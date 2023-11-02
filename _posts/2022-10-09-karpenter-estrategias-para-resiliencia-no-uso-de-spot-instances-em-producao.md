@@ -3,8 +3,11 @@ layout: post
 image: https://cdn-images-1.medium.com/max/1024/0*DCHMG6rWlh39XAZe.png
 title: Karpenter — Estratégias para resiliência no uso de Spot Instances em produção
 canonical_url: https://medium.com/@fidelissauro/karpenter-estrat%C3%A9gias-para-resili%C3%AAncia-no-uso-de-spot-instances-em-produ%C3%A7%C3%A3o-398c7bff2cdc?source=rss-fc2fda5e9bc2------2
+author: matheus
+featured: true
+categories: [ aws, arquitetura, kubernetes, terraform, karpenter ]
 ---
-## Introdução
+# Introdução
 
 Esse é o segundo artigo que eu publico sobre Karpenter. Dessa vez decidi trazer um ponto de vista bem legal que é a adoção de uso de Spots em produção.
 
@@ -28,7 +31,9 @@ Todos os exemplos aqui do texto estão feitos de forma resumida, porém você po
 
 [REPOSITÓRIO - eks-karpenter-autonomous-cluster/examples/spots at main · msfidelis/eks-karpenter-autonomous-cluster](https://github.com/msfidelis/eks-karpenter-autonomous-cluster/tree/main/examples/spots)
 
-### Cenário Inicial
+<br>
+
+## Cenário Inicial
 
 Nesse artigo iremos abordar as estratégias:
 
@@ -38,7 +43,9 @@ Nesse artigo iremos abordar as estratégias:
 
 Todos os cenários vão seguir a mesma formula, vamos escalar todos os pods de 2 para 100 e ver como o provisionamento vai se comportar.
 
-### Multi-AZ
+<br>
+
+## Multi-AZ
 
 Inicialmente, vamos fazer o básico em relação a ambientes produtivos, sendo ele rodando em spots ou não. Rodar em Multi AZ é o arroz com feijão quando falamos sobre cloud pública no geral. E quando falamos em ambientes 100% spots, onde vamos executar esse primeiro cenário, é praticamente impossível ganhar qualquer tipo de estabilidade sem rodarmos Multi AZ.
 
@@ -46,15 +53,14 @@ Vamos adicionar uma especificação sobre a label **_topology.kubernetes.io/zone
 
 {% gist a7d33da2fbeb0f10097d47870dec611e %}
 
-[Link para o Gist](https://medium.com/media/a4c5586813e70140c82071c961ec9539/href)
 
 Agora vamos realizar uma modificação no nosso deployment utilizando os topology spreads e skews. O controlador do Karpenter vai se basear nessa informação pra realizar o provisionamento dos nodes quando precisar suprir um capacity.
 
 {% gist 025b5c652f656495532e6fb1db78fd8c %}
 
-[Link para o Gist](https://medium.com/media/592d9820dc4ebe5b90c005d4ff7d1d13/href)
-
 ![Imagem](https://cdn-images-1.medium.com/max/1024/1*mceKb3IHQdpQpQSOVCpZOw.png)
+
+<br>
 
 ### Diversificação de Máquinas
 
@@ -83,6 +89,7 @@ kubectl scale --replicas 100 deploy/chip -n chip
 
 Dessa forma, conseguimos gerar uma distribuição bem tranquila entre os tamanhos de nodes do cluster pra suprir o novo capacity solicitado conforme o esperado.
 
+<br>
 
 ### Diversificação On Demand x Spots
 
@@ -99,6 +106,7 @@ Dessa forma também conseguimos instruir o Karpenter pra subir de forma diversif
 
 ![Imagem](https://cdn-images-1.medium.com/max/1024/1*7vj9ZVHGhM0rtcLmBsdQ0w.png)
 
+<br>
 
 ### Node Termination Handler
 
@@ -122,6 +130,7 @@ Sempre que um evento de desligamento de Spot for informado, ou solicitado via co
 
 ![Imagem](https://cdn-images-1.medium.com/max/865/1*2pvckY_9zzQ61t_yavLf1w.png)
 
+<br>
 
 ### Referências / Material de Apoio 
 - **EKS Best Pratices** [https://aws.github.io/aws-eks-best-practices/karpenter/](https://aws.github.io/aws-eks-best-practices/karpenter/)
