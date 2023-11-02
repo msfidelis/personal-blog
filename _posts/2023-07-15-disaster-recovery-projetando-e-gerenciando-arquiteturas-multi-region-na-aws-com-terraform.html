@@ -1,0 +1,652 @@
+---
+layout: post
+image: https://cdn-images-1.medium.com/max/1024/0*Ob8qDtlYFtcNQLhO
+author: matheus
+featured: true
+categories: [ aws, arquitetura, disaster-recovery, terraform ]
+title: Disaster Recovery — Projetando e Gerenciando Arquiteturas Multi-Region na AWS
+  com Terraform
+canonical_url: https://medium.com/@fidelissauro/disaster-recovery-projetando-e-gerenciando-arquiteturas-multi-region-na-aws-com-terraform-8e9a6a9a8669?source=rss-fc2fda5e9bc2------2
+---
+<h3>Disclaimer</h3>
+<p>Este artigo foi o mais longo e cansativo que escrevi em muito tempo, então considere esse disclaimer como um pedido
+  de desculpas escrito após a finalização do mesmo. <strong>Recomendo que leia aos poucos, com calma</strong>. Entrei em
+  um <em>hiperfoco</em> violento que me fez cuspir tudo que estava na minha cabeça de uma vez, então peço perdão por
+  isso e insisto que você não desista dessa leitura pela extensão.</p>
+<p>Refleti muito se deveria lança-lo por partes menores, mesmo não gostando desse modelo. Na verdade nada me deixa mais
+  decepcionado do que estar empolgado na leitura de um artigo e do nada ele acabar no <strong><em>&quot;like pra parte
+      2&quot;</em></strong>. Então salve esse cara nos seus favoritos e por favor, não desista dele.</p>
+<h3>Terraform e Disaster Recovery</h3>
+<p>O <strong>Disaster Recovery</strong> (Recuperação de Desastres) é uma estratégia essencial para garantir a
+  continuidade dos negócios e a resiliência de sistemas críticos em caso de falhas ou interrupções inesperadas. Com o
+  aumento da dependência de serviços e aplicações na nuvem, a adoção de soluções de recuperação de desastres se tornou
+  ainda mais crucial para proteger os dados e garantir a disponibilidade dos serviços.</p>
+<p>Além de ser uma poderosa ferramenta de <strong>Infraestrutura como Código</strong>, o Terraform pode desempenhar um
+  papel fundamental na implementação de estratégias de chaveamento (failover) e recuperação de desastres (DR) na nuvem.
+  Com sua capacidade de gerenciar recursos de infraestrutura em várias regiões e provedores de nuvem, o Terraform se
+  torna uma escolha natural para automatizar a criação e a configuração de ambientes de chaveamento e DR altamente
+  resilientes.</p>
+<p>Neste artigo, exploraremos como o Terraform pode ser utilizado como uma ferramenta abrangente para orquestrar
+  ambientes de chaveamento e DR na <strong>AWS (Amazon Web Services)</strong>. Veremos como podemos aproveitar a
+  flexibilidade e a facilidade de uso do Terraform para criar arquiteturas de failover que garantem a continuidade dos
+  serviços em caso de falhas ou interrupções inesperadas. Como exemplo prático, implementaremos uma proposta funcional
+  de uma arquitetura reduzida que pode se manter funcionando em casos de abordagens ativo/ativo ou ativo/passivo,
+  fazendo uso de algumas estratégias e serviços que possuam features de replicação, balanceamento chaveamento
+  automático, e trabalhando de forma espelhadas entre duas regiões da AWS.</p>
+<h3>Premissas e estratégias da nossa arquitetura</h3>
+<p>É possível pensar e filosofar em centenas de possibilidade de se projetar uma estrutura em nuvem, porém a que vamos
+  escolher aqui tem o objetivo central de se manter o mais simples possível e aproveitar o máximo de coisas <em>&quot;as
+    a service&quot;</em> que a AWS oferece por meio dos seus produtos.</p>
+<p>Nesse caso, vamos assumir de antemão as seguintes premissas:</p>
+<ul>
+  <li>Vamos dar prioridade <strong>para o máximo de serviços Serverless possível</strong>. Nossa estratégia será
+    desenhada em torno dessas soluções para mantermos o máximo de simplicidade possível. Por serem altamente gerenciados
+    pelos provedores de nuvem, esses serviços costumam ser mais rápidos e fáceis de provisionar e utilizar.</li>
+  <li>Vamos dar extrema prioridade para serviços que ofereçam <strong>replicação de dados</strong>, principalmente que
+    funcionem de <strong>forma bilateral </strong>e nos facilite na virada e no retorno entre a região primária e de DR
+    de forma rápida.</li>
+  <li>Voltando ao tópico anterior, a AWS possui vários e vários serviços que possibilitam trabalhar em Multi-Region de
+    alguma forma, porém a maioria deles serão despriorizados por necessitarem de algum tipo de intervenção manual para o
+    DR, ou que não possibilitem trabalhar ATIVO/ATIVO, como no caso de serviços que mantenham uma região <strong>Read
+      Only</strong>, <strong>Replica</strong> e etc.</li>
+  <li>Iremos presumir que a estratégia de DR seja executada manualmente e com base em certos critérios estabelecidos de
+    maneira lúdica previamente. Uma forma bonita de dizer que pro DR acontecer, será necessário executar o Terraform por
+    algum lugar, por alguém, por algum motivo.</li>
+</ul>
+<h3>Terraform em Multi-Region</h3>
+<p>Configurar o Terraform para trabalhar em multi região na AWS é um passo crucial dentro desta proposta para
+  estabelecer uma estratégia eficaz de Disaster Recovery. Através do uso de variáveis e providers específicos para cada
+  região, você pode garantir que seus recursos críticos sejam replicados e disponibilizados em regiões geograficamente
+  distantes, aumentando a resiliência e a disponibilidade da sua aplicação.</p>
+<p>O Terraform suporta multiplas definições do mesmo provider, sendo diferenciado por um alias para ser referenciado
+  posteriormente. Nesse caso, vamos estabelecer dois providers idênticos da AWS e criar os alias primary e
+  disaster-recovery .</p>
+<p>Para essa demonstração iremos assumir a região primary seja em <strong>São Paulo (sa-east-1)</strong> e a região de
+  disaster-recovery sendo em <strong>Norte Virginia (us-east-1).</strong></p>
+<pre>provider &quot;aws&quot; {<br>  alias  = &quot;primary&quot;<br>  region = &quot;sa-east-1&quot;<br>}<br><br>provider &quot;aws&quot; {<br>  alias  = &quot;disaster-recovery&quot;<br>  region = &quot;us-east-1&quot;<br>} </pre>
+<h4>Recursos Modulares — Especialistas ou Genéricos</h4>
+<p>Para essa prova de conceito funcionar, precisaremos investir numa arquitetura de Infraestrutura como <strong>Código
+    Modular</strong>, ou criar objetos de IaC que resolvem problemas de forma padronizada que podem ser reaproveitados
+  diversas vezes com base de parâmetros de entrada. Isso vai nos permitir entregar o mesmo recurso nas duas regiões com
+  a mesma baseline de configuração.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/642/1*_ZlYyfslMuwO31QitfRoGg.png" /></figure>
+<h4>E como fazemos isso?</h4>
+<p>Para esse exemplo, utilizaremos variáveis que são construídas por meio de <a
+    href="https://developer.hashicorp.com/terraform/language/expressions/types#maps-objects"><em>maps</em></a>, para
+  depois utilizarmos a função lookup para recuperar os valores. Nesse caso a chave dos maps será o nome da região, ou
+  seja, sa-east-1 e us-east-1 . Poderia ser primary ou secondary , active ou passive ou qualquer outra coisa que
+  faça sentido.</p>
+<pre>variable &quot;vpc_cidr&quot; {<br>  type = map(any)<br>  default = {<br>    us-east-1 = &quot;10.0.0.0/16&quot;<br>    sa-east-1 = &quot;172.0.0.0/16&quot;<br>  }<br>}<br><br>variable &quot;public_subnet_1a&quot; {<br>  type = map(any)<br>  default = {<br>    us-east-1 = &quot;10.0.0.0/20&quot;<br>    sa-east-1 = &quot;172.0.0.0/20&quot;<br>  }<br>}<br><br>variable &quot;public_subnet_1b&quot; {<br>  type = map(any)<br>  default = {<br>    us-east-1 = &quot;10.0.16.0/20&quot;<br>    sa-east-1 = &quot;172.0.16.0/20&quot;<br>  }<br>}<br><br>// ...</pre>
+<p>Nesse caso encapsulamos a criação de toda a networking da VPC em um modulo, e utilizamos o mesmo como source duas
+  vezes, passando os mesmos inputs porém com procurando a chave da região específica no <a
+    href="https://developer.hashicorp.com/terraform/language/functions/lookup">lookup</a>.</p>
+<p>Como definimos no primeiro passo os dois providers da AWS com seus determinados alias, temos que informar ao módulo
+  qual deles deve ser utilizado para criar os recursos.</p>
+<pre>module &quot;vpc_sa_east_1&quot; {<br>  source = &quot;./modules/vpc&quot;<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  project_name = &quot;primary&quot;<br>  vpc_cidr     = lookup(var.vpc_cidr, &quot;sa-east-1&quot;)<br><br>  public_subnet_1a = lookup(var.public_subnet_1a, &quot;sa-east-1&quot;)<br>  public_subnet_1b = lookup(var.public_subnet_1b, &quot;sa-east-1&quot;)<br>  public_subnet_1c = lookup(var.public_subnet_1c, &quot;sa-east-1&quot;)<br><br>  private_subnet_1a = lookup(var.private_subnet_1a, &quot;sa-east-1&quot;)<br>  private_subnet_1b = lookup(var.private_subnet_1b, &quot;sa-east-1&quot;)<br>  private_subnet_1c = lookup(var.private_subnet_1c, &quot;sa-east-1&quot;)<br>}<br><br><br>module &quot;vpc_us_east_1&quot; {<br>  source = &quot;./modules/vpc&quot;<br><br>  providers = {<br>    aws = aws.disaster-recovery<br>  }<br><br>  project_name = &quot;disaster-recovery&quot;<br>  vpc_cidr     = lookup(var.vpc_cidr, &quot;us-east-1&quot;)<br><br>  public_subnet_1a = lookup(var.public_subnet_1a, &quot;us-east-1&quot;)<br>  public_subnet_1b = lookup(var.public_subnet_1b, &quot;us-east-1&quot;)<br>  public_subnet_1c = lookup(var.public_subnet_1c, &quot;us-east-1&quot;)<br><br>  private_subnet_1a = lookup(var.private_subnet_1a, &quot;us-east-1&quot;)<br>  private_subnet_1b = lookup(var.private_subnet_1b, &quot;us-east-1&quot;)<br>  private_subnet_1c = lookup(var.private_subnet_1c, &quot;us-east-1&quot;)<br>}</pre>
+<h3>Uma pausa do decoro</h3>
+<p>Eu sei que quem acompanha os meus artigos anteriores vai se sentir um pouco estranho lendo esse aqui. Eu estou
+  intencionalmente tentando escrever algo de forma mais séria, e isso vai acontecer. Mas antes, eu preciso de uma pausa
+  antes de continuarmos para alinhar umas premissas:</p>
+<ul>
+  <li><em>Puts, mas eu prefiro trabalhar com Workspaces / Tfvars ao invés de modular</em>: O céu é o seu limite!</li>
+  <li><em>Prefiro separar tudo e trabalhar com tfvars separadas ao invés de lookups:</em> Te amo, você é incrível!</li>
+  <li><em>Eu acho que fazer um modulo que entrega nas duas regiões é melhor</em>: segura na mão do pai e vai</li>
+  <li><em>Eu acho assim ruim, prefiro separar tudo e disponibilizar os outputs de outras formas</em>: confia no seu
+    potencial, você é incrivel</li>
+  <li><strong>No mais: Se apegue mais na mensagem do que na cor da meia do carteiro.</strong></li>
+</ul>
+<p><em>Voltamos…</em></p>
+<h3>Parte 1: Ingress e o Fluxo Síncrono</h3>
+<p>Na primeira parte deste artigo, vamos nos concentrar em como funcionará o fluxo síncrono de consumo do nosso serviço,
+  considerando a necessidade de consumir uma API REST que é atendida por N aplicações (nesse escopo reduzido,
+  apenas uma).</p>
+<p>O nosso fluxo sincrono é bastante simples, e o caminho para atender a uma requisição será o seguinte:</p>
+<ul>
+  <li><strong>Route53:</strong> Faremos o apontamento e chaveamento de DNS por meio do Route53. Ele nos permite
+    gerenciar e redirecionar o tráfego de forma eficiente para o local correto. Aprenderemos como utilizá-lo para
+    chavear o tráfego entre a região primária e as de disaster recovery.</li>
+  <li><strong>Custom Domain Name:</strong> Utilizaremos o Custom Domain Name para gerenciar o domínio e o certificado
+    HTTPS/SSL da nossa API. Isso garantirá a segurança das comunicações entre o cliente e a nossa infraestrutura.</li>
+  <li><strong>API Gateway Regional:</strong> A exposição da API na DMZ (zona desmilitarizada, vulgo internet, terra de
+    ninguém) será realizada por meio do API Gateway Regional. Ele nos permitirá disponibilizar a API para o
+    consumo externo.</li>
+  <li><strong>Network Load Balancer:</strong> O Network Load Balancer funcionará como um <strong>VPC Link</strong>,
+    direcionando o tráfego externo para dentro da nossa VPC (Virtual Private Cloud). Ele será responsável por encaminhar
+    as requisições recebidas do API Gateway na internet para dentro da nossa infraestrutura de forma segura e correta.
+  </li>
+  <li><strong>Application Load Balancer: </strong>A gestão da camada 7 das aplicações que compõem o nosso Workload será
+    feita pelo ALB, Application Load Balancer. Ele nos permitirá distribuir o tráfego de maneira eficiente entre os
+    diferentes containers que executam a nossa aplicação REST. Essa camada 7 é responsável por processar solicitações
+    HTTP e HTTPS.</li>
+  <li><strong>Aplicação REST:</strong> A aplicação REST será executada em containers, que podem estar em qualquer lugar,
+    nesse caso, utilizaremos o ECS (Elastic Container Service). O ECS nos oferece um ambiente flexível para executar
+    nossos containers, garantindo escalabilidade e disponibilidade de uma forma estupidamente simples.</li>
+</ul>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/0*vJbCnJUJYYaNEEV7.png" /></figure>
+<p>Seguindo a premissa inicial utilizando a VPC de exemplo, vamos entregar todos os recursos de forma duplicada, usando
+  as duas configurações de providers configurados nas duas zonas de disponibilidade.</p>
+<h4>1.1 — API Gateway Regional</h4>
+<p>Neste exemplo, optamos por encapsular todos os mapeamentos da nossa API dentro de um <strong>módulo dedicado
+    do</strong> <strong>API Gateway</strong>. Ao contrário de um módulo genérico que poderia ser replicado para diversos
+  cenários, o objetivo deste módulo é fornecer todos os mapeamentos para todo o workload. Essa abordagem simplifica o
+  encapsulamento de todas as definições do <strong>OpenAPI 3.0</strong> e facilita o entendimento da proposta.</p>
+<p>É importante ressaltar que também é possível criar um módulo que aceite o OpenAPI de forma genérica, o que seria uma
+  opção viável em um ambiente de trabalho. Optei por seguir dessa forma por praticidade do exemplo.</p>
+<p>É importante considerar que o API Gateway é um recurso provisionado fora da VPC, o que significa que não temos
+  controle físico direto sobre ele, como saber em qual Zona de Disponibilidade de derminada região ele está alocado.
+  <strong>Nesse caso específico, é necessário fazer o deployment do API Gateway em modo Regional.</strong></p>
+<p>Embora o API Gateway seja um recurso externo à VPC, o modo Regional de implantação nos <strong>permite ter uma
+    visibilidade clara sobre a região em que a distribuição será entregue</strong>, o que é fundamental para garantir o
+  controle que estamos almejando para o chaveamento dos workloads.</p>
+<p><a
+    href="https://github.com/msfidelis/aws-multi-region-disaster-recovery/tree/main/modules/api-gateway-app-demo"><strong>Para
+      mais detalhes, o modulo do gateway da aplicação está aqui.</strong></a></p>
+<pre>module &quot;api_gateway_app_demo_sa_east_1&quot; {<br>  source = &quot;./modules/api-gateway-app-demo&quot;<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  gateway_name = &quot;app-demo&quot;<br>  stage_name   = &quot;prod&quot;<br>  vpc_link     = module.cluster_sa_east_1.vpc_link<br>}<br><br>module &quot;api_gateway_app_demo_us_east_1&quot; {<br>  source = &quot;./modules/api-gateway-app-demo&quot;<br><br>  providers = {<br>    aws = aws.disaster-recovery<br>  }<br><br>  gateway_name = &quot;app-demo&quot;<br>  stage_name   = &quot;prod&quot;<br>  vpc_link     = module.cluster_us_east_1.vpc_link<br>}go</pre>
+<h4>1.2 — ACM Regional</h4>
+<p>Para garantir um deployment confiável, também faremos o deploy do <strong>ACM (AWS Certificate Manager)</strong>. O
+  ACM é um serviço gerenciado pela AWS que permite provisionar, <strong>gerenciar e implantar certificados
+    SSL/TLS</strong> <em>(Secure Sockets Layer/Transport Layer Security)</em> para uso em serviços da AWS, incluindo o
+  API Gateway.</p>
+<p>Ao utilizar o ACM, facilitamos a aquisição, implantação e renovação automática de certificados <em>SSL/TLS</em>,
+  garantindo comunicações seguras entre os clientes e os recursos da AWS. <strong>Nesse caso, utilizaremos o ACM para
+    garantir a segurança do domínio em um nível regional</strong>.</p>
+<p>É importante ressaltar que <strong>as duas regiões provisionarão certificados com o mesmo nome</strong>. Essa
+  duplicação é necessária para que possamos associar os <strong>Custom Domain Names e API Gateways</strong> específicos
+  de cada região.</p>
+<p><strong><em>Exploraremos esse tópico no próximo tópico do artigo.</em></strong></p>
+<pre>module &quot;acm_sa_east_1&quot; {<br>  source = &quot;./modules/acm&quot;<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  domain_name     = format(&quot;*.%s&quot;, var.route53_domain)<br>  route53_zone_id = var.route53_hosted_zone<br>}<br><br><br>module &quot;acm_us_east_1&quot; {<br>  source = &quot;./modules/acm&quot;<br><br>  providers = {<br>    aws = aws.disaster-recovery<br>  }<br><br>  domain_name     = format(&quot;*.%s&quot;, var.route53_domain)<br>  route53_zone_id = var.route53_hosted_zone<br>}go</pre>
+<h4>1.3 — Custom Domain Name</h4>
+<p>O <strong>Custom Domain Name</strong> é a porta de entrada funcionando como um roteador de API Gateways, é onde vamos
+  definir um domínio <strong><em>human-like</em></strong> e realizar os devidos mappings. Esse exemplo, vamos fazer um
+  redirecionamento full de tudo que bater nesse domínio ser redirecionado, mas é uma das capacidades do Custom Domain
+  Name permitir que diversos API Gateways sejam expostos através de um único dominio.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*t8-5htmCprCG7Okyt4hOmg.png" /></figure>
+<pre>module &quot;custom_domain_sa_east_1&quot; {<br>  source = &quot;./modules/api-gateway-custom-domain&quot;<br><br>  providers = {<br>    aws = aws.primary<br>  }<br>  acm_arn                 = module.acm_sa_east_1.arn<br>  api_gateway_domain_name = var.api_gateway_domain<br><br><br>  base_path_mappings      = [<br>    {<br>      base_path = &quot;/&quot;,<br>      api_id    = module.api_gateway_app_demo_sa_east_1.id,<br>      stage     =  module.api_gateway_app_demo_sa_east_1.stage,<br>    }<br>  ]<br>}<br><br><br>module &quot;custom_domain_us_east_1&quot; {<br>  source = &quot;./modules/api-gateway-custom-domain&quot;<br><br>  providers = {<br>    aws = aws.disaster-recovery<br>  }<br>  acm_arn                 = module.acm_us_east_1.arn<br>  api_gateway_domain_name = var.api_gateway_domain<br><br>  base_path_mappings      = [<br>    {<br>      base_path = &quot;/&quot;,<br>      api_id    = module.api_gateway_app_demo_us_east_1.id,<br>      stage     =  module.api_gateway_app_demo_us_east_1.stage,<br>    }<br>  ]<br>}</pre>
+<h4>1.4 —Route53, Gestão de DNS</h4>
+<p>Uma parte fundamental para uma estratégia de Disaster Recovery em multi region é a capacidade de realizar o
+  chaveamento (failover) entre os sites de forma automática e rápida. Para realizar essa tarefa, vamos utilizar o Amazon
+  Route53, que é o serviço de DNS da AWS, junto ao o Terraform para automatizar o processo de failover.</p>
+<p>Vamos assumir que nossa zona já está criada e vamos referenciá-la com base na variável hosted_zone_id para criar os
+  recursos de chaveamento.</p>
+<pre>variable &quot;route53_hosted_zone&quot; {<br>  type    = string<br>  default = &quot;Z102505525LUE9SZ7HWTY&quot;<br>}<br><br>variable &quot;route53_domain&quot; {<br>  type    = string<br>  default = &quot;msfidelis.com.br&quot;<br>}<br><br>variable &quot;api_gateway_domain&quot; {<br>  type    = string<br>  default = &quot;api.msfidelis.com.br&quot;<br>}</pre>
+<h4>Chaveamento entre as Regiões da AWS</h4>
+<p>Com base nas premissas iniciais, a proposta é fornecer um chaveamento simples, com base em que apenas um commit, uma
+  rodada de pipeline, um apply, seja possível redirecionar todo o tráfego para uma ou outra região de DR.</p>
+<p>Vamos manipular uma variável chamada state, onde em cada key de região vamos manter as strings ACTIVE e PASSIVE . Com
+  base nesses valores vamos decidir muita coisa.</p>
+<pre>variable &quot;state&quot; {<br>  type = map(any)<br>  default = {<br>    &quot;sa-east-1&quot; : &quot;ACTIVE&quot;,<br>    &quot;us-east-1&quot; : &quot;PASSIVE&quot;,<br>  }<br>}</pre>
+<p>Com base no valor dessa variável, podemos definir por exemplo o quanto queremos setar de peso entre os records</p>
+<pre>lookup(var.state, &quot;região&quot;) == &quot;ACTIVE&quot; ? 100 : 0</pre>
+<p>Com base no valor ACTIVE, podemos colocar como weight policy no Route53 um redirecionamento de peso 100, e ao
+  contrário um peso 0. Invertendo os valores dessas variáveis podemos desabilitar o roteamento de DNS da região
+  sa-east-1e enviá-lo totalmente para us-east-1 com base nos pesos.</p>
+<p>Também é possível colocar as duas como ACTIVE fazendo com que seja executado um Round Robin de resolução de nomes
+  entre as duas, balanceando as devidas cargas de trabalho.</p>
+<pre><br>resource &quot;aws_route53_record&quot; &quot;primary&quot; {<br><br>  provider = aws.primary<br><br>  zone_id = var.route53_hosted_zone<br>  name    = var.api_gateway_domain<br>  type    = &quot;A&quot;<br><br>  weighted_routing_policy { &lt;-------------<br>    weight = lookup(var.state, &quot;sa-east-1&quot;) == &quot;ACTIVE&quot; ? 100 : 0<br>  }<br><br>  set_identifier = &quot;primary&quot;<br><br>  alias {<br>    evaluate_target_health = true<br>    name                   = module.custom_domain_sa_east_1.regional_domain_name<br>    zone_id                = module.custom_domain_sa_east_1.regional_zone_id<br>  }<br>}<br><br><br>resource &quot;aws_route53_record&quot; &quot;dr&quot; {<br><br>  provider = aws.disaster-recovery<br><br>  zone_id = var.route53_hosted_zone<br>  name    = var.api_gateway_domain<br>  type    = &quot;A&quot;<br><br>  weighted_routing_policy { &lt;-------------<br>    weight = lookup(var.state, &quot;us-east-1&quot;) == &quot;ACTIVE&quot; ? 100 : 0<br>  }<br><br>  set_identifier = &quot;disaster-recovery&quot;<br><br>  alias {<br>    evaluate_target_health = true<br>    name                   = module.custom_domain_us_east_1.regional_domain_name<br>    zone_id                = module.custom_domain_us_east_1.regional_zone_id<br>  }<br>}</pre>
+<h4><strong>Exemplo do DR desligado</strong></h4>
+<pre>variable &quot;state&quot; {<br>  type = map(any)<br>  default = {<br>    &quot;sa-east-1&quot; : &quot;ACTIVE&quot;,<br>    &quot;us-east-1&quot; : &quot;PASSIVE&quot;,<br>  }<br>}</pre>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*tmHxxVbrxpVkCOWN3ySd_g.png" /></figure>
+<h4><strong>Exemplo do DR Ligado</strong></h4>
+<pre>variable &quot;state&quot; {<br>  type = map(any)<br>  default = {<br>    &quot;sa-east-1&quot; : &quot;PASSIVE&quot;,<br>    &quot;us-east-1&quot; : &quot;ACTIVE&quot;,<br>  }<br>}</pre>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*9YP2fX4lwsr1bTS5NrtJwg.png" /></figure>
+<h4><strong>Exemplo do DR Ativo/Ativo</strong></h4>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*gWMOe0BnhaoPgAXtshzgkA.png" /></figure>
+<pre>variable &quot;state&quot; {<br>  type = map(any)<br>  default = {<br>    &quot;sa-east-1&quot; : &quot;ACTIVE&quot;,<br>    &quot;us-east-1&quot; : &quot;ACTIVE&quot;,<br>  }<br>}</pre>
+<h3>Parte 2: Computing</h3>
+<p>Parte crucial pra uma estratégia de DR funcionar, é escolher como rodar nossas aplicações. Essa decisão precisa levar
+  em conta o quão replicável a forma como publicamos e fazemos a governança desses serviços é. No o modelo computacional
+  que cabe como uma luva são <strong>containers</strong>, e principalmente opções <strong>Serverless</strong> como o
+  <strong>AWS Lambda, </strong>e na intersecção entre os dois modelos, o AWS Fargate que tem opções de rodar no modelo
+  de <strong>EKS (<em>Elastic Kubernetes Service</em>) </strong>e de <strong>ECS</strong> <strong><em>(Elastic Container
+      Service)</em></strong>.</p>
+<p>Como você vai fazer e qual modelo e tecnologia você vai usar é necessário uma análise cuidadosa a respeito das skills
+  do time e do nível de complexidade que você quer atingir ou evitar com sua arquitetura no fim do dia. Neste exemplo
+  vamos utilizar containers, rodando em <strong>ECS Fargate</strong>. Poderia ser um EKS, Nomad, o Próprio Lambda
+  tranquilamente. O importante é que consigamos replicar nosso serviço em qualquer lugar, isso inclui poder parametrizar
+  os recursos externos por meio de variáveis ambiente, gestão de secrets para que o serviço em si funcione de forma
+  padronizada, porém consumindo diferentes recursos em diferentes apontamentos.</p>
+<p><a href="https://github.com/msfidelis/aws-multi-region-disaster-recovery"><strong>A partir daqui vou reduzir os
+      exemplos de código, porém você pode acompanhar tudo que foi desenvolvido nessa PoC através deste
+      repo</strong></a>, e vou deixando pontualmente os links para os respectivos módulos.</p>
+<p><a href="https://github.com/msfidelis/aws-multi-region-disaster-recovery/tree/main/modules/cluster"><strong>Modulo do
+      Cluster ECS Disponível Aqui</strong></a></p>
+<p><a href="https://github.com/msfidelis/aws-multi-region-disaster-recovery/tree/main/modules/service"><strong>Modulo do
+      Service ECS Disponível Aqui</strong></a></p>
+<pre>module &quot;cluster_sa_east_1&quot; {<br>  source = &quot;./modules/cluster&quot;<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  cluster_name = &quot;my-demo&quot;<br><br>  vpc_id               = module.vpc_sa_east_1.vpc_id<br>  subnets              = module.vpc_sa_east_1.private_subnets<br>  route53_private_zone = var.route53_private_zone<br><br>}<br><br>// ... <br><br>module &quot;app_demo_sa_east_1&quot; {<br>  source = &quot;./modules/service&quot;<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  vpc_id = module.vpc_sa_east_1.vpc_id<br><br>  cluster_name = module.cluster_sa_east_1.cluster_name<br>  route53_zone = module.cluster_sa_east_1.private_zone<br><br>  service_name  = &quot;sales-api&quot;<br>  service_image = &quot;fidelissauro/sales-rest-api:latest&quot;<br><br>  service_port = 8080<br>  service_hostname = [<br>    format(&quot;app-demo.%s&quot;, var.route53_private_zone)<br>  ]<br><br>// ...<br><br>  envs = [<br>    {<br>      name : &quot;AWS_REGION&quot;,<br>      value : &quot;sa-east-1&quot;<br>    },<br>    {<br>      name : &quot;DYNAMO_SALES_TABLE&quot;,<br>      value : aws_dynamodb_table.sales.name<br>    },<br>    {<br>      name : &quot;SNS_SALES_PROCESSING_TOPIC&quot;,<br>      value : module.sales_sns_sa_east_1.arn<br>    },<br>    {<br>      name : &quot;SSM_PARAMETER_STORE_STATE&quot;,<br>      value : module.ssm_parameter_state_sa_east_1.name<br>    }<br>  ]<br><br>}</pre>
+<p>Aqui está um exemplo de como podemos centralizar os recursos para criação de um cluster e um service sendo entregue
+  da mesma forma dentro desse cluster, aceitando variáveis de ambiente parametrizáveis seguindo as premissas de duplo
+  provisionamento entre os diferentes providers e regiões.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*Gn_rZ9-Bk6V5rnvsuj2ODA.png" /></figure>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*LYbJKteBdiTN_4Zj9rzrBA.png" /></figure>
+<h3>Parte 3: Dados</h3>
+<p>Talvez a parte mais importante e complexa de todo plano de <strong>Disaster Recovery</strong>, trabalhar com
+  os dados.</p>
+<p>É fundamental garantir a integridade dos dados durante o processo de recuperação. Os dados devem ser replicados ou
+  backup em tempo real para garantir que não haja perda ou corrupção de dados durante uma interrupção.</p>
+<p>E mais difícil que virar para o DR, e garantir que os dados estarão lá disponíveis para serem consumidos, mesmo que
+  com algum delay ou com consistência eventual,<strong> é voltar ao estado original.</strong></p>
+<p>Voltar ao Site/Região/DC primário com os dados que foram alterados durante o tempo de atividade da Região de DR é
+  extremamente complexo, porém dentro do ferramental que a AWS nos dispõe é razoavelmente simples se tomarmos as
+  decisões arquiteturais corretas.</p>
+<p>Nessa parte do artigo, vamos detalhar como criar um fluxo de dados resiliente e eficiente, pensando em<strong>
+    replicação bilateral</strong> <strong>de todas as fontes de dados</strong>, <strong>offload de processamento,
+    mensageria e eventos, </strong>tudo pensado para que exista uma sincronia e replicação com tempo considerável das
+  duas regiões, para que seja possível chavear, deschavear e manter as duas ativas ofertando os mesmos dados de ambas
+  as partes.</p>
+<p>Nesse parte vamos tornar possível:</p>
+<ul>
+  <li><strong>SNS e SQS Multi-Region</strong></li>
+  <li><strong>DynamoDB Global Tables</strong></li>
+  <li><strong>Two-way replication no S3</strong></li>
+</ul>
+<p>No final, iremos chegar em uma solução parecida com essa entre as duas Regiões.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*YoRNqCoGB4VhFSYTg8ujuA.png" /></figure>
+<h4>3.1 — Eventos e Mensageria; SNS e SQS Multi Region</h4>
+<p>No nosso fluxo hipotético presume que nossa aplicação REST, durante o registro de uma venda, salve um registro de
+  venda no Dynamo, publique uma mensagem para processamento posterior desse item. Para essa solução vamos inserir
+  um fluxo:</p>
+<ul>
+  <li><strong>App REST -&gt; SNS Topic -&gt; SQS Queue -&gt; Aplicação Worker -&gt; Dynamo</strong></li>
+</ul>
+<p>Porém para garantir as premissas de replicação, e garantir que uma mensagem recebida por uma região seja replicada
+  automaticamente para a outra, precisamos fazer uso do <strong>SNS Cross-Region Delivery.</strong></p>
+<p>O <strong>SNS Cross-Region Delivery</strong> (Entrega Inter-regional do SNS) é um recurso fornecido pelo Amazon
+  Simple Notification Service (SNS) que permite enviar notificações entre regiões na AWS. O SNS é um serviço gerenciado
+  pela AWS que permite enviar mensagens para várias plataformas, como aplicativos móveis, e-mails, SMS e endpoints HTTP,
+  e neste caso, o <strong>Amazon SQS</strong>, e essa configuração deve ser feita de forma bilateral, em ambos os
+  tópicos SNS e ambas as filas SQS.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*LjkZI8ksvjerhKYJ4v1TrA.png" /></figure>
+<p>Essa configuração é feita dentro do modulo, mas para abrir um pouco o capô do carro, inicialmente precisamos criar
+  uma fila SQS com uma policy que permita os tópicos de SNS publicarem mensagens na mesma.</p>
+<pre>resource &quot;aws_sqs_queue_policy&quot; &quot;main&quot; {<br>  queue_url = aws_sqs_queue.main.id<br>  policy    = &lt;&lt;EOF<br>{<br>  &quot;Version&quot;: &quot;2012-10-17&quot;,<br>  &quot;Statement&quot;: [<br>    {<br>      &quot;Effect&quot;: &quot;Allow&quot;,<br>      &quot;Principal&quot;: &quot;*&quot;,<br>      &quot;Action&quot;: [<br>        &quot;sqs:SendMessage&quot;<br>      ],<br>      &quot;Resource&quot;: [<br>        &quot;${aws_sqs_queue.main.arn}&quot;<br>      ],<br>      &quot;Condition&quot;: {<br>        &quot;ArnLike&quot;: {<br>          &quot;aws:SourceArn&quot;: [<br>            &quot;arn:aws:sns:sa-east-1:${data.aws_caller_identity.current.account_id}:${var.sns_topic_name}&quot;,<br>            &quot;arn:aws:sns:us-east-1:${data.aws_caller_identity.current.account_id}:${var.sns_topic_name}&quot;<br>          ]<br>        }<br>      }<br>    }<br>  ]<br>}<br>EOF<br>}</pre>
+<pre>resource &quot;aws_sqs_queue&quot; &quot;main&quot; {<br>  name                      = var.queue_name<br>  delay_seconds             = var.delay_seconds<br>  max_message_size          = var.max_message_size<br>  message_retention_seconds = var.message_retention_seconds<br>  receive_wait_time_seconds = var.receive_wait_time_seconds<br>  visibility_timeout_seconds = var.visibility_timeout_seconds<br>  redrive_policy = jsonencode({<br>    deadLetterTargetArn = aws_sqs_queue.dlq.arn<br>    maxReceiveCount     = var.dlq_redrive_max_receive_count<br>  })<br>}</pre>
+<p>E em seguida criar um tópico SNS fazendo subscribe das filas de SQS</p>
+<pre>resource &quot;aws_sns_topic&quot; &quot;main&quot; {<br>  name = format(&quot;%s&quot;, var.name)<br>  #   fifo_topic                  = true<br>  #   content_based_deduplication = true<br>}<br><br>resource &quot;aws_sns_topic_subscription&quot; &quot;primary&quot; {<br>  protocol             = &quot;sqs&quot;<br>  raw_message_delivery = true<br>  topic_arn            = aws_sns_topic.main.arn<br>  endpoint             = var.sqs_queue<br>}<br><br>resource &quot;aws_sns_topic_subscription&quot; &quot;replica&quot; {<br>  protocol             = &quot;sqs&quot;<br>  raw_message_delivery = true<br>  topic_arn            = aws_sns_topic.main.arn<br>  endpoint             = var.sqs_queue_replica<br>}</pre>
+<p>Fechando um pouco o capô do carro, e ligando ele pra botar pra funcionar, nossa declaração de módulos trabalharia de
+  forma com que ambas as declarações dos providers recebesse respectivamente qual seria a queue primária e a replica,
+  alternando entre ambos.</p>
+<p><a href="https://github.com/msfidelis/aws-multi-region-disaster-recovery/tree/main/modules/sqs-queue"><strong>Módulo
+      do SQS disponível aqui</strong></a></p>
+<p><a
+    href="https://github.com/msfidelis/aws-multi-region-disaster-recovery/tree/main/modules/sns-multiregion-sqs-delivery"><strong>Módulo
+      do SNS disponível aqui</strong></a></p>
+<pre>module &quot;sales_processing_queue_sa_east_1&quot; {<br>  source = &quot;./modules/sqs-queue&quot;<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  queue_name                    = &quot;sales-processing-queue&quot;<br>  delay_seconds                 = 0<br>  max_message_size              = 2048<br>  message_retention_seconds     = 86400<br>  receive_wait_time_seconds     = 10<br>  dlq_redrive_max_receive_count = 4<br>  visibility_timeout_seconds    = 60<br><br>  sns_topic_name = var.sales_sns_topic_name<br>}<br><br>//..<br><br>module &quot;sales_sns_sa_east_1&quot; {<br>  source = &quot;./modules/sns-multiregion-sqs-delivery&quot;<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  name              = &quot;sales-processing-topic&quot;<br>  sqs_queue         = module.sales_processing_queue_sa_east_1.sqs_queue_arn<br>  sqs_queue_replica = module.sales_processing_queue_us_east_1.sqs_queue_arn<br>}<br><br>// ...</pre>
+<p>Independente do uso de um modulo, desse modulo, de outro modulo, ou fazer na mão, o esperado é que o tópico SNS tenha
+  sempre duas subscriptions, para as queues das duas regiões como no print a seguir, e a devida subscription do SNS de
+  cada região deve aparecer nas configurações das duas filas SQS mostradas.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*06RcwsW06XRV3q3rq1tIcA.png" /></figure>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*avBnof9YXpKzz9xV2YDDPw.png" /></figure>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*0OHoHNjKXCrx3Vr3J0oI-g.png" /></figure>
+<h4>3.2 — DynamoDB Global Tables</h4>
+<p>As <strong>DynamoDB Global Tables</strong> (Tabelas Globais do DynamoDB) são uma funcionalidade do serviço que
+  permitem que você crie e mantenha tabelas do DynamoDB automaticamente replicadas e sincronizadas em várias regiões da
+  AWS. Perfeito para nossa proposta de DR.</p>
+<p>Com as <strong>DynamoDB Global Tables</strong>, você pode ter cópias de tabelas em várias regiões da AWS, garantindo
+  replicação e failover automático, permitindo que as apps leiam e gravem dados de forma local em cada região.</p>
+<p>Essa replicação automática e síncrona de dados garante uma baixa latência de leitura e gravação, além de fornecer
+  alta disponibilidade e resiliência geográfica para o seu aplicativo.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/802/0*oZA9-EvfRP-wUe6e.png" /></figure>
+<p>Elas são particularmente úteis quando você precisa <strong>espelhar sua aplicação entre diversas regiões e
+    disponibilizá-las paralelamente,</strong> utilizando a mesma base de dados.</p>
+<p>Por exemplo em caso de <strong>Weighted Routing Policy </strong>utilizado neste exemplo entre Regiões, onde
+  teremos<strong> Round Robin</strong> do consumo de recursos em caso de ACTIVE/ACTIVE, ou num caso legal as
+  <strong>Geolocation routing policy,</strong> onde você pode disponibilizar o workload geograficamente mais proximo do
+  cliente, por exemplo:</p>
+<ul>
+  <li>Quem está no Brasil, acessa São Paulo</li>
+  <li>Quem está em Miami, acessa Virginia</li>
+</ul>
+<p>Mas no nosso caso de Disaster Recovery, podemos contar que teremos um banco de dados replicado de forma bilateral com
+  baixa latência e consistência eventual, independente das regiões que eu estiver manipulando esse dado.</p>
+<p>O provisionamento de uma <strong>Global Table</strong> é simples, e não requer provisionamento duplicado com base em
+  módulos, por isso não iremos fazer uso desse artifício nesse recurso.</p>
+<p>Os pontos de atenção para o provisonamento adequado é a necessidade de habilitar o <strong>DynamoDB Streams</strong>
+  no provisionamento da tabela informando o valor booleando no parâmetro stream_enabled e informando o stream_view_type
+  como NEW_AND_OLD_IMAGES para que por meio do stream a replicação aconteça em todas as replicas.</p>
+<pre>resource &quot;aws_dynamodb_table&quot; &quot;sales&quot; {<br><br>  provider = aws.primary<br><br>  hash_key = &quot;id&quot;<br><br>  name             = &quot;sales&quot;<br>  stream_enabled   = true<br>  stream_view_type = &quot;NEW_AND_OLD_IMAGES&quot;<br><br>  read_capacity  = lookup(var.dynamodb_sales, &quot;read_min&quot;)<br>  write_capacity = lookup(var.dynamodb_sales, &quot;write_min&quot;)<br>  billing_mode   = lookup(var.dynamodb_sales, &quot;billing_mode&quot;)<br><br>  point_in_time_recovery {<br>    enabled = lookup(var.dynamodb_sales, &quot;point_in_time_recovery&quot;)<br>  }<br><br>  attribute {<br>    name = &quot;id&quot;<br>    type = &quot;S&quot;<br>  }<br><br>  server_side_encryption {<br>    enabled     = true<br>    kms_key_arn = module.cluster_sa_east_1.kms_key<br>  }<br><br><br>  lifecycle {<br>    ignore_changes = [<br>      read_capacity,<br>      write_capacity,<br>      replica<br>    ]<br>  }<br>}<br><br>// Omitindo configs de autoscaling</pre>
+<p>Em seguida precisaremos criar um outro recurso chamado aws_dynamodb_table_replica informando qual tabela será
+  replicada e em qual região. Nesse caso precisaremos informar o provider do terraform da zona de DR.</p>
+<pre>resource &quot;aws_dynamodb_table_replica&quot; &quot;sales&quot; {<br>  provider         = aws.disaster-recovery<br>  global_table_arn = aws_dynamodb_table.sales.arn<br><br>  kms_key_arn      = module.cluster_us_east_1.kms_key<br><br>  depends_on = [<br>    aws_appautoscaling_target.sales_read,<br>    aws_appautoscaling_target.sales_write,<br>    aws_appautoscaling_policy.sales_read,<br>    aws_appautoscaling_policy.sales_write<br>  ]<br><br>}</pre>
+<p>Para testar, vamos consumir nossa API do produto hipotético tentando criar uma venda, em seguida executar um Scan na
+  tabela nas duas regiões para garantir que ele está lá.</p>
+<pre>❯ curl -X POST https://api.msfidelis.com.br/sales -d &#39;{&quot;product&quot;:&quot;registro que viajou entre duas regiões&quot;, &quot;amount&quot;: 666.00}&#39; -i<br>HTTP/2 201<br>date: Wed, 12 Jul 2023 00:22:26 GMT<br>content-type: application/json; charset=utf-8<br>content-length: 128<br>x-amzn-requestid: bb696387-4a2c-46b4-b68c-82adbefc9fd1<br>x-amzn-remapped-content-length: 128<br>x-amzn-remapped-connection: keep-alive<br>x-amz-apigw-id: H7LKVG88mjQEO6Q=<br>x-amzn-remapped-date: Wed, 12 Jul 2023 00:22:26 GMT<br><br>{&quot;id&quot;:&quot;d2673f99-d632-453d-aedd-13a30fc3bc78&quot;,&quot;product&quot;:&quot;registro que viajou entre duas regiões&quot;,&quot;amount&quot;:666,&quot;processed&quot;:false}</pre>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*wNpVfLQASyIRMqKWh3DpPw.png" /></figure>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*HRmUBwRSmEN7xSnkjeOpug.png" /></figure>
+<h4>3.3 — S3 Two Way Replication</h4>
+<p>Nosso produto hipotético, após nosso worker consumir a mensagem no SQS de uma nova venda, ele faz uma série de
+  processamento também hipotético, atualiza a flag de processamento no DynamoDB e em seguida sobe o registro para o S3
+  para Backup e ingestão futura de um <strong>Data Lake hipotético do Athena. (Não iremos abordar o Amazon Athena por
+    enquanto)</strong></p>
+<p>O <strong>Amazon S3 (Simple Storage Service)</strong> é um serviço popular de armazenamento de objetos oferecido pela
+  AWS. Ele fornece uma solução escalável, segura e durável para armazenar e recuperar dados de forma eficiente. Uma das
+  funcionalidades avançadas do Amazon S3 é o<strong> S3 Two Way Replication</strong>, que oferece uma abordagem
+  bidirecional para replicar dados entre buckets do S3 em regiões diferentes.</p>
+<p>A <strong>Replicação Bidirecional do S3 Two Way permite a replicação contínua e síncrona dos objetos armazenados em
+    um bucket do S3 para um bucket correspondente em outra região.</strong> Isso significa que qualquer
+  <strong>alteração, inclusão ou exclusão feita em um objeto em um bucket será automaticamente replicada para o bucket
+    de destino em tempo real.</strong> Com essa abordagem, você pode manter cópias atualizadas dos seus dados em regiões
+  distintas, aumentando a disponibilidade e a durabilidade dos objetos armazenados no S3.</p>
+<p>Para o nosso objetivo de DR e replicação de dados, essa solução serve muito bem. Podemos escrever e ler dos dois
+  buckets da replicação e contar que ambas as modificações serão espelhadas na região vizinha.</p>
+<p>Nesse caso, o provisionamento é bem simples. Vamos também utilizar um módulo onde iremos provisionar dois buckets com
+  as mesmas configurações nas duas regiões, primária e disaster-recovery.</p>
+<pre>module &quot;bucket_sa_east_1&quot; {<br>  source = &quot;./modules/s3_bucket&quot;<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  bucket_name_prefix = &quot;processed-sale&quot;<br>}<br><br><br>module &quot;bucket_us_east_1&quot; {<br>  source = &quot;./modules/s3_bucket&quot;<br><br>  providers = {<br>    aws = aws.disaster-recovery<br>  }<br><br>  bucket_name_prefix = &quot;processed-sale&quot;<br>}</pre>
+<p>Devemos prepara uma IAM Role que permita ser assumida pelo S3 com as devidas permissões de replicação e manipulação
+  de objetos.</p>
+<pre>// Replication IAM<br>data &quot;aws_iam_policy_document&quot; &quot;assume_role&quot; {<br>  statement {<br>    effect = &quot;Allow&quot;<br><br>    principals {<br>      type        = &quot;Service&quot;<br>      identifiers = [&quot;s3.amazonaws.com&quot;]<br>    }<br><br>    actions = [&quot;sts:AssumeRole&quot;]<br>  }<br>}<br><br>resource &quot;aws_iam_role&quot; &quot;replication&quot; {<br>  provider           = aws.primary<br>  name               = format(&quot;sales-s3-replication&quot;)<br>  assume_role_policy = data.aws_iam_policy_document.assume_role.json<br>}<br><br>data &quot;aws_iam_policy_document&quot; &quot;replication&quot; {<br>  statement {<br>    effect = &quot;Allow&quot;<br><br>    actions = [<br>      &quot;s3:GetReplicationConfiguration&quot;,<br>      &quot;s3:ListBucket&quot;,<br>    ]<br><br>    resources = [<br>      module.bucket_sa_east_1.arn,<br>      module.bucket_us_east_1.arn,<br>    ]<br>  }<br><br>  statement {<br>    effect = &quot;Allow&quot;<br><br>    actions = [<br>      &quot;s3:GetObjectVersionForReplication&quot;,<br>      &quot;s3:GetObjectVersionAcl&quot;,<br>      &quot;s3:GetObjectVersionTagging&quot;,<br>      &quot;s3:ReplicateObject&quot;,<br>      &quot;s3:ReplicateDelete&quot;,<br>      &quot;s3:ReplicateTags&quot;,<br>    ]<br><br>    resources = [<br>      &quot;${module.bucket_sa_east_1.arn}/*&quot;,<br>      &quot;${module.bucket_us_east_1.arn}/*&quot;<br>    ]<br>  }<br><br>}<br><br>resource &quot;aws_iam_policy&quot; &quot;replication&quot; {<br>  provider = aws.primary<br>  name     = format(&quot;sales-s3-replication&quot;)<br>  policy   = data.aws_iam_policy_document.replication.json<br>}<br><br>resource &quot;aws_iam_role_policy_attachment&quot; &quot;replication&quot; {<br>  provider   = aws.primary<br>  role       = aws_iam_role.replication.name<br>  policy_arn = aws_iam_policy.replication.arn<br>}</pre>
+<p>Podemos duplicar o recurso aws_s3_bucket_replication_configuration alternando em cada um o bucket origem e destino.
+</p>
+<pre>resource &quot;aws_s3_bucket_replication_configuration&quot; &quot;primary&quot; {<br><br>  provider = aws.primary<br><br>  role   = aws_iam_role.replication.arn<br>  bucket = module.bucket_sa_east_1.id<br><br>  rule {<br>    id = &quot;sales&quot;<br><br>    filter {<br>      prefix = &quot;sales&quot;<br>    }<br><br>    delete_marker_replication {<br>      status = &quot;Enabled&quot;<br>    }<br><br>    status = &quot;Enabled&quot;<br><br>    destination {<br>      bucket        = module.bucket_us_east_1.arn<br>      storage_class = &quot;STANDARD&quot;<br>    }<br>  }<br>}<br><br><br>resource &quot;aws_s3_bucket_replication_configuration&quot; &quot;disaster_recovery&quot; {<br><br>  provider = aws.disaster-recovery<br><br>  role   = aws_iam_role.replication.arn<br>  bucket = module.bucket_us_east_1.id<br><br>  rule {<br>    id = &quot;sales&quot;<br><br>    filter {<br>      prefix = &quot;sales&quot;<br>    }<br><br>    delete_marker_replication {<br>      status = &quot;Enabled&quot;<br>    }<br><br>    status = &quot;Enabled&quot;<br><br>    destination {<br>      bucket        = module.bucket_sa_east_1.arn<br>      storage_class = &quot;STANDARD&quot;<br>    }<br>  }<br>}</pre>
+<p>Vamos consumir novamente a aplicação inserindo um novo hipotético registro de venda de um produto.</p>
+<pre>❯ curl -X POST https://api.msfidelis.com.br/sales -d &#39;{&quot;product&quot;:&quot;registro que viajou entre duas regiões e caiu em dois buckets&quot;, &quot;amount&quot;: 333.00}&#39; -i<br>HTTP/2 201<br>date: Wed, 12 Jul 2023 00:44:43 GMT<br>content-type: application/json; charset=utf-8<br>content-length: 151<br>x-amzn-requestid: 7194a8c3-e4f1-48f2-baea-77c347174130<br>x-amzn-remapped-content-length: 151<br>x-amzn-remapped-connection: keep-alive<br>x-amz-apigw-id: H7ObVER4mjQEH_w=<br>x-amzn-remapped-date: Wed, 12 Jul 2023 00:44:43 GMT<br><br>{&quot;id&quot;:&quot;db218024-3974-4ad7-9490-2c88560298de&quot;,&quot;product&quot;:&quot;registro que viajou entre duas regiões e caiu em dois buckets&quot;,&quot;amount&quot;:333,&quot;processed&quot;:false} </pre>
+<p>Agora vamos conferir no bucket se existe o registro <strong><em>db218024–3974–4ad7–9490–2c88560298de.json
+    </em></strong>em ambas as regiões.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/921/1*GPETUjCT8_FFcDAbwVlDXA.png" /></figure>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/928/1*jQSTYJjxjq7JWrAv-157vQ.png" /></figure>
+<h3>Parte 4: Escrevendo Código Multi Region e Sugestões Arquiteturais</h3>
+<p>Achou mesmo que é só subir infra que resolve? Achou errado, ******.</p>
+<p>Trabalhar em Multiregião é uma escolha, um projeto, um objetivo, não um hotfix, então devemos trabalhar nossas
+  aplicações para que as mesmas sejam resilientes não só a falhas mas também para trabalhar de forma inteligente esse
+  chaveamento de regiões. Temos diversos padrões que podem nos ajudar, nesse artigo trabalharemos os seguintes:</p>
+<ul>
+  <li>Feature Toggle com Parameter Store</li>
+  <li>Dry-Run</li>
+  <li>Idempotência</li>
+</ul>
+<h4>4.1 — Feature Toggle com Parameter Store</h4>
+<p>Um <strong>Feature Toggle</strong>, também conhecido como <strong>Feature Flag </strong>dependendo pra quem você
+  pergunta<strong>, </strong>é um mecanismo de controle que permite <strong>habilitar ou desabilitar recursos ou
+    funcionalidades específicas em um software</strong>, sem a necessidade de fazer uma nova implantação ou alteração na
+  codebase. É uma técnica comumente utilizada no desenvolvimento de software para ativar ou desativar recursos de forma
+  flexível e controlada, possibilitando a entrega contínua e incremental de novas funcionalidades.</p>
+<p>Com um <strong>Feature Toggle</strong>, você pode ocultar uma funcionalidade em produção enquanto ainda está em
+  desenvolvimento, permitindo que você teste, experimente e valide essa funcionalidade em um ambiente de produção
+  controlado.</p>
+<p>No nosso caso, iremos utilizá-lo para desabilitar ou habilitar o processamento inteiro de uma região e das aplicações
+  que compõe o nosso Workload de vendas em tempo de DR.</p>
+<p>O <strong>Parameter Store</strong> é um serviço gerenciado pela AWS que <strong>oferece armazenamento seguro e
+    gerenciamento de parâmetros e configurações.</strong> Ele permite armazenar e recuperar informações sensíveis, como
+  senhas, chaves, strings de conexão e outros valores de configuração, de forma centralizada e segura.</p>
+<p>Uma forma inteligente de trabalhar com Feature Toggle no Parameter Store é fazer com que <strong>pragmaticamente, a
+    aplicação sempre consulte o valor do parametro de X em X tempo e salve em memória</strong> por um determinado
+  período de tempo. Sempre que esse registro expirar, a aplicação consiga consultar e atualizar o parâmetro de forma
+  global para o runtime.</p>
+<p>Por exemplo, durante uma determinada interação eu consulto o valor do parameter store que contém o valor do estado do
+  meu Site/Região, e digo para salvar essa informação em cache em memória por 30 segundos.</p>
+<pre>ssm_site_state_parameter := os.Getenv(&quot;SSM_PARAMETER_STORE_STATE&quot;)<br>site_state, err := parameter_store.GetParamValue(ssm_site_state_parameter, 30) </pre>
+<pre>package memory_cache<br><br>import (<br> &quot;time&quot;<br><br> &quot;github.com/patrickmn/go-cache&quot;<br>)<br><br>var instance *cache.Cache<br><br>// Memory Cache Singleton<br>func GetInstance() *cache.Cache {<br> if instance == nil {<br>  instance = cache.New(5*time.Minute, 10*time.Minute)<br> }<br> return instance<br>}</pre>
+<pre>package parameter_store<br><br>import (<br> &quot;fmt&quot;<br> &quot;os&quot;<br> &quot;time&quot;<br><br> &quot;sales-worker/pkg/log&quot;<br> &quot;sales-worker/pkg/memory_cache&quot;<br><br> &quot;github.com/aws/aws-sdk-go/aws&quot;<br> &quot;github.com/aws/aws-sdk-go/aws/session&quot;<br> &quot;github.com/aws/aws-sdk-go/service/ssm&quot;<br>)<br><br>func GetParamValue(parameter string, cache_time int64) (string, error) {<br> <br> m := memory_cache.GetInstance()<br> log := log.Instance()<br><br> if cache_time &gt; 0 {<br><br>  value, found := m.Get(parameter)<br><br>  if found {<br>   log.Info().<br>   return fmt.Sprint(value), nil<br>  } <br><br> }<br><br> sess, err := session.NewSession(&amp;aws.Config{<br>  Region: aws.String(os.Getenv(&quot;AWS_REGION&quot;)),<br> })<br><br> if err != nil {<br>  return nil, err<br> }<br><br> svc := ssm.New(sess)<br><br> result, err := svc.GetParameter(&amp;ssm.GetParameterInput{<br>  Name:           aws.String(parameter),<br>  WithDecryption: aws.Bool(false),<br> })<br><br> if err != nil {<br>  return &quot;&quot;, err<br> }<br><br> if cache_time &gt; 0 {<br>  m.Set(parameter, *result.Parameter.Value, time.Second*time.Duration(cache_time))<br> }<br><br> return fmt.Sprint(*result.Parameter.Value), nil<br><br>}</pre>
+<p>E voltando para a parte de infraestrutura que anda junto com esse tipo de lógica, no nosso workload hipotético vamos
+  salvar o valor da variável state do Terraform no Parameter Store, e com base nessa informação vamos desenvolver nossos
+  fluxos, com base que se essa variável for trocada, no deploy em sequencia todas as aplicações sejam informadas quase
+  que automaticamente de como elas devem se comportar.</p>
+<pre>variable &quot;state&quot; {<br>  type = map(any)<br>  default = {<br>    &quot;sa-east-1&quot; : &quot;ACTIVE&quot;,<br>    &quot;us-east-1&quot; : &quot;PASSIVE&quot;,<br>  }<br>}</pre>
+<p>Com base nisso vamos duplicar também o parâmeter store nas duas regiões utilizando o mesmo nome.</p>
+<pre>module &quot;ssm_parameter_state_sa_east_1&quot; {<br>  source = &quot;./modules/parameter_store&quot;<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  name  = format(&quot;/%s/site/state&quot;, var.project_name)<br>  value = lookup(var.state, &quot;sa-east-1&quot;)<br>}<br><br>module &quot;ssm_parameter_state_us_east_1&quot; {<br>  source = &quot;./modules/parameter_store&quot;<br><br>  providers = {<br>    aws = aws.disaster-recovery<br>  }<br><br>  name  = format(&quot;/%s/site/state&quot;, var.project_name)<br>  value = lookup(var.state, &quot;us-east-1&quot;)<br>}</pre>
+<p>Podemos conferir via painel o resultado das duas operações, tanto na <strong><em>Região Primária
+      (sa-east-1)</em></strong> quanto na de <strong><em>Disaster Recovery (us-east-1).</em></strong></p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*vGEkN7JZqrRBqFQYOrfMkg.png" /></figure>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*B8nW12m7RBZFhfW86NAMFw.png" /></figure>
+<p>Trabalhando dessa forma, podemos recuperar nosso state no inicio de um fluxo e trabalhá-lo até o final da mesma,
+  fazendo sempre uma validação do estado para saber se precisamos trabalhar o registro, ou não, por exemplo.
+  Detalharemos isso no próximo passo.</p>
+<pre> if state != &quot;ACTIVE&quot; {<br>  return nil<br> }<br> continueOqueEstavaFazendo()</pre>
+<h4>4.2 — Dry-Run, processamento café com leite</h4>
+<p><strong>Dry-Run</strong>, também conhecido como teste simulado ou simulação de execução, ou ensaio, é uma prática
+  comum no desenvolvimento de software e testes. <strong>Consiste em executar um programa, algoritmo ou conjunto de
+    instruções em um ambiente simulado, sem a efetiva execução das ações ou operações previstas</strong>.</p>
+<p>Durante um Dry-Run, o código é analisado e executado passo a passo, e os resultados são simulados <strong>sem
+    realizar alterações no estado real do sistema ou afetar os dados existentes</strong>. O objetivo principal é
+  identificar erros, validar a lógica do programa e verificar a saída esperada, tudo isso sem impactar o ambiente de
+  produção ou introduzir mudanças irreversíveis, porém para essa arquitetura vamos sair da definição da literatura e
+  fazer com que o principio do Dry-Run simplesmente não comite nenhuma alteração por mais que consuma as mensagens e
+  instruções com base no estado do feature toggle.</p>
+<p>No nosso Workload hipotético, após a API Rest salvar a venda no DynamoDB, ela publica uma mensagem no tópico do SNS e
+  o mesmo envia para o SQS em ambas as regiões. Essa mensagem deveria ser consumida pelos workers de ambas as regiões, e
+  esses workers devem fazer um processamento fake, atualizar a flag de processado na tabela do DynamoDB e salvar o item
+  no S3 conforme já explicado.</p>
+<p>Por mais que a mensagem seja replicada em ambas as regiões, é um desperdício de dinheiro e poder computacional
+  literalmente processar a mensagem duas vezes. Para isso vamos utilizar o Feature Toggle do estado da Região para dizer
+  para o nosso worker se ele deve processar a mensagem de fato ou executar um Dry-Run na mesma, ou simplesmente
+  descartando, e esperar que o processamento seja realizado e replicado pra ela pela região ativa.</p>
+<p><strong>Um exemplo de um processamento de Feature Flag e Dry-Run</strong></p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/632/1*bnkjg7AajKq_ETm9u6TWXA.png" /></figure>
+<p>Basicamente de tempos em tempos atualizamos o estado do nosso runtime com o definido no Parameter Store e com base
+  nesse estado, checamos se o Site/Região está ativa ou passiva. Caso esteja com estado ACTIVE , executa o processamento
+  em N ações descritas anteriormente, e caso esteja PASSIVE executa o Dry-Run e remove a mensagem da fila e seguida.</p>
+<p><strong>Exemplo do comportamento do Worker quando a região está ativa</strong></p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*UHiK-qqGyVn7vpdBHVHHEA.png" /></figure>
+<p><strong>Exemplo do comportamento do Worker quando a região está passiva</strong></p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*Xapi6pv-tTzPOpEXYZUAWQ.png" /></figure>
+<h4>4.3 — Idempotência</h4>
+<p>Talvez o pattern arquitetural mais importante quando falamos de qualquer coisa que se propõe a ser resiliente e
+  distribuída.</p>
+<p>Na arquitetura de software, a <strong>idempotência</strong> é um conceito importante que descreve a propriedade de
+  uma operação ou função que pode ser aplicada repetidamente sem alterar o resultado além da primeira aplicação.
+  <strong>Em outras palavras, uma operação idempotente produz o mesmo resultado, independentemente do número de vezes
+    que é executada.</strong></p>
+<p><strong>A idempotência é uma característica desejável em sistemas distribuídos e transações de software, pois garante
+    que a reexecução de uma operação não resulte em efeitos colaterais indesejados ou em um estado inconsistente do
+    sistema.</strong> Isso é particularmente <strong>importante quando ocorrem falhas de rede, erros transientes ou
+    reexecuções automáticas devido a mecanismos de recuperação de erros.</strong></p>
+<p>Existem várias formas de extender a capacidade de um pattern de idempotência, alguns exemplos fora desse assunto de
+  Disaster Recovery que são naturalmente idempotentes:</p>
+<ul>
+  <li><strong>Operações de Atualização de Estado: </strong>Em APIs REST, as operações de atualização de estado
+    geralmente seguem o princípio da idempotência. Por exemplo, se uma requisição <strong>DELETE</strong>,
+    <strong>PUT</strong> ou <strong>PATCH</strong> for repetida várias vezes, o estado final do recurso será o mesmo.
+  </li>
+  <li><strong>Operações de Pagamento na Industria Financeira:</strong> Em sistemas de pagamentos online, as transações
+    de pagamento são <strong>geralmente</strong> idempotentes. Isso significa que, se uma transação de pagamento for
+    repetida devido a um problema de comunicação ou a uma resposta de confirmação perdida, ela não resultará em
+    cobranças duplicadas ao usuário.</li>
+</ul>
+<p>Porém nesse exemplo iremos implementar uma idempotencia pragmática com base no id unico gerado ao decorrer de cada
+  venda criada através da nossa API. Nesse caso iremos controlar a idempotência garantindo um certo tempo de replicação
+  dos recursos em uma tabela do <strong>DynamoDB</strong> exclusivamente preparada para isso.</p>
+<p>O objetivo desse processo de idempotência no nosso workload hipotético é evitar o reprocessamento de uma venda criada
+  e disponibilizada para consumo durante uma virada ou uma possível duplicação de dados, ou tentativa de reprocessamento
+  por algum outro mecanismo não tratado aqui.</p>
+<p><strong>Exemplo do fluxo de Idempotencia de Processamento</strong></p>
+<p>Vamos extender o diagrama que vimos no Dry-Run. Nesse caso após validarmos que estamos numa região ativa, chegamos na
+  tabela do DynamoDB de idempotencia procurando pelo id da venda, caso ela já tenha sido processada descartamos a
+  mensagem. Caso o id ainda não esteja presente na tabela, realizamos todos os fluxos de processamento que tratamos aqui
+  e no final salvamos a mesma na tabela de idempotencia, também rodando como Global Table.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*wpM3_J8cbgi5DNxEjf1QwA.png" /></figure>
+<p><strong>Por exemplo:</strong></p>
+<pre> idempotency, err := dao.CheckIdempotency(sale.ID)<br> if err != nil {<br>  return err<br> }<br><br> if idempotency {<br>  log.Info().<br>   Str(&quot;Region&quot;, aws_region).<br>   Str(&quot;State&quot;, state).<br>   Int(&quot;Thread&quot;, thread).<br>   Str(&quot;Sale&quot;, sale.ID).<br>   Msg(&quot;Sale already processed, item found in idempotency table&quot;)<br>  return nil<br> }<br><br>// Continua </pre>
+<h3>Parte 5: Testando o Fluxo de Disaster Recovery</h3>
+<p>Agora chegou a parte legal. Fizemos muito desenhos bonitinhos, modulos lindos, explicamos um monte de paradinhas
+  arquiteturais filosóficas, agora precisamos validar de fato o funcionamento desse exemplo.</p>
+<p>Vamos injetar carga utilizando o k6, ferramenta já conhecida de outros carvanais aqui no Medium, injetaremos carga e
+  monitoraremos o comportamento dos recursos das duas regiões via CloudWatch.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*3OYQWKmxq39Zcy5u58uRAA.png" /></figure>
+<p>A ideia é fazer todo espelhamento de chaveamento via Terraform, então vamos estruturar essa parte com base em passos
+  de formiga, exemplificando ação e reação do workload.</p>
+<h4>5.1 — Status Inicial</h4>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*JhMiaPUbSWRGqKiaYOPCrA.png" /></figure>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*eT_Y2v1y2SXZHm48SK9yxA.png" /></figure>
+<p>Inicialmente temos o workload atendendo e performando de forma prevista, somente na zona primária. Temos um contador
+  de eventos de vendas e de requests por minuto no API Gateway para ambas as regiões.</p>
+<p>Em paralelo temos o registro de replicação das nossas tabelas do DynamoDB. Como estamos escrevendo e lendo da tabela
+  na região primária (sa-east-1), devemos ver o fluxo de replicação indo para a região de DR (us-east-1).</p>
+<p>Resumindo, nosso estado de configuração do chaveamento no Terraform está da seguinte forma, chaveando 100% do tráfego
+  para São Paulo e mantendo nosso feature toggle em ACTIVE para o mesmo.</p>
+<pre>variable &quot;state&quot; {<br>  type = map(any)<br>  default = {<br>    &quot;sa-east-1&quot; : &quot;ACTIVE&quot;,<br>    &quot;us-east-1&quot; : &quot;PASSIVE&quot;,<br>  }<br>}</pre>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*3aMUSS24hMBHNTt55TSIpw.png" /></figure>
+<h4>5.2 — Chaveando o DR</h4>
+<p>Vamos alterar o estado no Terraform para desligar a zona de São Paulo e direcionar o tráfego diretamente para a
+  região de Virginia.</p>
+<pre>variable &quot;state&quot; {<br>  type = map(any)<br>  default = {<br>    &quot;sa-east-1&quot; : &quot;PASSIVE&quot;,<br>    &quot;us-east-1&quot; : &quot;ACTIVE&quot;,<br>  }<br>}</pre>
+<p>Independente de onde e como você está executando isso, no fim essa mudança irá refletir com base em um apply</p>
+<pre>terraform apply --auto-approve</pre>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*NU7KjrRpy1qJhR9B5tKanA.png" /></figure>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*58qBe9JSyvgduDX3byKY2A.png" /></figure>
+<p>Após o Apply do Terraform chaveando a Região primária para o DR, sem interromper o load test, podemos ver
+  repentinamente o inicio de funcionamento da região do DR, que já começa a contabilizar eventos de vendas iniciados por
+  ela, fluxo de entrada no API Gateway e invertendo o sentido de replicação das tabelas do <strong>DynamoDB</strong>.
+</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*9YP2fX4lwsr1bTS5NrtJwg.png" /></figure>
+<p>Nesse sentido começamos a consumir os recursos da zona de DR como ACTIVE enviando todo tráfego da API para ele e
+  desabilitando a zona primária em São Paulo colocando a mesma como PASSIVE .</p>
+<p>Acompanhamos também uma métrica de replicação das mensagens. Esse pode ser um parâmetro ideal pro chaveamento de
+  retorno para a Região Primária.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/1024/1*e3jSpKphIZRtaw0oWaQRnA.png" /></figure>
+<h3>Parte 6: Estratégias Adicionais</h3>
+<p>Como explicado no inicio do artigo, algumas soluções e produtos da AWS pensados para Disaster Recovery foram
+  desconsiderados durante a concepção desse artigo. Mas como eu já escrevi até aqui, vale o esforço de catalogar algumas
+  das opções.</p>
+<h4>6.1 — Route53 Failover</h4>
+<p>Um recurso que QUASE colocamos aqui, se não fosse pela parametrização de feature flag.</p>
+<p>Ao utilizar o Route53 Failover, é possível direcionar o tráfego de maneira inteligente entre várias regiões,
+  garantindo que as solicitações dos usuários sejam redirecionadas para uma região de fallback caso a região primária se
+  torne indisponível. Isso é especialmente útil em cenários de disaster recovery, onde a continuidade dos negócios é
+  fundamental.</p>
+<p>O funcionamento do Route53 Failover <strong>é baseado em health checks</strong> configurados para monitorar a
+  disponibilidade das instâncias ou endpoints em cada região. Esses health checks verificam se os recursos estão
+  operacionais e saudáveis. Caso uma falha seja detectada em uma região específica, o Route53 pode automaticamente
+  redirecionar o tráfego para uma região secundária que esteja em pleno funcionamento. <strong>Caso ocorra uma falha
+    nessa região primária, o tráfego será redirecionado para uma região secundária de forma automática.</strong></p>
+<p>A implementação dessa estratégia é ideal para quando temos a capacidade de trabalhar de forma
+  <strong>ATIVO/ATIVO</strong> de forma natural, quando uma Região pode atender as solicitações de outra a qualquer
+  momento e se livrar delas a qualquer momento com a mesma facilidade.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/912/0*zYsjTFq9nJY2CMx1.png" /></figure>
+<p><strong>Exemplo da implementação em Terraform dos Healthchecks do Route53.</strong></p>
+<pre>resource &quot;aws_route53_health_check&quot; &quot;primary&quot; {<br>  fqdn             = var.api_gateway_dns_primary <br>  port             = 443<br>  type             = &quot;HTTP&quot;  <br>  resource_path    = &quot;/healthcheck&quot;  <br>  request_interval = 30  <br>  failure_threshold = 3  <br>}<br><br>resource &quot;aws_route53_health_check&quot; &quot;secondary&quot; {<br>  fqdn             = var.api_gateway_dns_secondary<br>  port             = 443<br>  type             = &quot;HTTP&quot;<br>  resource_path    = &quot;/healthcheck&quot;<br>  request_interval = 30<br>  failure_threshold = 3<br>}java</pre>
+<pre>resource &quot;aws_route53_record&quot; &quot;primary&quot; {<br>  zone_id = var.route53_hosted_zone<br><br>  name    = var.api_gateway_domain<br>  type    = &quot;A&quot;<br>  ttl     = 60  <br><br>  failover_routing_policy {<br>    type         = &quot;PRIMARY&quot;   # Identificando que e o Registro Primário<br>    ttl_override = 60  <br>  }<br><br>  set_identifier = &quot;primary&quot;<br>  health_check_id = aws_route53_health_check.primary.id<br>}<br><br>resource &quot;aws_route53_record&quot; &quot;secondary&quot; {<br>  zone_id = var.route53_hosted_zone<br><br>  name    = var.api_gateway_domain<br>  type    = &quot;A&quot;<br>  ttl     = 60<br><br>  failover_routing_policy {<br>    type         = &quot;SECONDARY&quot;  # Identificando que e o Registro Secundário<br>    ttl_override = 60<br>  }<br><br>  set_identifier = &quot;secondary&quot;<br>  health_check_id = aws_route53_health_check.secondary.id<br>}<br></pre>
+<p><a href="https://docs.aws.amazon.com/pt_br/Route53/latest/DeveloperGuide/dns-failover-configuring.html">Configurar
+    failover de DNS</a></p>
+<h4>6.2 — Elasticache Multi Region com Global Datastores</h4>
+<p>O <strong>Global Datastore</strong> é um recurso do <strong>Amazon ElastiCache</strong>, um serviço gerenciado de
+  cache na nuvem da Amazon Web Services (AWS). O Global Datastore permite a replicação automática e síncrona de dados
+  entre regiões geográficas distintas, proporcionando uma solução de cache altamente disponível e resiliente.</p>
+<p>Ao configurar um Global Datastore, você pode criar um ambiente de cache distribuído em várias regiões da AWS. Isso é
+  especialmente útil quando você tem aplicativos ou serviços que operam globalmente e precisam de acesso rápido aos
+  dados em cache, independentemente da localização geográfica dos usuários.</p>
+<p>Com o <strong>Global Datastore</strong>, o <strong>ElastiCache</strong> gerencia automaticamente a replicação dos
+  dados em tempo real entre as regiões selecionadas. Isso garante que os dados em cache estejam sempre atualizados e
+  disponíveis em todas as regiões.</p>
+<p>Ele não entrou nesse artigo pois os replications groups não aceitam escrita bilateral nos clusters de replicação em
+  outras regiões, só permitindo uma promoção automática em caso de failover causado pela falha do primário.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/853/0*Vt66WYnI-GAwXVGT.png" /></figure>
+<p><strong>Exemplo de Implementação em Terraform</strong></p>
+<pre>resource &quot;aws_elasticache_global_replication_group&quot; &quot;main&quot; {<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  global_replication_group_id_suffix = var.project_name<br>  primary_replication_group_id       = aws_elasticache_replication_group.primary.id<br><br>  engine_version = &quot;6.2&quot;<br>}<br><br>resource &quot;aws_elasticache_replication_group&quot; &quot;primary&quot; {<br><br>  providers = {<br>    aws = aws.primary<br>  }<br><br>  replication_group_id = &quot;${var.project_name}-primary&quot;<br>  description          = &quot;primary replication group&quot;<br><br>  engine         = &quot;redis&quot;<br>  engine_version = &quot;6.0&quot;<br>  node_type      = &quot;cache.m5.large&quot;<br><br>  num_cache_clusters = 1<br><br>  lifecycle {<br>    ignore_changes = [engine_version]<br>  }<br>}<br><br>resource &quot;aws_elasticache_replication_group&quot; &quot;secondary&quot; {<br>  providers = {<br>    aws = aws.disaster-recovery<br>  }<br><br>  replication_group_id        = &quot;${var.project_name}-secondary&quot;<br>  description                 = &quot;secondary replication group&quot;<br>  global_replication_group_id = aws_elasticache_global_replication_group.example.global_replication_group_id<br><br>  num_cache_clusters = 1<br><br>  lifecycle {<br>    ignore_changes = [engine_version]<br>  }<br>}</pre>
+<p><a href="https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Redis-Global-Datastore.html">Replication across
+    AWS Regions using global datastores</a></p>
+<h4>6.3 — RDS Cross Region Read Replicas</h4>
+<p>O <strong>Cross-Region Read Replicas </strong>do <strong>Amazon RDS (Relational Database Service)</strong> é um
+  recurso poderoso que permite replicar dados do banco de dados em uma região para uma ou mais regiões diferentes. Essa
+  funcionalidade é extremamente útil para melhorar a disponibilidade, o desempenho e a resiliência de um banco de dados
+  distribuído globalmente.</p>
+<p>Ao configurar o Cross-Region Read Replicas, <strong>você pode criar cópias de leitura do seu banco de dados em
+    regiões geograficamente distantes</strong>. Essas réplicas de leitura podem ser usadas para consultas de leitura
+  intensivas, permitindo uma distribuição de carga eficiente e reduzindo a latência para usuários localizados em
+  diferentes regiões.</p>
+<p>O motivo desse recurso não ser considerado na experiência, é justamente por ele também só permitir leitura e não
+  escritas bilaterais.</p>
+<p><a
+    href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RDS_Fea_Regions_DB-eng.Feature.CrossRegionReadReplicas.html">Cross-Region
+    read replicas</a></p>
+<h4>6.4 — Aurora Global Database</h4>
+<p>O A<strong>urora Global Database</strong> é um recurso avançado fornecido pelo Amazon Aurora, um banco de dados
+  relacional compatível com MySQL e PostgreSQL, oferecida dentro do produto RDS também. Ele permite que você crie um
+  ambiente de database distribuído globalmente, com replicação automática e síncrona dos dados entre várias regiões.</p>
+<p>Basicamente você pode criar um cluster em uma região primária e<strong> replicar automaticamente os dados para até
+    cinco regiões secundárias</strong>. Essas regiões secundárias podem ser usadas para fins de DR, <strong>porém
+    somente para leitura</strong> ou uma intervenção manual também. Mesmo motivo de não ser considerado para
+  esse artigo.</p>
+<figure><img alt="" src="https://cdn-images-1.medium.com/max/756/0*JDCfJJk2o8N7OSzZ.png" /></figure>
+<p><a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html">Using Amazon
+    Aurora global databases</a></p>
+<h4>6.5 — Secrets Manager Multi-Region Replication</h4>
+<p>Com a <strong>replicação Multi-Region do</strong> <strong>Secrets Manager</strong>, você pode criar cópias dos seus
+  secrets em regiões adicionais para fins de DR, conformidade com regulamentações locais ou baixa latência de acesso aos
+  segredos em diferentes regiões.</p>
+<p>A replicação multi-região do Secrets Manager é totalmente automatizada e transparente. Quando você cria ou atualiza
+  um segredo em uma região primária, o Secrets Manager replica automaticamente esse segredo para as regiões secundárias
+  especificadas. Isso garante que todos os segredos estejam disponíveis e atualizados em todas as regiões configuradas.
+</p>
+<p>O motivo dele não ter sido considerado é unica e exclusivamente por não ter uso mesmo, mas para gestão de segredos,
+  API Keys, chaves de integração, salt-keys e etc, e também por não estar disponível para terraform ainda.</p>
+<p><a href="https://aws.amazon.com/blogs/security/how-to-replicate-secrets-aws-secrets-manager-multiple-regions/">How to
+    replicate secrets in AWS Secrets Manager to multiple Regions | Amazon Web Services</a></p>
+<h4>6.6 — Mirror Maker e MSK</h4>
+<p>O Mirror Maker é uma ferramenta de replicação de dados utilizada no serviço Amazon Managed Streaming for Apache Kafka
+  (MSK). O MSK é um serviço gerenciado que facilita a criação, configuração e operação de clusters do Apache Kafka na
+  nuvem da Amazon Web Services (AWS).</p>
+<p>O Mirror Maker é uma funcionalidade nativa do MSK que permite replicar tópicos e partições de um cluster MSK para
+  outro. Com o Mirror Maker, você pode criar cópias dos dados do Kafka em diferentes regiões geográficas, o que
+  possibilita cenários como recuperação de desastres, baixa latência de leitura e distribuição global de carga.</p>
+<p>Ao configurar o Mirror Maker, você define um cluster MSK como o cluster de origem (source cluster) e outro cluster
+  MSK como o cluster de destino (destination cluster). O Mirror Maker então replica automaticamente os tópicos e
+  partições do cluster de origem para o cluster de destino, mantendo-os sincronizados em tempo real.</p>
+<p>Nesse caso será necessário algum tipo de VPC Link entre as duas regiões para realizar a replicação dos tópicos para
+  obtermos o mesmo resultado que tivemos com o SNS + SQS.</p>
+<ul>
+  <li><a href="https://docs.aws.amazon.com/msk/latest/developerguide/migration.html">Migrating clusters using Apache
+      Kafka&#39;s MirrorMaker</a></li>
+  <li><a
+      href="https://www.instaclustr.com/support/documentation/kafka/kafka-cluster-operations/setting-up-mirror-maker/">Setting
+      up Mirror Maker</a></li>
+</ul>
+<h3>Conclusão</h3>
+<p>Minha conclusão é que esse artigo foi muito extenso e cansativo. E a porcentagem de pessoas que vão chegar até esse
+  ponto deve ser muito baixa. Se você chegou até aqui, saiba que eu estou muito feliz, e por favor, me deixe saber
+  disso. Esse foi de longe o artigo mais extenso e cansativo que eu já escrevi nos últimos anos, e espero de coração que
+  ajude na firmação de conceitos e a pensar em estratégias paupáveis para o seu contexto depois de ver os
+  exemplos daqui.</p>
+<p>E um agradecimento de coração a todos os revisores que dedicaram seu tempo pra avaliar o artigo.</p>
+<h4>Repositórios do Artigo</h4>
+<ul>
+  <li><a href="https://github.com/msfidelis/aws-multi-region-disaster-recovery">GitHub -
+      msfidelis/aws-multi-region-disaster-recovery: Example to explain how to implement minimal multi-region
+      architecture on AWS with disaster recovery</a></li>
+  <li><a href="https://github.com/msfidelis/aws-multi-region-disaster-recovery-apps">GitHub -
+      msfidelis/aws-multi-region-disaster-recovery-apps: Apps to aws-multi-region-disaster-recovery example</a></li>
+</ul>
+<h4>Links e Referencias</h4>
+<ul>
+  <li><strong>Terraform — Global Replication Groups</strong> (<a
+      href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_global_replication_group">https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_global_replication_group</a>)
+  </li>
+  <li><strong>Terraform – Lookup</strong> (https://developer.hashicorp.com/terraform/language/functions/lookup)</li>
+  <li><strong>Terraform – Maps</strong>
+    (https://developer.hashicorp.com/terraform/language/expressions/types#maps-objects)</li>
+  <li><strong>AWS Disaster Recovery Workshop</strong> (<a
+      href="https://disaster-recovery.workshop.aws/en/">https://disaster-recovery.workshop.aws/en/</a>)</li>
+  <li><strong>Creating Disaster Recovery Mechanisms Using Amazon Route 53</strong> (<a
+      href="https://aws.amazon.com/blogs/networking-and-content-delivery/creating-disaster-recovery-mechanisms-using-amazon-route-53/">https://aws.amazon.com/blogs/networking-and-content-delivery/creating-disaster-recovery-mechanisms-using-amazon-route-53/</a>)
+  </li>
+  <li><strong>Resilience in Amazon Route53</strong> (<a
+      href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/disaster-recovery-resiliency.html">https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/disaster-recovery-resiliency.html</a>)
+  </li>
+  <li><strong>Amazon DynamoDB Global Tables</strong> (<a
+      href="https://aws.amazon.com/dynamodb/global-tables/">https://aws.amazon.com/dynamodb/global-tables/</a>)</li>
+  <li><strong>AWS Disaster Recovery Strategies</strong> (<a
+      href="https://xebia.com/blog/aws-disaster-recovery-strategies-poc-with-terraform/">https://xebia.com/blog/aws-disaster-recovery-strategies-poc-with-terraform/</a>)
+  </li>
+  <li><strong>How To Build a Custom Disaster Recovery Process for AWS Applications</strong> (<a
+      href="https://www.encora.com/insights/how-to-build-a-custom-disaster-recovery-process-for-aws-applications">https://www.encora.com/insights/how-to-build-a-custom-disaster-recovery-process-for-aws-applications</a>)
+  </li>
+  <li><strong>Google Disaster recovery planning guide</strong> (<a
+      href="https://cloud.google.com/architecture/dr-scenarios-planning-guide">https://cloud.google.com/architecture/dr-scenarios-planning-guide</a>)
+  </li>
+  <li><strong>Disaster Recovery for Multi-Region Kafka at Uber</strong> (<a
+      href="https://www.uber.com/en-KW/blog/kafka/">https://www.uber.com/en-KW/blog/kafka/</a>)</li>
+</ul>
+<h4>Obrigado aos Revisores</h4>
+<ul>
+  <li><a href="https://twitter.com/raffasarts"><strong>Rafael - (@ raffasarts)</strong></a></li>
+  <li><a href="https://twitter.com/caiodelgadonew"><strong>Caio Delgado — (@ caiodelgadonew)</strong></a></li>
+  <li><a href="https://twitter.com/indiepagodeiro"><strong>Bernardo — (@ indiepagodeiro)</strong></a></li>
+  <li><a href="https://twitter.com/kalves_rohan"><strong>Kaleb — (@ kalves_rohan)</strong></a></li>
+  <li><a href="https://twitter.com/lhgaravatti"><strong>Luis Garavatti — (@ lhgaravatti)</strong></a></li>
+  <li><a href="https://twitter.com/luiz_aoqui"><strong>Luiz Aoqui – (@ luiz_aoqui)</strong></a></li>
+</ul>
+<p><a href="https://twitter.com/fidelissauro"><strong>Me sigam no Twitter para acompanhar as paradinhas que eu
+      compartilho por lá!</strong></a></p>
+<p>Te ajudei de alguma forma? Me pague um café (Mentira, todos os valores doados nessa chave são dobrados por mim e
+  destinados a ongs de apoio e resgate animal)</p>
+<p>Chave Pix: fe60fe92-ecba-4165-be5a-3dccf8a06bfc</p><img
+  src="https://medium.com/_/stat?event=post.clientViewed&referrerSource=full_rss&postId=8e9a6a9a8669" width="1"
+  height="1" alt="">
