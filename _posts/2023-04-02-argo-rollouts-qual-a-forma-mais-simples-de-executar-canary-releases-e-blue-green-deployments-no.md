@@ -1,8 +1,11 @@
 ---
 layout: post
-image: https://cdn-images-1.medium.com/max/1024/0*srEMHw3PKt7Ac3_R.png
+author: matheus
+# image: https://cdn-images-1.medium.com/max/1024/0*srEMHw3PKt7Ac3_R.png
+image: assets/images/argo-logo.jpg
 title: Argo-Rollouts — "Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?"
 canonical_url: https://medium.com/@fidelissauro/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no-e030c2ee3af5?source=rss-fc2fda5e9bc2------2
+categories: [ aws, kubernetes, terraform, argo-rollouts ]
 ---
 
 <br>
@@ -56,6 +59,8 @@ A arquitetura de manipulação do **Argo Rollouts** funciona primeiramente como 
 Basicamente, caso você não escreva passos de deployment que se viram sozinhos, baseados em tempo e etc, você precisará utilizar o plugin do kubectl para o rollouts para promover, abortar ou dar rollback de versões. Então entende-se que esse plugin precisa estar instalado no seu orquestrador de pipelines caso necessite gerenciar o ciclo dessa forma.
 
 A instalação, siga o **[Installation Guide](https://argoproj.github.io/argo-rollouts/installation/)** oficial do Argo Rollouts.
+
+{% linkpreview "https://github.com/ysk24ok/jekyll-linkpreview" %}
 
 <br>
 

@@ -1,6 +1,7 @@
 ---
 layout: post
-image: https://cdn-images-1.medium.com/max/1024/0*DCHMG6rWlh39XAZe.png
+# image: https://cdn-images-1.medium.com/max/1024/0*DCHMG6rWlh39XAZe.png
+image: assets/images/karpenter-spots.png
 title: Karpenter — Estratégias para resiliência no uso de Spot Instances em produção
 canonical_url: https://medium.com/@fidelissauro/karpenter-estrat%C3%A9gias-para-resili%C3%AAncia-no-uso-de-spot-instances-em-produ%C3%A7%C3%A3o-398c7bff2cdc?source=rss-fc2fda5e9bc2------2
 author: matheus
@@ -8,7 +9,7 @@ featured: true
 categories: [ aws, arquitetura, kubernetes, terraform, karpenter ]
 ---
 # Introdução
-
+{: .text-justify}
 Esse é o segundo artigo que eu publico sobre Karpenter. Dessa vez decidi trazer um ponto de vista bem legal que é a adoção de uso de Spots em produção.
 
 Utilizar spots é uma estratégia muito comum pra quem deseja algum saving na conta da AWS no fim do mês, podem ser utilizada em formas de EC2 diretamente, Containers, Workloads de data e etc.
@@ -21,15 +22,18 @@ A ideia desse artigo é demonstrar possibilidades do uso do **Karpenter** para g
 
 Caso você não tenha visto ainda, fiz um artigo sobre uma PoC onde descrevo **como criar um ambiente em Amazon EKS sem Node Groups, utilizando somente o Karpenter pra suprir o capacity computacional**.
 
-[ARTIGO - Provisionando um cluster de EKS sem Node Groups com Karpenter](https://medium.com/@fidelissauro/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter-4d302b32b620)
+{% linkpreview "https://medium.com/@fidelissauro/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter-4d302b32b620" %}
+
 
 Caso você não tenha visto ainda, te convido para ler um artigo que eu escrevi sobre como utilizar o **Istio para sobreviver a cenários de caos**. Não tem nada a ver com o tema, mas eu acho que você vai gostar. #Confia.
 
-[ARTIGO - Sobrevivendo a cenários de caos no Kubernetes com Istio e Amazon EKS](https://medium.com/@fidelissauro/sobrevivendo-a-cen%C3%A1rios-de-caos-no-kubernetes-com-istio-e-amazon-eks-4fb8469a73da)
+{% linkpreview "https://medium.com/@fidelissauro/sobrevivendo-a-cen%C3%A1rios-de-caos-no-kubernetes-com-istio-e-amazon-eks-4fb8469a73da" %}
 
 Todos os exemplos aqui do texto estão feitos de forma resumida, porém você pode encontrá-los de forma completa [neste repositório do Github](https://github.com/msfidelis/eks-karpenter-autonomous-cluster/tree/main/examples/spots)
 
 [REPOSITÓRIO - eks-karpenter-autonomous-cluster/examples/spots at main · msfidelis/eks-karpenter-autonomous-cluster](https://github.com/msfidelis/eks-karpenter-autonomous-cluster/tree/main/examples/spots)
+
+
 
 <br>
 

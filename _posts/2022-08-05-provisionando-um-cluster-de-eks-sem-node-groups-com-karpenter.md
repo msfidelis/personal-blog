@@ -2,7 +2,8 @@
 layout: post
 title: Provisionando um cluster de EKS sem Node Groups com Karpenter
 canonical_url: https://medium.com/@fidelissauro/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter-4d302b32b620?source=rss-fc2fda5e9bc2------2
-image: https://cdn-images-1.medium.com/max/1024/0*ZQy5ZyZidbgJThzP.png
+# image: https://cdn-images-1.medium.com/max/1024/0*ZQy5ZyZidbgJThzP.png
+image: assets/images/karpenter-node-groups.png
 author: matheus
 featured: false
 categories: [ aws, arquitetura, kubernetes, terraform, karpenter ]

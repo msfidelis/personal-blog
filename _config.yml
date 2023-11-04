@@ -29,6 +29,7 @@ plugins:
   - jekyll-seo-tag
   - jekyll-archives
   - jekyll-gist
+  - jekyll-embed-urls
     
 # Archives
 jekyll-archives:
@@ -61,3 +62,18 @@ adsense-data-ad-slot: "1363087678"
 lazyimages: "disabled"
 
 exclude: [changelog.md, LICENSE.txt, README.md, Gemfile, Gemfile.lock]
+
+embed:
+# Extra elements to remove
+  scrub:
+  - form
+  - input
+  - textarea
+  - button
+  - fieldset
+  - select
+  - option
+  - optgroup
+  - canvas
+  - area
+  - map
