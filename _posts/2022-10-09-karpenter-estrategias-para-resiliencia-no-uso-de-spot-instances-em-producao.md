@@ -1,7 +1,7 @@
 ---
 layout: post
 # image: https://cdn-images-1.medium.com/max/1024/0*DCHMG6rWlh39XAZe.png
-image: assets/images/karpenter-spots.png
+image: assets/images/karpenter-spots-vg.png
 title: Karpenter — Estratégias para resiliência no uso de Spot Instances em produção
 canonical_url: https://medium.com/@fidelissauro/karpenter-estrat%C3%A9gias-para-resili%C3%AAncia-no-uso-de-spot-instances-em-produ%C3%A7%C3%A3o-398c7bff2cdc?source=rss-fc2fda5e9bc2------2
 author: matheus

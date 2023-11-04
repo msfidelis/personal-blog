@@ -1,6 +1,6 @@
 ---
 layout: post
-image: https://cdn-images-1.medium.com/max/1024/0*Ob8qDtlYFtcNQLhO
+image: assets/images/dr-logo-vg.png
 author: matheus
 featured: true
 categories: [ aws, arquitetura, disaster-recovery, terraform ]
@@ -8,10 +8,6 @@ title: Disaster Recovery — Projetando e Gerenciando Arquiteturas Multi-Region 
   com Terraform
 canonical_url: https://medium.com/@fidelissauro/disaster-recovery-projetando-e-gerenciando-arquiteturas-multi-region-na-aws-com-terraform-8e9a6a9a8669?source=rss-fc2fda5e9bc2------2
 ---
-
-<br>
-
-#### Disclaimer
 
 Este artigo foi o mais longo e cansativo que escrevi em muito tempo, então considere esse disclaimer como um pedido de desculpas escrito após a finalização do mesmo. **Recomendo que leia aos poucos, com calma**. Entrei em um *hiperfoco* violento que me fez cuspir tudo que estava na minha cabeça de uma vez, então peço perdão por isso e insisto que você não desista dessa leitura pela extensão.
 

@@ -2,16 +2,11 @@
 layout: post
 author: matheus
 # image: https://cdn-images-1.medium.com/max/1024/0*srEMHw3PKt7Ac3_R.png
-image: assets/images/argo-logo.jpg
+image: assets/images/argo-logo-vg.png
 title: Argo-Rollouts — "Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?"
 canonical_url: https://medium.com/@fidelissauro/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no-e030c2ee3af5?source=rss-fc2fda5e9bc2------2
 categories: [ aws, kubernetes, terraform, argo-rollouts ]
 ---
-
-<br>
-
-### Introdução
-
 O Deploy em ambientes **Cloud Native** pode ser, se não é, a parte mais desafiadora no dia a dia do ciclo de vida de um software, principalmente se a atualização é realizada em aplicações criticas que possuem volumes consideráveis de transações.
 
 Nesse contexto, possuímos uma vasta gama de ferramental para gerenciar deployments em ambientes de **Kubernetes**, algumas melhores, outras mais modestas e poucas simples e sucintas.
