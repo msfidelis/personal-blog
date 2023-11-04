@@ -1359,7 +1359,8 @@ resource "aws_route53_record" "secondary" {
 }
 ```
 
-[Configurar failover de DNS](https://docs.aws.amazon.com/pt_br/Route53/latest/DeveloperGuide/dns-failover-configuring.html)
+{% linkpreview "https://docs.aws.amazon.com/pt_br/Route53/latest/DeveloperGuide/dns-failover-configuring.html" %}
+
 
 <br>
 
@@ -1427,7 +1428,8 @@ resource "aws_elasticache_replication_group" "secondary" {
 }
 ```
 
-[Replication across AWS Regions using global datastores](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Redis-Global-Datastore.html)
+{% linkpreview "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Redis-Global-Datastore.html" %}
+
 
 <br>
 
@@ -1439,7 +1441,7 @@ Ao usar Cross-Region Read Replicas, você pode criar cópias de leitura do seu b
 
 O recurso é limitado a operações de leitura, não permitindo escritas bilaterais.
 
-[Cross-Region read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RDS_Fea_Regions_DB-eng.Feature.CrossRegionReadReplicas.html)
+{% linkpreview "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RDS_Fea_Regions_DB-eng.Feature.CrossRegionReadReplicas.html" %}
 
 <br>
 
@@ -1451,7 +1453,7 @@ Você pode criar um cluster primário e replicar dados para até cinco regiões 
 
 ![Imagem de Aurora Global Database](https://cdn-images-1.medium.com/max/756/0*JDCfJJk2o8N7OSzZ.png)
 
-[Using Amazon Aurora global databases](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html)
+{% linkpreview "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html" %}
 
 <br>
 
@@ -1461,7 +1463,8 @@ A **replicação Multi-Region do Secrets Manager** permite replicar secrets para
 
 A replicação é automática: atualizações em uma região primária são replicadas para todas as secundárias. Não foi considerado para o artigo por não ter uso em contextos não relacionados à gestão de segredos e por ainda não estar disponível para Terraform.
 
-[How to replicate secrets in AWS Secrets Manager to multiple Regions | Amazon Web Services](https://aws.amazon.com/blogs/security/how-to-replicate-secrets-aws-secrets-manager-multiple-regions/)
+{% linkpreview "https://aws.amazon.com/blogs/security/how-to-replicate-secrets-aws-secrets-manager-multiple-regions/" %}
+
 
 <br>
 
@@ -1473,9 +1476,9 @@ O Mirror Maker replica dados do Kafka entre regiões, suportando DR, leitura de 
 
 Para replicar usando o Mirror Maker, é necessário configurar um link entre VPCs de diferentes regiões.
 
-- [Migrating clusters using Apache Kafka's MirrorMaker](https://docs.aws.amazon.com/msk/latest/developerguide/migration.html)
-- [Setting up Mirror Maker](https://www.instaclustr.com/support/documentation/kafka/kafka-cluster-operations/setting-up-mirror-maker/)
+{% linkpreview "https://docs.aws.amazon.com/msk/latest/developerguide/migration.html" %}
 
+{% linkpreview "https://www.instaclustr.com/support/documentation/kafka/kafka-cluster-operations/setting-up-mirror-maker/" %}
 
 <br>
 
@@ -1523,3 +1526,5 @@ E um agradecimento de coração a todos os revisores que dedicaram seu tempo pra
 [**Me sigam no Twitter para acompanhar as paradinhas que eu compartilho por lá!**](https://twitter.com/fidelissauro)
 
 Te ajudei de alguma forma? Me pague um café (Mentira, todos os valores doados nessa chave são dobrados por mim e destinados a ongs de apoio e resgate animal
+
+**Chave Pix:** fe60fe92-ecba-4165-be5a-3dccf8a06bfc
