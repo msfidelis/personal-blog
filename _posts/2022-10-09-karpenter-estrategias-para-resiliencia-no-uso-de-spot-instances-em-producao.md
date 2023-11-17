@@ -126,9 +126,8 @@ A Referencia continuará no post mas os detalhes de implementação serão remov
 
 No proximo topico abordaremos o *Interruption Handler nativo do Karpenter*.
 
---->
 
-O **Node Termination Handler** é uma forma interessante de fazer Drain dos nossos nodes com base em notificações de Spot Interruptions, Rebalance Recommendations do Autoscale Group ou de um desligamento padrão das EC2. Esses eventos podem ser muito comuns quando tratamos de ambientes voláteis que utilizam estratégias de Spots.
+<!-- O **Node Termination Handler** é uma forma interessante de fazer Drain dos nossos nodes com base em notificações de Spot Interruptions, Rebalance Recommendations do Autoscale Group ou de um desligamento padrão das EC2. Esses eventos podem ser muito comuns quando tratamos de ambientes voláteis que utilizam estratégias de Spots.
 
 ![Imagem](https://cdn-images-1.medium.com/max/995/0*ZgrXumd_2ja6-8QS.png)
 
@@ -146,18 +145,17 @@ Sempre que um evento de desligamento de Spot for informado, ou solicitado via co
 
 ![Imagem](https://cdn-images-1.medium.com/max/865/1*2pvckY_9zzQ61t_yavLf1w.png)
 
-<br>
-
-<----->
+<br> -->
 
 
-### Karpenter - Interruption Handling
+
+<!-- ### Karpenter - Interruption Handling
 
 *Update 17/11/2023* - Como mencionado no topico anterior, agora o Karpenter possui a feature de realizar handling dos nodes que mudam de estado. 
 
 Para fazer o provisionamento temos que criar a fila SQS da mesma forma como 
 
-{% gist a928496d90f36656ad2efe49a121db06 %}
+{% gist a928496d90f36656ad2efe49a121db06 %} -->
 
 ### Referências / Material de Apoio 
 - **EKS Best Pratices** [https://aws.github.io/aws-eks-best-practices/karpenter/](https://aws.github.io/aws-eks-best-practices/karpenter/)
