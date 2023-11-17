@@ -11,7 +11,7 @@ categories: [ aws, arquitetura, kubernetes, terraform, karpenter ]
 # Introdução
 {: .text-justify}
 
-*Update 17/11/2023* - Alguns manifestos mudam sua estrutura a partir da versão 0.32.x do Karpenter. Nessa data de hoje aproveitei para atualizar os exemplos para os schemas mais novos. [Confira o blogpost do Edson sobre o tema](https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x). 
+**Update 17/11/2023** - *Alguns manifestos mudam sua estrutura a partir da versão 0.32.x do Karpenter. Nessa data de hoje aproveitei para atualizar os exemplos para os schemas mais novos. [Confira o blogpost do Edson sobre o tema](https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x).*
 
 Esse é o segundo artigo que eu publico sobre Karpenter. Dessa vez decidi trazer um ponto de vista bem legal que é a adoção de uso de Spots em produção.
 
@@ -59,7 +59,7 @@ Inicialmente, vamos fazer o básico em relação a ambientes produtivos, sendo e
 
 Vamos adicionar uma especificação sobre a label **_topology.kubernetes.io/zone_** tendo todas as AZ's que sua aplicação deverá utilizar
 
-{% gist a7d33da2fbeb0f10097d47870dec611e %}
+{% gist 1e95b30d8c727b0a313d9d6f4f4b9d8a %}
 
 
 Agora vamos realizar uma modificação no nosso deployment utilizando os topology spreads e skews. O controlador do Karpenter vai se basear nessa informação pra realizar o provisionamento dos nodes quando precisar suprir um capacity.
@@ -76,9 +76,9 @@ Uma das estratégias mais efetivas pra se proteger contra compras bruscas de tip
 
 Isso significa subir mais de um tipo de familia e tamanho no workload. Assim, se subirmos um pool de **_c5.large_**, **_m5.large_** e **_r5.large_**, caso exista uma compra massiva de algum desses tamanhos, podemos proteger de forma segura a disponibilidade de nossas aplicações se elas forem distribuídas de forma inteligente entre os nodes.
 
-Primeiramente vamos adicionar/alterar no Provisioner a spec baseada na label **_node.kubernetes.io/instance-type_** dos nodes, e nela vamos adicionar uma lista contendo os tipos de familia que podem ser lançadas para suprir capacity.
+Primeiramente vamos adicionar/alterar no NodePool a spec baseada na label **_node.kubernetes.io/instance-type_** dos nodes, e nela vamos adicionar uma lista contendo os tipos de familia que podem ser lançadas para suprir capacity.
 
-{% gist 81578a1fa116d0da4abccbb8b60dbf8a %}
+{% gist 26696e26cbb940fc7f714fec6dbd2c91 %}
 
 Vamos editar o deployment e adicionar o topology spread baseado na label **_node.kubernetes.io/instance-type_** também. Dessa forma vamos direcionar uma distribuição do nosso deployment entre os tipos de instancia, assim como fizemos com as AZ's.
 
@@ -103,7 +103,7 @@ Dessa forma, conseguimos gerar uma distribuição bem tranquila entre os tamanho
 
 Uma estratégia mais conservadora e segura de se usar spots em produção baseia-se em fazer uma diversificação entre instancias Spots e On Demand. Mantendo uma porcentagem do workload em extrema segurança. Nesse sentido, o **Karpenter** também nos permite selecionar mais de um tipo de Capacity Type na label **_karpenter.sh/capacity-type_**.
 
-{% gist b88a185526a58fdaa8891c3e41c698ec %}
+{% gist db03f5dafe0dbfaefb41e8b28e28fcb0 %}
 
 
 Agora vamos ajustar o **_Spread Constraint_** também como fizemos nos exemplos anteriores para distribuir os pods entre os tipos de nodes (já que agora temos não só o uso de spots, mas também nodes on-demand) assim como fizemos com as AZ’s e os tipos de instâncias.
@@ -167,6 +167,8 @@ Para fazer o provisionamento temos que criar a fila SQS da mesma forma como
 - **EC2 Spot Best Pratices** [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html)
 - **EC2 Spots** [https://aws.amazon.com/pt/ec2/spot/](https://aws.amazon.com/pt/ec2/spot/)
 - **Node Termination Handler** [https://github.com/aws/aws-node-termination-handler](https://github.com/aws/aws-node-termination-handler)
+- **Interruption Handling** [https://karpenter.sh/docs/faq/#should-i-use-karpenter-interruption-handling-alongside-node-termination-handler](https://karpenter.sh/docs/faq/#should-i-use-karpenter-interruption-handling-alongside-node-termination-handler)
+- **O que muda no Karpenter a partir das versões 0.32.x?** [https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x](https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x)
 
 **Obrigado aos revisores:**
 - [@Daniel_Requena](https://twitter.com/Daniel_Requena)

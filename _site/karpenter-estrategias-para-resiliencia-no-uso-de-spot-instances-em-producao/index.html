@@ -9,16 +9,16 @@
 <title>Karpenter — Estratégias para resiliência no uso de Spot Instances em produção | Matheus Fidelis</title>
 
 <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Karpenter — Estratégias para resiliência no uso de Spot Instances em produção | Matheus Fidelis Blog</title>
+<title>Karpenter — Estratégias para resiliência no uso de Spot Instances em produção | Matheus Fidelis - Engineering Blog</title>
 <meta name="generator" content="Jekyll v4.3.2" />
 <meta property="og:title" content="Karpenter — Estratégias para resiliência no uso de Spot Instances em produção" />
 <meta name="author" content="matheus" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Introdução Esse é o segundo artigo que eu publico sobre Karpenter. Dessa vez decidi trazer um ponto de vista bem legal que é a adoção de uso de Spots em produção." />
-<meta property="og:description" content="Introdução Esse é o segundo artigo que eu publico sobre Karpenter. Dessa vez decidi trazer um ponto de vista bem legal que é a adoção de uso de Spots em produção." />
+<meta name="description" content="Introdução" />
+<meta property="og:description" content="Introdução" />
 <link rel="canonical" href="https://medium.com/@fidelissauro/karpenter-estrat%C3%A9gias-para-resili%C3%AAncia-no-uso-de-spot-instances-em-produ%C3%A7%C3%A3o-398c7bff2cdc?source=rss-fc2fda5e9bc2------2" />
 <meta property="og:url" content="https://medium.com/@fidelissauro/karpenter-estrat%C3%A9gias-para-resili%C3%AAncia-no-uso-de-spot-instances-em-produ%C3%A7%C3%A3o-398c7bff2cdc?source=rss-fc2fda5e9bc2------2" />
-<meta property="og:site_name" content="Matheus Fidelis Blog" />
+<meta property="og:site_name" content="Matheus Fidelis - Engineering Blog" />
 <meta property="og:image" content="http://localhost:4000/assets/images/karpenter-spots-vg.png" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-10-09T00:00:00-03:00" />
@@ -26,7 +26,7 @@
 <meta property="twitter:image" content="http://localhost:4000/assets/images/karpenter-spots-vg.png" />
 <meta property="twitter:title" content="Karpenter — Estratégias para resiliência no uso de Spot Instances em produção" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"matheus"},"dateModified":"2022-10-09T00:00:00-03:00","datePublished":"2022-10-09T00:00:00-03:00","description":"Introdução Esse é o segundo artigo que eu publico sobre Karpenter. Dessa vez decidi trazer um ponto de vista bem legal que é a adoção de uso de Spots em produção.","headline":"Karpenter — Estratégias para resiliência no uso de Spot Instances em produção","image":"http://localhost:4000/assets/images/karpenter-spots-vg.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://medium.com/@fidelissauro/karpenter-estrat%C3%A9gias-para-resili%C3%AAncia-no-uso-de-spot-instances-em-produ%C3%A7%C3%A3o-398c7bff2cdc?source=rss-fc2fda5e9bc2------2"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/logo.png"},"name":"matheus"},"url":"https://medium.com/@fidelissauro/karpenter-estrat%C3%A9gias-para-resili%C3%AAncia-no-uso-de-spot-instances-em-produ%C3%A7%C3%A3o-398c7bff2cdc?source=rss-fc2fda5e9bc2------2"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"matheus"},"dateModified":"2022-10-09T00:00:00-03:00","datePublished":"2022-10-09T00:00:00-03:00","description":"Introdução","headline":"Karpenter — Estratégias para resiliência no uso de Spot Instances em produção","image":"http://localhost:4000/assets/images/karpenter-spots-vg.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://medium.com/@fidelissauro/karpenter-estrat%C3%A9gias-para-resili%C3%AAncia-no-uso-de-spot-instances-em-produ%C3%A7%C3%A3o-398c7bff2cdc?source=rss-fc2fda5e9bc2------2"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/logo.png"},"name":"matheus"},"url":"https://medium.com/@fidelissauro/karpenter-estrat%C3%A9gias-para-resili%C3%AAncia-no-uso-de-spot-instances-em-produ%C3%A7%C3%A3o-398c7bff2cdc?source=rss-fc2fda5e9bc2------2"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -230,6 +230,9 @@
                 
                 <!-- End Toc -->
                 <h1 class="text-justify" id="introdução">Introdução</h1>
+
+<p><strong>Update 17/11/2023</strong> - <em>Alguns manifestos mudam sua estrutura a partir da versão 0.32.x do Karpenter. Nessa data de hoje aproveitei para atualizar os exemplos para os schemas mais novos. <a href="https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x">Confira o blogpost do Edson sobre o tema</a>.</em></p>
+
 <p>Esse é o segundo artigo que eu publico sobre Karpenter. Dessa vez decidi trazer um ponto de vista bem legal que é a adoção de uso de Spots em produção.</p>
 
 <p>Utilizar spots é uma estratégia muito comum pra quem deseja algum saving na conta da AWS no fim do mês, podem ser utilizada em formas de EC2 diretamente, Containers, Workloads de data e etc.</p>
@@ -241,8 +244,6 @@
 <p>A ideia desse artigo é demonstrar possibilidades do uso do <strong>Karpenter</strong> para ganhar um pouco mais de resiliência em produção em ambientes que rodam totalmente, ou parcialmente com Spots.</p>
 
 <p>Caso você não tenha visto ainda, fiz um artigo sobre uma PoC onde descrevo <strong>como criar um ambiente em Amazon EKS sem Node Groups, utilizando somente o Karpenter pra suprir o capacity computacional</strong>.</p>
-
-<p><em>Update 17/11/2023</em> - Alguns manifestos mudam sua estrutura a partir da versão 0.32.x do Karpenter. Nessa data de hoje aproveitei para atualizar os exemplos para os schemas mais novos. <a href="https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x">Confira o blogpost do Edson sobre o tema</a>.</p>
 
 <div class="jekyll-linkpreview-wrapper">
   <div class="jekyll-linkpreview-wrapper-inner">
@@ -317,7 +318,7 @@
 <p>Vamos adicionar uma especificação sobre a label <strong><em>topology.kubernetes.io/zone</em></strong> tendo todas as AZ’s que sua aplicação deverá utilizar</p>
 
 <noscript><pre>400: Invalid request</pre></noscript>
-<script src="https://gist.github.com/a7d33da2fbeb0f10097d47870dec611e.js"> </script>
+<script src="https://gist.github.com/1e95b30d8c727b0a313d9d6f4f4b9d8a.js"> </script>
 
 <p>Agora vamos realizar uma modificação no nosso deployment utilizando os topology spreads e skews. O controlador do Karpenter vai se basear nessa informação pra realizar o provisionamento dos nodes quando precisar suprir um capacity.</p>
 
@@ -334,10 +335,10 @@
 
 <p>Isso significa subir mais de um tipo de familia e tamanho no workload. Assim, se subirmos um pool de <strong><em>c5.large</em></strong>, <strong><em>m5.large</em></strong> e <strong><em>r5.large</em></strong>, caso exista uma compra massiva de algum desses tamanhos, podemos proteger de forma segura a disponibilidade de nossas aplicações se elas forem distribuídas de forma inteligente entre os nodes.</p>
 
-<p>Primeiramente vamos adicionar/alterar no Provisioner a spec baseada na label <strong><em>node.kubernetes.io/instance-type</em></strong> dos nodes, e nela vamos adicionar uma lista contendo os tipos de familia que podem ser lançadas para suprir capacity.</p>
+<p>Primeiramente vamos adicionar/alterar no NodePool a spec baseada na label <strong><em>node.kubernetes.io/instance-type</em></strong> dos nodes, e nela vamos adicionar uma lista contendo os tipos de familia que podem ser lançadas para suprir capacity.</p>
 
 <noscript><pre>400: Invalid request</pre></noscript>
-<script src="https://gist.github.com/81578a1fa116d0da4abccbb8b60dbf8a.js"> </script>
+<script src="https://gist.github.com/26696e26cbb940fc7f714fec6dbd2c91.js"> </script>
 
 <p>Vamos editar o deployment e adicionar o topology spread baseado na label <strong><em>node.kubernetes.io/instance-type</em></strong> também. Dessa forma vamos direcionar uma distribuição do nosso deployment entre os tipos de instancia, assim como fizemos com as AZ’s.</p>
 
@@ -362,7 +363,7 @@
 <p>Uma estratégia mais conservadora e segura de se usar spots em produção baseia-se em fazer uma diversificação entre instancias Spots e On Demand. Mantendo uma porcentagem do workload em extrema segurança. Nesse sentido, o <strong>Karpenter</strong> também nos permite selecionar mais de um tipo de Capacity Type na label <strong><em>karpenter.sh/capacity-type</em></strong>.</p>
 
 <noscript><pre>400: Invalid request</pre></noscript>
-<script src="https://gist.github.com/b88a185526a58fdaa8891c3e41c698ec.js"> </script>
+<script src="https://gist.github.com/db03f5dafe0dbfaefb41e8b28e28fcb0.js"> </script>
 
 <p>Agora vamos ajustar o <strong><em>Spread Constraint</em></strong> também como fizemos nos exemplos anteriores para distribuir os pods entre os tipos de nodes (já que agora temos não só o uso de spots, mas também nodes on-demand) assim como fizemos com as AZ’s e os tipos de instâncias.</p>
 
@@ -387,40 +388,33 @@
 
 <p>No proximo topico abordaremos o <em>Interruption Handler nativo do Karpenter</em>.</p>
 
-<p>—&gt;</p>
+<!-- O **Node Termination Handler** é uma forma interessante de fazer Drain dos nossos nodes com base em notificações de Spot Interruptions, Rebalance Recommendations do Autoscale Group ou de um desligamento padrão das EC2. Esses eventos podem ser muito comuns quando tratamos de ambientes voláteis que utilizam estratégias de Spots.
 
-<p>O <strong>Node Termination Handler</strong> é uma forma interessante de fazer Drain dos nossos nodes com base em notificações de Spot Interruptions, Rebalance Recommendations do Autoscale Group ou de um desligamento padrão das EC2. Esses eventos podem ser muito comuns quando tratamos de ambientes voláteis que utilizam estratégias de Spots.</p>
+![Imagem](https://cdn-images-1.medium.com/max/995/0*ZgrXumd_2ja6-8QS.png)
 
-<p><img src="https://cdn-images-1.medium.com/max/995/0*ZgrXumd_2ja6-8QS.png" alt="Imagem"></p>
+Não vou abordar muitos detalhes do provisionamento, porém vou deixar um [exemplo completo no Github](https://github.com/msfidelis/eks-karpenter-autonomous-cluster).
 
-<p>Não vou abordar muitos detalhes do provisionamento, porém vou deixar um <a href="https://github.com/msfidelis/eks-karpenter-autonomous-cluster">exemplo completo no Github</a>.</p>
+Mas basicamente, precisamos provisionar o chart do **aws-node-termination-handler**, informando uma URL de um SQS e habilitando o **enableSqsTerminationDraining**. Questões como IAM estão detalhadas no repositório.
 
-<p>Mas basicamente, precisamos provisionar o chart do <strong>aws-node-termination-handler</strong>, informando uma URL de um SQS e habilitando o <strong>enableSqsTerminationDraining</strong>. Questões como IAM estão detalhadas no repositório.</p>
+<noscript><pre>400: Invalid request</pre></noscript><script src="https://gist.github.com/f98f1b1373b23df81bc366f1a84a4551.js"> </script>
 
-<noscript><pre>400: Invalid request</pre></noscript>
-<script src="https://gist.github.com/f98f1b1373b23df81bc366f1a84a4551.js"> </script>
+Precisamos provisionar uma série de Event Rules recomendadas na documentação do projeto e enviá-las para o SQS informado no chart pela **queueURL**.
 
-<p>Precisamos provisionar uma série de Event Rules recomendadas na documentação do projeto e enviá-las para o SQS informado no chart pela <strong>queueURL</strong>.</p>
+<noscript><pre>400: Invalid request</pre></noscript><script src="https://gist.github.com/a928496d90f36656ad2efe49a121db06.js"> </script>
 
-<noscript><pre>400: Invalid request</pre></noscript>
-<script src="https://gist.github.com/a928496d90f36656ad2efe49a121db06.js"> </script>
+Sempre que um evento de desligamento de Spot for informado, ou solicitado via console, cli, api, um evento será enviado para essa fila SQS, consumido pelo **aws-node-termination-handler** que se encarregará de fazer um drain dos pods a tempo suficiente para realocá-los em outros nodes.
 
-<p>Sempre que um evento de desligamento de Spot for informado, ou solicitado via console, cli, api, um evento será enviado para essa fila SQS, consumido pelo <strong>aws-node-termination-handler</strong> que se encarregará de fazer um drain dos pods a tempo suficiente para realocá-los em outros nodes.</p>
+![Imagem](https://cdn-images-1.medium.com/max/865/1*2pvckY_9zzQ61t_yavLf1w.png)
 
-<p><img src="https://cdn-images-1.medium.com/max/865/1*2pvckY_9zzQ61t_yavLf1w.png" alt="Imagem"></p>
+<br> -->
 
-<p><br></p>
+<!-- ### Karpenter - Interruption Handling
 
-<p>&lt;—–&gt;</p>
+*Update 17/11/2023* - Como mencionado no topico anterior, agora o Karpenter possui a feature de realizar handling dos nodes que mudam de estado. 
 
-<h3 id="karpenter---interruption-handling">Karpenter - Interruption Handling</h3>
+Para fazer o provisionamento temos que criar a fila SQS da mesma forma como 
 
-<p><em>Update 17/11/2023</em> - Como mencionado no topico anterior, agora o Karpenter possui a feature de realizar handling dos nodes que mudam de estado.</p>
-
-<p>Para fazer o provisionamento temos que criar a fila SQS da mesma forma como</p>
-
-<noscript><pre>400: Invalid request</pre></noscript>
-<script src="https://gist.github.com/a928496d90f36656ad2efe49a121db06.js"> </script>
+<noscript><pre>400: Invalid request</pre></noscript><script src="https://gist.github.com/a928496d90f36656ad2efe49a121db06.js"> </script> -->
 
 <h3 id="referências--material-de-apoio">Referências / Material de Apoio</h3>
 <ul>
@@ -431,6 +425,8 @@
   <li><strong>EC2 Spot Best Pratices</strong> <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html">https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html</a></li>
   <li><strong>EC2 Spots</strong> <a href="https://aws.amazon.com/pt/ec2/spot/">https://aws.amazon.com/pt/ec2/spot/</a></li>
   <li><strong>Node Termination Handler</strong> <a href="https://github.com/aws/aws-node-termination-handler">https://github.com/aws/aws-node-termination-handler</a></li>
+  <li><strong>Interruption Handling</strong> <a href="https://karpenter.sh/docs/faq/#should-i-use-karpenter-interruption-handling-alongside-node-termination-handler">https://karpenter.sh/docs/faq/#should-i-use-karpenter-interruption-handling-alongside-node-termination-handler</a></li>
+  <li><strong>O que muda no Karpenter a partir das versões 0.32.x?</strong> <a href="https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x">https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x</a></li>
 </ul>
 
 <p><strong>Obrigado aos revisores:</strong></p>
@@ -558,7 +554,7 @@ https://search.google.com/structured-data/testing-tool/u/0/
 ================================================== -->
 <div class="alertbar">
 	<div class="container text-center">
-		<span><img src="/assets/images/logo.png" alt="Matheus Fidelis Blog"> &nbsp; Never miss a <b>story</b> from us, subscribe to our newsletter</span>
+		<span><img src="/assets/images/logo.png" alt="Matheus Fidelis - Engineering Blog"> &nbsp; Never miss a <b>story</b> from us, subscribe to our newsletter</span>
         <form action="https://wowthemes.us11.list-manage.com/subscribe/post?u=8aeb20a530e124561927d3bd8&amp;id=8c3d2d214b" method="post" name="mc-embedded-subscribe-form" class="wj-contact-form validate" target="_blank" novalidate>
             <div class="mc-field-group">
             <input type="email" placeholder="Email" name="EMAIL" class="required email" id="mce-EMAIL" autocomplete="on" required>
