@@ -10,6 +10,9 @@ categories: [ aws, arquitetura, kubernetes, terraform, karpenter ]
 ---
 # Introdução
 {: .text-justify}
+
+*Update 17/11/2023* - Alguns manifestos mudam sua estrutura a partir da versão 0.32.x do Karpenter. Nessa data de hoje aproveitei para atualizar os exemplos para os schemas mais novos. [Confira o blogpost do Edson sobre o tema](https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x). 
+
 Esse é o segundo artigo que eu publico sobre Karpenter. Dessa vez decidi trazer um ponto de vista bem legal que é a adoção de uso de Spots em produção.
 
 Utilizar spots é uma estratégia muito comum pra quem deseja algum saving na conta da AWS no fim do mês, podem ser utilizada em formas de EC2 diretamente, Containers, Workloads de data e etc.
@@ -22,7 +25,6 @@ A ideia desse artigo é demonstrar possibilidades do uso do **Karpenter** para g
 
 Caso você não tenha visto ainda, fiz um artigo sobre uma PoC onde descrevo **como criar um ambiente em Amazon EKS sem Node Groups, utilizando somente o Karpenter pra suprir o capacity computacional**.
 
-*Update 17/11/2023* - Alguns manifestos mudam sua estrutura a partir da versão 0.32.x do Karpenter. Nessa data de hoje aproveitei para atualizar os exemplos para os schemas mais novos. [Confira o blogpost do Edson sobre o tema](https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x). 
 
 {% linkpreview "https://medium.com/@fidelissauro/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter-4d302b32b620" %}
 
