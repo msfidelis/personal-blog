@@ -22,6 +22,8 @@ A ideia desse artigo é demonstrar possibilidades do uso do **Karpenter** para g
 
 Caso você não tenha visto ainda, fiz um artigo sobre uma PoC onde descrevo **como criar um ambiente em Amazon EKS sem Node Groups, utilizando somente o Karpenter pra suprir o capacity computacional**.
 
+*Update 17/11/2023* - Alguns manifestos mudam sua estrutura a partir da versão 0.32.x do Karpenter. Nessa data de hoje aproveitei para atualizar os exemplos para os schemas mais novos. [Confira o blogpost do Edson sobre o tema](https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x). 
+
 {% linkpreview "https://medium.com/@fidelissauro/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter-4d302b32b620" %}
 
 
@@ -112,9 +114,19 @@ Dessa forma também conseguimos instruir o Karpenter pra subir de forma diversif
 
 <br>
 
-### Node Termination Handler
+### Node Termination Handler - **DEPRECATED** 
 
-*Update 20/08/2023* — Depois de trocar bastante ideia com a galera, decidi editar esse artigo para adicionar o Node Termination Handler na nossa estratégia.
+O **Node Termination Handler** é uma forma interessante de fazer Drain dos nossos nodes com base em notificações de Spot Interruptions, Rebalance Recommendations do Autoscale Group ou de um desligamento padrão das EC2. Esses eventos podem ser muito comuns quando tratamos de ambientes voláteis que utilizam estratégias de Spots.
+
+![Imagem](https://cdn-images-1.medium.com/max/995/0*ZgrXumd_2ja6-8QS.png)
+
+*Update 17/11/2023* - Segundo a comunidade do Karpenter, não é mais recomendado o uso do Node Termination handler pois o proprio componente agora faz Interruption Handling. - [Link](https://karpenter.sh/docs/faq/#should-i-use-karpenter-interruption-handling-alongside-node-termination-handler)
+
+A Referencia continuará no post mas os detalhes de implementação serão removidos. Para consulta de referencia, os detalhes de implementação estão [neste link](https://github.com/msfidelis/eks-karpenter-autonomous-cluster/blob/note-termination-handler/helm_aws_node_termination_handler.tf)
+
+No proximo topico abordaremos o *Interruption Handler nativo do Karpenter*.
+
+--->
 
 O **Node Termination Handler** é uma forma interessante de fazer Drain dos nossos nodes com base em notificações de Spot Interruptions, Rebalance Recommendations do Autoscale Group ou de um desligamento padrão das EC2. Esses eventos podem ser muito comuns quando tratamos de ambientes voláteis que utilizam estratégias de Spots.
 
@@ -135,6 +147,17 @@ Sempre que um evento de desligamento de Spot for informado, ou solicitado via co
 ![Imagem](https://cdn-images-1.medium.com/max/865/1*2pvckY_9zzQ61t_yavLf1w.png)
 
 <br>
+
+<----->
+
+
+### Karpenter - Interruption Handling
+
+*Update 17/11/2023* - Como mencionado no topico anterior, agora o Karpenter possui a feature de realizar handling dos nodes que mudam de estado. 
+
+Para fazer o provisionamento temos que criar a fila SQS da mesma forma como 
+
+{% gist a928496d90f36656ad2efe49a121db06 %}
 
 ### Referências / Material de Apoio 
 - **EKS Best Pratices** [https://aws.github.io/aws-eks-best-practices/karpenter/](https://aws.github.io/aws-eks-best-practices/karpenter/)

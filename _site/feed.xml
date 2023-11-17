@@ -3,10 +3,10 @@
   <channel>
     <title>Matheus Fidelis Blog</title>
     <description>Technical Blog</description>
-    <link>/</link>
-    <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 17 Nov 2023 12:50:44 -0300</pubDate>
-    <lastBuildDate>Fri, 17 Nov 2023 12:50:44 -0300</lastBuildDate>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Fri, 17 Nov 2023 19:04:45 -0300</pubDate>
+    <lastBuildDate>Fri, 17 Nov 2023 19:04:45 -0300</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
     
       <item>
@@ -2442,8 +2442,8 @@ x-amzn-remapped-date: Wed, 12 Jul 2023 00:44:43 GMT
 &lt;p&gt;&lt;strong&gt;Chave Pix:&lt;/strong&gt; fe60fe92-ecba-4165-be5a-3dccf8a06bfc&lt;/p&gt;
 </description>
         <pubDate>Sat, 15 Jul 2023 00:00:00 -0300</pubDate>
-        <link>/disaster-recovery-projetando-e-gerenciando-arquiteturas-multi-region-na-aws-com-terraform/</link>
-        <guid isPermaLink="true">/disaster-recovery-projetando-e-gerenciando-arquiteturas-multi-region-na-aws-com-terraform/</guid>
+        <link>http://localhost:4000/disaster-recovery-projetando-e-gerenciando-arquiteturas-multi-region-na-aws-com-terraform/</link>
+        <guid isPermaLink="true">http://localhost:4000/disaster-recovery-projetando-e-gerenciando-arquiteturas-multi-region-na-aws-com-terraform/</guid>
         
         
         <category>aws</category>
@@ -3698,8 +3698,8 @@ kubectl describe analysisrun &amp;lt;&lt;span class=&quot;nb&quot;&gt;id&lt;/spa
 
 </description>
         <pubDate>Sun, 02 Apr 2023 00:00:00 -0300</pubDate>
-        <link>/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no/</link>
-        <guid isPermaLink="true">/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no/</guid>
+        <link>http://localhost:4000/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no/</link>
+        <guid isPermaLink="true">http://localhost:4000/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no/</guid>
         
         
         <category>aws</category>
@@ -3726,6 +3726,8 @@ kubectl describe analysisrun &amp;lt;&lt;span class=&quot;nb&quot;&gt;id&lt;/spa
 &lt;p&gt;A ideia desse artigo é demonstrar possibilidades do uso do &lt;strong&gt;Karpenter&lt;/strong&gt; para ganhar um pouco mais de resiliência em produção em ambientes que rodam totalmente, ou parcialmente com Spots.&lt;/p&gt;
 
 &lt;p&gt;Caso você não tenha visto ainda, fiz um artigo sobre uma PoC onde descrevo &lt;strong&gt;como criar um ambiente em Amazon EKS sem Node Groups, utilizando somente o Karpenter pra suprir o capacity computacional&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Update 17/11/2023&lt;/em&gt; - Alguns manifestos mudam sua estrutura a partir da versão 0.32.x do Karpenter. Nessa data de hoje aproveitei para atualizar os exemplos para os schemas mais novos. &lt;a href=&quot;https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x&quot;&gt;Confira o blogpost do Edson sobre o tema&lt;/a&gt;.&lt;/p&gt;
 
 &lt;div class=&quot;jekyll-linkpreview-wrapper&quot;&gt;
   &lt;div class=&quot;jekyll-linkpreview-wrapper-inner&quot;&gt;
@@ -3858,9 +3860,19 @@ kubectl describe analysisrun &amp;lt;&lt;span class=&quot;nb&quot;&gt;id&lt;/spa
 
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;node-termination-handler&quot;&gt;Node Termination Handler&lt;/h3&gt;
+&lt;h3 id=&quot;node-termination-handler---deprecated&quot;&gt;Node Termination Handler - &lt;strong&gt;DEPRECATED&lt;/strong&gt;&lt;/h3&gt;
 
-&lt;p&gt;&lt;em&gt;Update 20/08/2023&lt;/em&gt; — Depois de trocar bastante ideia com a galera, decidi editar esse artigo para adicionar o Node Termination Handler na nossa estratégia.&lt;/p&gt;
+&lt;p&gt;O &lt;strong&gt;Node Termination Handler&lt;/strong&gt; é uma forma interessante de fazer Drain dos nossos nodes com base em notificações de Spot Interruptions, Rebalance Recommendations do Autoscale Group ou de um desligamento padrão das EC2. Esses eventos podem ser muito comuns quando tratamos de ambientes voláteis que utilizam estratégias de Spots.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://cdn-images-1.medium.com/max/995/0*ZgrXumd_2ja6-8QS.png&quot; alt=&quot;Imagem&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Update 17/11/2023&lt;/em&gt; - Segundo a comunidade do Karpenter, não é mais recomendado o uso do Node Termination handler pois o proprio componente agora faz Interruption Handling. - &lt;a href=&quot;https://karpenter.sh/docs/faq/#should-i-use-karpenter-interruption-handling-alongside-node-termination-handler&quot;&gt;Link&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;A Referencia continuará no post mas os detalhes de implementação serão removidos. Para consulta de referencia, os detalhes de implementação estão &lt;a href=&quot;https://github.com/msfidelis/eks-karpenter-autonomous-cluster/blob/note-termination-handler/helm_aws_node_termination_handler.tf&quot;&gt;neste link&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;No proximo topico abordaremos o &lt;em&gt;Interruption Handler nativo do Karpenter&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;—&amp;gt;&lt;/p&gt;
 
 &lt;p&gt;O &lt;strong&gt;Node Termination Handler&lt;/strong&gt; é uma forma interessante de fazer Drain dos nossos nodes com base em notificações de Spot Interruptions, Rebalance Recommendations do Autoscale Group ou de um desligamento padrão das EC2. Esses eventos podem ser muito comuns quando tratamos de ambientes voláteis que utilizam estratégias de Spots.&lt;/p&gt;
 
@@ -3883,6 +3895,17 @@ kubectl describe analysisrun &amp;lt;&lt;span class=&quot;nb&quot;&gt;id&lt;/spa
 &lt;p&gt;&lt;img src=&quot;https://cdn-images-1.medium.com/max/865/1*2pvckY_9zzQ61t_yavLf1w.png&quot; alt=&quot;Imagem&quot;&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
+
+&lt;p&gt;&amp;lt;—–&amp;gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;karpenter---interruption-handling&quot;&gt;Karpenter - Interruption Handling&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Update 17/11/2023&lt;/em&gt; - Como mencionado no topico anterior, agora o Karpenter possui a feature de realizar handling dos nodes que mudam de estado.&lt;/p&gt;
+
+&lt;p&gt;Para fazer o provisionamento temos que criar a fila SQS da mesma forma como&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/a928496d90f36656ad2efe49a121db06.js&quot;&gt; &lt;/script&gt;
 
 &lt;h3 id=&quot;referências--material-de-apoio&quot;&gt;Referências / Material de Apoio&lt;/h3&gt;
 &lt;ul&gt;
@@ -3911,8 +3934,8 @@ kubectl describe analysisrun &amp;lt;&lt;span class=&quot;nb&quot;&gt;id&lt;/spa
 &lt;p&gt;&lt;strong&gt;Chave Pix:&lt;/strong&gt; fe60fe92-ecba-4165-be5a-3dccf8a06bfc&lt;/p&gt;
 </description>
         <pubDate>Sun, 09 Oct 2022 00:00:00 -0300</pubDate>
-        <link>/karpenter-estrategias-para-resiliencia-no-uso-de-spot-instances-em-producao/</link>
-        <guid isPermaLink="true">/karpenter-estrategias-para-resiliencia-no-uso-de-spot-instances-em-producao/</guid>
+        <link>http://localhost:4000/karpenter-estrategias-para-resiliencia-no-uso-de-spot-instances-em-producao/</link>
+        <guid isPermaLink="true">http://localhost:4000/karpenter-estrategias-para-resiliencia-no-uso-de-spot-instances-em-producao/</guid>
         
         
         <category>aws</category>
@@ -4213,8 +4236,8 @@ horizontalpodautoscaler.autoscaling/chip created
 &lt;p&gt;&lt;strong&gt;Chave Pix:&lt;/strong&gt; fe60fe92-ecba-4165-be5a-3dccf8a06bfc&lt;/p&gt;
 </description>
         <pubDate>Fri, 05 Aug 2022 00:00:00 -0300</pubDate>
-        <link>/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter/</link>
-        <guid isPermaLink="true">/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter/</guid>
+        <link>http://localhost:4000/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter/</link>
+        <guid isPermaLink="true">http://localhost:4000/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter/</guid>
         
         
         <category>aws</category>
@@ -4879,8 +4902,8 @@ orders-api-56f8bf5b7c-zlwgd 2/2 Running 0 2m10s 10.0.78.253 ip-10-0-76-14.ec2.in
 &lt;p&gt;&lt;strong&gt;Chave Pix:&lt;/strong&gt; fe60fe92-ecba-4165-be5a-3dccf8a06bfc&lt;/p&gt;
 </description>
         <pubDate>Sat, 13 Nov 2021 00:00:00 -0300</pubDate>
-        <link>/sobrevivendo-a-cenarios-de-caos-no-kubernetes-com-istio-e-amazon-eks/</link>
-        <guid isPermaLink="true">/sobrevivendo-a-cenarios-de-caos-no-kubernetes-com-istio-e-amazon-eks/</guid>
+        <link>http://localhost:4000/sobrevivendo-a-cenarios-de-caos-no-kubernetes-com-istio-e-amazon-eks/</link>
+        <guid isPermaLink="true">http://localhost:4000/sobrevivendo-a-cenarios-de-caos-no-kubernetes-com-istio-e-amazon-eks/</guid>
         
         
         <category>kubernetes</category>
