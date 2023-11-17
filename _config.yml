@@ -1,7 +1,7 @@
 # Site
 name: "Matheus Fidelis"
 title: "Matheus Fidelis Blog"
-description: "Fidelissauro technical blog"
+description: "Technical Blog"
 logo: 'assets/images/logo.png'
 favicon: 'assets/images/logo.png'
 # baseurl: /mediumish-theme-jekyll
@@ -61,7 +61,7 @@ adsense-data-ad-slot: "1363087678"
 # Lazy Images ("enabled" or "disabled")
 lazyimages: "enabled"
 
-exclude: [changelog.md, LICENSE.txt, README.md, Gemfile, Gemfile.lock]
+exclude: [changelog.md, LICENSE.txt, README.md, Gemfile, Gemfile.lock, docker-compose.yml]
 
 embed:
 # Extra elements to remove

@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link rel="icon" href="/assets/images/logo.png">
+
+<title>Argo-Rollouts — "Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?" | Matheus Fidelis</title>
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Argo-Rollouts — ”Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?” | Matheus Fidelis Blog</title>
+<meta name="generator" content="Jekyll v4.3.2" />
+<meta property="og:title" content="Argo-Rollouts — ”Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?”" />
+<meta name="author" content="matheus" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="O Deploy em ambientes Cloud Native pode ser, se não é, a parte mais desafiadora no dia a dia do ciclo de vida de um software, principalmente se a atualização é realizada em aplicações criticas que possuem volumes consideráveis de transações." />
+<meta property="og:description" content="O Deploy em ambientes Cloud Native pode ser, se não é, a parte mais desafiadora no dia a dia do ciclo de vida de um software, principalmente se a atualização é realizada em aplicações criticas que possuem volumes consideráveis de transações." />
+<meta property="og:site_name" content="Matheus Fidelis Blog" />
+<meta property="og:image" content="/assets/images/argo-logo-vg.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-04-02T00:00:00-03:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="/assets/images/argo-logo-vg.png" />
+<meta property="twitter:title" content="Argo-Rollouts — ”Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?”" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"matheus"},"dateModified":"2023-04-02T00:00:00-03:00","datePublished":"2023-04-02T00:00:00-03:00","description":"O Deploy em ambientes Cloud Native pode ser, se não é, a parte mais desafiadora no dia a dia do ciclo de vida de um software, principalmente se a atualização é realizada em aplicações criticas que possuem volumes consideráveis de transações.","headline":"Argo-Rollouts — ”Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?”","image":"/assets/images/argo-logo-vg.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://medium.com/@fidelissauro/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no-e030c2ee3af5?source=rss-fc2fda5e9bc2------2"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/images/logo.png"},"name":"matheus"},"url":"https://medium.com/@fidelissauro/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no-e030c2ee3af5?source=rss-fc2fda5e9bc2------2"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    
+<link href="/assets/css/screen.css" rel="stylesheet">
+
+<link href="/assets/css/main.css" rel="stylesheet">
+
+<script src="/assets/js/jquery.min.js"></script>
+
+</head>
+
+
+
+
+<body class="layout-post">
+	<!-- defer loading of font and font awesome -->
+	<noscript id="deferred-styles">
+		<link href="https://fonts.googleapis.com/css?family=Righteous%7CMerriweather:300,300i,400,400i,700,700i" rel="stylesheet">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+	</noscript>
+
+
+<!-- Begin Menu Navigation
+================================================== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top mediumnavigation nav-down">
+
+    <div class="container pr-0">
+
+    <!-- Begin Logo -->
+    <a class="navbar-brand" href="/">
+    <img src="/assets/images/logo.png" alt="Matheus Fidelis">
+    </a>
+    <!-- End Logo -->
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMediumish" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMediumish">
+
+        <!-- Begin Menu -->
+
+            <ul class="navbar-nav ml-auto">
+
+                
+                <li class="nav-item">
+                
+                <a class="nav-link" href="/index.html">Blog</a>
+                </li>
+
+                <li class="nav-item">
+                <a class="nav-link" href="/about">Sobre</a>
+                </li>
+
+                <script src="/assets/js/lunr.js"></script>
+
+
+<style>
+    .lunrsearchresult .title {color: #d9230f;}
+    .lunrsearchresult .url {color: silver;}
+    .lunrsearchresult a {display: block; color: #777;}
+    .lunrsearchresult a:hover, .lunrsearchresult a:focus {text-decoration: none;}
+    .lunrsearchresult a:hover .title {text-decoration: underline;}
+</style>
+
+
+<form class="bd-search" onSubmit="return lunr_search(document.getElementById('lunrsearch').value);">
+    <input type="text" class="form-control text-small launch-modal-search" id="lunrsearch" name="q" maxlength="255" value="" placeholder="Type and enter..."/>
+</form>
+
+<div id="lunrsearchresults">
+    <ul></ul>
+</div>
+
+<script src="/assets/js/lunrsearchengine.js"></script>
+
+            </ul>
+
+        <!-- End Menu -->
+
+    </div>
+
+    </div>
+</nav>
+<!-- End Navigation
+================================================== -->
+
+<div class="site-content">
+
+<div class="container">
+
+<!-- Site Title
+================================================== -->
+<div class="mainheading">
+    <h1 class="sitetitle">Matheus Fidelis</h1>
+    <p class="lead">
+        Technical Blog
+    </p>
+</div>
+
+<!-- Content
+================================================== -->
+<div class="main-content">
+    <!-- Begin Article
+================================================== -->
+<div class="container">
+    <div class="row">
+
+        <!-- Post Share -->
+        <div class="col-md-2 pl-0">
+            <div class="share sticky-top sticky-top-offset">
+    <p>
+        Share
+    </p>
+    <ul>
+        <li class="ml-1 mr-1">
+            <a target="_blank" href="https://twitter.com/intent/tweet?text=Argo-Rollouts — "Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?"&url=/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                <i class="fab fa-twitter"></i>
+            </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+            <a target="_blank" href="https://facebook.com/sharer.php?u=/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no/" onclick="window.open(this.href, 'facebook-share', 'width=550,height=435');return false;">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+        </li>
+
+        <li class="ml-1 mr-1">
+            <a target="_blank" href="https://www.linkedin.com/shareArticle?mini=true&url=/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no/" onclick="window.open(this.href, 'width=550,height=435');return false;">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+        </li>
+
+    </ul>
+    
+    <div class="sep">
+    </div>
+    <ul>
+        <li>
+        <a class="small smoothscroll" href="#disqus_thread"></a>
+        </li>
+    </ul>
+    
+</div>
+
+        </div>
+
+        <!-- Post -->
+        
+
+        <div class="col-md-9 flex-first flex-md-unordered">
+            <div class="mainheading">
+
+                <!-- Author Box -->
+                
+                <div class="row post-top-meta">
+                    <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0">
+                        
+                        <img class="author-thumb" src="https://www.gravatar.com/avatar/5700ede08434f0ab49b75fe5543f129b?s=250&d=mm&r=x" alt="Matheus Fidelis">
+                        
+                    </div>
+                    <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left">
+                        <a target="_blank" class="link-dark" href="https://msfidelis.github.io/">Matheus Fidelis</a><a target="_blank" href="https://twitter.com/fidelissauro" class="btn follow">Follow</a>
+                        <span class="author-description">Staff Engineer, Lifelong Learner, Site Reliability Engineer, Cloud and Containers Wizard, Software Alchemist and Home Bartender</span>
+                    </div>
+                </div>
+                
+
+                <!-- Post Title -->
+                <h1 class="posttitle">Argo-Rollouts — "Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?"</h1>
+
+            </div>
+
+            <!-- Adsense if enabled from _config.yml (change your pub id and slot) -->
+            
+            <!-- End Adsense -->
+
+            <!-- Post Featured Image -->
+            
+
+            
+            <img class="featured-image img-fluid lazyimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAACCAQAAAA3fa6RAAAADklEQVR42mNkAANGCAUAACMAA2w/AMgAAAAASUVORK5CYII=" data-src="/assets/images/argo-logo-vg.png" alt="Argo-Rollouts — "Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?"">
+            
+
+            
+            <!-- End Featured Image -->
+
+            <!-- Post Content -->
+            <div class="article-post">
+                <!-- Toc if any -->
+                
+                <!-- End Toc -->
+                <p>O Deploy em ambientes <strong>Cloud Native</strong> pode ser, se não é, a parte mais desafiadora no dia a dia do ciclo de vida de um software, principalmente se a atualização é realizada em aplicações criticas que possuem volumes consideráveis de transações.</p>
+
+<p>Nesse contexto, possuímos uma vasta gama de ferramental para gerenciar deployments em ambientes de <strong>Kubernetes</strong>, algumas melhores, outras mais modestas e poucas simples e sucintas.</p>
+
+<p>Existe um ponto de atenção muito importante quando falamos de realizar um deploy em produção: <strong>O rollback</strong>.</p>
+
+<p>Uma frase simples, mas que mudou minha forma de pensar sobre qualquer coisa que eu colocaria a mão quando trato desse tema veio do meu mestre <a href="https://twitter.com/fernandoike"><strong>Fernando Ike</strong></a>. <strong><em>“Mais importante que entregar rápido, é voltar rápido” </em></strong> — Algo assim.</p>
+
+<p>Nesses dias um colega de trabalho me fez uma pergunta que me deixou pensativo das ideia, e que pra responder de forma decente, prometi escrever esse artigo:</p>
+
+<blockquote>
+  <p><strong><em>“Qual a forma mais simples de executar um Canary ou um Blue Green no Kubernetes?”</em></strong></p>
+</blockquote>
+
+<p>Executar <strong>Canary</strong> e <strong>Blue / Green</strong> eu conheço algumas formas de fazer. Provavelmente você também. Experiência com ferramentas, truques no kubectl e tudo mais não falta por ai. Mas beleza, mas qual das várias possibilidades é a mais simples?</p>
+
+<p><br></p>
+
+<h2 id="o-argo-rollouts">O Argo Rollouts</h2>
+
+<p>O <strong>Argo Rollouts</strong> é uma ferramenta de automação de implantação em clusters <strong>Kubernetes</strong> que fornece recursos avançados de controle de versão. Ele é projetado para ajudar os desenvolvedores a gerenciar o ciclo de vida de seus aplicativos de maneira mais eficiente e confiável, permitindo que eles implantem novas versões de aplicativos com mais segurança e menos tempo de inatividade. E antes de tudo, de forma simples.</p>
+
+<p>O <strong>Argo Rollouts</strong> é uma extensão do <strong>Argo CD</strong>, outra ferramenta popular de automação de implantação de <strong>Kubernetes</strong>. Ele é construído em cima do controlador de implantação nativo do <strong>Kubernetes</strong> e é compatível com várias plataformas em nuvem, incluindo <strong>AWS</strong>, <strong>Google Cloud</strong> e <strong>Microsoft Azure</strong>.</p>
+
+<p>O <strong>Argo CD</strong> é talvez a ferramenta favorita da maioria das pessoas, eu tento não ser fã de tooling, mas provavelmente é a minha também. Porém, não é simples. As vezes precisamos dar um simples upgrade do que já temos nativamente pra resolver a maioria dos problemas. O <strong>Argo-Rollouts</strong> talvez tenha sido uma resposta a isso.</p>
+
+<p><br></p>
+
+<h2 id="premissas">Premissas</h2>
+
+<p>A proposta desse post é mostrar o funcionamento básico do Argo-Rollouts resolvendo problemas reais, de forma que consiga ser adaptado ao maior numero de contextos possíveis.</p>
+
+<p>Com excessão do argo-rollouts, não vou focar em nenhuma outra ferramenta que por ventura possa aparecer nesse post.</p>
+
+<p>Todas as possíveis soluções para os problemas apresentados serão apresentados de duas formas:</p>
+
+<ul>
+  <li>Os exemplos desse artigo serão apresentados em forma de perguntas ou requisitos hipotéticos, seguido da implementação que resolveria a questão. Gosto desse tipo de abordagem.</li>
+  <li>Utilizarei o modo mais “manual” possível para que as logicas possam ser reaproveitados de forma genérica em qualquer tipo de orquestrador de pipelines que eventualmente faça entregas de software num cluster Kubernetes.</li>
+  <li>No final apresentando um componente adicional, da dashboard do argo-rollouts, que pode ser um grande aliado na hora de separar os processos de CI/CD e deixar a progressão dos deploys mais customizáveis e cautelosos.</li>
+</ul>
+
+<p><br></p>
+
+<h3 id="instalação-do-kubectl-plugin">Instalação do Kubectl Plugin</h3>
+
+<p>A arquitetura de manipulação do <strong>Argo Rollouts</strong> funciona primeiramente como um <strong>client / server</strong>.</p>
+
+<p>Basicamente, caso você não escreva passos de deployment que se viram sozinhos, baseados em tempo e etc, você precisará utilizar o plugin do kubectl para o rollouts para promover, abortar ou dar rollback de versões. Então entende-se que esse plugin precisa estar instalado no seu orquestrador de pipelines caso necessite gerenciar o ciclo dessa forma.</p>
+
+<p>A instalação, siga o <strong><a href="https://argoproj.github.io/argo-rollouts/installation/">Installation Guide</a></strong> oficial do Argo Rollouts.</p>
+
+<div class="jekyll-linkpreview-wrapper">
+  <div class="jekyll-linkpreview-wrapper-inner">
+    <div class="jekyll-linkpreview-content">
+      <div class="jekyll-linkpreview-image">
+        <a href="https://github.com/ysk24ok/jekyll-linkpreview" target="_blank">
+          <img src="https://opengraph.githubassets.com/576eab07e9da93396f8e80075bb3ae0295258a6136f74ee63ffcbde0a51b53d1/ysk24ok/jekyll-linkpreview">
+        </a>
+      </div>
+
+      <div class="jekyll-linkpreview-body">
+        <h2 class="jekyll-linkpreview-title">
+          <a href="https://github.com/ysk24ok/jekyll-linkpreview" target="_blank">GitHub - ysk24ok/jekyll-linkpreview: Jekyll plugin to generate link preview</a>
+        </h2>
+        <div class="jekyll-linkpreview-description">Jekyll plugin to generate link preview. Contribute to ysk24ok/jekyll-linkpreview development by creating an account on GitHub.</div>
+      </div>
+    </div>
+    <div class="jekyll-linkpreview-footer">
+      <a href="//github.com" target="_blank">github.com</a>
+    </div>
+  </div>
+</div>
+
+<p><br></p>
+
+<h3 id="instalação-do-argo-rollouts">Instalação do Argo-Rollouts</h3>
+
+<p>A instalação da ferramenta possui algumas alternativas, mas nesse post iremos abordar o método via Helm. Para as demais, você pode acessar o manual de instalação.</p>
+
+<p><br></p>
+
+<h3 id="instalação-via-helm">Instalação via Helm</h3>
+
+<p>A instalação via helm é bem simples e sem segredo.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>helm repo add argo https://argoproj.github.io/argo-helm
+helm <span class="nb">install </span>argo-rollouts argo/argo-rollouts
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Para a instalação da Dashboard, será necessário adicionar o parâmetro <code class="language-plaintext highlighter-rouge">--set dashboard.enabled=true</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>helm <span class="nb">install </span>argo-rollouts argo/argo-rollouts <span class="nt">--set</span> dashboard.enabled<span class="o">=</span><span class="nb">true</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br></p>
+
+<h3 id="instalação-via-terraform">Instalação via Terraform</h3>
+
+<p>Uma opção interessante também é utilizar o provider do helm para o terraform. Como já abordamos esse processo em alguns outros artigos, vou deixar o exemplo aqui também. Certeza que vai ser útil em algum momento pra alguém.</p>
+
+<div class="language-hcl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="nx">resource</span> <span class="s2">"helm_release"</span> <span class="s2">"argo_rollouts"</span> <span class="p">{</span>
+    <span class="nx">name</span>                <span class="p">=</span> <span class="s2">"argo-rollouts"</span>
+    <span class="nx">chart</span>               <span class="p">=</span> <span class="s2">"argo-rollouts"</span>
+    <span class="nx">repository</span>          <span class="p">=</span> <span class="s2">"https://argoproj.github.io/argo-helm"</span>
+    <span class="nx">namespace</span>           <span class="p">=</span> <span class="s2">"argo-rollouts"</span>
+    <span class="nx">create_namespace</span>    <span class="p">=</span> <span class="kc">true</span>
+
+    <span class="nx">set</span> <span class="p">{</span>
+            <span class="nx">name</span>  <span class="p">=</span> <span class="s2">"dashboard.enabled"</span>
+            <span class="nx">value</span> <span class="p">=</span> <span class="s2">"true"</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br></p>
+
+<h2 id="a-estrutura-de-um-rollout">A Estrutura de um Rollout</h2>
+
+<p>Uma coisa que precisa ficar evidente, na lata, quando começamos a utilizar o <em>Argo-Rollouts</em>, é que vamos parar de utilizar os manifestos de Deployment. Isso é a premissa inicial da ferramenta, mas calma. É muito simples.</p>
+
+<p>No lugar do que escreveríamos nossos pod templates e replicas, no Deployment vamos começar a utilizar o objeto Rollout, disponível a partir dos CRD’s do Argo Rollouts no lugar.</p>
+
+<p>De forma genérica, migraríamos um Deployment convencional que já estamos acostumados disso:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">nginx-deployment</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">nginx</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">nginx</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">nginx</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">nginx:1.14.2</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">http</span>
+          <span class="na">containerPort</span><span class="pi">:</span> <span class="m">80</span>
+          <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Para algo parecido com o item abaixo, onde temos a mesma estrutura de template/spec para os pods, porém adicionamos o campo strategy onde vamos descrever como será executado os rollouts de versão. Não se atente a esse modelo agora, vamos evoluir bastante o case a seguir:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+</pre></td><td class="rouge-code"><pre><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">argoproj.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Rollout</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">nginx-deployment</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">revisionHistoryLimit</span><span class="pi">:</span> <span class="m">2</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">nginx</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">nginx</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">nginx</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">nginx:1.14.2</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">http</span>
+          <span class="na">containerPort</span><span class="pi">:</span> <span class="m">80</span>
+          <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+  <span class="na">strategy</span><span class="pi">:</span>
+    <span class="na">canary</span><span class="pi">:</span>
+      <span class="na">steps</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">20</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">30</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">50</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">60</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br></p>
+
+<h2 id="canary-release">Canary Release</h2>
+
+<p>O <strong>Canary Deployment</strong> é um padrão de deploy onde uma nova versão de uma aplicação é implantada em uma quantidade determinada e progressiva de instâncias para fins de teste e validação a quente antes de ser totalmente implantada em todo o ambiente de produção.</p>
+
+<p>Esse processo também é conhecido sem estrangeirismo como <strong>Canário</strong>. Durante o período de teste, <strong>o tráfego é direcionado para o canário, permitindo que a nova versão do aplicativo seja validada em um ambiente real, mas com um menor risco de interrupção</strong> para o restante dos usuários,** recebendo uma quantidade pequena, porém progressiva, do tráfego** até que seja promovida a versão estável.</p>
+
+<p><strong>O ideal, é que se houver algum problema durante os testes, a implantação do canário pode ser revertida com facilidade, minimizando o impacto para o restante dos usuários.</strong></p>
+
+<p>Os <strong>Canary Deployments</strong> são amplamente utilizados em ambientes de produção, especialmente em implantações críticas em que os erros podem ter consequências graves, ou onde <strong>queremos validar um de-para a quente de alguma feature</strong>, modificação, migração. Essa técnica ajuda a garantir a estabilidade e a qualidade do aplicativo, ao mesmo tempo em que permite que as equipes de desenvolvimento e operações <strong>realizem testes e validações com segurança junto ao tráfego real</strong>.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/360/1*tcqTyqa0QHGtwrbMphOc0A.gif" alt="Canary Image"></p>
+
+<p>Tentei elaborar mentalmente alguns requisitos de plataforma nos quais o Canary Release proposto pelo <strong>Argo Rollouts</strong> resolveria.</p>
+
+<p><br></p>
+
+<h4 id="eu-preciso-que-meu-canário-progrida-automaticamente-20-a-cada-30-segundos-sozinho-de-depois-promova-a-versão">“Eu preciso que meu canário progrida automaticamente 20% a cada 30 segundos sozinho, de depois promova a versão”</h4>
+
+<p>Essa talvez seja a abordagem inicial dos espectros do canary automatizado. Temos alguns time-boxes que podem variar de segundos, minutos, horas ou dias e queremos que a progressão da porcentagem do uso progrida dentro desses intervalos. Tudo dependendo do nível de exigência e criticidade da aplicação ou o quão específica e crítica aquela mudança pode ser em relação ao todo.</p>
+
+<p>Então para este primeiro cenário, vamos aplicar o seguinte manifesto, adicionando vários steps com o peso desejado da porcentagem do rollout e informando as pausas desejadas para cada uma das progressões de carga.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">argoproj.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Rollout</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">strategy</span><span class="pi">:</span>
+    <span class="na">canary</span><span class="pi">:</span>
+      <span class="na">steps</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">20</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">10</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">40</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">10</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">60</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">10</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">10</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="s">100</span>    
+  <span class="na">revisionHistoryLimit</span><span class="pi">:</span> <span class="m">2</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">chip</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Para acompanhar os rollouts localmente, vamos utilizar a função watch do plugin do argo que instalamos no kubectl, onde podemos acompanhar a devida progressão dos pods entre as duas versões.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>kubectl argo rollouts get rollout chip <span class="nt">-n</span> chip <span class="nt">--watch</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*5QYh21jVsmbiPI-hnPp99Q.png" alt="Canary Release Progression Image"></p>
+
+<p>Para ilustrar, na imagem abaixo tem um loop de consumo de uma API que retorna a devida versão da mesma. Assim podemos acompanhar visualmente como funciona a progressão a quente para os consumidores do serviço em questão. Vamos usar essa abordagem a partir daqui.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*SLN877naES-VpjuZTo3wJg.png" alt="API Version Loop Image"></p>
+
+<p>Após todos os steps finalizarem, teremos nossa revision:2 marcada como stable e a revision:1 descontinuada. Porém ela vai ficar ali podendo ser reativada num possível rollback. Trataremos disso mais pra frente.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*u5b1Lc6AlPtr4VzpsswUVw.png" alt="Revision Update Image"></p>
+
+<p>Visualmente, durante nossas interações com as requisições que retornam a versão da aplicação de teste, podemos ver ela totalmente promovida:</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*LRHFBPBs7WqJSXCeTrnkvA.png" alt="Application Version Promotion Image"></p>
+
+<p><a href="https://github.com/msfidelis/argo-rollouts-article/blob/main/canary/canary-auto-progressive.yml">Exemplo completo — Github</a></p>
+
+<p><br></p>
+
+<h4 id="eu-preciso-que-meu-canário-progrida-sozinho-até-80-porém-eu-gostaria-de-promover-ou-abortar-o-restante-manualmente">“Eu preciso que meu canário progrida sozinho até 80%, porém eu gostaria de promover ou abortar o restante manualmente”</h4>
+
+<p>Um outro tipo de cenário de uso é uma progressão gradual controlada, porém que seja necessária uma intervenção humana para progressão da release em si. Nesse cenário hipotético, vamos imaginar que eu gostaria que a progressão funcione como o primeiro exemplo, de x em x tempo, porém pare em 80%. E a partir daí, alguém aprova ou aborta a mudança de versão.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">argoproj.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Rollout</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">strategy</span><span class="pi">:</span>
+    <span class="na">canary</span><span class="pi">:</span>
+      <span class="na">steps</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">20</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">10</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">60</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">10</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{}</span>  
+  <span class="na">revisionHistoryLimit</span><span class="pi">:</span> <span class="m">2</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+<span class="s">//...</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Nesse caso, temos a opção de colocar uma instrução de pause sem uma duração definida, e nosso rollout entrará num status de Paused indefinidademente quando chegar no step. Nesse caso em especifico, precisaremos dar uma instrução para o argo manualmente continuar o rollout, ou abortá-lo e retornar a versão anterior.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*LkFudHsvWPSvLOzw95TRdA.png" alt="Imagem do Argo Rollouts"></p>
+
+<p>Essas instruções são os comandos <code class="language-plaintext highlighter-rouge">promote</code> e <code class="language-plaintext highlighter-rouge">abort</code> também vindos do plugin do Argo Rollouts. O <code class="language-plaintext highlighter-rouge">promote</code> irá progredir o step atual, o <code class="language-plaintext highlighter-rouge">abort</code> irá cancelar o rollout e retornar todos os pods da aplicação para a versão anterior.</p>
+
+<p>Um adendo ao abort é que ele pode ser executado em qualquer momento do ciclo de vida do rollout.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>kubectl argo rollouts promote chip <span class="nt">-n</span> chip
+kubectl argo rollouts abort chip <span class="nt">-n</span> chip
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://github.com/msfidelis/argo-rollouts-article/blob/main/canary/canary-final-promote.yml">Exemplo Completo — Github</a></p>
+
+<p><br></p>
+
+<h4 id="eu-preciso-que-meu-canário-progrida-até-20-depois-necessite-de-uma-intervenção-manual-para-continuar-o-rollout">“Eu preciso que meu canário progrida até 20%, depois necessite de uma intervenção manual para continuar o rollout”</h4>
+
+<p>Esse processo é exatamente igual ao anterior, porém vamos pensar num case onde eu queria ser um pouco mais conservador e chato quanto ao meu rollout, e queria promover uma pequena porcentagem para o meu canary, olhar minha observability, acompanhar com mais calma antes de prosseguir com o rollout automatizado. Nesse caso somente precisamos adicionar o step pause depois de promover a primeira porcentagem. Assim precisaremos dar o <code class="language-plaintext highlighter-rouge">promote</code> para prosseguir, ou o <code class="language-plaintext highlighter-rouge">abort</code> logo de começo.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">argoproj.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Rollout</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">strategy</span><span class="pi">:</span>
+    <span class="na">canary</span><span class="pi">:</span>
+      <span class="na">steps</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">20</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">40</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">10</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">60</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">10</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="pi">-</span> <span class="na">pause</span><span class="pi">:</span> <span class="pi">{</span><span class="nv">duration</span><span class="pi">:</span> <span class="nv">10</span><span class="pi">}</span>
+      <span class="pi">-</span> <span class="na">setWeight</span><span class="pi">:</span> <span class="s">100</span>      
+  <span class="na">revisionHistoryLimit</span><span class="pi">:</span> <span class="m">2</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+<span class="s">//...</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*hOONNhP8CjNjtG24F5CChw.png" alt="Imagem do Argo Rollouts"></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>kubectl argo rollouts promote chip <span class="nt">-n</span> chip
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Uma abordagem que deriva dessa é fazer o inverso, promover automaticamente até uma porcentagem menor, e pedir uma intervenção manual para progredir automaticamente até a estabilização da versão.</p>
+
+<p><a href="https://github.com/msfidelis/argo-rollouts-article/blob/main/canary/canary-initial-promote.yml">Exemplo Completo — Github</a></p>
+
+<p><br></p>
+
+<h4 id="eu-gostaria-que-meu-canário-tivesse-passos-de-10-em-10-mas-que-eu-consiga-promover-todos-manualmente">“Eu gostaria que meu canário tivesse passos de 10 em 10%, mas que eu consiga promover todos manualmente”</h4>
+
+<p>Pra uma abordagem mais conservadora e crítica, é possível que os rollouts aconteçam de forma contínua com baixa progressão de volume, em que cada step seja promovido manualmente.</p>
+
+<p>Esse cenário é interessante pra produtos que sejam extremamente sensíveis a falhas com volumes altos de clientes e que possam gerar prejuízos grandes em casos de erro. Em todo caso, uma abordagem mais cuidadosa.</p>
+
+<p>Imagine nesse cenário acima, você está trocando a API de um fornecedor, fez alguma melhoria de performance, trocou um flavor de banco, algum driver, atualizou versão de framework e etc, e gostaria que esse rollout acontecesse de forma extremamente validada.</p>
+
+<p>Nesse caso, vamos utilizar o step pause em seguida de cada progressão de porcentagem do rollout, sem as definições de duration. Nesse sentido em cada promoção de step, o argo vai paus</p>
+
+<p><br></p>
+
+<h2 id="blue--green-deployments">Blue / Green Deployments</h2>
+
+<p>O <strong>Blue/Green Deployment</strong>, é diferente do <strong>Canary</strong> em sua concepção, no qual cumpre o objetivo de realizar uma validação prévia do deploy. <strong>A diferença para o canary, é que a a nova versão do aplicativo é implantada em paralelo ao ambiente de produção atual (ambiente Blue), sem afetar o tráfego do usuário da versão estável (ambiente Green)</strong>, porém é configurada uma rota customizada para que seja possível realizar testes durante o processo de deploy antes de promover a versão nova.</p>
+
+<p>A estratégia <strong>Blue/Green Deployment</strong> é comumente usada em ambientes de alta disponibilidade, onde interrupções ou erros no ambiente de produção podem ter um grande impacto na experiência do usuário, basicamente <strong>é a melhor opção onde a aplicação é muito sensível a erros no geral</strong>. Essa técnica tem muito a agregar na maior parte do tempo, porém é considerada um pouco mais cara, e não permite fazer uma validação gradual de uma feature com o cliente real, por exemplo.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/611/1*k0d5ugLsZ76poUtbAfoUHQ.gif" alt="Blue/Green Deployment"></p>
+
+<p><br></p>
+
+<h3 id="configuração-inicial-do-service-para-o-bluegreen">Configuração Inicial do Service para o Blue/Green</h3>
+
+<p>Diferente do modelo do canary que utiliza o mesmo Service precisamos de antemão criar 2 services, um que vai representar a versão active e outra que funcionará como a versão preview, ou trazendo pro termo genérico um será a versão blue e outra será a versão green.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip-active</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span> 
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app.kubernetes.io/name</span><span class="pi">:</span> <span class="s">chip</span>
+    <span class="na">app.kubernetes.io/instance</span><span class="pi">:</span> <span class="s">chip</span> 
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="m">8080</span>
+    <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">ClusterIP</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip-preview</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>   
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app.kubernetes.io/name</span><span class="pi">:</span> <span class="s">chip</span>
+    <span class="na">app.kubernetes.io/instance</span><span class="pi">:</span> <span class="s">chip</span> 
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="m">8080</span>
+    <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">ClusterIP</span>
+<span class="nn">---</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*ffmwP6LRX5I6mKjeqS6mhQ.png" alt="Blue/Green Image"></p>
+
+<p>Também será necessário criar <strong>duas rotas no seu ingress</strong>, uma para validação no seu <strong>preview</strong> e outra para a versão <strong>ativa</strong>, algo parecido. No Istio, teríamos algo parecido com isso:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+</pre></td><td class="rouge-code"><pre><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.istio.io/v1alpha3</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Gateway</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip-gateway</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">istio</span><span class="pi">:</span> <span class="s">ingressgateway</span> 
+  <span class="na">servers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span>
+      <span class="na">number</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">http</span>
+      <span class="na">protocol</span><span class="pi">:</span> <span class="s">HTTP</span>
+    <span class="na">hosts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s2">"</span><span class="s">chip.k8s.raj.ninja"</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.istio.io/v1alpha3</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Gateway</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip-gateway-preview</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">istio</span><span class="pi">:</span> <span class="s">ingressgateway</span> 
+  <span class="na">servers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span>
+      <span class="na">number</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">http</span>
+      <span class="na">protocol</span><span class="pi">:</span> <span class="s">HTTP</span>
+    <span class="na">hosts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s2">"</span><span class="s">chip-preview.k8s.raj.ninja"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br></p>
+
+<h3 id="eu-gostaria-de-ter-a-capacidade-de-validar-minha-versão-green-através-de-uma-rota-específica-e-promover-manualmente">“Eu gostaria de ter a capacidade de validar minha versão Green através de uma rota específica, e promover manualmente”</h3>
+
+<p>Escrevendo nosso rollout de <strong>blue/green</strong>, precisamos parametrizar inicialmente o <code class="language-plaintext highlighter-rouge">activeService</code> e o <code class="language-plaintext highlighter-rouge">previewService</code> de forma com que nosso rollout saiba quais services controlar durante as viradas de cargas e validação.</p>
+
+<p>E como a proposta desse cenário é validar e promover manualmente depois de certas validações, é importante setar o parâmetro <code class="language-plaintext highlighter-rouge">autoPromotionEnabled</code> como <code class="language-plaintext highlighter-rouge">false</code>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">argoproj.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Rollout</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">strategy</span><span class="pi">:</span>
+    <span class="na">blueGreen</span><span class="pi">:</span> 
+      <span class="na">activeService</span><span class="pi">:</span> <span class="s">chip-active</span>
+      <span class="na">previewService</span><span class="pi">:</span> <span class="s">chip-preview</span>
+      <span class="na">autoPromotionEnabled</span><span class="pi">:</span> <span class="kc">false</span>
+  <span class="na">revisionHistoryLimit</span><span class="pi">:</span> <span class="m">2</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">template</span><span class="pi">:</span>
+<span class="s">//...</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Ao aplicar uma nova versão configurada como blue/green, o Argo mantém ambas as versões operando simultaneamente, com a mesma capacidade, aguardando side by side.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*soutJkhPms5-q9VPZp2tYw.png" alt="Image"></p>
+
+<p>A configuração do seu ingress deve ser configurada para permitir o acesso às versões de diversas maneiras, seja por header, path, host ou outros métodos.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*5FAp5ceaE7E8d1xFjue90g.png" alt="Image"></p>
+
+<p>Para monitorar a transição entre as versões, vamos criar um loop para consumir ambas as versões da API em paralelo.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*nvr4T2jpKlyyDpfkve1nPg.png" alt="Image"></p>
+
+<p>Após validar os comportamentos, podemos promover a nova versão da seguinte maneira:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>kubectl argo rollouts promote chip <span class="nt">-n</span> chip
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*W3X3pHr-e019T-qtk4jSAg.png" alt="Image"></p>
+
+<p>Agora aguardaremos até a versão revision:2 estabilizar.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*_xnSKI8PAR8o-DU6S1qGaw.png" alt="Image"></p>
+
+<p><a href="https://github.com/msfidelis/argo-rollouts-article/blob/main/blue-green/blue-green-manual-promote.yml"><strong>Exemplo Completo — Github</strong></a></p>
+
+<p><br></p>
+
+<h4 id="eu-gostaria-de-que-minha-versão-de-preview-recebesse-alguns-requests-para-warm-up-do-meu-runtime-ou-realizar-testes-antes-de-promover-para-a-versão-ativa">“Eu gostaria de que minha versão de preview recebesse alguns requests para warm up do meu runtime ou realizar testes antes de promover para a versão ativa”</h4>
+
+<p>O interessante do Blue Green é que ele trabalhe de forma com que você consiga validar o comportamento da sua versão nova manualmente, por processos automatizados, ferramentas de teste antes de promover a versão nova para o cliente final.</p>
+
+<p>Neste cenário irei realizar uma ferramenta de <strong>HTTP Bench</strong> para realizar um número considerável de requests para minha versão nova afim de simular um “<strong><em>warm up</em></strong>” do runtime. <strong>Esse processo pode ser interessante para workloads criados em JVM que precisam de uma “esquentada” nos primeiros instantes de vida para performar da melhor forma</strong>.</p>
+
+<p>Uma ideia interessante é utilizar seus testes de fumaça de forma containerizada, subir seu roteiro num container e executá-lo da mesma forma.</p>
+
+<p>Precisamos criar um AnalysisTemplate descrevendo que tipo de análise vamos realizar para dar uma flag na nossa versão. Nesse caso vou executar um container do cassowary em uma rota qualquer do meu serviço, simulando um endpoint de verdade que precise desse tipo de estratégia.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">AnalysisTemplate</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">argoproj.io/v1alpha1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip-http-warm-up</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">metrics</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">http-bench-analysis</span>
+    <span class="na">failureLimit</span><span class="pi">:</span> <span class="m">1</span>
+    <span class="na">provider</span><span class="pi">:</span>
+      <span class="na">job</span><span class="pi">:</span>
+        <span class="na">spec</span><span class="pi">:</span>
+          <span class="na">backoffLimit</span><span class="pi">:</span> <span class="m">1</span>
+          <span class="na">template</span><span class="pi">:</span>
+            <span class="na">metadata</span><span class="pi">:</span>
+              <span class="na">labels</span><span class="pi">:</span>
+                <span class="na">istio-injection</span><span class="pi">:</span> <span class="s">disabled</span>
+                <span class="na">sidecar.istio.io/inject</span><span class="pi">:</span> <span class="s2">"</span><span class="s">false"</span>
+            <span class="na">spec</span><span class="pi">:</span>
+              <span class="na">containers</span><span class="pi">:</span>
+              <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">http-bench-analysis</span>
+                <span class="na">image</span><span class="pi">:</span> <span class="s">rogerw/cassowary:v0.14.0</span>
+                <span class="na">command</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">cassowary"</span><span class="pi">]</span>
+                <span class="na">args</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">run"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-u"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">&lt;http://chip-preview.chip.svc.cluster.local:8080/healthcheck&gt;"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-c"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">3"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-n"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">1000"</span><span class="pi">]</span>
+              <span class="na">restartPolicy</span><span class="pi">:</span> <span class="s">Never</span>
+    <span class="na">count</span><span class="pi">:</span> <span class="m">1</span>
+<span class="nn">---</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Agora no nosso rollout, vamos utilizar o prePromotionAnalysis passando o nosso AnalysisTemplate criado</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">argoproj.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Rollout</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">strategy</span><span class="pi">:</span>
+    <span class="na">blueGreen</span><span class="pi">:</span> 
+      <span class="na">activeService</span><span class="pi">:</span> <span class="s">chip-active</span>
+      <span class="na">previewService</span><span class="pi">:</span> <span class="s">chip-preview</span>
+      <span class="na">autoPromotionEnabled</span><span class="pi">:</span> <span class="kc">false</span>
+      <span class="na">prePromotionAnalysis</span><span class="pi">:</span>
+        <span class="na">templates</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">templateName</span><span class="pi">:</span> <span class="s">chip-http-warm-up</span>
+  <span class="na">revisionHistoryLimit</span><span class="pi">:</span> <span class="m">2</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+<span class="s">// ...</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*IGunLxEntRZjAf3HKM62Rw.png" alt="Image"></p>
+
+<p>Podemos validar o seguinte cenário coletando algumas métricas dos dois services. Também é uma boa prática acompanhar as duas versões em paralelo no momento de um rollout. Nesse caso, podemos ver um pico de requisições acontecendo no service preview conforme parametrizado no AnalysisTemplate.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*JJ7nGOb7LYlQ8X3yrUQNsQ.png" alt="Image"></p>
+
+<p>Agora que já temos nosso warm up finalizado, vamos promover nosso rollout com nossos hipotéticos runtimes warmados para receber o tráfego real.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>kubectl argo rollouts promote chip <span class="nt">-n</span> chip
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*STUTJ3kuVkDbu4IrNAaVPA.png" alt="Image"></p>
+
+<p><a href="https://github.com/msfidelis/argo-rollouts-article/blob/main/blue-green/blue-green-pre-warm-up.yml">Exemplo Completo — Github</a></p>
+
+<p><br></p>
+
+<h4 id="preciso-executar-uma-bateria-de-testes-na-minha-versão-de-preview-e-criar-uma-análise-de-métricas-automatizada-para-validar-se-a-versão-está-saudável-é-possível">“Preciso executar uma bateria de testes na minha versão de preview, e criar uma análise de métricas automatizada para validar se a versão está saudável. É possível?”</h4>
+
+<p>Sim, assim como podemos criar um <strong>AnalysisTemplate</strong> pra executar os testes, podemos criar outro em seguida que a partir de métricas do Prometheus, consegue dar um sinal verde ou vermelho pra nossa aplicação finalizar o rollout. Nesse caso seria interessantes tanto o <strong><em>autoPromote: false</em></strong> como o <strong><em>autoPromote: true</em></strong> para workloads que tenham mais confiança.</p>
+
+<p>Vamos reaproveitar o <strong>AnalysisTemplate</strong> do exemplo anterior nesse aqui como uma continuidade.</p>
+
+<p>Além dele vamos criar um outro template onde vamos definir uma query <strong>PromQL</strong> que será executada em uma instância de prometheus que esteja agregando as métricas do nosso cluster.</p>
+
+<p>Para isso vamos precisar configurar algumas coisas, sendo elas o provider do prometheus onde vamos informar a URL do Prometheus, nesse caso tenho uma instancia rondando no meu cluster então informarei a URL do service.</p>
+
+<p>Em seguida vamos definir qual será a query de consulta. No caso do exemplo estou fazendo um calculo de <strong>SLO</strong> de disponibilidade avaliando os 5 ultimos minutos.</p>
+
+<p>Por ultimo vamos informar o successRate onde vamos colocar uma condição do teste ser aceito ou não.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">argoproj.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">AnalysisTemplate</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip-error-rate-check</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">metrics</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">success-rate</span>
+    <span class="na">interval</span><span class="pi">:</span> <span class="s">2m</span>
+    <span class="na">successCondition</span><span class="pi">:</span> <span class="s">result[0] &gt;= </span><span class="m">0.95</span>
+    <span class="na">failureLimit</span><span class="pi">:</span> <span class="m">1</span>
+    <span class="na">provider</span><span class="pi">:</span>
+      <span class="na">prometheus</span><span class="pi">:</span>
+        <span class="na">address</span><span class="pi">:</span> <span class="s">&lt;http://prometheus.istio-system.svc.cluster.local:9090&gt;</span>
+        <span class="na">query</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">sum(irate(</span>
+            <span class="s">istio_requests_total{destination_service=~"chip-preview.chip.svc.cluster.local",response_code!~"5.*"}[5m]</span>
+          <span class="s">)) /</span>
+          <span class="s">sum(irate(</span>
+            <span class="s">istio_requests_total{destination_service=~"chip-preview.chip.svc.cluster.local"}[5m]</span>
+          <span class="s">))</span>
+    <span class="na">count</span><span class="pi">:</span> <span class="s">1</span>          
+<span class="nn">---</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Como no exemplo anterior, adicionar apenas mais um step após o nosso <strong><em>“smoke test”</em></strong> avaliando as métricas de disponibilidade do mesmo:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">argoproj.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Rollout</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">strategy</span><span class="pi">:</span>
+    <span class="na">blueGreen</span><span class="pi">:</span> 
+      <span class="na">activeService</span><span class="pi">:</span> <span class="s">chip-active</span>
+      <span class="na">previewService</span><span class="pi">:</span> <span class="s">chip-preview</span>
+      <span class="na">autoPromotionEnabled</span><span class="pi">:</span> <span class="kc">false</span>
+      <span class="na">prePromotionAnalysis</span><span class="pi">:</span>
+        <span class="na">templates</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">templateName</span><span class="pi">:</span> <span class="s">chip-http-warm-up</span>
+        <span class="pi">-</span> <span class="na">templateName</span><span class="pi">:</span> <span class="s">chip-error-rate-check</span>
+  <span class="na">revisionHistoryLimit</span><span class="pi">:</span> <span class="m">2</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+<span class="s">//...</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Aplicando iremos ver correr o blue/green como já estamos acostumados, porém com um adicional no qual iremos ver rodando os AnalysisTemplates, um que vai executar nossos testes / warm up e o do Prometheus que irá sumarizar as métricas do teste.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*7miYjtv-yKivNl7b0QUf5Q.png" alt="Image"></p>
+
+<p>Para maiores informações a respeitos das análises que fazemos através dos templates, podemos verificar os objetos AnalysisRun</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>kubectl get analysisrun <span class="nt">-n</span> chip
+kubectl describe analysisrun &lt;<span class="nb">id</span><span class="o">&gt;</span> <span class="nt">-n</span> chip
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*BOWwgv5nyi9_x07tTXNO1Q.png" alt="Image"></p>
+
+<p><a href="https://github.com/msfidelis/argo-rollouts-article/blob/main/blue-green/blue-green-prometheus-analysis-auto.yml">Exemplo Completo — Github</a></p>
+
+<p><br></p>
+
+<h3 id="rollbacks-de-versões-anteriores">Rollbacks de Versões Anteriores</h3>
+
+<p>É uma premissa do canary que seja possível validar a nova versão aos poucos e a partir do tráfego do cliente conseguir validar o sucesso de uma implantação. Esse sucesso pode ser medido de diversas formas, a olho nú ou de formas automatizadas como pudemos ver nesse artigo.</p>
+
+<p>Mas independente do modelo de deployment aplicado no no produto, é muito importante que existam ferramentas que possibilitem alternativas de rollback de forma rápida. Repetindo mais uma vez: <strong><em>“Melhor que entregar rápido, é voltar rápido”</em></strong></p>
+
+<p>Vamos imaginar um cenário hipotético em que uma release de canário começou a ser promovida e durante os steps, podemos identificar que uma taxa de erros incomum começou a subir junto a progressão dos steps.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*l8Y9zbrzrTU85IFnlRQ8uw.png" alt="Image"></p>
+
+<p>Como já vimos, existe a opção abort para reverter um rollout durante sua execução, podendo ser executado a qualquer momento.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>kubectl argo rollouts abort chip <span class="nt">-n</span> chip<span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*ON6fbKMuy_og9Gndqsi-sA.png" alt="Image"></p>
+
+<p>Já vimos essa dinâmica antes, mas fui um pouco repetitivo propositalmente para mostrar uma alternativa pra quando a versão com erro já foi promovida e estabilizada e será necessário um rollback.</p>
+
+<p><br></p>
+
+<h4 id="mesmo-com-o-canário-ou-bluegreen-eu-comi-bola-e-por-um-comportamento-não-previsto-preciso-voltar-a-versão-anterior-rápido">“Mesmo com o canário ou blue/green, eu comi bola e por um comportamento não previsto, preciso voltar a versão anterior rápido”</h4>
+
+<p>O comando de abort pode ser executado em qualquer momento do ciclo de vida de implementação do Rollout, porém quando a versão é promovida para stable o processo é um pouco diferente.</p>
+
+<p>Depois de uma implantação finalizada, é necessário o rollout de uma versão anterior do zero, nesse caso iremos utilizar o comando… pasmem, chamado rollback.</p>
+
+<p>Após o inicio do rollback será realizado um rollout novo, promovendo a versão anterior.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>kubectl argo rollouts rollback chip <span class="nt">-n</span> chip<span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Tanto no caso anterior do abort quando nessa do rollback o resultado final de uma implantação que teve um plano de retorno deverá ser parecida com a abaixo, onde a taxa de erro anômala identificada retorna aos níveis normais da aplicação.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*hRJMhCSA6LOBOeChbf7oHw.png" alt="Image"></p>
+
+<p><br></p>
+
+<h3 id="horizontal-pod-autoscaler--vertical-pod-autoscaler">Horizontal Pod Autoscaler / Vertical Pod Autoscaler</h3>
+
+<p>Agora vamos para algumas dicas úteis pra resolver alguns problemas que você venha a encontrar durante seus testes e migração do Argo. Caso você esteja utilizando <strong>HPA/VPA</strong> em seu workload, será necessário fazer algumas modificações no objeto do <strong>HorizontalPodAutoscaler</strong> e <strong>VerticalPodAutoscaler</strong> alterando o <strong>scaleTargetRef</strong> trocando o apiVersion de apps/v1 para <a href="http://argoproj.io/v1alpha1">argoproj.io/v1alpha1</a> e o Kind de Deployment para Rollout , assim conseguimos acertar as referencias.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">autoscaling/v2beta2</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">HorizontalPodAutoscaler</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">maxReplicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">minReplicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">metrics</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">Resource</span>
+      <span class="na">resource</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">cpu</span>
+        <span class="na">target</span><span class="pi">:</span>
+          <span class="na">type</span><span class="pi">:</span> <span class="s">Utilization</span>
+          <span class="na">averageUtilization</span><span class="pi">:</span> <span class="m">60</span>
+  <span class="na">scaleTargetRef</span><span class="pi">:</span>
+    <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+    <span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="nn">---</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Para isso</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">autoscaling/v2beta2</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">HorizontalPodAutoscaler</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">chip</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">maxReplicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">minReplicas</span><span class="pi">:</span> <span class="m">10</span>
+  <span class="na">metrics</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">Resource</span>
+      <span class="na">resource</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">cpu</span>
+        <span class="na">target</span><span class="pi">:</span>
+          <span class="na">type</span><span class="pi">:</span> <span class="s">Utilization</span>
+          <span class="na">averageUtilization</span><span class="pi">:</span> <span class="m">60</span>
+  <span class="na">scaleTargetRef</span><span class="pi">:</span>
+    <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">argoproj.io/v1alpha1</span>
+    <span class="na">kind</span><span class="pi">:</span> <span class="s">Rollout</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">chip</span>
+<span class="nn">---</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br></p>
+
+<h3 id="dashboard-uma-alternativa-mais-amigável-para-acompanhamento-dos-rollouts">Dashboard, uma alternativa mais amigável para acompanhamento dos rollouts.</h3>
+
+<p>Para acessar a dashboard será necessário também expor o pod argo-rollouts-dashboard no seu ingress. Como no caso estou utilizando Istio, o exemplo seria esse:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+</pre></td><td class="rouge-code"><pre><span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.istio.io/v1alpha3</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Gateway</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">argo-dashboard</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">argo-rollouts</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">istio</span><span class="pi">:</span> <span class="s">ingressgateway</span> 
+  <span class="na">servers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span>
+      <span class="na">number</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">http</span>
+      <span class="na">protocol</span><span class="pi">:</span> <span class="s">HTTP</span>
+    <span class="na">hosts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s2">"</span><span class="s">argo-rollouts-dashboard"</span>
+    <span class="pi">-</span> <span class="s2">"</span><span class="s">dashboard-argo.k8s.raj.ninja"</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">networking.istio.io/v1alpha3</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">VirtualService</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">argo-dashboard</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">argo-rollouts</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">hosts</span><span class="pi">:</span>
+  <span class="pi">-</span>  <span class="s2">"</span><span class="s">argo-rollouts-dashboard"</span>
+  <span class="pi">-</span>  <span class="s2">"</span><span class="s">dashboard-argo.k8s.raj.ninja"</span>
+  <span class="na">gateways</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">argo-dashboard</span>
+  <span class="na">http</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">route</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">destination</span><span class="pi">:</span>
+        <span class="na">host</span><span class="pi">:</span> <span class="s">argo-rollouts-dashboard</span>
+        <span class="na">port</span><span class="pi">:</span>
+          <span class="na">number</span><span class="pi">:</span> <span class="m">3100</span>
+    <span class="na">retries</span><span class="pi">:</span>
+      <span class="na">perTryTimeout</span><span class="pi">:</span> <span class="s">500ms</span>
+      <span class="na">retryOn</span><span class="pi">:</span> <span class="s">5xx,gateway-error,connect-failure,refused-stream</span>
+<span class="nn">---</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Agora tendo acesso a dashboard, podemos utilizar a mesma para manipular nossos rollouts de forma visual, podendo abortar, promover, acompanhar e dar rollback a qualquer momento com poucos clicks.</p>
+
+<p><img src="https://cdn-images-1.medium.com/max/1024/1*dZPgKUJ6CtxiSJLN0SLTaQ.png" alt="Imagem">
+<img src="https://cdn-images-1.medium.com/max/1024/1*XGAOPwyKSbsjIUVF0Ky4BQ.png" alt="Imagem"></p>
+
+<p><strong>Referencias / Materiais de Apoio</strong></p>
+<ul>
+  <li><a href="https://argo-rollouts.readthedocs.io/en/stable/">Argo-Rollouts — Site Oficial</a></li>
+  <li><a href="https://argo-rollouts.readthedocs.io/en/stable/features/analysis/">Argo-Rollouts — Analysis Template</a></li>
+  <li><a href="https://argo-rollouts.readthedocs.io/en/stable/analysis/prometheus/">Argo-Rollouts — Prometheus Provider</a></li>
+  <li><a href="https://martinfowler.com/bliki/BlueGreenDeployment.html">BlueGreenDeployment — Martin Fowler</a></li>
+  <li><a href="https://martinfowler.com/delivery.html">Software Delivery Guide</a></li>
+  <li><a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">Kubernetes Deployments</a></li>
+  <li><a href="https://argoproj.github.io/argo-rollouts/FAQ/">ArgoProject — Argo Rollouts</a></li>
+</ul>
+
+<p><strong>Obrigado aos revisores:</strong></p>
+<ul>
+  <li>Carlos Panato — <a href="https://twitter.com/comedordexis">@comedordexis</a></li>
+  <li>Bernardo — <a href="https://twitter.com/indiepagodeiro">@indiepagodeiro</a></li>
+  <li>Caio Volpato — <a href="https://twitter.com/caioauv">@caioauv</a></li>
+  <li>Diego Murta Freire — <a href="https://twitter.com/diogomurta">@diegomurta</a></li>
+  <li>Marcelo Freire — <a href="https://twitter.com/marcelofreire28">@marcelofreire28</a></li>
+</ul>
+
+<p>Me <a href="https://twitter.com/fidelissauro">sigam no Twitter</a> para acompanhar as paradinhas que eu compartilho por lá!</p>
+
+<p>Te ajudei de alguma forma? Me pague um café (Mentira, todos os valores doados nessa chave são dobrados por mim e destinados a ongs de apoio e resgate animal)</p>
+
+<p><strong>Chave Pix:</strong> fe60fe92-ecba-4165-be5a-3dccf8a06bfc</p>
+
+
+            </div>
+
+            <!-- Rating -->
+            
+
+            <!-- Post Date -->
+            <p>
+            <small>
+                <span class="post-date"><time class="post-date" datetime="2023-04-02">02 Apr 2023</time></span>           
+                
+                </small>
+            </p>
+
+            <!-- Post Categories -->
+            <div class="after-post-cats">
+                <ul class="tags mb-4">
+                    
+                    
+                    <li>
+                        <a class="smoothscroll" href="/categories#argo-rollouts">argo-rollouts</a>
+                    </li>
+                    
+                    <li>
+                        <a class="smoothscroll" href="/categories#aws">aws</a>
+                    </li>
+                    
+                    <li>
+                        <a class="smoothscroll" href="/categories#kubernetes">kubernetes</a>
+                    </li>
+                    
+                    <li>
+                        <a class="smoothscroll" href="/categories#terraform">terraform</a>
+                    </li>
+                    
+                </ul>
+            </div>
+            <!-- End Categories -->
+
+            <!-- Post Tags -->
+            <div class="after-post-tags">
+                <ul class="tags">
+                    
+                    
+                </ul>
+            </div>
+            <!-- End Tags -->
+
+            <!-- Prev/Next -->
+            <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+            
+            <a class="prev d-block col-md-6" href="//karpenter-estrategias-para-resiliencia-no-uso-de-spot-instances-em-producao/"> &laquo; Karpenter — Estratégias para resiliência no uso de Spot Instances em produção</a>
+            
+            
+            <a class="next d-block col-md-6 text-lg-right" href="//disaster-recovery-projetando-e-gerenciando-arquiteturas-multi-region-na-aws-com-terraform/">Disaster Recovery — Projetando e Gerenciando Arquiteturas Multi-Region na AWS com Terraform &raquo; </a>
+            
+            <div class="clearfix"></div>
+            </div>
+            <!-- End Categories -->
+
+        </div>
+        <!-- End Post -->
+
+    </div>
+</div>
+<!-- End Article
+================================================== -->
+
+<!-- Begin Comments
+================================================== -->
+
+    <div class="container">
+        <div id="comments" class="row justify-content-center mb-5">
+            <div class="col-md-8">
+                <section class="disqus">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = ''; 
+        var disqus_developer = 0;
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = window.location.protocol + '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+            </div>
+        </div>
+    </div>
+
+<!--End Comments
+================================================== -->
+
+<!-- Review with LD-JSON, adapt it for your needs if you like, but make sure you test the generated HTML source code first: 
+https://search.google.com/structured-data/testing-tool/u/0/
+================================================== -->
+
+</div>
+
+
+<!-- Bottom Alert Bar
+================================================== -->
+<div class="alertbar">
+	<div class="container text-center">
+		<span><img src="/assets/images/logo.png" alt="Matheus Fidelis Blog"> &nbsp; Never miss a <b>story</b> from us, subscribe to our newsletter</span>
+        <form action="https://wowthemes.us11.list-manage.com/subscribe/post?u=8aeb20a530e124561927d3bd8&amp;id=8c3d2d214b" method="post" name="mc-embedded-subscribe-form" class="wj-contact-form validate" target="_blank" novalidate>
+            <div class="mc-field-group">
+            <input type="email" placeholder="Email" name="EMAIL" class="required email" id="mce-EMAIL" autocomplete="on" required>
+            <input type="submit" value="Subscribe" name="subscribe" class="heart">
+            </div>
+        </form>
+	</div>
+</div>
+
+    
+</div>
+
+<!-- Categories Jumbotron
+================================================== -->
+<div class="jumbotron fortags">
+	<div class="d-md-flex h-100">
+		<div class="col-md-4 transpdark align-self-center text-center h-100">
+            <div class="d-md-flex align-items-center justify-content-center h-100">
+                <h2 class="d-md-block align-self-center py-1 font-weight-light">Explore <span class="d-none d-md-inline">→</span></h2>
+            </div>
+		</div>
+		<div class="col-md-8 p-5 align-self-center text-center">
+            
+            
+                
+                    <a class="mt-1 mb-1" href="/categories#kubernetes">kubernetes (4)</a>
+                
+                    <a class="mt-1 mb-1" href="/categories#istio">istio (1)</a>
+                
+                    <a class="mt-1 mb-1" href="/categories#disaster-recovery">disaster-recovery (2)</a>
+                
+                    <a class="mt-1 mb-1" href="/categories#service-mesh">service-mesh (1)</a>
+                
+                    <a class="mt-1 mb-1" href="/categories#aws">aws (4)</a>
+                
+                    <a class="mt-1 mb-1" href="/categories#arquitetura">arquitetura (3)</a>
+                
+                    <a class="mt-1 mb-1" href="/categories#terraform">terraform (4)</a>
+                
+                    <a class="mt-1 mb-1" href="/categories#karpenter">karpenter (2)</a>
+                
+                    <a class="mt-1 mb-1" href="/categories#argo-rollouts">argo-rollouts (1)</a>
+                
+            
+            
+		</div>
+	</div>
+</div>
+
+<!-- Begin Footer
+================================================== -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 text-center text-lg-left">
+                Copyright © 2023 Matheus Fidelis 
+            </div>
+            <div class="col-md-6 col-sm-6 text-center text-lg-right">    
+                <a target="_blank" href="https://www.wowthemes.net/mediumish-free-jekyll-template/">Mediumish Jekyll Theme</a> by WowThemes.net
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- End Footer
+================================================== -->
+
+</div> <!-- /.site-content -->
+
+<!-- Scripts
+================================================== -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+<script src="/assets/js/mediumish.js"></script>
+
+
+<script src="/assets/js/lazyload.js"></script>
+
+
+<script src="/assets/js/ie10-viewport-bug-workaround.js"></script> 
+
+
+<script id="dsq-count-scr" src="//.disqus.com/count.js"></script>
+
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4Z30K3KNFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4Z30K3KNFW');
+</script>
+
+
+
+</body>
+</html>
