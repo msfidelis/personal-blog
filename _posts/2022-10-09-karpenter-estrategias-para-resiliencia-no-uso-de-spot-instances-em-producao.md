@@ -8,8 +8,6 @@ author: matheus
 featured: true
 categories: [ aws, arquitetura, kubernetes, terraform, karpenter ]
 ---
-# Introdução
-{: .text-justify}
 
 **Update 17/11/2023** - *Alguns manifestos mudam sua estrutura a partir da versão 0.32.x do Karpenter. Nessa data de hoje aproveitei para atualizar os exemplos para os schemas mais novos. [Confira o blogpost do Edson sobre o tema](https://blog.edsoncelio.dev/o-que-muda-no-karpenter-a-partir-das-versoes-032x).*
 
