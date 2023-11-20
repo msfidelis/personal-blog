@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ keda, kubernetes, containers, cloud-native, capacity, dicas ]
-title: Keda - Escalando sua aplicação por requests HTTP usando métricas do Prometheus
+title: Keda - Escalando Aplicações por Requisições HTTP em Ambientes de Alta Demanda
 ---
 
 O [Keda Autoscaler](https://keda.sh/) é uma das minhas tecnologias favoritas no Landscape da [CNCF](https://www.cncf.io/projects/). Considero, sem meias palavras, divertidas as possibilidades que ele oferece para trabalhar com autoscaling.
