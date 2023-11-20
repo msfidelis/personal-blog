@@ -191,6 +191,8 @@ Espero ter ajudado! :)
 
 # Referencias e Recursos Adicionais
 
+* [Chip - Smart "dummy" mock for cloud native tests ](https://github.com/msfidelis/chip)
+* [EKS with Istio - Terraform template for a production ready EKS Cluster and ISTIO Service Mesh  ](https://github.com/msfidelis/eks-with-istio)
 * [Don’t combine ScaledObject with Horizontal Pod Autoscaler (HPA) ](https://keda.sh/docs/2.12/faq/#dont-combine-scaledobject-with-horizontal-pod-autoscaler-hpa)
 * [Keda - Scaling Deployments - Advanced](https://keda.sh/docs/2.12/concepts/scaling-deployments/#advanced)
 * [Keda - Scaling applications based on Prometheus](https://keda.sh/docs/2.12/scalers/prometheus/)
