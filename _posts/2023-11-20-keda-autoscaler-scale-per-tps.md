@@ -80,7 +80,7 @@ Essa configuração também pode ser derivada de uma estimativa experiente (vulg
 
 <br>
 
-# Implementação do Keda para Escalar por TPS
+# Implementação do Keda
 
 O objetivo aqui não é replicar a documentação do Keda, mas focar nos aspectos cruciais para atingir o objetivo da nossa Prova de Conceito (PoC). Para informações mais detalhadas e exemplos adicionais, consulte as referências ao final deste texto. Agora, vamos abordar os passos necessários para construir um `ScaledObject` usando métricas do Prometheus, que nos auxiliará a escalar a aplicação com base no tráfego.
 
