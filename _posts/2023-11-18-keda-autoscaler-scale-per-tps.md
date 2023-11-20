@@ -8,14 +8,6 @@ categories: [ keda, kubernetes, containers, cloud-native, capacity, dicas ]
 title: Keda - Escalando sua aplicação por requests HTTP usando métricas do Prometheus
 ---
 
-<br>
-
-# TOPICS
-* Conhecer o quanto cada replica da sua aplicação aguenta
-* Conhecer a métrica que te diz quanto de requisições sua aplicação está recebendo 
-* * Nginx 
-* * Istio
-
 O [Keda Autoscaler](https://keda.sh/) é uma das minhas tecnologias favoritas da Landscape da [CNCF](https://www.cncf.io/projects/). Considero divertido, sem meias palavras, as possibilidades que ele te proporciona pra trabalhar com autoscale. 
 
 Em serviços de alta demanda com como e-commerces, instituições financeiras e serviços de streaming o fluxo de requisições é ininterrupto, porém a quantidade dessas requisições pode variar dramaticamente em determinados períodos do dia, do mês ou do ano, exigindo que os sistemas subjacentes que atendem essas solicitações acompanhem essa demanda em tempo real, se adaptando rapidamente para manter a perfomance e disponibilidade. 
@@ -44,16 +36,16 @@ Este tipo de estratégia que será utilizada é uma alternativa para workloads m
 
 # O "Problema" de Escalar por Uso e Saturação de CPU e Memória
 
-Não existe esse problema. É apenas uma decisão que pode ou não caber no seu workload. Entender e comparar as alternativas para usar o autoscale por requisições, ao invés do autoscale por consumo de recursos e saturação de CPU e memória, é uma parte crucial para abrir a mente para os diferentes tipos de abordagens de escalabilidade existentes em ambientes cloud native, principalmente olhando para métricas customizadas.
+Na realidade, não existe nenhum problema em escalar dessa forma, na realidade é a forma que vai atender 99% dos casos de escalonamento. Escalar por métricas customizadas, ou por volumes de transação é apenas uma decisão que pode ou não caber no seu workload. Entender e comparar as alternativas para usar o autoscale por requisições ao invés do autoscale por consumo de recursos e saturação de recursos é apenas uma parte crucial para abrir a mente para os diferentes tipos de abordagens de escalabilidade existentes em ambientes cloud native.
 
-<br>
+Porém como todos tipos de tecnologia, temos tradeoffs que podemos considerar: 
+
 
 ### Vantagens
 
 * **Simplicidade**: Fácil de configurar e praticamente todos os recursos de escalabilidade já consideram esse tipo de abordagem como padrão, pois o uso de CPU/Memória é um indicador comum de performance
 * **Eficiência**: Garante que os recursos computacionais alocados no cluster para a carga de trabalho estão sendo utilizados de maneira eficiente, diminuindo eventuais desperdicios por recursos subutilizados. 
 
-<br>
 
 ### Desvantagens
 
@@ -61,6 +53,7 @@ Não existe esse problema. É apenas uma decisão que pode ou não caber no seu 
 * A mudança no nível de CPU pode não corresponder **imediatamente** a mudanças na demanda das solicitações da aplicação, causando picos no tempo de resposta até os indicadores de CPU serem acionados para efetuar o escalonamento.
 
 Logo, escolher escalar por quantidade de requisições pode ser desafiador por requerer uma configuração mais detalhada e out of the box das ferramentas convencinais, um conhecimento maior da aplicação e seu comportamento, requerer intrumentações adicionais nas ferramentas que na maioria das vezes costumam ser *plug n' play*, mas pode ser ideal para aplicações mais sensíveis a tráfego que tenham variações bruscas na demanda. 
+
 
 <br>
 
@@ -83,14 +76,28 @@ Como dito acima, é muito complexo responder a essa pergunta, mas existem meios 
 
 ## Encontre a Métrica 
 
+### Istio Service Mesh
+
 ```bash
 sum(rate(istio_requests_total{destination_service_name="chip"}[1m]))
 ```
 
+### Nginx Ingress Controller
+
+```bash
+rate(nginx_ingress_controller_requests{ingress="chip", namespace="chip"}[1m])
+```
+
+### JVM - Micrometer
+```bash
+sum(rate(requests_total{app="chip", namespace="chip"}[1m]))
+```
+
+
 ## Construindo o ScaledObject 
 
 
-## Janelas de Estabilização 
+### Janelas de Estabilização 
 
 
 
@@ -118,10 +125,10 @@ spec:
   - type: prometheus
     metadata:
       serverAddress: http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090
-      metricName: istio_requests_total
-      threshold: "10" # <---- Quantidade de requisições por pod
+      metricName: istio_requests_total 
+      threshold: "10" # <---- Quantidade de requisições por pod. No exemplo, 10 TPS. 
       query: |
-        sum(rate(istio_requests_total{destination_service_name="chip"}[1m]))
+        sum(rate(istio_requests_total{destination_service_name="chip"}[1m])) 
 ```
 
 # Testes e Resultados 
