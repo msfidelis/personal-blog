@@ -187,7 +187,7 @@ Para esta prova de conceito, utilizou-se a ferramenta [Cassowary](https://github
 
 <br>
 
-Espero ter ajudado! :)
+Esse é o primeiro artigo que publico nativamente aqui nesse blog. Espero ter ajudado! :)
 
 # Referencias e Recursos Adicionais
 
