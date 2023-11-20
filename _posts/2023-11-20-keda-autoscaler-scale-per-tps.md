@@ -82,6 +82,9 @@ Essa configuração também pode ser derivada de uma estimativa experiente (vulg
 
 # Implementação do Keda para Escalar por TPS
 
+O objetivo aqui não é replicar a documentação do Keda, mas focar nos aspectos cruciais para atingir o objetivo da nossa Prova de Conceito (PoC). Para informações mais detalhadas e exemplos adicionais, consulte as referências ao final deste texto. Agora, vamos abordar os passos necessários para construir um `ScaledObject` usando métricas do Prometheus, que nos auxiliará a escalar a aplicação com base no tráfego.
+
+
 ## Encontrando a Métrica Ideal
 
 Há uma grande chance de que a métrica desejada já exista e esteja sendo bem monitorada. Precisamos identificar qual métrica será utilizada para contabilizar as requisições recebidas pelo nosso workload. Segue uma referência útil:
@@ -123,6 +126,8 @@ Para aplicações Spring Boot, é comum o uso do [Micrometer](https://micrometer
 ```bash
 sum(rate(requests_total{app="chip", namespace="chip"}[1m]))
 ```
+
+Baseado nessas queries do Prometheus, já temos onde começar a buscar a métrica que servirá como guia para efetuarmos o scale das aplicações. 
 
 
 ## Construindo o ScaledObject
