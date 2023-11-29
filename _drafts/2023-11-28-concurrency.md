@@ -382,7 +382,7 @@ func main() {
 	}
 
 	wg.Wait() // Espera que todas as goroutines chamem Done()
-
+    
 	fmt.Println("Total de itens grelhados na churrasqueira:", grelhados)
 
 }
