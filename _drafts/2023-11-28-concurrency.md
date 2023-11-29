@@ -53,15 +53,15 @@ Esse é um exemplo de concorrência, você está gerenciando muitas tarefas, mas
 
 <br>
 
-### Exemplo de um processamento concorrente de tarefas
+### Implementando um algoritmo de concorrência
 
 Vamos tentar criar um  algortimo que se abstraia o nosso churrasco. Esse algoritmo deverá seguir a lógica:
 
-```
+
 * Listar as atividades do churrasco
 * Executar essas tarefas em goroutines simultêneas, cada uma esperando o tempo de preparo devido
 * Monitorar a saída das atividades
-```
+
 
 ```go
 package main
@@ -165,7 +165,7 @@ O paralelismo em computação é uma área de pesquisa ativa e continua evoluind
 
 <br>
 
-## Exemplo de um processamento paralelo de tarefas
+### Implementando um algoritmo de paralelismo
 
 Novamente vamos simular um churrasco no código. Diferente das condições de concorrência, nesse snippet vamos escrever um algoritmo que:
 
@@ -314,19 +314,17 @@ Program exited.
 
 ## Paralelismo Externo vs Paralelismo Interno. 
 
-O paralelismo pode ser dividido em duas frentes muito simples de compreender a diferença: o interno e externo. Eu vou te provar que é simples. 
+O paralelismo pode ser dividido em duas frentes muito simples de compreender a diferença: o **interno** e **externo**. Pode parecer complexo mas eu vou te provar que é simples com a explicação a seguir. 
 
-<br>
 
 ### Paralelismo Interno
 
-O paralelismo interno, também conhecido como paralelismo intrínseco, ocorre dentro de uma única aplicação ou processo. É o paralelismo que você implementa na sua aplicação via código quando precisa dividir as tarefas ou itens em memória entre várias sub-tarefas que podem ser processadas simultaneamente. Basicamente é o paralelismo que você cria via código para ser executado dentro do seu container ou servidor. 
+O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, ocorre dentro de uma **única aplicação ou processo**. É o paralelismo que você **implementa na sua aplicação via código** quando p**recisa dividir as tarefas ou itens em memória entre várias sub-tarefas** que podem ser processadas simultaneamente. **Basicamente é o paralelismo que você cria via código para ser executado dentro do seu container ou servidor**. 
 
-<br>
 
 ### Paralelismo Externo
 
-É o paralelismo que se refere a execução simultânea de multiplas tarefas em diferentes hardwares, maquinas ou containers. Podemos ver esse conceito sendo aplicado em ambientes de computação distribuída como **Haddop**, **Spark** que distribuiem grandes volumes de dados em muitos servidores e instâncias para realizar tarefas de ETL, Machine Learning e Analytics ou como simples **Load Balancers, ou Balanceadores de Carga** que dividem as requisições entre diversas instâncias da mesma aplicação para distribuir o tráfego. 
+É o paralelismo que se refere a **execução simultânea de multiplas tarefas em diferentes hardwares, maquinas ou containers**. Podemos ver esse conceito sendo aplicado em ambientes de computação distribuída como **Haddop**, **Spark** que distribuiem grandes volumes de dados em muitos servidores e instâncias para realizar tarefas de ETL, Machine Learning e Analytics ou como simples **Load Balancers, ou Balanceadores de Carga** que dividem as requisições entre diversas instâncias da mesma aplicação para distribuir o tráfego. 
 
 ![Paralelismo Load Balancer](/assets/images/system-design/load-balancer.gif)
 
@@ -337,6 +335,8 @@ O paralelismo interno, também conhecido como paralelismo intrínseco, ocorre de
 <br>
 
 ### Race Conditions - Condições de Corrida
+
+![Robô Race Condition](/assets/images/system-design/race-condition.png)
 
 Imagine que você está organizando um outro churrasco com seus amigos. Vocês tem apenas uma churrasqueira pra grelhar os alimentos. Vocês precisam preparar picanha, maminha, legumes, abacaxi, linguiça, pão de alho e afins. Essa churrasqueira é muito pequena, e só possibilita assar um alimento por vez. Aqui, a churrasqueira é um recurso compartilhado, e uma **race condition** pode acontecer caso todos os alimentos sejam preparados para serem assados ao mesmo tempo. 
 
@@ -413,6 +413,8 @@ Total de itens grelhados na churrasqueira: 99
 <br>
 
 ### Mutex
+
+![Robô Mutex](/assets/images/system-design/mutex.png)
 
 De volta ao churrasco. Chegamos na conclusão após o exemplo de Race Conditions de que é impossível todos os alimentos serem assados ao mesmo tempo, pois só cabe 1 por vez na nossa pobre grelha. Para isso precisamos de que algum membro do churrasco fique responsável por assar os alimentos em sequencia. 
 
@@ -510,15 +512,17 @@ Total de itens grelhados na churrasqueira: 100
 
 ### Mutex Distribuído 
 
-Já demonstramos como trabalhar com mutex no modelo de paralelismo interno, onde implementamos todo o controle de paralelismo via código. É importante também portar essa lógica para o paralelismo externo, onde arquiteturalmente podemos consumir mensagens produzidas em uma fila, eventos de tópico, lidar com solicitações HTTP e muitos outros cenários onde precisamos ter idempotencia, atomicidade e exclusividade em algum processo. 
+![Robô Mutex Distríbuido](/assets/images/system-design/mutex-distribuido.png)
 
-Criar um Mutex para sistemas distribuídos é um desafio um pouco complexo, mas também de certa forma facilitado do que quando comparado com mutexes de paralelismo interno de memória compartilhada. Existem desafios como comunicação com componentes, latência de rede e falhas nos serviços no geral. 
+Já demonstramos como trabalhar com mutex no modelo de paralelismo interno, onde implementamos todo o controle de paralelismo via código. É importante também portar essa lógica para o paralelismo externo, onde arquiteturalmente podemos consumir **mensagens produzidas em uma fila**, **eventos de um tópico do Kafka**, lidar com **solicitações** HTTP e muitos outros cenários onde precisamos ter **idempotencia**, **atomicidade** e **exclusividade** em algum processo. 
 
-É necessário ter alguma base de dados centralizada onde podemos manter o estado dos processos compartilhados entre todas as replicas dos consumidores dessas mensagens, para caso de duplicidade da mensagem, evento ou solicitacão ou duplicação das mesmas por algum cenário não previsto. 
+Criar um Mutex para sistemas distribuídos é um desafio um pouco complexo, mas também de certa forma facilitado do que quando comparado com mutexes de paralelismo interno de memória compartilhada. Existem desafios como **comunicação com componentes, latência de rede e falhas nos serviços em geral**. 
 
-Para isso são utilizadas algumas estratégias utilizando bancos otimizados para leitura e escrita chave/valor como Redis, Memcached, Cassandra, DynamoDB e etc. 
+É necessário ter alguma **base de dados centralizada** onde podemos manter o estado dos processos compartilhados entre todas as replicas dos consumidores dessas mensagens, para caso de duplicidade da mensagem, evento ou solicitacão ou duplicação das mesmas por algum cenário não previsto. 
 
-Exemplo utilizando Redis:
+Para isso são utilizadas algumas estratégias utilizando bancos otimizados para leitura e escrita chave/valor como **Redis, Memcached, Cassandra, DynamoDB** e etc ou tecnologias como **Zookeeper**. 
+
+No exemplo abaixo utilizando o Redis, fiz um fluxo lógico do algoritmo de mutex, onde recebemos uma pseudo-mensagem, checamos existe um lock criado pra ela no Redis, caso exista descartamos o processamento. Caso não exista, criamos o lock, processamos a mensagem e liberamos o lock na sequencia. 
 
 ```go
 package main
@@ -635,12 +639,13 @@ Esse é um exemplo simples pra entendimento do algoritmo que não trata dodos os
 
 <br>
 
-
+> Imagens geradas pelo DALL-E
 
 #### Topicos
 Thread, Espera ocupada, multiprocessamento, paralelismo interno vs externo, mecanismos de concorrencia (mutex, semaforo, spinlock), backpressure, 
 
 
+#### Referências
 
 https://medium.com/the-kickstarter/load-balancing-101-81710aa7a3d7
 
