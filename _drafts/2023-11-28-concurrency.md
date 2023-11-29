@@ -382,7 +382,7 @@ func main() {
 	}
 
 	wg.Wait() // Espera que todas as goroutines chamem Done()
-    
+
 	fmt.Println("Total de itens grelhados na churrasqueira:", grelhados)
 
 }
@@ -508,6 +508,117 @@ Total de itens grelhados na churrasqueira: 100
 
 <br>
 
+### Mutex Distribuído 
+
+Já demonstramos como trabalhar com mutex no modelo de paralelismo interno, onde implementamos todo o controle de paralelismo via código. É importante também portar essa lógica para o paralelismo externo, onde arquiteturalmente podemos consumir mensagens produzidas em uma fila, eventos de tópico, lidar com solicitações HTTP e muitos outros cenários onde precisamos ter idempotencia, atomicidade e exclusividade em algum processo. 
+
+Criar um Mutex para sistemas distribuídos é um desafio um pouco complexo, mas também de certa forma facilitado do que quando comparado com mutexes de paralelismo interno de memória compartilhada. Existem desafios como comunicação com componentes, latência de rede e falhas nos serviços no geral. 
+
+É necessário ter alguma base de dados centralizada onde podemos manter o estado dos processos compartilhados entre todas as replicas dos consumidores dessas mensagens, para caso de duplicidade da mensagem, evento ou solicitacão ou duplicação das mesmas por algum cenário não previsto. 
+
+Para isso são utilizadas algumas estratégias utilizando bancos otimizados para leitura e escrita chave/valor como Redis, Memcached, Cassandra, DynamoDB e etc. 
+
+Exemplo utilizando Redis:
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	redis "github.com/redis/go-redis/v9"
+)
+
+type PedidoDeCompra struct {
+	Id         string
+	Item       string
+	Quantidade float64
+}
+
+// Função mock para exemplificar a chegada de alguma mensagem
+func consomeMensagem() PedidoDeCompra {
+	return PedidoDeCompra{
+		Id:         "12345",
+		Item:       "pão de alho",
+		Quantidade: 4,
+	}
+}
+
+// Função mock para exemplificar o processamento de uma mensagem
+func processaMensagem(pedido PedidoDeCompra) bool {
+	fmt.Println("Processando pedido:", pedido.Id)
+	time.Sleep(1 * time.Second)
+	return true
+}
+
+func main() {
+
+	var ctx = context.Background()
+
+	// Create a new Redis client
+	client := redis.NewClient(&redis.Options{
+		Addr:     "0.0.0.0:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	// looping de consumo
+	NovoPedido := consomeMensagem()
+	mutexKey := NovoPedido.Id
+
+	// Verifica se o Lock já existe
+	lock, _ := client.Get(ctx, mutexKey).Result()
+	if lock != "" {
+		fmt.Println("Mutex travado para o recurso", mutexKey)
+		return
+	}
+
+	// Criando um lock para o registro por 10 segundos
+	err := client.Set(ctx, mutexKey, "locked", 10*time.Second).Err()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Mutex criado para o recurso por 10s:", mutexKey)
+
+	// Processa o registro
+	success := processaMensagem(NovoPedido)
+	if !success {
+		return
+	}
+
+	fmt.Println("Pedido processado:", mutexKey)
+
+	// Libera o Mutex
+	_, err = client.Del(ctx, mutexKey).Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Mutex liberado para o recurso:", mutexKey)
+
+}
+```
+
+```
+❯ go run main.go
+Mutex criado para o recurso por 10s: 12345
+Processando pedido: 12345
+Pedido processado: 12345
+Mutex liberado para o recurso: 12345
+```
+
+Caso outro processo tentasse acessar o recurso 12345 durante a execução do primeiro receberia o seguinte retorno: 
+
+```
+❯ go run main.go
+Mutex travado para o recurso 12345
+```
+
+Esse é um exemplo simples pra entendimento do algoritmo que não trata dodos os cenários de um ambiente produto. Para isso eu recomendo o uso de alguma biblioteca especifica para locks no Redis como [RedisLock](https://github.com/bsm/redislock)
+
+<br>
+
 ### Semáforos 
 
 <br>
@@ -533,7 +644,10 @@ Thread, Espera ocupada, multiprocessamento, paralelismo interno vs externo, meca
 
 https://medium.com/the-kickstarter/load-balancing-101-81710aa7a3d7
 
-
 https://medium.com/@rgribeiro/desvendando-a-concorr%C3%AAncia-e-paralelismo-em-go-7a33d33f5510
 
-https://www.tabnews.com.br/lucchesisp/concorrencia-e-paralelismo-com-golang#s
+https://www.tabnews.com.br/lucchesisp/concorrencia-e-paralelismo-com-golang#
+
+https://dev.to/jdvert/handling-mutexes-in-distributed-systems-with-redis-and-go-5g0d
+
+https://github.com/bsm/redislock
