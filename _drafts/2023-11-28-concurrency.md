@@ -8,11 +8,13 @@ categories: [ system-design, golang, engineering ]
 title: System & Design para SRE's - Paralelismo, Concorrência e Multithreading
 ---
 
-Esse artigo é o primeiro de uma série sobre System Design. Essa série tem a intenção de explicar conceitos complexos de programação de forma simples para todos os tipos de profissionais, não importanto o nível de sênioridade ou tempo de experiência, ajudando a fixar conceitos de ciências da computação e arquitetura. 
+Esse artigo é o primeiro de uma série sobre **System Design**. Essa série tem a intenção de explicar conceitos complexos de programação de forma simples para todos os tipos de profissionais, não importanto o nível de sênioridade ou tempo de experiência, ajudando a fixar conceitos de ciências da computação e arquitetura. 
 
 Comecei a escrever esses textos em 2021, quanto tinha a intenção de produzir algum material para explicar conceitos de engenharia para profissionais de Site Reliability Engineering, hoje olhando com outros olhos, consigui revisar esse material e torná-lo útil e acessível pra todo mundo. 
 
 Todos os artigos vão utilizar em algum momento alguma analogia com o "mundo real" para externalizar a lógica e facilitar a explicacão e compreensão utilizando exemplos do dia a dia das pessoas. Nesse texto, vou te explicar conceitos de **Multithreading**, **Concorrência** e **Paralelismo** fazendo um **churasco**. 
+
+Não é meu objeito gerar o conteúdo mais "no bit" do mundo, nem explicar em detalhes todos os tópicos que envolvem esse tema. Meu objeitvo é que você compreenda os conceitos, consiga aplicar e principalmente explicar pra outra pessoa. 
 
 
 <br>
@@ -620,6 +622,104 @@ Mutex travado para o recurso 12345
 ```
 
 Esse é um exemplo simples pra entendimento do algoritmo que não trata dodos os cenários de um ambiente produto. Para isso eu recomendo o uso de alguma biblioteca especifica para locks no Redis como [RedisLock](https://github.com/bsm/redislock)
+
+### Mutex Distribuído - Zookeeper
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/go-zookeeper/zk"
+)
+
+type PedidoDeCompra struct {
+	Id         string
+	Item       string
+	Quantidade float64
+}
+
+// Função mock para exemplificar a chegada de alguma mensagem
+func consomeMensagem() PedidoDeCompra {
+	return PedidoDeCompra{
+		Id:         "12345",
+		Item:       "pão de alho",
+		Quantidade: 4,
+	}
+}
+
+// Função mock para exemplificar o processamento de uma mensagem
+func processaMensagem(pedido PedidoDeCompra) bool {
+	fmt.Println("Processando pedido:", pedido.Id)
+	time.Sleep(1 * time.Second)
+	return true
+}
+
+func main() {
+
+	// Conecta ao ZooKeeper
+	conn, _, err := zk.Connect([]string{"0.0.0.0"}, 1000*time.Second)
+	if err != nil {
+		panic(err)
+	}
+	defer conn.Close()
+
+	// looping de consumo
+	NovoPedido := consomeMensagem()
+	mutexKey := fmt.Sprintf("/%v", NovoPedido.Id)
+
+	// Verifica se o Znode de lock já existe
+	exists, _, err := conn.Exists(mutexKey)
+	if err != nil || exists == true {
+		fmt.Println("Mutex travado para o recurso", mutexKey)
+		return
+	}
+
+	// Criando um lock para o registro
+	acl := zk.WorldACL(zk.PermAll) // Permissões abertas, ajuste conforme necessário
+	path, err := conn.Create(mutexKey, []byte{}, zk.FlagEphemeral, acl)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Mutex criado para o recurso", mutexKey)
+
+	// Processa o registro
+	success := processaMensagem(NovoPedido)
+	if !success {
+		return
+	}
+
+	fmt.Println("Pedido processado:", mutexKey)
+
+	// Libera o Mutex manualmente
+	conn.Delete(path, -1)
+	fmt.Println("Mutex liberado para o recurso:", mutexKey)
+
+	// Caso a sessão com o zookeeper acabe, todos os locks gerados pela conexão serão liberados.
+	time.Sleep(50 * time.Second)
+}
+```
+
+```
+2023/11/30 08:08:38 connected to 0.0.0.0:2181
+2023/11/30 08:08:38 authenticated: id=72058178855239682, timeout=40000
+2023/11/30 08:08:38 re-submitting `0` credentials after reconnect
+Mutex criado para o recurso /123456
+Processando pedido: 123456
+Pedido processado: /123456
+Mutex liberado para o recurso: /123456
+```
+
+```
+2023/11/30 08:05:19 connected to 0.0.0.0:2181
+2023/11/30 08:05:19 authenticated: id=72058073710329942, timeout=40000
+2023/11/30 08:05:19 re-submitting `0` credentials after reconnect
+Mutex travado para o recurso /12345
+2023/11/30 08:05:19 recv loop terminated: EOF
+2023/11/30 08:05:19 send loop terminated: <nil>
+```
 
 <br>
 
