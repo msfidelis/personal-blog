@@ -740,6 +740,10 @@ Mutex travado para o recurso /12345
 
 ### Spinlock
 
+Volte para o churrasco com seus amigos onde há uma única grelha que todos querem usar pra assar um tipo de alimento pra comer. Ao invés de ficar esperando, como no Mutex, cada pessoa fica parada ao lado da grelha, verificando constantemente se ela está livre para uso. Assim que a grelha fica disponível, a pessoa que está verificando nesse momento a utiliza.
+
+Um spinlock é um tipo de mecanismo de sincronização usado em ambientes de programação concorrente para proteger o acesso a recursos compartilhados. A ideia principal por trás de um spinlock é bastante simples: **em vez de bloquear uma thread e colocá-la para dormir quando ela tenta acessar um recurso que já está bloqueado, a thread "gira" (ou seja, entra em um loop) até que o lock seja liberado**.
+
 <br>
 
 ### Semáforos 
