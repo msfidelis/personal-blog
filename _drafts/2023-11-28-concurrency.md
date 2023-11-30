@@ -625,6 +625,21 @@ Esse é um exemplo simples pra entendimento do algoritmo que não trata dodos os
 
 ### Mutex Distribuído - Zookeeper
 
+Uma opção bem elegante em alternativa ao Redis é utilizar o **Apache Zookeeper** para gerenciar os locks distribuiídos. A lógica é exatamente a mesma do exemplo anterior porém com algumas peculiaridades.
+
+Criar um mutex distribuído em Go usando **Apache ZooKeeper** é uma tarefa avançada que envolve manipular **znodes** (Nós do  **ZooKeeper**) para gerenciar essas travas de forma distribuída. Vamos passar por um exemplo básico de como isso pode ser feito.
+
+Uma coisa legal dos locks do zookeeper é que você pode determinar um timeout de sessão para que todas os locks gerenciados pelo processo sejam excluídos após o termino da execução do programa. 
+
+A lógica é exatamente igual ao do Redis:
+
+* Verificar se existe um lock para o recurso 
+* Se existir, ignorar a mensagem e retorná-la para o pool
+* Se não existir, criar
+* Processar a solicitação 
+* Remover o lock em caso de sucesso
+
+
 ```go
 package main
 
@@ -660,7 +675,7 @@ func processaMensagem(pedido PedidoDeCompra) bool {
 func main() {
 
 	// Conecta ao ZooKeeper
-	conn, _, err := zk.Connect([]string{"0.0.0.0"}, 1000*time.Second)
+	conn, _, err := zk.Connect([]string{"0.0.0.0"}, 10*time.Second)
 	if err != nil {
 		panic(err)
 	}
@@ -723,19 +738,11 @@ Mutex travado para o recurso /12345
 
 <br>
 
-### Semáforos 
-
-<br>
-
-### Mutex
-
-<br>
-
 ### Spinlock
 
 <br>
 
-### Backpressure
+### Semáforos 
 
 <br>
 
