@@ -1023,18 +1023,27 @@ Essa foi uma implementação manual que pode ou não ser utilizada pra resolver 
 
 #### Referências
 
-https://medium.com/the-kickstarter/load-balancing-101-81710aa7a3d7
+[Load Balancing 101](https://medium.com/the-kickstarter/load-balancing-101-81710aa7a3d7)
 
-https://medium.com/@rgribeiro/desvendando-a-concorr%C3%AAncia-e-paralelismo-em-go-7a33d33f5510
+[Desvendando a Concorrência e Paralelismo em Go](https://medium.com/@rgribeiro/desvendando-a-concorr%C3%AAncia-e-paralelismo-em-go-7a33d33f5510)
 
-https://www.tabnews.com.br/lucchesisp/concorrencia-e-paralelismo-com-golang#
+[Concorrência e Paralelismo em Go](https://www.tabnews.com.br/lucchesisp/concorrencia-e-paralelismo-com-golang#)
 
-https://dev.to/jdvert/handling-mutexes-in-distributed-systems-with-redis-and-go-5g0d
+[Handling Mutexes in Distributed Systems with Redis and Go](https://dev.to/jdvert/handling-mutexes-in-distributed-systems-with-redis-and-go-5g0d)
 
-https://github.com/bsm/redislock
+[Github - Redislock](https://github.com/bsm/redislock)
 
-https://afteracademy.com/blog/difference-between-mutex-and-semaphore-in-operating-system/
+[Difference Between Mutex and Semaphore in Operating System](https://afteracademy.com/blog/difference-between-mutex-and-semaphore-in-operating-system/)
 
-https://dev.to/yanpiing/go-paralelismo-e-concorrencia-4mlo
+[Go - Paralelismo e Concorrência](https://dev.to/yanpiing/go-paralelismo-e-concorrencia-4mlo)
 
-https://pkg.go.dev/golang.org/x/sync/semaphore
+[Golang - Semaphore Lib](https://pkg.go.dev/golang.org/x/sync/semaphore)
+
+[Using Spinlocks](https://docs.oracle.com/cd/E37838_01/html/E61057/ggecq.html)
+
+[O Jantar dos filósofos - Problema de sincronização em Sistemas Operacionais](https://blog.pantuza.com/artigos/o-jantar-dos-filosofos-problema-de-sincronizacao-em-sistemas-operacionais)
+
+[Comunicação de Processos](https://edisciplinas.usp.br/pluginfile.php/4933938/mod_resource/content/1/Aula%2005%20-%20Comunicacao_so_2019.pdf)
+
+[Comunicação e Sincronismo entre Processos](https://www.professores.uff.br/mquinet/wp-content/uploads/sites/42/2017/08/7.pdf)
+
