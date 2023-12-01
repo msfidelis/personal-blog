@@ -355,35 +355,40 @@ Em sistemas com um único núcleo de CPU, a concorrência é normalmente alcanç
 
 <br>
 
-
 ## Lidando com Paralelismo e Concorrência
 
-Agora que já detalhamos de forma lúdica e conceitual a definição de programação paralela, podemos entrar em detalhes sobre os desafios e ferramentas existentes para se trabalhar com esse tipo de estratégia. Uma vez que esse tipo de abordagem tenha várias vantagens como performance, escalabilidade e aproveitamento de recursos, existem muitos desafios como sincronização, condições de corrida, deadlocks, starvation, balanceamento de carga de trabalho entre outros. Agora vamos definir conceitualmente alguns desses termos para que você consiga entender e explicar futuramente. 
+Agora que já detalhamos de forma lúdica e conceitual a definição de programação paralela e concorrente, é hora de explorar os desafios e ferramentas existentes para trabalhar com essas estratégias. Embora abordagens paralelas e concorrentes ofereçam várias vantagens, como melhoria de performance, escalabilidade e otimização de recursos, elas também trazem desafios significativos. Estes incluem questões de sincronização, condições de corrida, deadlocks, starvation e o balanceamento de carga de trabalho, entre outros. Vamos agora definir conceitualmente alguns desses termos para facilitar seu entendimento e capacidade de explicá-los no futuro.
+
+<br>
 
 ### Deadlocks e Starvation
 
 ![Deadlock](/assets/images/system-design/deadlocks.png)
 
-Imagine que você está do ocupando a grelha que é um recurso compartilhado do seu churrasco para prepara o pão de alho, e seu amigo está segurando a espátula (não fure a carne com garfo) que também é um recurso compartilhado para a preparação. Você precisa da espátula tanto quanto seu amigo precisa da grelha. Cada um de vocês aguarda o recurso do outro estar disponível sem desocupar o seu próprio, e nenhum de vocês dois pode continuar com sua tarefa. Isso é um exemplo de **Deadlock**. 
+Imagine que você está usando a grelha, um recurso compartilhado no seu churrasco, para preparar o pão de alho, enquanto seu amigo está segurando a espátula (lembre-se, nada de furar a carne com garfo, pelo amor de Deus...), outro recurso essencial. Você precisa da espátula, e seu amigo precisa da grelha. Ambos aguardam que o recurso do outro fique disponível, mas nenhum de vocês libera o recurso que possui, criando um impasse onde nenhuma das tarefas pode prosseguir. Isso exemplifica um **Deadlock**.
 
-Um deadlock ocorre quando duas ou mais threads (ou processos) estão em um estado de espera permanente porque cada uma delas está esperando por um recurso que a outra detém. Em outras palavras, há um ciclo de dependências de recursos que impede o progresso adicional.
+Um deadlock ocorre quando duas ou mais threads (ou processos) entram em um estado de espera permanente, pois cada uma está esperando por um recurso que está sob posse da outra. Em suma, existe um ciclo de dependências de recursos que impede qualquer avanço.
 
-Agora visualize uma situação onde cada um precisa preparar sua própria refeição por conta de preferencias de ponto de carne e o seu grupo de amigos é dividido entre um grupo muito cara-de-pau, rápido e esfomeado e outro mais educado e lentos. Conforme temos grelhas disponíveis, as pessoas mais rápidas e esfomeadas ocupam a churrasqueira de forma desbalanceada, tirando o lugar das pessoas mais tranquilas. Essas pessoas mais tranquilas tendem a ficar com fome pela dificuldade de acessar o recurso compartilhado para assar sua comida. Esse é um processo de **Starvation**. 
+Agora, imagine outra situação onde cada um precisa preparar sua própria refeição devido a preferências específicas de ponto da carne. Seu grupo de amigos se divide entre os mais ágeis, cara-de-pau e esfomeados, e os mais educados e lentos. À medida que as grelhas ficam disponíveis, o primeiro grupo ocupa rapidamente os espaços, deixando pouco ou nenhum acesso para o segundo grupo. Como resultado, as pessoas mais tranquilas enfrentam dificuldades para assar sua comida, experimentando uma espécie de **Starvation**.
 
-Starvation, ou inanição, ocorre quando uma ou mais threads não conseguem acessar os recursos de que precisam para prosseguir por um longo período de tempo. Isso geralmente acontece devido a um problema de alocação de recursos, onde algumas threads são priorizadas em detrimento de outras.
+Starvation, ou inanição, ocorre quando uma ou mais threads não conseguem acessar os recursos necessários por um longo período. Isso é frequentemente causado por uma alocação de recursos desigual, onde certas threads são priorizadas em detrimento de outras.
 
+<br>
 
 ### Race Conditions - Condições de Corrida
 
 ![Robô Race Condition](/assets/images/system-design/race-condition.png)
 
-Imagine que você está organizando um outro churrasco com seus amigos. Vocês tem apenas uma churrasqueira pra grelhar os alimentos. Vocês precisam preparar picanha, maminha, legumes, abacaxi, linguiça, pão de alho e afins. Essa churrasqueira é muito pequena, e só possibilita assar um alimento por vez. Aqui, a churrasqueira é um recurso compartilhado, e uma **race condition** pode acontecer caso todos os alimentos sejam preparados para serem assados ao mesmo tempo. 
+Imagine que você está organizando outro churrasco com seus amigos. Desta vez, há apenas uma churrasqueira disponível para grelhar todos os alimentos. Vocês precisam preparar picanha, maminha, legumes, abacaxi, linguiça, pão de alho e mais. A churrasqueira é pequena e só permite assar um tipo de alimento por vez. Aqui, a churrasqueira representa um recurso compartilhado, e uma **Race Condition** (condição de corrida) pode surgir se todos os alimentos forem preparados para assar simultaneamente.
 
-Uma **Race Condition**, ou **condição de corrida** é um comportentamento extremamente comum quando temos um recurso compartilhado que é acessado e modificado por várias tarefas e threads em paralelo, na qual o estado final desse recurso pode depender da ordem na qual as modificações ocorrem, que podem variar de execução para execução. Como por exemplo, vamos executar o algoritmo a seguir várias vezes: 
+Uma **Race Condition** é um fenômeno comum quando um recurso compartilhado é acessado e modificado por várias tarefas ou threads em paralelo. O estado final desse recurso pode depender da ordem em que as modificações são realizadas, que pode variar a cada execução. Por exemplo, considere o seguinte algoritmo:
 
-* Temos o número de itens disponíveis pra serem colocados na brasa. 
-* Temos um controle de numero de itens grelhados que foram para a churrasqueira
-* Temos `100` itens disponíveis, então o correto seria que o contador de itens grelhados também terminasse a execução com o valor `100`
+- Inicialmente, temos um número definido de itens (como `100`) disponíveis para serem grelhados.
+- Temos um contador que registra o número de itens que foram grelhados.
+- Idealmente, se começarmos com `100` itens disponíveis, o contador de itens grelhados também deveria terminar com o valor `100`.
+
+Contudo, em uma situação de race condition, o resultado pode ser diferente do esperado devido à sobreposição e interferência das operações realizadas pelas várias threads. Por exemplo, dois ou mais amigos podem tentar colocar diferentes itens na churrasqueira ao mesmo tempo, resultando em confusão e possíveis erros no processo de contagem.
+
 
 ```go
 package main
