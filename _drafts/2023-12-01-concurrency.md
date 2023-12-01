@@ -8,17 +8,18 @@ categories: [ system-design, golang, engineering ]
 title: System & Design - Paralelismo, Concorrência e Multithreading
 ---
 
-Esse artigo é o primeiro de uma série sobre **System Design**. Essa série tem a intenção de explicar conceitos complexos de programação de forma simples e objetiva para todos os tipos de profissionais, não importanto o nível de sênioridade ou tempo de experiência, ajudando a fixar conceitos de ciências da computação e arquitetura. 
+Este artigo é o primeiro de uma série sobre **System Design**. Esta série tem como objetivo explicar conceitos complexos de programação de maneira simples e objetiva para todos os tipos de profissionais, independentemente do nível de senioridade ou tempo de experiência, contribuindo para a fixação de conceitos de ciências da computação e arquitetura.
 
-Comecei a escrever esses textos em 2021, quanto tinha a intenção de produzir algum material para explicar conceitos de engenharia para profissionais de Site Reliability Engineering, hoje olhando com outros olhos, consigui revisar esse material e torná-lo útil e acessível pra todo mundo. 
+Comecei a escrever esses textos em 2021, quando tinha a intenção de produzir material explicativo sobre engenharia para profissionais de **SRE**. Hoje, revendo com uma nova perspectiva, consegui revisar esse material para torná-lo útil e acessível a todos.
 
-Todos os artigos vão utilizar em algum momento alguma analogia com o "mundo real" para externalizar a lógica e facilitar a explicacão e compreensão, utilizando exemplos do dia a dia das pessoas. Nesse texto, vou te explicar tópicos de **Multithreading**, **Concorrência** e **Paralelismo**.
+Todos os artigos vão, em algum momento, utilizar analogias com o "mundo real" para tornar a lógica mais clara e facilitar a explicação e compreensão, utilizando exemplos do cotidiano. Neste texto, vou explicar tópicos como **Multithreading**, **Concorrência** e **Paralelismo**.
 
-Não é meu objeito gerar o conteúdo detalhado do mundo, nem explicar minuciosamente todos os tópicos que envolvem esse tema usando termos complexos da literatura. Meu objeitvo é que você **compreenda** os conceitos, consiga **aplicar** e principalmente **explicar pra outra pessoa** usando os mesmos exemplos ou criando novos. **Prometo fazer ser divertido.**
+Não é meu objetivo detalhar exaustivamente todos os aspectos do mundo ou explicar todos os tópicos envolvendo esse tema com termos complexos da literatura. Meu objetivo é que você **compreenda** os conceitos, consiga **aplicar** e, principalmente, **explicar para outra pessoa** usando os mesmos exemplos ou criando novos. **Prometo tornar isso divertido.**
 
-Iremos utilizar a linguagem `Go` para exemplificar alguns algoritmos, mas a ideia não é tornar esse material um artigo da linguagem especificamente, embora vamos usar alguns recursos nativos como `Goroutines`, `Channels` e `WaitGroups` ele pode ser aproveitado conceitualmente pra qualquer coisa. 
+Utilizaremos a linguagem `Go` para exemplificar alguns algoritmos. Embora utilizemos recursos nativos como `Goroutines`, `Channels` e `WaitGroups`, a ideia não é tornar este material um artigo específico sobre a linguagem; mesmo assim, ele pode ser aproveitado conceitualmente para diversos contextos. 
 
-Vamos começar detalhando alguns conceitos que vão ser úteis durante o artigo:
+Vamos começar detalhando alguns conceitos que serão úteis durante o artigo:
+
 
 <br>
 
