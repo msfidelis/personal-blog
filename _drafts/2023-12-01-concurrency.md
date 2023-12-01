@@ -5,17 +5,20 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, golang, engineering ]
-title: System & Design para SRE's - Paralelismo, Concorrência e Multithreading
+title: System & Design - Paralelismo, Concorrência e Multithreading
 ---
 
-Esse artigo é o primeiro de uma série sobre **System Design**. Essa série tem a intenção de explicar conceitos complexos de programação de forma simples para todos os tipos de profissionais, não importanto o nível de sênioridade ou tempo de experiência, ajudando a fixar conceitos de ciências da computação e arquitetura. 
+Esse artigo é o primeiro de uma série sobre **System Design**. Essa série tem a intenção de explicar conceitos complexos de programação de forma simples e objetiva para todos os tipos de profissionais, não importanto o nível de sênioridade ou tempo de experiência, ajudando a fixar conceitos de ciências da computação e arquitetura. 
 
 Comecei a escrever esses textos em 2021, quanto tinha a intenção de produzir algum material para explicar conceitos de engenharia para profissionais de Site Reliability Engineering, hoje olhando com outros olhos, consigui revisar esse material e torná-lo útil e acessível pra todo mundo. 
 
-Todos os artigos vão utilizar em algum momento alguma analogia com o "mundo real" para externalizar a lógica e facilitar a explicacão e compreensão utilizando exemplos do dia a dia das pessoas. Nesse texto, vou te explicar conceitos de **Multithreading**, **Concorrência** e **Paralelismo** fazendo um **churasco**. 
+Todos os artigos vão utilizar em algum momento alguma analogia com o "mundo real" para externalizar a lógica e facilitar a explicacão e compreensão, utilizando exemplos do dia a dia das pessoas. Nesse texto, vou te explicar tópicos de **Multithreading**, **Concorrência** e **Paralelismo**.
 
-Não é meu objeito gerar o conteúdo mais "no bit" do mundo, nem explicar em detalhes todos os tópicos que envolvem esse tema. Meu objeitvo é que você compreenda os conceitos, consiga aplicar e principalmente explicar pra outra pessoa. 
+Não é meu objeito gerar o conteúdo detalhado do mundo, nem explicar minuciosamente todos os tópicos que envolvem esse tema usando termos complexos da literatura. Meu objeitvo é que você **compreenda** os conceitos, consiga **aplicar** e principalmente **explicar pra outra pessoa** usando os mesmos exemplos ou criando novos. **Prometo fazer ser divertido.**
 
+Iremos utilizar a linguagem `Go` para exemplificar alguns algoritmos, mas a ideia não é tornar esse material um artigo da linguagem especificamente, embora vamos usar alguns recursos nativos como `Goroutines`, `Channels` e `WaitGroups` ele pode ser aproveitado conceitualmente pra qualquer coisa. 
+
+Vamos começar detalhando alguns conceitos que vão ser úteis durante o artigo:
 
 <br>
 
@@ -35,13 +38,18 @@ Uma **Thread é a menor unidade de processamento que pode ser gerenciada por um 
 
 <br>
 
-## Multithreading
+## O que é Multithreading?
 
 **Multithreading** é uma técnica de programação que envolve a criação de múltiplas threads (fluxos de execução de uma tarefa) dentro de um único processo. Cada thread pode lidar com diferentes tarefas ou partes de uma tarefa maior. Esse método pode ser usado **tanto em contextos concorrentes quanto paralelos**. Em sistemas com **um único processador, o multithreading permite concorrência** (troca rápida entre threads para dar a ilusão de simultaneidade). Em sistemas **multiprocessador, o multithreading pode alcançar paralelismo verdadeiro, onde diferentes threads são executadas em paralelo em diferentes núcleos**, ambos os casos permitindo melhor aproveitamento de recursos e melhoria de eficiência e performance. 
 
 Te tirando do seu churrasco, imagine agora seu **restaurante favorito**. O **processo é o restaurante em funcionamento** com objetivo de **fornecer comida aos clientes**. Imagine esse restaurante num horário de pico, hora do almoço em dia de semana, em seguida **veja as threads como funcionários da cozinha**. Cada cozinheiro disponível é **responsável por preparar um prato diferente ao mesmo tempo** para acelerar a vazão dos pedidos feitos para a cozinha. Assim vários pratos são preparados simultâneamente aumentando a eficiência na entrega dos pratos reduzindo o tempo de espera dos clientes. 
 
 <br>
+
+Agora que já temos uma bagagem teórica de alguns termos e conceitos que vão aparecer nas próximas explicações, vamos detalhar com um pouco mais de segurança. 
+
+<br>
+
 
 # Concorrência 
 
@@ -55,7 +63,7 @@ Esse é um exemplo de concorrência, você está gerenciando muitas tarefas, mas
 
 <br>
 
-### Implementando um algoritmo de concorrência
+### Exemplo de Implementação
 
 Vamos tentar criar um  algortimo que se abstraia o nosso churrasco. Esse algoritmo deverá seguir a lógica:
 
@@ -316,6 +324,9 @@ Program exited.
 
 ## Paralelismo Externo vs Paralelismo Interno. 
 
+
+![Paralelismo Interno e Externo](/assets/images/system-design/paralelismo-interno-externo.png)
+
 O paralelismo pode ser dividido em duas frentes muito simples de compreender a diferença: o **interno** e **externo**. Pode parecer complexo mas eu vou te provar que é simples com a explicação a seguir. 
 
 
@@ -332,9 +343,32 @@ O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, o
 
 <br>
 
-## Lidando com Paralelismo e Concorrência
+# Paralelismo vs Concorrência 
+
+Depois de bastante trabalho, conseguimos resumir conceitualmente a diferença entre **concorrência** e **paralelismo**. **Concorrência** é sobre lidar com várias tarefas ao mesmo tempo. Ela permite que um sistema execute várias operações aparentemente ao mesmo tempo, e **Paralelismo** é a execução literal de várias operações ou tarefas simultaneamente.
+
+Em sistemas com um único núcleo de CPU, a concorrência é geralmente alcançada através de multithread, onde as tarefas são **alternadas rapidamente**, dando a ilusão de que estão sendo executadas simultaneamente, já **Paralelismo** requer hardware com **múltiplos cores**, onde cada um deles executa **diferentes threads ou processos ao mesmo tempo**.
+
+![Cocorrencia vs Paralelismo](/assets/images/system-design/concorrencia-paralelismo.png)
 
 <br>
+
+## Lidando com Paralelismo e Concorrência
+
+Agora que já detalhamos de forma lúdica e conceitual a definição de programação paralela, podemos entrar em detalhes sobre os desafios e ferramentas existentes para se trabalhar com esse tipo de estratégia. Uma vez que esse tipo de abordagem tenha várias vantagens como performance, escalabilidade e aproveitamento de recursos, existem muitos desafios como sincronização, condições de corrida, deadlocks, starvation, balanceamento de carga de trabalho entre outros. Agora vamos definir conceitualmente alguns desses termos para que você consiga entender e explicar futuramente. 
+
+### Deadlocks e Starvation
+
+![Deadlock](/assets/images/system-design/deadlocks.png)
+
+Imagine que você está do ocupando a grelha que é um recurso compartilhado do seu churrasco para prepara o pão de alho, e seu amigo está segurando a espátula (não fure a carne com garfo) que também é um recurso compartilhado para a preparação. Você precisa da espátula tanto quanto seu amigo precisa da grelha. Cada um de vocês aguarda o recurso do outro estar disponível sem desocupar o seu próprio, e nenhum de vocês dois pode continuar com sua tarefa. Isso é um exemplo de **Deadlock**. 
+
+Um deadlock ocorre quando duas ou mais threads (ou processos) estão em um estado de espera permanente porque cada uma delas está esperando por um recurso que a outra detém. Em outras palavras, há um ciclo de dependências de recursos que impede o progresso adicional.
+
+Agora visualize uma situação onde cada um precisa preparar sua própria refeição por conta de preferencias de ponto de carne e o seu grupo de amigos é dividido entre um grupo muito cara-de-pau, rápido e esfomeado e outro mais educado e lentos. Conforme temos grelhas disponíveis, as pessoas mais rápidas e esfomeadas ocupam a churrasqueira de forma desbalanceada, tirando o lugar das pessoas mais tranquilas. Essas pessoas mais tranquilas tendem a ficar com fome pela dificuldade de acessar o recurso compartilhado para assar sua comida. Esse é um processo de **Starvation**. 
+
+Starvation, ou inanição, ocorre quando uma ou mais threads não conseguem acessar os recursos de que precisam para prosseguir por um longo período de tempo. Isso geralmente acontece devido a um problema de alocação de recursos, onde algumas threads são priorizadas em detrimento de outras.
+
 
 ### Race Conditions - Condições de Corrida
 
@@ -623,6 +657,8 @@ Mutex travado para o recurso 12345
 
 Esse é um exemplo simples pra entendimento do algoritmo que não trata dodos os cenários de um ambiente produto. Para isso eu recomendo o uso de alguma biblioteca especifica para locks no Redis como [RedisLock](https://github.com/bsm/redislock)
 
+<br>
+
 ### Mutex Distribuído - Zookeeper
 
 Uma opção bem elegante em alternativa ao Redis é utilizar o **Apache Zookeeper** para gerenciar os locks distribuiídos. A lógica é exatamente a mesma do exemplo anterior porém com algumas peculiaridades.
@@ -738,23 +774,229 @@ Mutex travado para o recurso /12345
 
 <br>
 
-### Spinlock
+## Spinlock
+
+![Spinlock](/assets/images/system-design/spinlock.png)
 
 Volte para o churrasco com seus amigos onde há uma única grelha que todos querem usar pra assar um tipo de alimento pra comer. Ao invés de ficar esperando, como no Mutex, cada pessoa fica parada ao lado da grelha, verificando constantemente se ela está livre para uso. Assim que a grelha fica disponível, a pessoa que está verificando nesse momento a utiliza.
 
 Um spinlock é um tipo de mecanismo de sincronização usado em ambientes de programação concorrente para proteger o acesso a recursos compartilhados. A ideia principal por trás de um spinlock é bastante simples: **em vez de bloquear uma thread e colocá-la para dormir quando ela tenta acessar um recurso que já está bloqueado, a thread "gira" (ou seja, entra em um loop) até que o lock seja liberado**.
 
+### Exemplo de Implementação
+
+```go
+package main
+
+import (
+	"fmt"
+	"runtime"
+	"sync"
+	"sync/atomic"
+	"time"
+)
+
+type SpinLock struct {
+	state int32
+}
+
+// Método do SpinLock para "travar a grelha"
+// Cria um loop ativo (spin) que aguarda o valor do state ter o valor de 1
+// Quando entrar na condição de `Unlock()`, libera o runtime para executar outras goroutines
+func (s *SpinLock) Lock() {
+	for !atomic.CompareAndSwapInt32(&s.state, 0, 1) {
+		runtime.Gosched() // Permite que outras goroutines sejam executadas
+	}
+}
+
+// Método do SpinLock para "destravar a grelha"
+// Seta o valor da propriedade `state` para 0
+func (s *SpinLock) Unlock() {
+	atomic.StoreInt32(&s.state, 0)
+}
+
+// Função para simular o tempo de preparo de cada atividade do churrasco
+func grelhar(amigo int, lock *SpinLock, wg *sync.WaitGroup) {
+	fmt.Printf("Amigo %d está esperando para usar a grelha\n", amigo)
+	lock.Lock() // Trava as demais Goroutines para usar a grelha
+
+	fmt.Printf("Amigo %d está grelhando seu almoço\n", amigo)
+	time.Sleep(1 * time.Second) // Simulando o tempo para grelhar
+
+	fmt.Printf("Amigo %d terminou de usar a grelhar\n", amigo)
+	lock.Unlock() // Destrava a grelha para a proxima goroutine (amigo)
+
+	defer wg.Done() // Decrementa o contador de Goroutines
+}
+
+func main() {
+	var wg sync.WaitGroup
+	var lock SpinLock
+
+	// Define a quantidade de gente no churrasco
+	var amigosNoChurrasco = 10
+
+	// Cria go routines para colocar todos os amigos para esperar a grelha liberar
+	for i := 1; i <= amigosNoChurrasco; i++ {
+		wg.Add(1)                 // Incrementa o contador dos WaitGroups das Goroutines
+		go grelhar(i, &lock, &wg) // Inicia a preparação da comida
+	}
+
+	wg.Wait()
+	fmt.Println("O churrasco terminou :/")
+
+}
+```
+
+```
+❯ go run main.go
+Amigo 10 está esperando para usar a grelha
+Amigo 10 está grelhando seu almoço
+Amigo 1 está esperando para usar a grelha
+Amigo 2 está esperando para usar a grelha
+Amigo 3 está esperando para usar a grelha
+Amigo 4 está esperando para usar a grelha
+Amigo 5 está esperando para usar a grelha
+Amigo 6 está esperando para usar a grelha
+Amigo 7 está esperando para usar a grelha
+Amigo 8 está esperando para usar a grelha
+Amigo 9 está esperando para usar a grelha
+Amigo 10 terminou de usar a grelhar
+Amigo 3 está grelhando seu almoço
+Amigo 3 terminou de usar a grelhar
+Amigo 5 está grelhando seu almoço
+Amigo 5 terminou de usar a grelhar
+Amigo 1 está grelhando seu almoço
+Amigo 1 terminou de usar a grelhar
+Amigo 9 está grelhando seu almoço
+Amigo 9 terminou de usar a grelhar
+Amigo 2 está grelhando seu almoço
+Amigo 2 terminou de usar a grelhar
+Amigo 8 está grelhando seu almoço
+Amigo 8 terminou de usar a grelhar
+Amigo 7 está grelhando seu almoço
+Amigo 7 terminou de usar a grelhar
+Amigo 4 está grelhando seu almoço
+Amigo 4 terminou de usar a grelhar
+Amigo 6 está grelhando seu almoço
+Amigo 6 terminou de usar a grelhar
+O churrasco terminou :/
+```
+
+[Spinlock - Go Playground](https://go.dev/play/p/AsoJtOIUyde)
+
 <br>
 
-### Semáforos 
+## Semáforos e Worker Pools
+
+![Semaforos](/assets/images/system-design/worker-pools.png)
+
+Existem dois tipos importantes de semaforo, o Semáforo Binário, que é muito parecido como o **Mutex** que já vimos, e o **Semáforo Contador**, que é o que vamos definir agora. 
+
+Imagine um churrasco onde temos uma grelha um pouco maior que pode comportar agora um certo número de alimentos de cada vez. Aqui a grelha ainda representa um recurso compartilhado, e o numero máximo de carnes que podem ser assadas por vez é o conceito aplicado de **semáforo contador**. 
+
+Agora a grelha da churrasqueira que você arrumou cabe até 3 pedaços de carte de cada vez, cada alimento que é colocado na churrasqueira adquire um espaço de semaforo e decrementa seu valor até chegar ao numero 0, que significa a grelha totalmente ocupada com 0 espaços disponíveis. Quando um alimento fica pronto, ele é removido da grelha o contador é incrementado dizendo que mais um alimento pode ser assado. 
+
+Um **semáforo** também é um mecanismo de sincronização que ajuda a controlar acessos a recursos compartilhados em programação paralela e também é utilizado para evitar Race Conditions e problemas de consistência de dados, porém com outra abordagem que também nos permite coordenar várias threads de uma maneira bem legal.
+
+Os semaforos possuem recursos para controle que são baseados em operações atômicas, sendo elas 
+
+* **Wait (Ocupar um recurso)**: Essa operação é usada para adquirir um recurso dentro do range disponível. Se temos um semaforo de 3 posições, significa que podemos ter 3 threads trabalhando por vez no maximo. Se tivermos 3 livres e executarmos uma operação de `Wait()`, esse numero é decrementado para 2 significando que temos 1 espaço de trabalho ocupado. 
+* **Signal (Liberar um recurso)**: Ao contrário do Wait, a operação `Signal()` incrementa o valor do contador do semaforo com o limite de espaço especificado, no caso o exemplo 2. Se um processo que estavaem  `Wait()` terminou, ele chama a operação de `Signal()` para desocupar um espaço do semaforo para que outra thread possa consumir. 
+
+Os semaforos são ferramentas muito eficiêntes para trabalhar com **Worker Pools**, que são um conjunto de threads que executam tarefas de forma controlada. É um padrão útil quando se tem um grande número de tarefas a serem executadas mas precisa se limitar o número de threads que podem estar sendo executadas simultaneamente. No caso da nossa analogia, o **Worker Pool** é número de alimentos que a grelha comporta. 
+
+### Exemplo de implementação: 
+
+* Vamos encontrar a capacidade da grelha: `3`
+* Verificar qual a quantidade de comida disponível pro churrasco: `10`
+* Criar um channel com o tamanho da capacidade da grelha para gerenciarmos o uso
+* Iniciar o preparo da comida adicionando um espaço no semaforo quando começar a assar o alimento
+* Remover um espaço do semaforo quando terminar de assar o alimento
+
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+// Função para simular o tempo de preparo de cada atividade do churrasco
+func preparar(item int, tempoPreparo int) {
+	fmt.Printf("Preparando o alimento %v...\n", item)
+	time.Sleep(time.Duration(tempoPreparo) * time.Second)
+	fmt.Printf("Alimento %v preparado, desocupando a grelha...\n", item)
+}
+
+func main() {
+
+	var wg sync.WaitGroup
+
+	// Numero maximo de goroutines / threads / alimentos que podem ser assados
+	var capacidadeDaGrelha = 3
+	// Alimentos disponíveis pra colocar na grelha
+	var alimentosChurrasco = 10
+
+	// Criando canal que tenha o tamanho maximo igual ao tamanho da grelha
+	semaforo := make(chan struct{}, capacidadeDaGrelha)
+
+	// Inicia o processo de assar os alimentos disponíveis
+	for i := 0; i < alimentosChurrasco; i++ {
+
+		wg.Add(1)              // Adiciona 1 atividade ao contador do WaitGroup
+		semaforo <- struct{}{} // Adquire 1 espaço no semáforo adicionando 1 item ao channel
+
+		// Começando a assar os alimentos na churrasqueira
+		go func(i int) {
+			alimento := i + 1
+
+			preparar(alimento, 2) // Inicia o preparo da comida
+			<-semaforo            // Libera um espaço no semaforo quando terminar o preparo
+			wg.Done()             // Termina uma ativilidade no contador do WaitGroup
+
+		}(i)
+	}
+
+	wg.Wait() // Espera todos os alimentos serem preparados
+	fmt.Println("Acabou o churrasco :/")
+
+}
+```
+
+```
+❯ go run main.go
+Preparando o alimento 2...
+Preparando o alimento 1...
+Preparando o alimento 3...
+Alimento 3 preparado, desocupando a grelha...
+Alimento 1 preparado, desocupando a grelha...
+Alimento 2 preparado, desocupando a grelha...
+Preparando o alimento 6...
+Preparando o alimento 5...
+Preparando o alimento 4...
+Alimento 4 preparado, desocupando a grelha...
+Alimento 6 preparado, desocupando a grelha...
+Alimento 5 preparado, desocupando a grelha...
+Preparando o alimento 9...
+Preparando o alimento 7...
+Preparando o alimento 8...
+Alimento 8 preparado, desocupando a grelha...
+Alimento 7 preparado, desocupando a grelha...
+Alimento 9 preparado, desocupando a grelha...
+Preparando o alimento 10...
+Alimento 10 preparado, desocupando a grelha...
+Acabou o churrasco :/
+```
+
+[Exemplo de Semaphore - Go Playground](https://go.dev/play/p/qZmrpyU_6a9)
+
+Essa foi uma implementação manual que pode ou não ser utilizada pra resolver algum problema, o objetivo foi explicar o funcionamento. Caso for implementar em produção, recomendo a utilização da bibliote [semaphore](https://pkg.go.dev/golang.org/x/sync/semaphore) do Golang que abstrai muita coisa da lógica dos Worker Pools. 
 
 <br>
 
 > Imagens geradas pelo DALL-E
-
-#### Topicos
-Thread, Espera ocupada, multiprocessamento, paralelismo interno vs externo, mecanismos de concorrencia (mutex, semaforo, spinlock), backpressure, 
-
 
 #### Referências
 
@@ -767,3 +1009,9 @@ https://www.tabnews.com.br/lucchesisp/concorrencia-e-paralelismo-com-golang#
 https://dev.to/jdvert/handling-mutexes-in-distributed-systems-with-redis-and-go-5g0d
 
 https://github.com/bsm/redislock
+
+https://afteracademy.com/blog/difference-between-mutex-and-semaphore-in-operating-system/
+
+https://dev.to/yanpiing/go-paralelismo-e-concorrencia-4mlo
+
+https://pkg.go.dev/golang.org/x/sync/semaphore
