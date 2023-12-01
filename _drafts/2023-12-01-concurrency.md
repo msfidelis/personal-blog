@@ -59,22 +59,22 @@ Agora que já exploramos alguns conceitos teóricos importantes, estamos prontos
 
 ![Concorrência Robô](/assets/images/system-design/concurrency-example.png)
 
-Imagine que você está preparando um churrasco sozinho. Você está responsável por organizar a geladeira, fazer os cortes de carne, cortar os vegetais para os amigos vegetarianos, fazendo a caipirinha, gelando a cerveja. Você alterna as tarefas fazendo um pouco de cada vez, **trabalhando um pouco em cada uma**, por mais que seja responsável por todas elas.
+Imagine que você está preparando um churrasco sozinho. Você é responsável por organizar a geladeira, fazer os cortes de carne, preparar os vegetais para os amigos vegetarianos, fazer caipirinhas e gelar a cerveja. Você alterna entre essas tarefas, trabalhando um pouco em cada uma, apesar de ser responsável por todas elas.
 
-Esse é um exemplo de concorrência, você está gerenciando muitas tarefas, mas não necessariamente trabalhando nelas ao mesmo tempo. Você troca entre as tarefas, dando a impressão de que tudo está progredindo ao mesmo tempo em conjunto. 
+Este cenário é um exemplo de concorrência, onde você está gerenciando várias tarefas, mas não necessariamente trabalhando em todas simultaneamente. Você se alterna entre as tarefas, criando a impressão de que tudo está progredindo em conjunto e ao mesmo tempo.
 
-**Concorrência é sobre lidar com muitas tarefas ao mesmo tempo**, mas não simultâneamente. É a capacidade de uma aplicação fazer a gestão de multiplas tarefas e instruções em segundo plano, mas não necessariamente essas instruções estão recebendo atenção do processador ao mesmo tempo, ou sendo executada em mais de um core.  
+**Concorrência é sobre lidar com muitas tarefas ao mesmo tempo**, mas não de forma simultânea. É a habilidade de uma aplicação gerenciar múltiplas tarefas e instruções em segundo plano, mesmo que essas instruções não estejam sendo processadas ao mesmo tempo, ou executadas em mais de um núcleo do processador.
+
 
 <br>
 
 ### Exemplo de Implementação
 
-Vamos tentar criar um  algortimo que se abstraia o nosso churrasco. Esse algoritmo deverá seguir a lógica:
+Agora, vamos criar um algoritmo que abstrai o nosso churrasco. Este algoritmo seguirá a lógica:
 
-
-* Listar as atividades do churrasco
-* Executar essas tarefas em goroutines simultêneas, cada uma esperando o tempo de preparo devido
-* Monitorar a saída das atividades
+- Listar as atividades do churrasco.
+- Executar essas tarefas em goroutines simultâneas, com cada uma aguardando seu respectivo tempo de preparo.
+- Monitorar a conclusão das atividades.
 
 
 ```go
@@ -165,29 +165,30 @@ costela foi preparado.
 
 ![Paralelismo Robô](/assets/images/system-design/paralelism-example.png)
 
-Vamos voltar pro exemplo do churrasco. Agora você tem tem seus amigos pra te ajudar a cortar a carne, acender a churrasqueira, gelar a cerveja e fazer a caipirinha. Todas essas tarefas agora estão sendo acontecendo em paralelo, cada pessoa responsável por uma parte do processo. 
+Revisitemos o exemplo do churrasco. Desta vez, você tem amigos para ajudar: um corta a carne, outro acende a churrasqueira, outro gela a cerveja e mais um faz a caipirinha. Todas essas tarefas estão ocorrendo em paralelo, com cada pessoa responsável por uma parte do processo.
 
-Isso é paralelismo. **Multiplas tarefas** e instruções estão acontecendo **ao mesmo tempo**, **simultaneamente**, por **multiplos cores de processadores**. 
+Isso ilustra o paralelismo. **Múltiplas tarefas** e instruções ocorrendo **simultaneamente**, executadas por **múltiplos núcleos de processadores**.
 
-Diferente da Concorrência, **paralelismo é estar fazendo muitas coisas ao mesmo tempo.**
+Diferentemente da concorrência, onde se trata de gerenciar várias tarefas ao mesmo tempo, **o paralelismo envolve fazer várias coisas ao mesmo tempo.**
 
-Paralelismo é usado em situações onde o desempenho e a eficiência são críticos, e há recursos suficientes como múltiplos cores de CPU para executar várias tarefas simultaneamente. 
+O paralelismo é empregado em situações onde o desempenho e a eficiência são críticos, e há recursos suficientes, como múltiplos núcleos de CPU, para executar diversas tarefas simultaneamente.
 
-Em ambientes paralelos, processos ou threads frequentemente precisam sincronizar suas ações e comunicar-se entre si. Mecanismos de sincronização, como **semáforos**, **mutexes** e **monitores**, são ferramentas essenciais para evitar **race conditions** e garantir a consistência dos dados, isso acarreta numa eventual dificuldade de programação, debugs de programas que implementem paralelismo. 
+Em ambientes paralelos, processos ou threads frequentemente precisam sincronizar suas ações e comunicar-se entre si. Mecanismos de sincronização, como **semáforos**, **mutexes** e **monitores**, são ferramentas essenciais para evitar **race conditions** e garantir a consistência dos dados, embora isso possa acrescentar complexidade à programação e ao debugging de programas que implementam paralelismo.
 
-O paralelismo em computação é uma área de pesquisa ativa e continua evoluindo, especialmente com o surgimento de novas arquiteturas de hardware e demandas crescentes por processamento de grandes volumes de dados e computação de alto desempenho.
+O paralelismo em computação é um campo de pesquisa ativo e continua evoluindo, especialmente com o desenvolvimento de novas arquiteturas de hardware e a crescente demanda por processamento de grandes volumes de dados e computação de alto desempenho.
 
 <br>
 
 ### Implementando um algoritmo de paralelismo
 
-Novamente vamos simular um churrasco no código. Diferente das condições de concorrência, nesse snippet vamos escrever um algoritmo que:
+Vamos simular novamente um churrasco em código, mas agora sob condições de paralelismo. Neste snippet, vamos:
 
-* Identificar quantos **amigos (CPU's)** estão disponíveis para ajudar no churrasco. 
-* Criar uma lista de atividades do churrasco informando o tempo de preparo e o responsável pela tarefa 
-* Encontrar o número ideal de tarefas e dividí-las entre os amigos (balanceamento)
-* Dividir as tarefas entre os **amigos (CPU's)** em threads 
+* Identificar quantos **amigos (CPUs)** estão disponíveis para ajudar no churrasco.
+* Criar uma lista de atividades do churrasco, informando o tempo de preparo e quem é o responsável por cada tarefa.
+* Determinar o número ideal de tarefas e distribuí-las entre os amigos de forma equilibrada.
+* Alocar as tarefas entre os **amigos (CPUs)** em threads.
 * Monitorar o output das tarefas:
+
 
 
 ```go
@@ -326,22 +327,19 @@ Program exited.
 
 <br>
 
-## Paralelismo Externo vs Paralelismo Interno. 
-
+## Paralelismo Externo vs Paralelismo Interno
 
 ![Paralelismo Interno e Externo](/assets/images/system-design/paralelismo-interno-externo.png)
 
-O paralelismo pode ser dividido em duas frentes muito simples de compreender a diferença: o **interno** e **externo**. Pode parecer complexo mas eu vou te provar que é simples com a explicação a seguir. 
-
+O paralelismo pode ser dividido em duas categorias simples de compreender: **interno** e **externo**. A diferença entre eles é mais simples do que parece, conforme explicado a seguir.
 
 ### Paralelismo Interno
 
-O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, ocorre dentro de uma **única aplicação ou processo**. É o paralelismo que você **implementa na sua aplicação via código** quando p**recisa dividir as tarefas ou itens em memória entre várias sub-tarefas** que podem ser processadas simultaneamente. **Basicamente é o paralelismo que você cria via código para ser executado dentro do seu container ou servidor**. 
-
+O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, ocorre dentro de uma **única aplicação ou processo**. É o paralelismo que você **implementa no código da sua aplicação** quando precisa dividir tarefas ou itens em memória entre várias sub-tarefas que podem ser processadas simultaneamente. **Basicamente, é o paralelismo que você cria via código para ser executado dentro do seu container ou servidor**.
 
 ### Paralelismo Externo
 
-É o paralelismo que se refere a **execução simultânea de multiplas tarefas em diferentes hardwares, maquinas ou containers**. Podemos ver esse conceito sendo aplicado em ambientes de computação distribuída como **Haddop**, **Spark** que distribuiem grandes volumes de dados em muitos servidores e instâncias para realizar tarefas de ETL, Machine Learning e Analytics ou como simples **Load Balancers, ou Balanceadores de Carga** que dividem as requisições entre diversas instâncias da mesma aplicação para distribuir o tráfego. 
+Já o paralelismo externo refere-se à **execução simultânea de múltiplas tarefas em diferentes hardwares, máquinas ou containers**. Esse conceito é aplicado em ambientes de computação distribuída, como **Hadoop** e **Spark**, que distribuem grandes volumes de dados em vários servidores e instâncias para realizar tarefas de ETL, Machine Learning e Analytics. Também é visto em **Load Balancers**, que dividem as requisições entre várias instâncias da mesma aplicação para distribuir o tráfego.
 
 ![Paralelismo Load Balancer](/assets/images/system-design/load-balancer.gif)
 
@@ -349,13 +347,14 @@ O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, o
 
 # Paralelismo vs Concorrência 
 
-Depois de bastante trabalho, conseguimos resumir conceitualmente a diferença entre **concorrência** e **paralelismo**. **Concorrência** é sobre lidar com várias tarefas ao mesmo tempo. Ela permite que um sistema execute várias operações aparentemente ao mesmo tempo, e **Paralelismo** é a execução literal de várias operações ou tarefas simultaneamente.
+Após uma análise detalhada, conseguimos distinguir conceitualmente **concorrência** de **paralelismo**. A **concorrência** lida com a execução de várias tarefas ao mesmo tempo, permitindo que um sistema execute múltiplas operações aparentemente simultâneas. Já o **paralelismo** envolve a execução literal de várias operações ou tarefas ao mesmo tempo.
 
-Em sistemas com um único núcleo de CPU, a concorrência é geralmente alcançada através de multithread, onde as tarefas são **alternadas rapidamente**, dando a ilusão de que estão sendo executadas simultaneamente, já **Paralelismo** requer hardware com **múltiplos cores**, onde cada um deles executa **diferentes threads ou processos ao mesmo tempo**.
+Em sistemas com um único núcleo de CPU, a concorrência é normalmente alcançada através de multithreading, onde as tarefas são **alternadas rapidamente**, criando a ilusão de execução simultânea. Por outro lado, o **paralelismo** requer hardware com **múltiplos núcleos**, permitindo que cada núcleo execute **diferentes threads ou processos simultaneamente**.
 
-![Cocorrencia vs Paralelismo](/assets/images/system-design/concorrencia-paralelismo.png)
+![Concorrência vs Paralelismo](/assets/images/system-design/concorrencia-paralelismo.png)
 
 <br>
+
 
 ## Lidando com Paralelismo e Concorrência
 
