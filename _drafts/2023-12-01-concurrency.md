@@ -43,13 +43,14 @@ Uma **Thread é a menor unidade de processamento que pode ser gerenciada por um 
 
 ## O que é Multithreading?
 
-**Multithreading** é uma técnica de programação que envolve a criação de múltiplas threads (fluxos de execução de uma tarefa) dentro de um único processo. Cada thread pode lidar com diferentes tarefas ou partes de uma tarefa maior. Esse método pode ser usado **tanto em contextos concorrentes quanto paralelos**. Em sistemas com **um único processador, o multithreading permite concorrência** (troca rápida entre threads para dar a ilusão de simultaneidade). Em sistemas **multiprocessador, o multithreading pode alcançar paralelismo verdadeiro, onde diferentes threads são executadas em paralelo em diferentes núcleos**, ambos os casos permitindo melhor aproveitamento de recursos e melhoria de eficiência e performance. 
+**Multithreading** é uma técnica de programação que consiste na criação de múltiplas threads (fluxos de execução independentes) dentro de um único processo. Cada thread pode ser responsável por diferentes tarefas ou partes de uma tarefa mais ampla. Este método pode ser aplicado **tanto em contextos concorrentes quanto paralelos**. Em sistemas com **um único processador, o multithreading facilita a concorrência** (alternância rápida entre threads para criar a ilusão de simultaneidade). Já em sistemas **multiprocessadores, o multithreading pode alcançar paralelismo real, com threads sendo executadas simultaneamente em núcleos distintos da CPU**, otimizando o uso dos recursos e melhorando a eficiência e o desempenho.
 
-Te tirando do seu churrasco, imagine agora seu **restaurante favorito**. O **processo é o restaurante em funcionamento** com objetivo de **fornecer comida aos clientes**. Imagine esse restaurante num horário de pico, hora do almoço em dia de semana, em seguida **veja as threads como funcionários da cozinha**. Cada cozinheiro disponível é **responsável por preparar um prato diferente ao mesmo tempo** para acelerar a vazão dos pedidos feitos para a cozinha. Assim vários pratos são preparados simultâneamente aumentando a eficiência na entrega dos pratos reduzindo o tempo de espera dos clientes. 
+Para ilustrar, saia do contexto do churrasco e pense agora em seu **restaurante favorito**. Aqui, o **processo é o restaurante funcionando**, com o objetivo de **servir comida aos clientes**. Durante um horário de pico, como o almoço em um dia útil, as **threads são como os funcionários da cozinha**. Cada cozinheiro (thread) é **responsável por preparar um prato diferente simultaneamente**, acelerando o atendimento dos pedidos. Dessa forma, vários pratos são preparados ao mesmo tempo, aumentando a eficiência e diminuindo o tempo de espera dos clientes.
 
 <br>
 
-Agora que já temos uma bagagem teórica de alguns termos e conceitos que vão aparecer nas próximas explicações, vamos detalhar com um pouco mais de segurança. 
+Agora que já exploramos alguns conceitos teóricos importantes, estamos prontos para mergulhar em explicações mais detalhadas com segurança.
+
 
 <br>
 
