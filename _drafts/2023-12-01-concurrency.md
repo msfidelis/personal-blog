@@ -355,7 +355,7 @@ Em sistemas com um único núcleo de CPU, a concorrência é normalmente alcanç
 
 <br>
 
-## Lidando com Paralelismo e Concorrência
+# Lidando com Paralelismo e Concorrência
 
 Agora que já detalhamos de forma lúdica e conceitual a definição de programação paralela e concorrente, é hora de explorar os desafios e ferramentas existentes para trabalhar com essas estratégias. Embora abordagens paralelas e concorrentes ofereçam várias vantagens, como melhoria de performance, escalabilidade e otimização de recursos, elas também trazem desafios significativos. Estes incluem questões de sincronização, condições de corrida, deadlocks, starvation e o balanceamento de carga de trabalho, entre outros. Vamos agora definir conceitualmente alguns desses termos para facilitar seu entendimento e capacidade de explicá-los no futuro.
 
@@ -375,7 +375,7 @@ Starvation, ou inanição, ocorre quando uma ou mais threads não conseguem aces
 
 <br>
 
-### Race Conditions - Condições de Corrida
+## Race Conditions - Condições de Corrida
 
 ![Robô Race Condition](/assets/images/system-design/race-condition.png)
 
@@ -433,7 +433,8 @@ func main() {
 
 ```
 
-Podemos ver que o resultado sempre varia de acordo com as goroutines que acessam o contador. Esse é o problema de race condition, onde na realidade não poderia ser representado num churrasco real, pois a grelha não comportaria todas os alimentos ao mesmo tempo na churrasqueira de qualquer forma. 
+Podemos observar que o resultado varia de acordo com as goroutines que acessam o contador. Esse é o cerne do problema de race condition: a inconsistência dos resultados devido ao acesso simultâneo ao mesmo recurso. Embora a analogia com o churrasco seja útil para ilustrar o conceito, na realidade prática de um churrasco, a grelha não comportaria todos os alimentos ao mesmo tempo. Portanto, a situação de race condition, neste contexto, seria menos provável, já que a limitação física da grelha impõe um controle natural sobre o acesso simultâneo. No entanto, em sistemas de computação, onde múltiplas threads podem acessar e modificar o mesmo recurso sem uma devida sincronização, a race condition se torna um problema significativo e desafiador.
+
 
 ```
 ❯ go run problem/main.go
@@ -456,29 +457,30 @@ Total de itens grelhados na churrasqueira: 99
 
 <br>
 
-### Mutex
+## Mutex
 
 ![Robô Mutex](/assets/images/system-design/mutex.png)
 
-De volta ao churrasco. Chegamos na conclusão após o exemplo de Race Conditions de que é impossível todos os alimentos serem assados ao mesmo tempo, pois só cabe 1 por vez na nossa pobre grelha. Para isso precisamos de que algum membro do churrasco fique responsável por assar os alimentos em sequencia. 
+Voltando ao churrasco, após observar o exemplo de **Race Conditions**, concluímos que é impossível assar todos os alimentos ao mesmo tempo na grelha, já que ela só comporta um item por vez. Portanto, é necessário que alguém do churrasco fique responsável por assar os alimentos em sequência.
 
-Como a churrasqueira é um recurso compartilhado, essa pessoa irá atuar como uma "trava" do uso da churrasqueira. *Terminou um, coloca o próximo e espera*. Isso é um exemplo de como funciona um **Mutex**.
+Como a churrasqueira é um recurso compartilhado, essa pessoa atuará como uma "trava" para o uso da churrasqueira: *um alimento é assado, e então o próximo é colocado*. Esse cenário ilustra a função de um **Mutex**.
 
-Mutex é uma abreviação para **Mutual Exclusion**, ou **Exclusão Mutua**, e é uma estratégia muito eficiente que serve para controlar acesso a um recurso compartilhado em um ambiente multithread, paralelo ou concorrente, fazendo com que exista a possibilidade de um acesso sequencial e organizado para os recursos distribuídos, sendo uma das principais ferramentas para se trabalhar com programação concorrente e paralela
+"Mutex" é a abreviação de **Mutual Exclusion** (Exclusão Mútua) e é uma estratégia eficiente para controlar o acesso a um recurso compartilhado em ambientes de multithreading, paralelismo ou concorrência. Ela possibilita um acesso sequencial e organizado aos recursos, sendo uma das principais ferramentas para programação concorrente e paralela.
 
-O objetivo principal do Mutex é evitar **Race Conditions** do tipo que vimos no exemplo anterior garantindo que só uma thread por vez consiga acessar o recurso. As operações básicas de um Mutex são de "lock" para bloquear o acesso a um determinado recurso, e "unlock" para liberar esse recurso para a proxima thread acessar. 
+O principal objetivo do Mutex é evitar **Race Conditions**, como visto anteriormente, garantindo que apenas uma thread por vez possa acessar um recurso. As operações básicas de um Mutex são "lock", para bloquear o acesso ao recurso, e "unlock", para liberá-lo para a próxima thread.
 
-Essas operações de **lock/unlock** também precisam respeitar uma certa prioridade, ou seja, apenas a thread que bloqueou o recurso tem acesso para desbloquear o mesmo. 
+Estas operações de **lock/unlock** também devem respeitar uma certa prioridade, ou seja, apenas a thread que bloqueou o recurso pode desbloqueá-lo.
 
-Sem um mutex, **todos tentariam usar a churrasqueira ao mesmo tempo**. Isso resultaria em confusão, com as pessoas se empurrando, brigando e tentando colocar sua carne na grelha, possivelmente gerando carnes mal grelhadas ou até mesmo queimadas.
+Sem um Mutex, **todos tentariam usar a churrasqueira simultaneamente**, resultando em confusão, disputas e, possivelmente, alimentos mal preparados ou queimados.
 
-Existem alguns riscos do uso de Mutex como em qualquer outra estratégia, o maior deles são os riscos de **Deadlock**, que é a condição onde várias threads tentam bloquear multiplos mutexes em uma ordem inconsistente. 
+Contudo, o uso de Mutexes não está isento de riscos, sendo o principal deles o **Deadlock**. Um Deadlock ocorre quando várias threads tentam bloquear múltiplos Mutexes em uma ordem inconsistente.
 
-No Go podemos trabalhar com Mutexes através do pacote `sync`. Vamos resolver o problema de race condition da grelha da churrasqueira. 
+No Go, podemos trabalhar com Mutexes através do pacote `sync`. Para solucionar o problema de race condition com a grelha, podemos:
 
-* Criamos um orquestrador de uso da grelha, chamado `grelhaOcupada` usando o `sync.Mutex`
-* Durante a preparação, `grelhar()`, colocamos um `Mutex.Lock()` no inicio, e um `Mutex.Unlock()` no final para liberar o recurso para a proxima thread. 
-* Dessa forma conseguimos garantir um acesso sequencial de todos os processos para grelhar coisas na churrasqueira. 
+- Criar um orquestrador para o uso da grelha, chamado `grelhaOcupada`, usando o `sync.Mutex`.
+- Durante a preparação, na função `grelhar()`, inserimos um `Mutex.Lock()` no início e um `Mutex.Unlock()` no final para liberar o recurso para a próxima thread.
+- Assim, garantimos um acesso sequencial a todos os processos para grelhar itens na churrasqueira.
+
 
 ```go
 package main
@@ -554,19 +556,21 @@ Total de itens grelhados na churrasqueira: 100
 
 <br>
 
-### Mutex Distribuído 
+## Mutex Distribuído 
 
-![Robô Mutex Distríbuido](/assets/images/system-design/mutex-distribuido.png)
+![Robô Mutex Distribuído](/assets/images/system-design/mutex-distribuido.png)
 
-Já demonstramos como trabalhar com mutex no modelo de paralelismo interno, onde implementamos todo o controle de paralelismo via código. É importante também portar essa lógica para o paralelismo externo, onde arquiteturalmente podemos consumir **mensagens produzidas em uma fila**, **eventos de um tópico do Kafka**, lidar com **solicitações** HTTP e muitos outros cenários onde precisamos ter **idempotencia**, **atomicidade** e **exclusividade** em algum processo. 
+Já exploramos o uso de Mutex no modelo de paralelismo interno, onde o controle de paralelismo é implementado via código. É igualmente importante entender a aplicação dessa lógica no paralelismo externo, em cenários arquiteturais diversos como o consumo de **mensagens de uma fila**, **eventos de um tópico do Kafka**, tratamento de **solicitações HTTP** e outras situações que demandam **idempotência**, **atomicidade** e **exclusividade** em determinados processos.
 
-Criar um Mutex para sistemas distribuídos é um desafio um pouco complexo, mas também de certa forma facilitado do que quando comparado com mutexes de paralelismo interno de memória compartilhada. Existem desafios como **comunicação com componentes, latência de rede e falhas nos serviços em geral**. 
+Desenvolver um Mutex para sistemas distribuídos apresenta uma série de desafios, mas em alguns aspectos, é mais facilitado do que os Mutexes em cenários de paralelismo interno com memória compartilhada. Entre os possíveis problemas que podemos encontrar estão a **comunicação entre componentes, latência de rede e falhas gerais nos serviços**.
 
-É necessário ter alguma **base de dados centralizada** onde podemos manter o estado dos processos compartilhados entre todas as replicas dos consumidores dessas mensagens, para caso de duplicidade da mensagem, evento ou solicitacão ou duplicação das mesmas por algum cenário não previsto. 
+Para funcionar eficientemente, esses sistemas geralmente dependem de uma **base de dados centralizada** para manter o estado dos processos compartilhados entre todas as réplicas dos consumidores de mensagens. Isso é crucial para lidar com duplicidades em mensagens, eventos ou solicitações devido a cenários imprevistos.
 
-Para isso são utilizadas algumas estratégias utilizando bancos otimizados para leitura e escrita chave/valor como **Redis, Memcached, Cassandra, DynamoDB** e etc ou tecnologias como **Zookeeper**. 
+Algumas estratégias comuns utilizam bancos de dados otimizados para operações de leitura e escrita chave/valor, como **Redis, Memcached, Cassandra, DynamoDB**, além de tecnologias como **Zookeeper**.
 
-No exemplo abaixo utilizando o Redis, fiz um fluxo lógico do algoritmo de mutex, onde recebemos uma pseudo-mensagem, checamos existe um lock criado pra ela no Redis, caso exista descartamos o processamento. Caso não exista, criamos o lock, processamos a mensagem e liberamos o lock na sequencia. 
+No exemplo a seguir, que utiliza o Redis, apresentamos um fluxo lógico de um algoritmo de Mutex. Ao receber uma pseudo-mensagem, verificamos se já existe um lock para ela no Redis. Se o lock existir, descartamos o processamento da mensagem. Se não existir, criamos o lock, processamos a mensagem e, em seguida, liberamos o lock.
+
+### Exemplo de Implementação
 
 ```go
 package main
@@ -667,21 +671,23 @@ Esse é um exemplo simples pra entendimento do algoritmo que não trata dodos os
 
 <br>
 
-### Mutex Distribuído - Zookeeper
+## Mutex Distribuído - Zookeeper
 
-Uma opção bem elegante em alternativa ao Redis é utilizar o **Apache Zookeeper** para gerenciar os locks distribuiídos. A lógica é exatamente a mesma do exemplo anterior porém com algumas peculiaridades.
+Uma alternativa elegante ao Redis para gerenciar locks distribuídos é o uso do **Apache Zookeeper**. Embora a lógica fundamental seja semelhante ao exemplo anterior, o Zookeeper apresenta algumas peculiaridades interessantes.
 
-Criar um mutex distribuído em Go usando **Apache ZooKeeper** é uma tarefa avançada que envolve manipular **znodes** (Nós do  **ZooKeeper**) para gerenciar essas travas de forma distribuída. Vamos passar por um exemplo básico de como isso pode ser feito.
+A criação de um mutex distribuído em Go utilizando **Apache Zookeeper** é uma tarefa avançada que implica na manipulação de **znodes** (nós do Zookeeper) para gerenciar as travas de forma distribuída. Vamos explorar um exemplo básico de como isso pode ser implementado.
 
-Uma coisa legal dos locks do zookeeper é que você pode determinar um timeout de sessão para que todas os locks gerenciados pelo processo sejam excluídos após o termino da execução do programa. 
+Uma vantagem notável dos locks do Zookeeper é a capacidade de definir um timeout de sessão. Isso garante que todos os locks gerenciados pelo processo sejam excluídos automaticamente após o término da execução do programa.
 
-A lógica é exatamente igual ao do Redis:
+Segue a lógica para o uso do Zookeeper na gestão de locks:
 
-* Verificar se existe um lock para o recurso 
-* Se existir, ignorar a mensagem e retorná-la para o pool
-* Se não existir, criar
-* Processar a solicitação 
-* Remover o lock em caso de sucesso
+- **Verificação de Lock**: Checar se já existe um lock para o recurso específico.
+- **Gerenciamento de Mensagem**: Caso o lock exista, a mensagem é ignorada e retornada ao pool. Se não existir, prosseguir para o próximo passo.
+- **Criação de Lock**: Estabelecer um lock para o recurso.
+- **Processamento da Solicitação**: Realizar as operações necessárias enquanto o lock está ativo.
+- **Remoção do Lock**: Após o processamento bem-sucedido, remover o lock para liberar o recurso.
+
+### Exemplo de Implementação
 
 
 ```go
@@ -786,9 +792,19 @@ Mutex travado para o recurso /12345
 
 ![Spinlock](/assets/images/system-design/spinlock.png)
 
-Volte para o churrasco com seus amigos onde há uma única grelha que todos querem usar pra assar um tipo de alimento pra comer. Ao invés de ficar esperando, como no Mutex, cada pessoa fica parada ao lado da grelha, verificando constantemente se ela está livre para uso. Assim que a grelha fica disponível, a pessoa que está verificando nesse momento a utiliza.
+## Spinlock
 
-Um spinlock é um tipo de mecanismo de sincronização usado em ambientes de programação concorrente para proteger o acesso a recursos compartilhados. A ideia principal por trás de um spinlock é bastante simples: **em vez de bloquear uma thread e colocá-la para dormir quando ela tenta acessar um recurso que já está bloqueado, a thread "gira" (ou seja, entra em um loop) até que o lock seja liberado**.
+![Spinlock](/assets/images/system-design/spinlock.png)
+
+Imagine novamente o churrasco com seus amigos, onde há uma única grelha que todos desejam utilizar para assar diferentes alimentos. Diferentemente do Mutex, onde se espera pacientemente pela liberação do recurso, no caso do Spinlock, cada pessoa permanece ao lado da grelha, verificando constantemente se ela está livre. Assim que a grelha fica disponível, a pessoa que está verificando naquele exato momento a utiliza.
+
+Um spinlock é um mecanismo de sincronização utilizado em ambientes de programação concorrente para proteger o acesso a recursos compartilhados. A ideia por trás de um spinlock é relativamente simples: **em vez de bloquear uma thread e fazê-la entrar em estado de espera (sleep) quando tenta acessar um recurso já bloqueado, a thread continua ativa (girando) em um loop até que o lock seja liberado**.
+
+Esta abordagem de "girar" em um loop, constantemente verificando se o recurso está disponível, é eficaz em cenários onde o tempo de espera pelo recurso é relativamente curto, pois evita o overhead associado ao bloqueio e desbloqueio de threads. No entanto, em situações onde o recurso permanece bloqueado por períodos mais longos, o spinlock pode ser menos eficiente, pois a thread continua consumindo recursos de CPU enquanto "gira".
+
+
+Pense em um spinlock como uma situação em um churrasco onde, em vez de formar uma fila e aguardar a sua vez de usar a grelha (o que seria um bloqueio tradicional como vimos no **Mutex**), cada pessoa fica parada ao lado da grelha, perguntando toda hora se ela está livre. Assim que a grelha é liberada, a pessoa que verificar naquele momento a utiliza. Esta abordagem é eficiente se o tempo de espera pela grelha for curto, mas pode ser cansativa e ineficiente se a grelha estiver ocupada por longos períodos.
+
 
 ### Exemplo de Implementação
 
@@ -896,30 +912,29 @@ O churrasco terminou :/
 
 ## Semáforos e Worker Pools
 
-![Semaforos](/assets/images/system-design/worker-pools.png)
+![Semáforos](/assets/images/system-design/worker-pools.png)
 
-Existem dois tipos importantes de semaforo, o Semáforo Binário, que é muito parecido como o **Mutex** que já vimos, e o **Semáforo Contador**, que é o que vamos definir agora. 
+Existem dois tipos principais de semáforos: o **Semáforo Binário**, que é similar ao **Mutex** já discutido, e o **Semáforo Contador**, que vamos abordar agora.
 
-Imagine um churrasco onde temos uma grelha um pouco maior que pode comportar agora um certo número de alimentos de cada vez. Aqui a grelha ainda representa um recurso compartilhado, e o numero máximo de carnes que podem ser assadas por vez é o conceito aplicado de **semáforo contador**. 
+Imagine um churrasco com uma grelha maior, capaz de comportar um número definido de alimentos simultaneamente. A grelha representa um recurso compartilhado, e a capacidade máxima de alimentos que ela pode assar por vez ilustra o conceito de **semáforo contador**.
 
-Agora a grelha da churrasqueira que você arrumou cabe até 3 pedaços de carte de cada vez, cada alimento que é colocado na churrasqueira adquire um espaço de semaforo e decrementa seu valor até chegar ao numero 0, que significa a grelha totalmente ocupada com 0 espaços disponíveis. Quando um alimento fica pronto, ele é removido da grelha o contador é incrementado dizendo que mais um alimento pode ser assado. 
+Suponha que a grelha possa acomodar até 3 pedaços de carne de cada vez. Cada alimento colocado na grelha ocupa um espaço do semáforo, decrementando seu valor até atingir 0, indicando que a grelha está completamente ocupada. Quando um alimento é retirado da grelha, o contador é incrementado, indicando que há espaço para mais um alimento ser assado.
 
-Um **semáforo** também é um mecanismo de sincronização que ajuda a controlar acessos a recursos compartilhados em programação paralela e também é utilizado para evitar Race Conditions e problemas de consistência de dados, porém com outra abordagem que também nos permite coordenar várias threads de uma maneira bem legal.
+Um **semáforo** é outro mecanismo de sincronização usado em programação paralela para controlar o acesso a recursos compartilhados e evitar **Race Conditions** e inconsistências de dados. Ele se baseia em operações atômicas, que incluem:
 
-Os semaforos possuem recursos para controle que são baseados em operações atômicas, sendo elas 
+- **Wait (Ocupar um recurso)**: Utilizada para adquirir um recurso. Por exemplo, em um semáforo com 3 posições, podemos ter no máximo 3 threads trabalhando simultaneamente. Ao executar `Wait()`, o número disponível é decrementado, indicando que uma posição está ocupada.
+- **Signal (Liberar um recurso)**: O oposto de `Wait`, a operação `Signal()` incrementa o contador do semáforo até o limite especificado. Quando um processo em `Wait()` conclui, ele chama `Signal()` para liberar um espaço, permitindo que outra thread ocupe esse lugar.
 
-* **Wait (Ocupar um recurso)**: Essa operação é usada para adquirir um recurso dentro do range disponível. Se temos um semaforo de 3 posições, significa que podemos ter 3 threads trabalhando por vez no maximo. Se tivermos 3 livres e executarmos uma operação de `Wait()`, esse numero é decrementado para 2 significando que temos 1 espaço de trabalho ocupado. 
-* **Signal (Liberar um recurso)**: Ao contrário do Wait, a operação `Signal()` incrementa o valor do contador do semaforo com o limite de espaço especificado, no caso o exemplo 2. Se um processo que estavaem  `Wait()` terminou, ele chama a operação de `Signal()` para desocupar um espaço do semaforo para que outra thread possa consumir. 
+Os semáforos são eficientes para trabalhar com **Worker Pools**, que são conjuntos de threads executando tarefas de forma controlada. Esse padrão é útil quando há muitas tarefas a serem realizadas, mas é necessário limitar o número de threads em execução simultânea. Na nossa analogia, o **Worker Pool** seria o número de alimentos que a grelha pode acomodar.
 
-Os semaforos são ferramentas muito eficiêntes para trabalhar com **Worker Pools**, que são um conjunto de threads que executam tarefas de forma controlada. É um padrão útil quando se tem um grande número de tarefas a serem executadas mas precisa se limitar o número de threads que podem estar sendo executadas simultaneamente. No caso da nossa analogia, o **Worker Pool** é número de alimentos que a grelha comporta. 
+### Exemplo de Implementação: 
 
-### Exemplo de implementação: 
-
-* Vamos encontrar a capacidade da grelha: `3`
-* Verificar qual a quantidade de comida disponível pro churrasco: `10`
-* Criar um channel com o tamanho da capacidade da grelha para gerenciarmos o uso
-* Iniciar o preparo da comida adicionando um espaço no semaforo quando começar a assar o alimento
-* Remover um espaço do semaforo quando terminar de assar o alimento
+- Determinar a capacidade da grelha: `3`.
+- Verificar a quantidade de comida disponível para o churrasco: `10`.
+- Criar um channel com o tamanho da capacidade da grelha para gerenciar o uso.
+- Iniciar o preparo da comida, ocupando um espaço no semáforo ao começar a assar o alimento.
+- Remover um espaço do semáforo ao concluir o assado de cada alimento.
+- Aqui no Go vamos inverter a lógica de incrementar / decrementar. Vamos criar um canal com o tamanho maximo de itens que cabem na grelha, adicionar um objeto para ocupar a posição e em seguida removê-lo quando liberar o processo. 
 
 
 ```go
