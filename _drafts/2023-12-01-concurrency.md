@@ -25,11 +25,12 @@ Vamos começar detalhando alguns conceitos que serão úteis durante o artigo:
 
 ## O que é um Processo?
 
-Imagine o ultimo churrasco que você participou junto com sua familia e amigos. Pense nesse churrasco como um processo sendo executado por um computador. 
+Vamos pensar no último churrasco em que você participou com sua família e amigos. Imagine esse churrasco como um processo sendo executado por um computador.
 
-Um processo nada mais é do que uma **instância de um programa que está sendo executado no momento**. Esse programa contém uma série de instruções, o processo é a execução real dessas instruções. **Um processo é um programa em movimento**.  
+Um processo é basicamente uma **instância de um programa em execução**. Esse programa contém uma série de instruções, e o processo é a execução real dessas instruções. Em outras palavras, **um processo é um programa em ação**.
 
-Quando iniciamos o **navegador**, **IDE**, **agents**, **aplicações**, **bancos de dados** e outros serviços, o sistema operacional cria um processo para esses programas, fornecendo os recursos necessários para execução do mesmo, como **espaço de memória isolado**, **threads**, **contextos** e a gestão do **próprio ciclo de vida** do mesmo. 
+Ao iniciarmos aplicativos como o **navegador**, **IDE**, **agentes**, **aplicações**, **bancos de dados** e outros serviços, o sistema operacional cria um processo para cada um desses programas, fornecendo os recursos necessários para sua execução. Isso inclui **espaço de memória isolado**, **threads**, **contextos** e a gestão do **próprio ciclo de vida** do processo.
+
 
 <br>
 
