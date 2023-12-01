@@ -1019,6 +1019,8 @@ Essa foi uma implementação manual que pode ou não ser utilizada pra resolver 
 
 <br>
 
+[Github - Algoritmos apresentados no texto](https://github.com/msfidelis/system-design-examples/tree/main/concurrency-parallelism)
+
 > Imagens geradas pelo DALL-E
 
 #### Referências
