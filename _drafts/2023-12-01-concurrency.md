@@ -36,7 +36,8 @@ Ao iniciarmos aplicativos como o **navegador**, **IDE**, **agentes**, **aplicaç
 
 ## O que é uma Thread?
 
-Uma **Thread é a menor unidade de processamento que pode ser gerenciada por um sistema operacional**. Ela é uma sequência de instruções previamente programadas que podem ser executadas independentemente por uma CPU. No mesmo processo, multiplas threads podem ser usadas para executar as tarefas de forma **concorrente** para melhorar a eficiência. As threads de um programa compartilham o mesmo espaço em memória e os recursos alocados, mas também podem ser executadas simultâneamente em cores de CPU diferentes, permitindo o **paralelismo**. Pense em threads como tarefas que precisam ser executadas dentro de um churrasco. 
+Uma **Thread é a menor unidade de processamento que pode ser gerenciada por um sistema operacional**. Ela representa uma sequência de instruções programadas que pode ser executada de forma independente por uma CPU. Dentro do mesmo processo, múltiplas threads podem ser utilizadas para realizar tarefas de forma **concorrente**, visando melhorar a eficiência do programa. As threads de um mesmo programa compartilham o mesmo espaço de memória e os recursos alocados. Além disso, elas podem ser executadas simultaneamente em núcleos diferentes da CPU, permitindo o **paralelismo**. Imagine as threads como várias tarefas menores que precisam ser realizadas em um churrasco.
+
 
 <br>
 
