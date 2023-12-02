@@ -49,7 +49,7 @@ Para ilustrar, saia do contexto do churrasco e pense agora em seu **restaurante 
 
 <br>
 
-Agora que já exploramos alguns conceitos teóricos importantes, estamos prontos para mergulhar em explicações mais detalhadas com segurança.
+Agora que já exploramos alguns conceitos teóricos importantes, podemos seguir com explicações mais detalhadas com segurança.
 
 
 <br>
@@ -349,7 +349,12 @@ Já o paralelismo externo refere-se à **execução simultânea de múltiplas ta
 
 Após uma análise detalhada, conseguimos distinguir conceitualmente **concorrência** de **paralelismo**. A **concorrência** lida com a execução de várias tarefas ao mesmo tempo, permitindo que um sistema execute múltiplas operações aparentemente simultâneas. Já o **paralelismo** envolve a execução literal de várias operações ou tarefas ao mesmo tempo.
 
+Concorrência no mais, significa também ter várias tarefas em paralelo onde você não tem controle na ordem que elas serão processadas, tendo em vista que só é posseivel saber a ordem de execução após todas elas terem terminado. 
+
 Em sistemas com um único núcleo de CPU, a concorrência é normalmente alcançada através de multithreading, onde as tarefas são **alternadas rapidamente**, criando a ilusão de execução simultânea. Por outro lado, o **paralelismo** requer hardware com **múltiplos núcleos**, permitindo que cada núcleo execute **diferentes threads ou processos simultaneamente**.
+
+Paralelismo em geral é concorrênte, mas nem toda concorrência é paralela. 
+
 
 ![Concorrência vs Paralelismo](/assets/images/system-design/concorrencia-paralelismo.png)
 
@@ -1013,13 +1018,28 @@ Acabou o churrasco :/
 
 Essa foi uma implementação manual que pode ou não ser utilizada pra resolver algum problema, o objetivo foi explicar o funcionamento. Caso for implementar em produção, recomendo a utilização da biblioteca [semaphore](https://pkg.go.dev/golang.org/x/sync/semaphore) do Golang que abstrai muita coisa da lógica dos Worker Pools. 
 
+
 <br>
 
-[Github - Algoritmos apresentados no texto](https://github.com/msfidelis/system-design-examples/tree/main/concurrency-parallelism)
+#### Obrigado aos Revisores 
+
+* [Tarsila, amor da minha vida](https://twitter.com/tarsilabianca_c/)
+* [Klecianny Melo](https://twitter.com/Kecbm)
+* [Coproduto](https://twitter.com/coproduto)
+* [Douglas Asimov](https://twitter.com/dougdotcon)
+* [Mark Gerald](https://twitter.com/mark_gerald)
+* [Jessica](https://twitter.com/whatever_jess)
+* [Luiz Aoqui](https://twitter.com/luiz_aoqui)
 
 > Imagens geradas pelo DALL-E
 
+<br>
+
 #### Referências
+
+[Github - Algoritmos apresentados no texto](https://github.com/msfidelis/system-design-examples/tree/main/concurrency-parallelism)
+
+[Martin Kleppmann - How to do distributed locking](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html)
 
 [Load Balancing 101](https://medium.com/the-kickstarter/load-balancing-101-81710aa7a3d7)
 
@@ -1044,4 +1064,5 @@ Essa foi uma implementação manual que pode ou não ser utilizada pra resolver 
 [Comunicação de Processos](https://edisciplinas.usp.br/pluginfile.php/4933938/mod_resource/content/1/Aula%2005%20-%20Comunicacao_so_2019.pdf)
 
 [Comunicação e Sincronismo entre Processos](https://www.professores.uff.br/mquinet/wp-content/uploads/sites/42/2017/08/7.pdf)
+
 
