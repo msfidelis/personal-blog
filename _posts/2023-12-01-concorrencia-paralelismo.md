@@ -10,13 +10,13 @@ title: System & Design - Paralelismo, Concorrência e Multithreading
 
 Este artigo é o primeiro de uma série sobre **System Design**. Esta série tem como objetivo explicar conceitos complexos de programação de maneira simples e objetiva para todos os tipos de profissionais, independentemente do nível de senioridade ou tempo de experiência, contribuindo para a fixação de conceitos de ciências da computação e arquitetura.
 
-Comecei a escrever esses textos em 2021, quando tinha a intenção de produzir material explicativo sobre engenharia para profissionais de **SRE**. Hoje, revendo com uma nova perspectiva, consegui revisar esse material para torná-lo útil e acessível a todos.
+Comecei a escrever esses textos em 2021, quando tinha a intenção de produzir material explicativo sobre engenharia para profissionais de **Site Reliability Engineering (SRE)**. Hoje, revendo com uma nova perspectiva, consegui revisar esse material para torná-lo útil e acessível a todos.
 
-Todos os artigos vão, em algum momento, utilizar analogias com o "mundo real" para tornar a lógica mais clara e facilitar a explicação e compreensão, utilizando exemplos do cotidiano. Neste texto, vou explicar tópicos como **Multithreading**, **Concorrência** e **Paralelismo**.
+Todos os artigos vão, em algum momento, utilizar analogias com o "mundo real" para tornar a lógica mais clara e facilitar a explicação e compreensão. Neste texto, vou explicar tópicos como **Multithreading**, **Concorrência** e **Paralelismo**.
 
 Não é meu objetivo detalhar exaustivamente todos os aspectos do mundo ou explicar todos os tópicos envolvendo esse tema com termos complexos da literatura. Meu objetivo é que você **compreenda** os conceitos, consiga **aplicar** e, principalmente, **explicar para outra pessoa** usando os mesmos exemplos ou criando novos. **Prometo tornar isso divertido.**
 
-Utilizaremos a linguagem `Go` para exemplificar alguns algoritmos. Embora utilizemos recursos nativos como `Goroutines`, `Channels` e `WaitGroups`, a ideia não é tornar este material um artigo específico sobre a linguagem; mesmo assim, ele pode ser aproveitado conceitualmente para diversos contextos. 
+Utilizaremos a linguagem de programação `Go` para exemplificar alguns algoritmos. Embora utilizemos recursos nativos como `Goroutines`, `Channels` e `WaitGroups`, a ideia não é tornar este material um artigo específico sobre a linguagem; Ele pode ser aproveitado conceitualmente para diversos contextos. 
 
 Vamos começar detalhando alguns conceitos que serão úteis durante o artigo:
 
@@ -25,7 +25,7 @@ Vamos começar detalhando alguns conceitos que serão úteis durante o artigo:
 
 ## O que é um Processo?
 
-Vamos pensar no último churrasco em que você participou com sua família e amigos. Imagine esse churrasco como um processo sendo executado por um computador.
+<!-- Vamos pensar no último churrasco em que você participou com sua família e amigos. Imagine esse churrasco como um processo sendo executado por um computador. -->
 
 Um processo é basicamente uma **instância de um programa em execução**. Esse programa contém uma série de instruções, e o processo é a execução real dessas instruções. Em outras palavras, **um processo é um programa em ação**.
 
@@ -36,20 +36,20 @@ Ao iniciarmos aplicativos como o **navegador**, **IDE**, **agentes**, **aplicaç
 
 ## O que é uma Thread?
 
-Uma **Thread é a menor unidade de processamento que pode ser gerenciada por um sistema operacional**. Ela representa uma sequência de instruções programadas que pode ser executada de forma independente por uma CPU. Dentro do mesmo processo, múltiplas threads podem ser utilizadas para realizar tarefas de forma **concorrente**, visando melhorar a eficiência do programa. As threads de um mesmo programa compartilham o mesmo espaço de memória e os recursos alocados. Além disso, elas podem ser executadas simultaneamente em núcleos diferentes da CPU, permitindo o **paralelismo**. Imagine as threads como várias tarefas menores que precisam ser realizadas em um churrasco.
+Uma **Thread é a menor unidade de processamento que pode ser gerenciada por um sistema operacional**. Ela representa uma sequência de instruções programadas que pode ser executada de forma independente em um núcleo de CPU. Dentro do mesmo processo, múltiplas threads podem ser utilizadas para realizar tarefas de forma **concorrente**, visando melhorar a eficiência do programa, enquanto uma thread aguarda por uma ação demorada, como uma requisição HTTP, o programa pode prosseguir com a execução de outras threads. As threads de um mesmo programa compartilham o mesmo espaço de memória e os recursos alocados. Sistemas que possuem múltiplas CPUs, ou CPUs com múltiplos núcleos, podem executar threads simultaneamente em núcleos diferentes da CPU, permitindo o **paralelismo**. Imagine as threads como várias tarefas menores que precisam ser realizadas em um churrasco.
 
 
 <br>
 
 ## O que é Multithreading?
 
-**Multithreading** é uma técnica de programação que consiste na criação de múltiplas threads (fluxos de execução independentes) dentro de um único processo. Cada thread pode ser responsável por diferentes tarefas ou partes de uma tarefa mais ampla. Este método pode ser aplicado **tanto em contextos concorrentes quanto paralelos**. Em sistemas com **um único processador, o multithreading facilita a concorrência** (alternância rápida entre threads para criar a ilusão de simultaneidade). Já em sistemas **multiprocessadores, o multithreading pode alcançar paralelismo real, com threads sendo executadas simultaneamente em núcleos distintos da CPU**, otimizando o uso dos recursos e melhorando a eficiência e o desempenho.
+**Multithreading** é uma técnica de programação que consiste na criação de múltiplas threads (fluxos de execução independentes) dentro de um único processo. Cada thread pode ser responsável por diferentes tarefas ou partes de uma tarefa mais ampla. Este método pode ser aplicado **tanto em contextos concorrentes quanto paralelos**. Em sistemas com **um único núcleo do processador, o multithreading facilita a concorrência** (alternância rápida entre threads para criar a ilusão de simultaneidade). Já em sistemas **multiprocessadores, ou com múltiplos núcleos**, o multithreading pode alcançar paralelismo real, com threads sendo executadas simultaneamente em núcleos distintos da CPU**, otimizando o uso dos recursos e melhorando a eficiência e o desempenho do processo.
 
-Para ilustrar, saia do contexto do churrasco e pense agora em seu **restaurante favorito**. Aqui, o **processo é o restaurante funcionando**, com o objetivo de **servir comida aos clientes**. Durante um horário de pico, como o almoço em um dia útil, as **threads são como os funcionários da cozinha**. Cada cozinheiro (thread) é **responsável por preparar um prato diferente simultaneamente**, acelerando o atendimento dos pedidos. Dessa forma, vários pratos são preparados ao mesmo tempo, aumentando a eficiência e diminuindo o tempo de espera dos clientes.
+Para ilustrar o conceito de multithread, saia do contexto do churrasco e pense agora em seu **restaurante favorito**. Aqui, o **processo é o restaurante funcionando**, com o objetivo de **servir comida aos clientes**. Durante um horário de pico, como o almoço em um dia útil, as **threads são como os funcionários da cozinha**. Cada cozinheiro (thread) é **responsável por preparar um prato diferente simultaneamente**, acelerando o atendimento dos pedidos. Dessa forma, vários pratos são preparados ao mesmo tempo, aumentando a eficiência e diminuindo o tempo de espera dos clientes.
 
 <br>
 
-Agora que já exploramos alguns conceitos teóricos importantes, podemos seguir com explicações mais detalhadas com segurança.
+Agora que já exploramos alguns conceitos teóricos importantes, podemos seguir com explicações mais detalhadas.
 
 
 <br>
@@ -61,9 +61,9 @@ Agora que já exploramos alguns conceitos teóricos importantes, podemos seguir 
 
 Imagine que você está preparando um churrasco sozinho. Você é responsável por organizar a geladeira, fazer os cortes de carne, preparar os vegetais para os amigos vegetarianos, fazer caipirinhas e gelar a cerveja. Você alterna entre essas tarefas, trabalhando um pouco em cada uma, apesar de ser responsável por todas elas.
 
-Este cenário é um exemplo de concorrência, onde você está gerenciando várias tarefas, mas não necessariamente trabalhando em todas simultaneamente. Você se alterna entre as tarefas, criando a impressão de que tudo está progredindo em conjunto e ao mesmo tempo.
+Este cenário é um exemplo de concorrência, onde você está gerenciando várias tarefas, mas não necessariamente trabalhando mem mais de uma delas simultaneamente. Você se alterna entre as tarefas, criando a impressão de que tudo está progredindo ao mesmo tempo.
 
-**Concorrência é sobre lidar com muitas tarefas ao mesmo tempo**, mas não de forma simultânea. É a habilidade de uma aplicação gerenciar múltiplas tarefas e instruções em segundo plano, mesmo que essas instruções não estejam sendo processadas ao mesmo tempo, ou executadas em mais de um núcleo do processador.
+**Concorrência é sobre lidar com muitas tarefas ao mesmo tempo**, mas não de forma simultânea. É a habilidade de uma aplicação gerenciar múltiplas tarefas e instruções em segundo plano, mesmo que essas instruções não estejam sendo processadas ao mesmo tempo, ou executadas em outros núcleos do processador.
 
 
 <br>
@@ -165,15 +165,15 @@ costela foi preparado.
 
 ![Paralelismo Robô](/assets/images/system-design/paralelism-example.png)
 
-Revisitemos o exemplo do churrasco. Desta vez, você tem amigos para ajudar: um corta a carne, outro acende a churrasqueira, outro gela a cerveja e mais um faz a caipirinha. Todas essas tarefas estão ocorrendo em paralelo, com cada pessoa responsável por uma parte do processo.
+Ainda estamos no exemplo do churrasco. Desta vez você tem amigos para ajudar: um corta a carne, outro acende a churrasqueira, outro gela a cerveja e mais um faz a caipirinha. Todas essas tarefas estão ocorrendo em paralelo, com cada pessoa responsável por uma parte do processo.
 
 Isso ilustra o paralelismo. **Múltiplas tarefas** e instruções ocorrendo **simultaneamente**, executadas por **múltiplos núcleos de processadores**.
 
-Diferentemente da concorrência, onde se trata de gerenciar várias tarefas ao mesmo tempo, **o paralelismo envolve fazer várias coisas ao mesmo tempo.**
+Diferentemente da concorrência, onde se trata de gerenciar várias tarefas ao mesmo tempo, mas com apenas uma ativa por vez, **o paralelismo envolve fazer várias coisas ao mesmo tempo.**
 
 O paralelismo é empregado em situações onde o desempenho e a eficiência são críticos, e há recursos suficientes, como múltiplos núcleos de CPU, para executar diversas tarefas simultaneamente.
 
-Em ambientes paralelos, processos ou threads frequentemente precisam sincronizar suas ações e comunicar-se entre si. Mecanismos de sincronização, como **semáforos**, **mutexes** e **monitores**, são ferramentas essenciais para evitar **race conditions** e garantir a consistência dos dados, embora isso possa acrescentar complexidade à programação e ao debugging de programas que implementam paralelismo.
+Em ambientes paralelos, processos ou threads frequentemente precisam coordenar suas ações e comunicar-se entre si. Mecanismos de sincronização, como **semáforos**, **mutexes** e **monitores**, são ferramentas essenciais para evitar **race conditions** e garantir a consistência dos dados, embora isso possa acrescentar complexidade à programação e ao debugging de programas que implementam paralelismo.
 
 O paralelismo em computação é um campo de pesquisa ativo e continua evoluindo, especialmente com o desenvolvimento de novas arquiteturas de hardware e a crescente demanda por processamento de grandes volumes de dados e computação de alto desempenho.
 
@@ -187,7 +187,7 @@ Vamos simular novamente um churrasco em código, mas agora sob condições de pa
 * Criar uma lista de atividades do churrasco, informando o tempo de preparo e quem é o responsável por cada tarefa.
 * Determinar o número ideal de tarefas e distribuí-las entre os amigos de forma equilibrada.
 * Alocar as tarefas entre os **amigos (CPUs)** em threads.
-* Monitorar o output das tarefas:
+* Monitorar o output das tarefas.
 
 
 
@@ -331,15 +331,15 @@ Program exited.
 
 ![Paralelismo Interno e Externo](/assets/images/system-design/paralelismo-interno-externo.png)
 
-O paralelismo pode ser dividido em duas categorias simples de compreender: **interno** e **externo**. A diferença entre eles é mais simples do que parece, conforme explicado a seguir.
+O paralelismo pode ser dividido em duas categorias: **interno** e **externo**. 
 
 ### Paralelismo Interno
 
-O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, ocorre dentro de uma **única aplicação ou processo**. É o paralelismo que você **implementa no código da sua aplicação** quando precisa dividir tarefas ou itens em memória entre várias sub-tarefas que podem ser processadas simultaneamente. **Basicamente, é o paralelismo que você cria via código para ser executado dentro do seu container ou servidor**.
+O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, ocorre dentro de uma **processo**. É o paralelismo que você **implementa no código da sua aplicação** quando precisa dividir tarefas ou itens em memória entre várias sub-tarefas que podem ser processadas simultaneamente. **Basicamente, é o paralelismo que você cria via código para ser executado dentro do seu container ou servidor**.
 
 ### Paralelismo Externo
 
-Já o paralelismo externo refere-se à **execução simultânea de múltiplas tarefas em diferentes hardwares, máquinas ou containers**. Esse conceito é aplicado em ambientes de computação distribuída, como **Hadoop** e **Spark**, que distribuem grandes volumes de dados em vários servidores e instâncias para realizar tarefas de ETL, Machine Learning e Analytics. Também é visto em **Load Balancers**, que dividem as requisições entre várias instâncias da mesma aplicação para distribuir o tráfego.
+Já o paralelismo externo refere-se à **execução simultânea de múltiplas tarefas em diferentes hardwares, máquinas ou containers**. Esse conceito é aplicado em ambientes de computação distribuída, como **Hadoop** e **Spark**, consumo de mensagens vindas de message brokers como **RabbitMQ**, **SQS**, streamings como **Kafka**  que distribuem grandes volumes de dados em vários servidores e instâncias para realizar tarefas de ETL, Machine Learning e Analytics. Também é visto em **Load Balancers**, que dividem as requisições entre várias instâncias da mesma aplicação para distribuir o tráfego.
 
 ![Paralelismo Load Balancer](/assets/images/system-design/load-balancer.gif)
 
@@ -362,7 +362,7 @@ Paralelismo em geral é concorrênte, mas nem toda concorrência é paralela.
 
 # Lidando com Paralelismo e Concorrência
 
-Agora que já detalhamos de forma lúdica e conceitual a definição de programação paralela e concorrente, é hora de explorar os desafios e ferramentas existentes para trabalhar com essas estratégias. Embora abordagens paralelas e concorrentes ofereçam várias vantagens, como melhoria de performance, escalabilidade e otimização de recursos, elas também trazem desafios significativos. Estes incluem questões de sincronização, condições de corrida, deadlocks, starvation e o balanceamento de carga de trabalho, entre outros. Vamos agora definir conceitualmente alguns desses termos para facilitar seu entendimento e capacidade de explicá-los no futuro.
+Agora que já detalhamos de forma lúdica e conceitual a definição de programação paralela e concorrente, é hora de explorar os desafios e ferramentas existentes para trabalhar com essas estratégias. Embora abordagens paralelas e concorrentes ofereçam várias vantagens, como melhoria de performance, escalabilidade e otimização de recursos, elas também trazem desafios significativos. Estes incluem questões de coordenação, condições de corrida, deadlocks, starvation, balanceamento de carga de trabalho entre outros. Vamos agora definir conceitualmente alguns desses termos para facilitar seu entendimento e capacidade de explicá-los no futuro.
 
 <br>
 
@@ -438,7 +438,7 @@ func main() {
 
 ```
 
-Podemos observar que o resultado varia de acordo com as goroutines que acessam o contador. Esse é o cerne do problema de race condition: a inconsistência dos resultados devido ao acesso simultâneo ao mesmo recurso. Embora a analogia com o churrasco seja útil para ilustrar o conceito, na realidade prática de um churrasco, a grelha não comportaria todos os alimentos ao mesmo tempo. Portanto, a situação de race condition, neste contexto, seria menos provável, já que a limitação física da grelha impõe um controle natural sobre o acesso simultâneo. No entanto, em sistemas de computação, onde múltiplas threads podem acessar e modificar o mesmo recurso sem uma devida sincronização, a race condition se torna um problema significativo e desafiador.
+Podemos observar que o resultado varia de acordo com a ordem e o tempo que as goroutines acessam o contador. Esse é o cerne do problema de race condition: a inconsistência dos resultados devido ao acesso simultâneo ao mesmo recurso. Embora a analogia com o churrasco seja útil para ilustrar o conceito, na realidade prática de um churrasco, a grelha não comportaria todos os alimentos ao mesmo tempo. Portanto, a situação de race condition, neste contexto, seria menos provável, já que a limitação física da grelha impõe um controle natural sobre o acesso simultâneo. No entanto, em sistemas de computação, onde múltiplas threads podem acessar e modificar o mesmo recurso sem uma devida sincronização, a race condition se torna um problema significativo e desafiador.
 
 
 ```
@@ -569,11 +569,11 @@ Já exploramos o uso de Mutex no modelo de paralelismo interno, onde o controle 
 
 Desenvolver um Mutex para sistemas distribuídos apresenta uma série de desafios, mas em alguns aspectos, é mais facilitado do que os Mutexes em cenários de paralelismo interno com memória compartilhada. Entre os possíveis problemas que podemos encontrar estão a **comunicação entre componentes, latência de rede e falhas gerais nos serviços**.
 
-Para funcionar eficientemente, esses sistemas geralmente dependem de uma **base de dados centralizada** para manter o estado dos processos compartilhados entre todas as réplicas dos consumidores de mensagens. Isso é crucial para lidar com duplicidades em mensagens, eventos ou solicitações devido a cenários imprevistos.
+Para funcionar eficientemente, esses sistemas geralmente dependem de uma **base de dados centralizada** para manter o estado dos processos compartilhados entre todas as réplicas dos consumidores de mensagens. Isso é crucial para lidar com duplicidade de mensagens, eventos ou solicitações devido a cenários imprevistos.
 
 Algumas estratégias comuns utilizam bancos de dados otimizados para operações de leitura e escrita chave/valor, como **Redis, Memcached, Cassandra, DynamoDB**, além de tecnologias como **Zookeeper**.
 
-No exemplo a seguir, que utiliza o Redis, apresentamos um fluxo lógico de um algoritmo de Mutex. Ao receber uma pseudo-mensagem, verificamos se já existe um lock para ela no Redis. Se o lock existir, descartamos o processamento da mensagem. Se não existir, criamos o lock, processamos a mensagem e, em seguida, liberamos o lock.
+No exemplo a seguir, que utilizamos o Redis para apresentar um fluxo lógico de um algoritmo de Mutex. Ao receber uma pseudo-mensagem, verificamos se já existe um lock para ela no Redis. Se o lock existir, descartamos o processamento da mensagem. Se não existir, criamos o lock, processamos a mensagem e, em seguida, liberamos o lock.
 
 ### Exemplo de Implementação
 
@@ -614,7 +614,7 @@ func main() {
 
 	var ctx = context.Background()
 
-	// Create a new Redis client
+	// Cria o client do Redis
 	client := redis.NewClient(&redis.Options{
 		Addr:     "0.0.0.0:6379",
 		Password: "", // no password set
@@ -672,7 +672,7 @@ Caso outro processo tentasse acessar o recurso 12345 durante a execução do pri
 Mutex travado para o recurso 12345
 ```
 
-Esse é um exemplo simples pra entendimento do algoritmo que não trata dodos os cenários de um ambiente produto. Para isso eu recomendo o uso de alguma biblioteca especifica para locks no Redis como [RedisLock](https://github.com/bsm/redislock)
+Esse é um exemplo simples pra entendimento do algoritmo que não trata todos os cenários de um ambiente produto. Para isso eu recomendo o uso de alguma biblioteca especifica para locks no Redis como [RedisLock](https://github.com/bsm/redislock)
 
 <br>
 
@@ -680,7 +680,7 @@ Esse é um exemplo simples pra entendimento do algoritmo que não trata dodos os
 
 Uma alternativa elegante ao Redis para gerenciar locks distribuídos é o uso do **Apache Zookeeper**. Embora a lógica fundamental seja semelhante ao exemplo anterior, o Zookeeper apresenta algumas peculiaridades interessantes.
 
-A criação de um mutex distribuído em Go utilizando **Apache Zookeeper** é uma tarefa avançada que implica na manipulação de **znodes** (nós do Zookeeper) para gerenciar as travas de forma distribuída. Vamos explorar um exemplo básico de como isso pode ser implementado.
+A criação de um mutex distribuído em Go utilizando **Apache Zookeeper** é uma tarefa avançada que exige a manipulação de **znodes** (nós do Zookeeper) para gerenciar as travas de forma distribuída. Vamos explorar um exemplo básico de como isso pode ser implementado.
 
 Uma vantagem notável dos locks do Zookeeper é a capacidade de definir um timeout de sessão. Isso garante que todos os locks gerenciados pelo processo sejam excluídos automaticamente após o término da execução do programa.
 
@@ -742,7 +742,7 @@ func main() {
 
 	// Verifica se o Znode de lock já existe
 	exists, _, err := conn.Exists(mutexKey)
-	if err != nil || exists == true {
+	if err != nil || exists {
 		fmt.Println("Mutex travado para o recurso", mutexKey)
 		return
 	}
@@ -1029,7 +1029,7 @@ Essa foi uma implementação manual que pode ou não ser utilizada pra resolver 
 * [Douglas Asimov](https://twitter.com/dougdotcon)
 * [Mark Gerald](https://twitter.com/mark_gerald)
 * [Jessica](https://twitter.com/whatever_jess)
-* [Luiz Aoqui](https://twitter.com/luiz_aoqui)
+* [Luiz Aoqui, o revisor universal da comunidade](https://twitter.com/luiz_aoqui)
 
 > Imagens geradas pelo DALL-E
 
@@ -1040,6 +1040,8 @@ Essa foi uma implementação manual que pode ou não ser utilizada pra resolver 
 [Github - Algoritmos apresentados no texto](https://github.com/msfidelis/system-design-examples/tree/main/concurrency-parallelism)
 
 [Martin Kleppmann - How to do distributed locking](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html)
+
+[Palestra na GopherCon 2023: O que há por trás de um orquestrador? Go, sistemas distribuídos e lágrimas](https://www.youtube.com/watch?feature=shared&v=DjAF_sLJjZM)
 
 [Load Balancing 101](https://medium.com/the-kickstarter/load-balancing-101-81710aa7a3d7)
 
