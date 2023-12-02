@@ -13,7 +13,7 @@ title: System & Design - Teorema CAP
 
 O Teorena CAP é uma sigla para **Consistency, Availability and Partition Tolerance**, ou **Consistência, Disponibilidade e Tolerância a Partições** e é um principio fundamental para compreender a arquitetura e limitações na escolha de uma base de dados. 
 
-Esse modelo foi proposto por Eric Brewer nda Universidade da Califórnia durante uma conferência no ano 2000. Esse teorema foi crucial para influenciar em escolhas arquiteturais quando trabalhamos com bancos de dados distribuídos. 
+Esse modelo foi proposto por Eric Brewer da Universidade da Califórnia durante uma conferência no ano 2000. Esse teorema foi crucial para influenciar em escolhas arquiteturais quando trabalhamos com bancos de dados distribuídos. 
 
 Ele fornece uma base para entender as limitações inerentes a qualquer sistema de banco de dados distribuído e ajuda a esclarecer por que não é possível atingir todas as três propriedades simultaneamente em sua forma mais forte, é o que vamos entender durante esse artigo. 
 
