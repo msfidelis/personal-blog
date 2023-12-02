@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, golang, engineering ]
-title: System & Design - Paralelismo, Concorrência e Multithreading
+title: System Design - Paralelismo, Concorrência e Multithreading
 ---
 
 Este artigo é o primeiro de uma série sobre **System Design**. Esta série tem como objetivo explicar conceitos complexos de programação de maneira simples e objetiva para todos os tipos de profissionais, independentemente do nível de senioridade ou tempo de experiência, contribuindo para a fixação de conceitos de ciências da computação e arquitetura.
@@ -1025,7 +1025,7 @@ Essa foi uma implementação manual que pode ou não ser utilizada pra resolver 
 
 * [Tarsila, amor da minha vida](https://twitter.com/tarsilabianca_c/)
 * [Klecianny Melo](https://twitter.com/Kecbm)
-* [Coproduto](https://twitter.com/coproduto)
+* [Pedro - Coproduto](https://twitter.com/coproduto)
 * [Douglas Asimov](https://twitter.com/dougdotcon)
 * [Mark Gerald](https://twitter.com/mark_gerald)
 * [Jessica](https://twitter.com/whatever_jess)
