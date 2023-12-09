@@ -249,6 +249,15 @@ Ele pode ser encontrado em outros tipos de databases que podem ou não ser distr
 
 Em 2012, Eric Brewer, autor do teorema publicou um paper chamado [CAP Twelve Years Later: How the "Rules" Have Changed](https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/), fazendo uma revisão do que foi proposto no primeiro trabaho de 2000 baseado na evolução tecnologica das opções de bancos de dados, clouds e arquiteturas de microserviços modernas, listando as lições aprendidas e os conceitos que precisam ser revisitados.
 
+Um dos principais pontos desse artigo, é mostrar o por que "2 de 3" entre consistência, disponibilidade e tolerância a partições é enganoso na realidade atual. A formulação inicial do teorema era o já mencionado, "Bom, Rápido e Barato, escolha 2", mas de acordo com o autor, essa ideia sugere que as propriedades do sistema são binárias e altamente exclusivas.
+
+A simplificação excessiva das compensações é um pouco limitante nas escolhas de arquitetura quando projetamos sistemas modernos hoje. Na realidade, consistência e disponibilidade não são estados **on-off**, mas sim espectros que oferecem graus variados de realização. 
+
+Ao considerar consistência, disponibilidade e tolerância a partições, é mais produtivo pensar nelas como **propriedades contínuas** em vez de **estados binários**. Por exemplo, a disponibilidade pode variar de 0 a 100%, e existem muitos níveis de consistência que podem ser assumidos em sistemas modernos.
+
+As partições de dados, embora críticas, são eventos relativamente raros em muitos workloads. A interpretação original do teorema sugere que as decisões de design devem ser feitas assumindo a presença de partições. Na prática, a maior parte do tempo, os sistemas de bancos de dados operam em um estado não particionado, permitindo consistência e disponibilidade, sejam otimizados sempre.
+
+Em resumo, o teorema é ótimo para compreensões e discussões iniciais de design e escolhas arquiteturais, porém é uma simplificação enganosa, uma vez que "2 de 3" não são altamente exclusivas, podendo existir níveis de consistência e disponibilidade além de um estado de "consistente/não consistente", "disponível/não disponível", como apresentado no modelo **BASE**. 
 
 
 #### Referências 
