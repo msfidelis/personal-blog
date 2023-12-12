@@ -8,18 +8,24 @@ categories: [ system-design, databases, engineering ]
 title: System & Design - Teorema CAP, ACID, BASE e Bancos de Dados Distribuídos
 ---
 
-Esse é mais um artigo da série de System Design, que está se mostrando extremamente prazerosa de escrever. Tem sido muito gratificante me desafiar a entender temas densos e complexos e, ao mesmo tempo, simplificar suas explicações. Hoje vamos abordar alguns tópicos muito importantes relacionados à arquitetura de bancos de dados. Discutiremos o Teorema CAP, desde sua concepção até outros tópicos que tangenciam este tema, e, por fim, reavaliaremos a evolução do teorema muitos anos após sua publicação, comparando-o com soluções modernas e a evolução contínua da engenharia de software.
+Esse é mais um artigo da série de **System Design**, que está se mostrando extremamente prazerosa de escrever. Tem sido muito gratificante me desafiar a entender temas densos e complexos e simplificar suas explicações. Da ultima vez falamos sobre [Concorrência, Paralelismo e Multithreading](), hoje não consegui gerar exemplos tão didáticos para o mundo real quando nesse artigo, mas ainda assim espero de coração que você ainda saia com algum conhecimento bacana daqui. 
+
+Hoje vamos abordar alguns tópicos muito importantes relacionados à arquitetura de bancos de dados. Discutiremos o Teorema CAP, desde sua concepção até outros tópicos que tangenciam este tema, e, por fim, reavaliaremos a evolução do teorema muitos anos após sua publicação, comparando-o com soluções modernas e a evolução contínua da engenharia de software.
 
 
 # O Teorema CAP 
 
 O Teorema CAP é uma sigla para **Consistency, Availability, and Partition Tolerance** (Consistência, Disponibilidade e Tolerância a Partições), e representa um princípio fundamental para compreender a arquitetura e as limitações na escolha de uma base de dados.
 
-O teorema propõe que, na perspectiva de sistemas distribuídos, um banco de dados só pode entregar dois dos três atributos descritos no CAP. Isso é análogo à máxima popular de ***"Escolha 2 B's: Bom, Rápido e Barato"***.
-
 Esse modelo foi proposto por **Eric Brewer** da **Universidade da Califórnia** durante uma conferência no ano 2000. O teorema foi crucial para influenciar escolhas arquiteturais em bancos de dados distribuídos.
 
-Ele fornece uma base para entender as limitações inerentes a qualquer sistema de banco de dados distribuído e ajuda a esclarecer por que não é possível atingir todas as três propriedades simultaneamente em sua forma mais forte, como vamos explorar ao longo deste artigo.
+O teorema propõe que, na perspectiva de sistemas distribuídos, um banco de dados só pode entregar dois dos três atributos descritos no CAP. Isso é análogo à máxima popular de ***"Escolha 2: Bom, Rápido e Barato"***. Se for **Bom e Barato, não vai Rápido**. Se for **Rápido e Bom não vai ser Barato**. Se for **Barato e Rápido não vai ser Bom**. A proposta inicial segue essa lógica. 
+
+Ele fornece uma base para entender as limitações inerentes a qualquer sistema de banco de dados distribuído e ajuda a esclarecer por que não é possível atingir todas as três propriedades simultaneamente. Vamos explorar o modelo proposto comparando com abordagens mais modernas longo deste artigo.
+
+Para entender a concepção completa de todas as propriedades do terema CAP, precisamos revisitar alguns conceitos antes para melhor compreesão. Antes de detalhar o que significa no detalhe cada item do CAP, precisamos entender os conceitos de **ACID** e **BASE** compreender como funcionam as transações e operações dentro dos bancos de dados. 
+
+<br>
 
 # ACID e BASE, os trade-offs entre SQL e NoSQL
 
@@ -27,16 +33,19 @@ Nas disciplinas de bancos de dados, dois conjuntos de conceitos são fundamentai
 
 Entender a diferença entre ambos é crucial para qualquer engenheiro ou arquiteto que deseje trabalhar de forma eficiente em bancos de dados distribuídos, além da escolha de uma tecnologia específica. Antes de explorarmos as aplicações do Teorema CAP, é importante ter esses dois conceitos bem claros em mente para um melhor entendimento.
 
+Vamos começar detalhando sobre ACID. 
 
 ## Modelo ACID - Atomicity, Consistency, Isolation, Durability
 
-Quando falamos sobre ACID, um acrônimo para Atomicidade, Consistência, Isolamento e Durabilidade, estamos nos referindo a bancos de dados que proporcionam operações transacionais processadas de forma atômica e confiável, em troca, talvez, de alguns requisitos de performance. É o caso dos bancos de dados SQL tradicionais, onde a consistência e o commit das transações de escrita são priorizados em detrimento da performance e resiliência.
+Quando falamos sobre ACID, um acrônimo para **Atomicidade**, **Consistência**, **Isolamento** e **Durabilidade**, estamos nos referindo a bancos de dados que **proporcionam operações transacionais processadas de forma atômica e confiável**, em troca, talvez, de algumas possíveis em outros requisitos. É o caso dos bancos de dados SQL tradicionais, onde a consistência e o commit das transações de escrita são priorizados em detrimento da performance e resiliência.
+
+Os itens do ACID são definidos da seguinte forma: 
 
 ### Atomicidade
 
-A atomicidade assegura que cada transação seja tratada como uma unidade indivisível, ou seja, todas as operações de escrita dentro de uma transação devem ser concluídas com sucesso; caso contrário, nenhuma delas será efetivada.
+A **atomicidade assegura que cada transação seja tratada como uma unidade indivisível**, ou seja, **todas as operações de escrita dentro de uma transação devem ser concluídas com sucesso; caso contrário, nenhuma delas será efetivada.**
 
-Dentro de uma transação, podem conter-se uma ou mais queries que correspondam a uma lógica ou funcionalidade de negócio específica. Por exemplo, imaginemos um sistema simples que registra vendas de um e-commerce. Recebemos um evento fictício que representa a venda de um produto qualquer, no qual precisamos decrementar o estoque desse produto e registrar a venda. Nesse caso, seriam duas operações: decrementar o contador de estoque do produto numa tabela chamada `estoque` e, em seguida, fazer um INSERT em uma tabela chamada `vendas`. Ambas as operações precisam ser concluídas de forma dependente, pois tanto atualizar o estoque sem registrar a venda quanto registrar a venda sem atualizar o estoque podem gerar problemas de consistência logística e contábil para o e-commerce, além de transtornos para o cliente. Esse é o real benefício das transações, que garantem a atomicidade no modelo ACID.
+Dentro de uma transação, podem conter uma ou mais queries que correspondam a uma lógica ou funcionalidade de negócio específica. Por exemplo, imagine um **sistema simples que registra vendas de um e-commerce**. Recebemos um evento fictício que representa a venda de um produto qualquer, no qual precisamos decrementar o estoque desse produto e registrar a venda. Nesse caso, seriam duas operações: **decrementar o contador de estoque** do produto numa tabela chamada `estoque` e, em seguida, **fazer um INSERT** em uma tabela chamada `vendas`. Ambas as operações precisam ser concluídas de forma dependente, pois tanto atualizar o estoque sem registrar a venda quanto registrar a venda sem atualizar o estoque podem gerar problemas de consistência logística e contábil para o e-commerce, além de transtornos para o cliente. Esse é o real benefício das transações, que garantem a atomicidade no modelo ACID.
 
 
 ```go
@@ -92,9 +101,9 @@ func main() {
 
 ### Consistência
 
-A consistência em um banco de dados refere-se à garantia de que todas as transações conduzam o banco de dados de um estado consistente para outro estado igualmente consistente. Esta definição, embora elegante, pode ser difícil de compreender inicialmente. Em termos práticos, a consistência nos assegura a integridade dos dados, evitando dados corrompidos ou inválidos. Isso significa que, em nenhum momento, o banco de dados operará com dados desatualizados ou indisponíveis na visão do cliente.
+A consistência em um banco de dados refere-se à **garantia de que todas as transações conduzam o banco de dados de um estado consistente para outro estado igualmente consistente**. Esta definição, embora elegante, pode ser difícil de compreender inicialmente. Em termos práticos, a **consistência nos assegura a integridade dos dados, evitando dados corrompidos ou inválidos**. Isso significa que, em nenhum momento, o banco de dados operará com dados desatualizados ou indisponíveis na visão do cliente.
 
-O nível de consistência também garante a validação das transações, conforme discutido no tópico de atomicidade, além de respeitar restrições e condições impostas durante a modelagem dos dados. Na prática, isso se traduz na garantia de que todas as foreign keys, especificações de nullabilidade, triggers e tipos sejam respeitados em todo momento. Por exemplo, uma tentativa de inserir uma string em um campo do tipo decimal resultará em um erro de validação, ou a garantia de que um valor nunca será menor que zero ou excederá um determinado tamanho.
+O nível de consistência também **garante a validação das transações, conforme discutido no tópico de atomicidade**, além de respeitar restrições e condições impostas durante a modelagem dos dados. Na prática, isso se traduz na **garantia de que todas as foreign keys, especificações de nullabilidade, triggers e tipos sejam respeitados em todo momento**. Por exemplo, uma tentativa de inserir uma string em um campo do tipo decimal resultará em um erro de validação, ou a garantia de que um valor nunca será menor que zero ou excederá um determinado tamanho.
 
 ### Isolamento
 
@@ -115,7 +124,7 @@ Ela é fundamental para a confiabilidade do sistema, especialmente em aplicaçõ
 
 ## Modelo BASE - Basically Available, Soft State, Eventual Consistency
 
-Enquanto o ACID foca na precisão e confiabilidade, o BASE, um acrônimo para **Basicamente Disponível**, **Soft State** e **Eventualmente Consistente**, adota uma abordagem com níveis de flexibilidade mais adequados para lidar com sistemas distribuídos modernos, onde a disponibilidade e a tolerância a falhas são prioridades.
+Enquanto o ACID foca na precisão e confiabilidade, o BASE, um acrônimo para **Basicamente Disponível**, **Soft State** e **Eventualmente Consistente**, adota uma abordagem com níveis de **flexibilidade mais adequados para lidar com sistemas distribuídos modernos**, onde a disponibilidade e a tolerância a falhas são prioridades. Assim como o Teorema CAP, o **BASE** também foi proposto por Brewer junto a um grupo de pesquisadores. 
 
 ### Basicamente Disponível
 
@@ -147,7 +156,7 @@ A consistência eventual é crucial para sistemas que precisam escalar para lida
 
 # Explicação dos Componentes do CAP
 
-Agora que já exploramos os conceitos e aplicações de ACID e BASE, podemos traçar um paralelo mais claro com as combinações de funcionalidades propostas no Teorema CAP, com maior segurança e embasamento. Vamos detalhar cada um dos componentes da sigla:
+Agora que já exploramos os conceitos e aplicações de **ACID** e **BASE**, podemos traçar um paralelo mais claro com as combinações de funcionalidades propostas no Teorema CAP. Vamos detalhar cada um dos componentes da sigla tentando gerar familiaridade com ambos os conceitos:
 
 ## Consistency / Consistência (C)
 
@@ -156,6 +165,8 @@ O nível de **Consistência** refere-se à garantia de que todos os nodes de um 
 Imagine uma situação onde uma operação de escrita precise aguardar a confirmação de replicação de todos os nós para concluir a transação e liberar o dado para consulta.
 
 A consistência é essencial em aplicações onde a atomicidade e a atualização dos dados são partes críticas da solução, como em sistemas financeiros e registros hospitalares.
+
+<br>
 
 ## Availability / Disponibilidade (A)
 
@@ -189,7 +200,7 @@ Frequentemente, em um cluster otimizado para tolerância a partições, é poss�
 
 <br>
 
-# "Escolha 2: Bom, Rápido ou Barato" - As combinações do Teorema
+# As combinações do Teorema: "Escolha 2"
 
 ## CP (Consistência e Tolerância a Partições)
 
@@ -245,34 +256,39 @@ Tal abordagem pode ser encontrada em outros tipos de bancos de dados que podem o
 * [Redis Standalone](https://redis.io/)
 * [Memcached Standalone](https://memcached.org/)
 
+<br>
 
 # Tabela de Flavors (CAP)
-|      Banco de Dados     |  Consistência (C)  |  Disponibilidade (A) | Tolerância a Partições (P) |
-|:-----------------------:|:------------------:|:--------------------:|:--------------------------:|
-|        Cassandra        |         ❌         |          ✅          |             ✅             |
-|        MongoDB          |         ✅         |          ❌          |             ✅             |
-|        Couchbase        |         ✅         |          ❌          |             ✅             |
-|        DynamoDB         |         ❌         |          ✅          |             ✅             |
-|         Redis           |         ✅         |          ✅          |             ❌             |
-|        MySQL/MariaDB    |         ✅         |          ✅          |             ❌             |
-|        PostgreSQL       |         ✅         |          ✅          |             ❌             |
-|         Oracle          |         ✅         |          ✅          |             ❌             |
-|         Etcd            |         ✅         |          ❌          |             ✅             |
-|         Consul          |         ✅         |          ❌          |             ✅             |
-|       CockroachDB       |         ✅         |          ❌          |             ✅             |
-|          Riak           |         ❌         |          ✅          |             ✅             |
-|         HBase           |         ✅         |          ❌          |             ✅             |
-|         Neo4j           |         ✅         |          ✅          |             ❌             |
-|     FoundationDB        |         ✅         |          ❌          |             ✅             |
-|         VoltDB          |         ✅         |          ✅          |             ❌             |
-|       ArangoDB          |         ✅         |          ✅          |             ❌             |
-|        FaunaDB          |         ✅         |          ✅          |             ❌             |
-|       Aerospike         |         ❌         |          ✅          |             ✅             |
-|     Amazon Aurora       |         ✅         |          ✅          |             ❌             |
-|       CouchDB           |         ❌         |          ✅          |             ✅             |
-|      SimpleDB           |         ❌         |          ✅          |             ✅             |
+
+Assumindo o que já vimos até aqui, segue uma tabela de refência de diferentes flavors de databases e onde cada uma das opções **melhor** se encaixa dentro da proposta do CAP. 
+
+| Banco de Dados   | Consistência (C) | Disponibilidade (A) | Tolerância a Partições (P) |
+|------------------|------------------|---------------------|---------------------------|
+| Cassandra        | ❌               | ✅                   | ✅                        |
+| MongoDB          | ✅               | ❌                   | ✅                        |
+| Couchbase        | ✅               | ❌                   | ✅                        |
+| DynamoDB         | ❌               | ✅                   | ✅                        |
+| Redis            | ✅               | ✅                   | ❌                        |
+| MySQL/MariaDB    | ✅               | ✅                   | ❌                        |
+| PostgreSQL       | ✅               | ✅                   | ❌                        |
+| Oracle           | ✅               | ✅                   | ❌                        |
+| Etcd             | ✅               | ❌                   | ✅                        |
+| Consul           | ✅               | ❌                   | ✅                        |
+| CockroachDB      | ✅               | ❌                   | ✅                        |
+| Riak             | ❌               | ✅                   | ✅                        |
+| HBase            | ✅               | ❌                   | ✅                        |
+| Neo4j            | ✅               | ✅                   | ❌                        |
+| FoundationDB     | ✅               | ❌                   | ✅                        |
+| VoltDB           | ✅               | ✅                   | ❌                        |
+| ArangoDB         | ✅               | ✅                   | ❌                        |
+| FaunaDB          | ✅               | ✅                   | ❌                        |
+| Aerospike        | ❌               | ✅                   | ✅                        |
+| Amazon Aurora    | ✅               | ✅                   | ❌                        |
+| CouchDB          | ❌               | ✅                   | ✅                        |
+| SimpleDB         | ❌               | ✅                   | ✅                        |
 
 
+<br>
 
 # O que mudou depois da concepção do CAP?
 
@@ -288,13 +304,19 @@ As partições de dados, embora críticas, são eventos relativamente raros em m
 
 Em resumo, o teorema CAP é útil para compreensões e discussões iniciais sobre design e escolhas arquiteturais. No entanto, é uma simplificação enganosa, uma vez que "2 de 3" não são necessariamente exclusivos, permitindo a existência de níveis de consistência e disponibilidade além de um estado binário de "consistente/não consistente", "disponível/não disponível", como demonstrado no modelo **BASE**.
 
-
+<br>
 
 #### Referências 
 
 [Seth Gilbert and Nancy Lynch. 2002. Brewer's conjecture and the feasibility of consistent, available, partition-tolerant web services. SIGACT News 33, 2 (June 2002)](https://dl.acm.org/doi/10.1145/564585.564601)
 
+[Theo Haerder and Andreas Reuter. 1983. Principles of transaction-oriented database recovery. ACM Comput. Surv. 15, 4 (December 1983), 287–317](https://doi.org/10.1145/289.291)
+
 [Eric Brewer. 2012. CAP Twelve Years Later: How the "Rules" Have Changed ](https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/)
+
+[Problems with CAP, and Yahoo’s little known NoSQL system ](http://dbmsmusings.blogspot.com/2010/04/problems-with-cap-and-yahoos-little.html)
+
+[Basically Available, Soft State, Eventual Consistency](https://www.devx.com/terms/basically-available-soft-state-eventual-consistency/)
 
 [O que é o Teorema CAP?](https://www.ibm.com/br-pt/topics/cap-theorem)
 
