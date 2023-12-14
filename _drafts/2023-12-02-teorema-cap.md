@@ -329,3 +329,6 @@ Em resumo, o teorema CAP é útil para compreensões e discussões iniciais sobr
 [Please stop calling databases CP or AP](https://martin.kleppmann.com/2015/05/11/please-stop-calling-databases-cp-or-ap.html)
 
 [Martin Kleppmann. 2015. A Critique of the CAP Theorem](https://arxiv.org/abs/1509.05393)
+
+[Hermitage: Testing the “I” in ACID - Martin Kleppmann ](https://martin.kleppmann.com/2014/11/25/hermitage-testing-the-i-in-acid.html)
+
