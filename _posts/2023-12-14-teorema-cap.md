@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, databases, engineering ]
-title: System & Design - Teorema CAP, ACID, BASE e Bancos de Dados Distribuídos
+title: System Design - Teorema CAP, ACID, BASE e Bancos de Dados Distribuídos
 ---
 
 Esse é mais um artigo da série de **System Design**, que está se mostrando extremamente prazerosa de escrever. Tem sido muito gratificante me desafiar a entender temas densos e complexos e simplificar suas explicações. Da ultima vez falamos sobre [Concorrência, Paralelismo e Multithreading](), hoje não consegui gerar exemplos tão didáticos para o mundo real quando nesse artigo, mas ainda assim espero de coração que você ainda saia com algum conhecimento bacana daqui. 
