@@ -23,7 +23,7 @@ O teorema propõe que, na perspectiva de sistemas distribuídos, um banco de dad
 
 Ele fornece uma base para entender as limitações inerentes a qualquer sistema de banco de dados distribuído e ajuda a esclarecer por que não é possível atingir todas as três propriedades simultaneamente. Vamos explorar o modelo proposto comparando com abordagens mais modernas longo deste artigo.
 
-Para entender a concepção completa de todas as propriedades do terema CAP, precisamos revisitar alguns conceitos antes para melhor compreesão. Antes de detalhar o que significa no detalhe cada item do CAP, precisamos entender os conceitos de **ACID** e **BASE** compreender como funcionam as transações e operações dentro dos bancos de dados. 
+Para entender a concepção completa de todas as propriedades do terema CAP, precisamos revisitar alguns conceitos para complementar a compreesão. Antes de detalhar o que significa cada sigla do CAP, vamos analisar os conceitos de **ACID** e **BASE**, para observar o funcionamento das transações e operações dentro dos bancos de dados.
 
 <br>
 
