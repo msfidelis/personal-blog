@@ -306,6 +306,17 @@ Em resumo, o teorema CAP é útil para compreensões e discussões iniciais sobr
 
 <br>
 
+#### Obrigado aos Revisores 
+
+* [Tarsila, amor da minha vida](https://twitter.com/tarsilabianca_c/)
+* [Klecianny Melo](https://twitter.com/Kecbm)
+* [Juliana Gaioso](https://twitter.com/juligaioso)
+* [Luiz Aoqui, o revisor universal da comunidade](https://twitter.com/luiz_aoqui)
+
+> Imagens geradas pelo DALL-E
+
+<br>
+
 #### Referências 
 
 [Seth Gilbert and Nancy Lynch. 2002. Brewer's conjecture and the feasibility of consistent, available, partition-tolerant web services. SIGACT News 33, 2 (June 2002)](https://dl.acm.org/doi/10.1145/564585.564601)
