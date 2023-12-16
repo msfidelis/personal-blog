@@ -139,20 +139,20 @@ Por mais que o Least Request resolva o grande problema de uniformidade de requis
 
 ## Least Connection
 
-Os algoritmos de "Least Connection" são técnicas mais avançadas de balanceamento de carga que são utilizadas para distribuir requisições de maneira mais inteligente em uma série de hosts. Diferentemente do Round Robin, que distribui requisições de maneira uniforme sem considerar o estado atual dos servidores, estas abordagens levam em conta a carga de trabalho atual dos servidores levando em consideração dois critérios que os diferenciam entre si. 
+Os algoritmos de "Least Connection" são técnicas mais avançadas de balanceamento de carga que são utilizadas para distribuir requisições de maneira mais inteligente em uma série de hosts. Diferentemente do Round Robin e Least Request que tem objetivo de distribuir requisições de maneira uniforme sem considerar o estado atual dos servidores, esta abordagem é uma tentativa de levar em conta a carga de trabalho presente em cada um deles.
 
-O método de **Least Connection** encaminha a solicitação atual para o servidor que detêm menos conexões ativas no momento. Uma "conexão ativa" significa uma sessão ou interação em andamento entre o cliente e o servidor, independentemente de a requisição ter sido processada ou não.
+O método de **Least Connection** **encaminha a solicitação atual para o servidor que detêm menos conexões ativas no momento**. Uma "conexão ativa" significa uma **sessão ou interação em andamento entre o cliente e o servidor**, independentemente de a requisição ter sido processada ou não, como implementações que suporte keep alive, web sockets, grpc persistentes e etc. 
 
-O **Least Request** trabalha com um contador que encaminha o request atual para o host que recebeu menos requisições até o momento sendo uma abordagem muito mais simples porém muito eficaz para trazer uniformidade para a distribuição de carga. 
-
-As duas abordagem cabem perfeitamente em cenários onde as requisições são relativamente uniformes e curtas, pois ambas ajudam a garantir uma distribuição equilibrada e baseada em utilização, e ambos os métodos se adaptam dinamicamente às mudanças repentinas na quantidade de requests. 
+Se um host está gerenciando 5 conexões ativas e outro está gerenciando 3, o próximo request será direcionado para o host com apenas 3 conexões, mesmo que essas conexões possam ser tarefas de baixa demanda.
 
 
-### Desvantagens do Least Request e Least Connection 
+### Desvantagens do Least Connection 
 
 A "não tão importante" desvantagem que podemos citar é que ambos os algoritmos são muito mais complexos de se implementar em comparação a simplicidade do Round Robin, porém essa característica pode ser fácilmente vencida se nos limitarmos a sermos meros usuários de algum tipo de tecnologia que já possui suporte para esses cenários. 
 
-Em cenários onde temos uma diversidade muito grande de tipos de chamadas que possuam durações diferentes, é comum também acontecer um desbalanceamento de uso assim como no Round Robin, principalmente no caso do Least Request, pois ainda que o tráfego seja distribuído de forma mais inteligente, ainda não leva em consideração a capacidade de processamento dos hosts. 
+O Least Connection foca no número de conexões ativas, sem avaliar a carga associada a cada conexão, o que pode resultar em sobrecarga de servidores com conexões mais intensivas assim como as opções anteriores.
+
+Servidores com várias conexões de longa duração (keep alive) podem parecer menos ocupados do que realmente estão, criando um potencial para ineficiências na distribuição da carga gerando desbalanceamento.
 
 
 ## Least Outstanding Requests
