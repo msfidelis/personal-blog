@@ -132,7 +132,7 @@ O algoritmo de "Least Request" é uma abordagem de balanceamento simples mas bem
 
 O objetivo do Least Request é **garantir uma distribuição de carga equitativa baseada na frequência de requisições atendidas** em vez de sua duração ou complexidade, o que faz ele **uma alternativa vantajosa para cenários que possuam requisições uniformes e curtas**, como um microserviço que possuam poucas rotas que sejam muito bem performáticas por exemplo um serviço de consulta de usuários que receba um `id` e retorne o recurso muito rapidamente. 
 
-### Desvantagens do Least Request
+### Limitações do Least Request
 
 Por mais que o Least Request resolva o grande problema de uniformidade de requisições, ele ainda pode apresentar problemas de desbalanceamento em ambientes que possuam requisicões muito diversificadas que possuam durações muito diferentes. Assim como o Round Robin, ele não leva em conta a saturação dos hosts, fazendo com que apenas "contar" as requisições não sejam suficientes para representar a real distribuição de carga.
 
@@ -146,18 +146,29 @@ O método de **Least Connection** **encaminha a solicitação atual para o servi
 Se um host está gerenciando 5 conexões ativas e outro está gerenciando 3, o próximo request será direcionado para o host com apenas 3 conexões, mesmo que essas conexões possam ser tarefas de baixa demanda.
 
 
-### Desvantagens do Least Connection 
+### Limitações do Least Connection 
 
 A "não tão importante" desvantagem que podemos citar é que ambos os algoritmos são muito mais complexos de se implementar em comparação a simplicidade do Round Robin, porém essa característica pode ser fácilmente vencida se nos limitarmos a sermos meros usuários de algum tipo de tecnologia que já possui suporte para esses cenários. 
 
-O Least Connection foca no número de conexões ativas, sem avaliar a carga associada a cada conexão, o que pode resultar em sobrecarga de servidores com conexões mais intensivas assim como as opções anteriores.
+O Least Connection foca no número de conexões ativas, sem avaliar a carga associada a cada conexão, o que pode resultar em sobrecarga de servidores com conexões mais intensivas assim como as opções anteriores e o fato de ter que fazer essa gestão pode acabar consumindo recursos significativos no balanceador. 
 
 Servidores com várias conexões de longa duração (keep alive) podem parecer menos ocupados do que realmente estão, criando um potencial para ineficiências na distribuição da carga gerando desbalanceamento.
 
 
-## Least Outstanding Requests
+## Least Outstanding Requests (LOR)
 
-O **Least Outstanding Request** ou **LOR** é um algoritmo de balanceamento de carga muito sofitsticado que resolve o maior problema dos algoritmos anteriores, que é a **saturação dos hosts**. Ao contrário do **Least Request** que encaminha o request para o host que recebeu menos requisições até o momento ou o **Least Connection** que encaminha para o host que detêm o host com menos conexões ativas, o LOR encaminha o request para aquele servidor que possui 
+O **Least Outstanding Request** ou **LOR** é um algoritmo de balanceamento de carga muito sofitsticado que resolve o maior problema dos algoritmos anteriores, que é a **saturação dos hosts**. De certa forma é fácil confundir as abordagens do LOR e do Least Connections. Enquanto o Least Connection se concentra em gerenciar conexões ativas, independente de estarem sendo utilizadas ou não, o Least Outstanding Request considera o número de **requisições pendentes em cada host**. Uma **"requisição pendente" é uma requisição que foi iniciada, mas ainda não foi concluída**, independentemente de haver uma conexão ativa contínua ou não, fazendo o mesmo ser mais eficiente quando comparado ao Least Connection na hora de identificar hosts que estejam com um processamento maior, segurando mais conexões, tendo um tempo de resposta maior e etc.
+
+Resumindo, o Least Connection foca em "quantas conexões" estão ativas, enquanto o LOR olha para "quantas requisições" estão ainda sendo processadas.
+
+O LOR procura equilibrar a carga de trabalho distribuindo novas requisições para os hosts com menos requisições pendentes, tentando garantir que todos os servidores tenham um volume de trabalho semelhante e gerenciável. Ou seja, o foco de balanceamento do LOR é a possível saturação, e não a quantidade de requests, fazendo o mesmo ser uma alternativa eficaz em ambientes onde as requisições podem ter tempos de resposta variáveis e imprevisíveis.
+
+### Limitações do Least Outstanding Requests
+
+O LOR requer um monitoramento contínuo e detalhado do estado das requisições em cada host implementado junto ao algoritmo. Isso pode aumentar a complexidade da implementação em si e exigir mais recursos computacionais para manter o acompanhamento em tempo real, e mais ainda onde esse controle precise funcionar de forma distribuída. 
+
+Essa complexidade pode invariavelmente impactar em performance do balanceador em caso de variações de carga de trabalho repentina.  Além do mais, pode ser um desafio entender quando uma conexão foi concluída ou não.
+
 
 ## Manglev
 
