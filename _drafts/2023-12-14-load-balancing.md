@@ -24,6 +24,8 @@ O objetivo é garantir que nenhum servidor seja sobrecarregado com muitos reques
 
 Tanto no balanceamento de carga entre servidores quanto no escalonamento de CPU, o Round Robin é centrado na ideia de distribuir o trabalho ou recursos de maneira justa e equitativa, evitando a sobrecarga de um único recurso, em ambos os casos, o Round Robin é apreciado por sua simplicidade e abordagem justa.
 
+Essa forma de balanceamento ciclico torna esse tipo de algoritmo altamente receptivo em ambientes que possuam escalabilidade horizontal, tornando muito fácil remover e adicionar novos hosts do pool. 
+
 ### Limitações do Round Robin
 
 A grande crítica ao Round Robin é que por mais que seu funcionamento cíclico entre os hosts entregue requests de forma igualitária, nem todos os requests tem o mesmo peso de processamento, e isso pode resultar em ineficiências se os servidores tiverem capacidades variadas. 
@@ -136,6 +138,8 @@ O objetivo do Least Request é **garantir uma distribuição de carga equitativa
 
 Por mais que o Least Request resolva o grande problema de uniformidade de requisições, ele ainda pode apresentar problemas de desbalanceamento em ambientes que possuam requisicões muito diversificadas que possuam durações muito diferentes. Assim como o Round Robin, ele não leva em conta a saturação dos hosts, fazendo com que apenas "contar" as requisições não sejam suficientes para representar a real distribuição de carga.
 
+Implementações que não tenham uma forma de "zerar" o contador de requisições podem se tornar altamente problematicos em ambientes sucetiveis a escabalilidade horizontal. Uma má implementação desse algoritmo pode acarretar em uma "negação de serviço" involuntária em novos hosts que entrarem no pool do balanceador. 
+
 
 ## Least Connection
 
@@ -171,6 +175,18 @@ Essa complexidade pode invariavelmente impactar em performance do balanceador em
 
 
 ## Manglev
+
+O Manglev é um algoritmo relativamente novo desenvolvido pela Google e é considerado uma técnica avançada de balanceamento de carga, usada principalmente em sistemas complexos de computação distribuída, por mais que ainda bem pouco utilizada. 
+
+O algoritmo Maglev distribui as requisições de clientes para um conjunto de servidores de maneira que cada cliente sempre seja encaminhado para o mesmo servidor, **desde que este esteja disponível**. Isso é alcançado através do uso de **tabelas de hash consistentes**, que mapeiam clientes para servidores de uma forma determinística, mas equilibrada.
+
+O Manglev busca garantir uma **distribuição consistente priorizando cache de dados e manutenção de sessão do usuário**. O Manglev passa uma ideia de "persistência", o que acarretaria em N outros problemas de escalabilidade quando comparado com outras opções apresentadas anteriormente. Isso se dá pois os cenários de aplicação do Manglev são diferentes de um balanceamento stateless entre várias replicas de uma API REST por exemplo. 
+
+O Objetivo do Manglev é garantir mínima flutuação no mapeamento das requisições, garantindo consistencia baseada em algo parecido com uma "sessão". 
+
+Esse algoritmo é ideal para balanceamento entre datacenters, ingestão de dados e outros cenários que exijam uma continuidade e persistências entre as requisições
+
+### Limitações do Manglev
 
 ## Random 
 
