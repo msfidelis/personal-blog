@@ -126,13 +126,27 @@ Requisição 20 direcionada para: http://host1.com
 
 [Go Playground - Round Robin](https://go.dev/play/p/sUrhELXqIJW)
 
-## Least Request e Least Connection
+## Least Request
 
-Os algoritmos "Least Request" e "Least Connection" são técnicas mais avançadas de balanceamento de carga que são utilizadas para distribuir requisições de maneira mais inteligente em uma série de hosts. Diferentemente do Round Robin, que distribui requisições de maneira uniforme sem considerar o estado atual dos servidores, estas abordagens levam em conta a carga de trabalho atual dos servidores levando em consideração dois critérios que os diferenciam entre si. 
+O algoritmo de "Least Request" é uma abordagem de balanceamento simples mas bem eficiente que nos permite direcionar o request atual para o servidor que processo menos requisições até o momento. Ele trabalha com um contador vinculado aos hosts ativos que incrementa individualmente conforme as requisições vão sendo distribuídas. Para selecionar o proximo host para o qual o request será redirecionado, ele prioriza o host com o menor valor entre as possibilidades.  Dependendo da implementação esse contador pode zerado dentro de um período razoável de tempo, o tornando escalável para ambientes que possuam escalabilidade horizontal. 
 
-O método de **Least Connection** por exemplo encaminha a solicitação atual para o servidor que detêm menos conexões ativas no momento, enquanto o **Least Request** trabalha com um contador que encaminha o request atual para o host que recebeu menos requisições até o momento. 
+O objetivo do Least Request é **garantir uma distribuição de carga equitativa baseada na frequência de requisições atendidas** em vez de sua duração ou complexidade, o que faz ele **uma alternativa vantajosa para cenários que possuam requisições uniformes e curtas**, como um microserviço que possuam poucas rotas que sejam muito bem performáticas por exemplo um serviço de consulta de usuários que receba um `id` e retorne o recurso muito rapidamente. 
 
-Esse tipo de abordagem cabe perfeitamente em cenários onde as requisições relativamente uniformes e curtas, pois ambas ajudam a garantir uma distribuição equilibrada baseada no real uso, e ambos os métodos se adaptam dinamicamente às mudanças repentinas na quantidade de requests. 
+### Desvantagens do Least Request
+
+Por mais que o Least Request resolva o grande problema de uniformidade de requisições, ele ainda pode apresentar problemas de desbalanceamento em ambientes que possuam requisicões muito diversificadas que possuam durações muito diferentes. Assim como o Round Robin, ele não leva em conta a saturação dos hosts, fazendo com que apenas "contar" as requisições não sejam suficientes para representar a real distribuição de carga.
+
+
+## Least Connection
+
+Os algoritmos de "Least Connection" são técnicas mais avançadas de balanceamento de carga que são utilizadas para distribuir requisições de maneira mais inteligente em uma série de hosts. Diferentemente do Round Robin, que distribui requisições de maneira uniforme sem considerar o estado atual dos servidores, estas abordagens levam em conta a carga de trabalho atual dos servidores levando em consideração dois critérios que os diferenciam entre si. 
+
+O método de **Least Connection** encaminha a solicitação atual para o servidor que detêm menos conexões ativas no momento. Uma "conexão ativa" significa uma sessão ou interação em andamento entre o cliente e o servidor, independentemente de a requisição ter sido processada ou não.
+
+O **Least Request** trabalha com um contador que encaminha o request atual para o host que recebeu menos requisições até o momento sendo uma abordagem muito mais simples porém muito eficaz para trazer uniformidade para a distribuição de carga. 
+
+As duas abordagem cabem perfeitamente em cenários onde as requisições são relativamente uniformes e curtas, pois ambas ajudam a garantir uma distribuição equilibrada e baseada em utilização, e ambos os métodos se adaptam dinamicamente às mudanças repentinas na quantidade de requests. 
+
 
 ### Desvantagens do Least Request e Least Connection 
 
@@ -142,6 +156,8 @@ Em cenários onde temos uma diversidade muito grande de tipos de chamadas que po
 
 
 ## Least Outstanding Requests
+
+O **Least Outstanding Request** ou **LOR** é um algoritmo de balanceamento de carga muito sofitsticado que resolve o maior problema dos algoritmos anteriores, que é a **saturação dos hosts**. Ao contrário do **Least Request** que encaminha o request para o host que recebeu menos requisições até o momento ou o **Least Connection** que encaminha para o host que detêm o host com menos conexões ativas, o LOR encaminha o request para aquele servidor que possui 
 
 ## Manglev
 
