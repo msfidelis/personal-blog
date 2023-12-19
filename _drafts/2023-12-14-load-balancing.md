@@ -16,17 +16,17 @@ title: System Design - Load Balancing, Proxy Reversos e Algoritmos
 
 ![sem load balancing](/assets/images/system-design/no-balance.png)
 
-Imagine um supermercado pequeno do seu bairro. Imagine esse estabeleciomento lotado num horário de pico. **Esse supermercado possui apenas um caixa de atendimento para todos os clientes presentes**. Nesse ambiente, podemos fazer a seguinte leitura: 
+Imagine um pequeno supermercado em seu bairro, lotado em um horário de pico. **Este estabelecimento conta apenas com um caixa para atender todos os clientes presentes**. Podemos observar o seguinte cenário: 
 
-Todos os clientes têm que esperar na mesma fila, e como ela está longa, isso causa atrasos e deixa todos irritados. 
+Todos os clientes são forçados a esperar na mesma longa fila, gerando atrasos e irritação generalizada.
 
-O único caixa eletrônico está sobrecarregado, aumentando o estresse do atendente, podendo ocasionar erros devido à pressão constante.
+O único caixa eletrônico, sob intensa pressão, fica sobrecarregado, aumentando o risco de erros cometidos pelo atendente devido ao estresse constante.
 
-Mesmo que alguns clientes tenham apenas poucos itens, como por exemplo um litro de refrigerante, eles ainda têm que esperar sua vez, disputando com pessoas com carrinhos extremamente lotados com sua compra do mês de algumas pessoas. 
+Clientes com compras pequenas, como um litro de refrigerante, são obrigados a aguardar o mesmo tempo que aqueles com carrinhos repletos, tornando o processo ineficiente.
 
-Se esse caixa por ventura falhar, quebrar, queimar, toda a operação do mercadinho será comprometida. 
+Se, por alguma razão, esse caixa falhar ou se danificar, toda a operação do mercado será afetada.
 
-Nesse exemplo podemos traçar um paralelo para um ambiente que não faz uso de um balanceamento de carga e podemos começar a entender que tipo de problemas esse tipo de abordagem resolve. 
+Este exemplo ilustra os desafios de um ambiente sem balanceamento de carga, ajudando-nos a compreender que tipos de problemas essa abordagem visa solucionar.
 
 <br>
 
@@ -36,13 +36,13 @@ Nesse exemplo podemos traçar um paralelo para um ambiente que não faz uso de u
 
 Agora para entender o funcionamento e diferencial de um balanceamento de carga, imagine que o dono desse mercadinho fez um investimento e comprou mais alguns caixas e contratou mais alguns atendentes para acelerar a fila de espera. 
 
-Com vários caixas, os clientes podem se distribuir entre eles, resultando em filas mais curtas, onde cada um dos caixas tem menos pressão, o que diminui a chance de estresse e erros humanos. 
+Com a presença de múltiplos caixas, os clientes têm a opção de escolher entre diferentes filas, levando a uma redução significativa no tempo de espera. Cada caixa, enfrentando uma menor carga de trabalho, tem menos probabilidade de estresse e erro.
 
-Se caso um caixa der problema e precisar de manutenção, o fluxo é apenas degradado parcialmente, e ainda continua operando apesar disso. 
+No caso de um caixa apresentar problemas e necessitar de manutenção, o impacto no fluxo geral de clientes é apenas parcial, permitindo que a operação continue, embora de forma degradada.
 
 Alguns desses caixas podem ser utilizados para um numero menor de volumes, ou para atendimento preferncial, fazendo com que os mesmos evitem concorrência com clientes com carrinhos lotados. 
 
-Dessa forma, os clientes podem ser atendidos de forma mais rápida aumentado a eficiência do estabelecimento, o que acarreta por tabela em uma experiência melhor para os clientes. 
+Esta abordagem não só agiliza o atendimento, aumentando a eficiência do estabelecimento, mas também melhora significativamente a experiência dos clientes.
 
 Esse cenário exemplifica o funcionamento do balanceamento de carga no seu dia a dia, agora podemos entrar em termos técnicos do funcionamento e aplicações de balanceadores de carga. 
 
@@ -50,75 +50,78 @@ Esse cenário exemplifica o funcionamento do balanceamento de carga no seu dia a
 
 # Fundamentos de Balanceadores de Carga
 
-Um Load Balancer é uma ferramenta para gestão de tráfego de rede em ambientes com múltiplos servidores, como datacenters privados, clouds públicas e aplicações web distribuídas. Seu principal objetivo é **distribuir as requisições de entrada entre vários hosts de forma eficiente e equitativa, otimizando o uso de recursos, melhorando tempos de resposta, minimizando a carga em cada servidor e garantindo a disponibilidade do serviço em caso de falha de algum dos hosts de seu pool**. 
+Um Load Balancer é uma ferramenta essencial para a gestão de tráfego de rede em ambientes com múltiplos servidores, tais como datacenters privados, nuvens públicas e aplicações web distribuídas. Sua função principal é **distribuir as requisições de entrada entre vários hosts de maneira eficiente e equitativa, otimizando o uso dos recursos, aprimorando os tempos de resposta, reduzindo a carga em cada servidor e assegurando a disponibilidade do serviço, mesmo em caso de falhas em algum dos hosts do pool**.
 
-Quando olhamos para o lado de resiliência, um load balancer desempenha uma função crucial, **evitando que qualquer host de seu pool de servidores se torne um ponto único de falha**. 
+Do ponto de vista da resiliência, o load balancer desempenha um papel crucial, **evitando que qualquer servidor individual do pool se torne um ponto único de falha**.
 
-As aplicações de um balanceador de carga pode variar desde hardwares de networking até softwares específicos que atuam em alguma camada de rede para distribuir carga entre hosts que falem o mesmo protocolo do balanceador. 
+As aplicações de um balanceador de carga são diversas, abrangendo desde hardwares de rede até softwares especializados que operam em determinadas camadas de rede, distribuindo a carga entre hosts que operam no mesmo protocolo do balanceador.
 
-Alguns balanceadores podem desempenhar algumas outras funções além da distribuição de tráfego propriamente dita, podendo aceitar customizações de camada 7 para fazer roteamentos especificos com base em basepaths, querystrings, headers e ip's de origem. Outra função muito comum de ser encontrada em softwares e apliances de balanceamento de carga é o offload de certificados SSL/TLS tirando essa responsabilidade de cada uma das aplicações do pool. 
+Além da distribuição de tráfego, muitos balanceadores de carga oferecem funcionalidades adicionais. Eles podem permitir customizações na camada 7 da rede, como roteamento específico baseado em basepaths, querystrings, headers e IPs de origem. Uma função comum em softwares e dispositivos de balanceamento de carga é o offload de certificados SSL/TLS, removendo essa carga de processamento das aplicações individuais do pool.
 
-Abaixo podemos ver um exemplo do funcionamento de de um balanceador de carga: 
+A seguir, apresentamos um exemplo ilustrativo do funcionamento de um balanceador de carga:
 
 
-![GIT Load Balancer](/assets/images/system-design/load-balancer.gif)
+
+![GIF Load Balancer](/assets/images/system-design/load-balancer.gif)
 
 <br>
 
 ## Proxy Reverso vs Load Balancer
 
-Um Reverse Proxy, ou Proxy Reverso, atua como um intermediário para requisições destinadas a um ou mais servidores internos. Ele recebe as requisições dos clientes e as encaminha para o servidor apropriado. Após o servidor processar a requisição, o reverse proxy retorna a resposta do servidor ao cliente inicial. 
+Um Proxy Reverso, ou Reverse Proxy, atua como um intermediário para requisições destinadas a um ou mais servidores internos. Ele recebe as requisições dos clientes e as encaminha para o servidor apropriado. Após o servidor processar a requisição, o proxy reverso retorna a resposta do servidor ao cliente original.
 
-> Ué, não é exatamente isso que um Load Balancer faz? 
+> Ué, não é isso que um Load Balancer faz?
 
-A definição dos dois soam bem parecidas, pois ambas as aplicações se baseiam em ficar entre clientes e servidores para cumprir o papel de ponto único de acesso entre N hosts de aplicação, então é compreensivel que exista muita confusão sobre o papel de cada um. 
+A definição de ambos pode soar semelhante, já que as duas ferramentas atuam entre clientes e servidores como pontos únicos de acesso a múltiplos hosts de aplicação. Portanto, é compreensível a confusão sobre o papel de cada um.
 
-A implementação de um load balancer faz bastante sentido **quando temos muitos hosts no pool**, **quando o volume é grande demais para ser endereçado para apenas um servidor**, e quando a resiliência e diminuição de pontos únicos de falha são requisitos essenciais. 
+A implementação de um Load Balancer é ideal **quando há muitos hosts no pool**, **quando o volume de requisições é extenso demais para ser gerido por apenas um servidor**, e quando a resiliência e a minimização de pontos únicos de falha são essenciais.
 
-Um load balancer também é bem vindo em ambientes onde a **escalabilidade horizontal é presente e constante**, pois é um requisito de design balanceadores serem **receptíveis a entrada e saída de novos hosts do pool** a todo momento, e inclusive serem capazes disponibilizar algum mecanismo de **checar a saúde dos hosts** constantemente para evitar degradação da experiência do cliente por falha ou degradação de algum deles.
+Um Load Balancer também é apropriado em ambientes com **escalabilidade horizontal constante**, pois é projetado para ser **adaptável à inclusão e remoção de hosts do pool a qualquer momento**. Além disso, ele geralmente oferece mecanismos para **verificar constantemente a saúde dos hosts**, evitando a degradação da experiência do usuário devido a falhas ou problemas de desempenho.
 
-Comparando com um proxy reverso, a implementação do mesmo pode estar ligado mais ser uma simples camada entre cliente e servidor servindo como uma camada de controle intermediária, aplicando regras de roteamento, fazendo offload de SSL e implementando **caching**. 
+Comparado ao proxy reverso, que pode atuar como uma camada intermediária simples entre cliente e servidor, aplicando regras de roteamento, realizando offload de SSL e implementando **cache**.
 
-Enquanto o load balancer é implementado quando existem vários hosts da mesma aplicação, o reverse proxy pode ser implementado de 1:1. É comum um servidor expor a aplicação atrás de uma camada de proxy reverso que é encarregada de gerenciar pool de conexões, limites de upload, tipos de conteúdo, restrições, segurança e cacheamento. É o caso por exemplo de **Sidecars de Envoy no Kubernetes**, A Stack** Nginx com PHP FPM**, Servidores Web rodando NodeJS, Java com Spring, Golang serem disponibilizados atrás de um proxy reverso para fazer a gestão das requisições e etc. 
+Enquanto o Load Balancer é utilizado quando existem vários hosts da mesma aplicação, o Proxy Reverso pode ser aplicado em uma relação de 1:1. É comum um servidor expor sua aplicação por trás de um Proxy Reverso, responsável pela gestão de pools de conexões, limites de upload, tipos de conteúdo, restrições, segurança e cacheamento. Um exemplo é o uso de **Sidecars de Envoy no Kubernetes**, a stack **Nginx com PHP FPM**, ou servidores Web rodando NodeJS, Java com Spring, Golang, entre outros, posicionados atrás de um proxy reverso para gerir as requisições.
 
-Também é possível encontrar configurações de proxy reverso onde temos mais de um host no pool assim no presumido no load balancer, e também mais de uma aplicação sendo servida pelo mesmo proxy fazendo um controle de redirecionamento através de URL's, Basepaths, Headers, IP de origem e etc. 
+Também é possível encontrar configurações de Proxy Reverso com mais de um host no pool, semelhante ao Load Balancer, e até mesmo servindo mais de uma aplicação, controlando o redirecionamento por meio de URLs, Basepaths, Headers, IPs de origem, etc.
 
-Soluções modernas de balanceamento de carga podem cumprir tanto o papel inicial de load balancing quanto de reverse proxy em alguma escala. 
+Soluções modernas de balanceamento de carga muitas vezes podem desempenhar tanto o papel de Load Balancer quanto de Proxy Reverso em alguma medida.
+
 
 
 <br>
 
 # Algoritmos de Balanceamento de Carga
 
-Existem várias abordagens diferentes quando falamos de balanceamento de carga. Alguns algoritmos podem ter melhor performance e eficiência que outros em determinados cenários como também podem ser causadores de mais problemas. 
+Existem diversas abordagens quando se trata de balanceamento de carga, cada uma com suas especificidades e adequações a diferentes cenários. Alguns algoritmos podem oferecer melhor performance e eficiência em determinadas situações, enquanto em outros contextos podem não ser a escolha ideal.
 
-É interessante entender quais os tipos de algoritmos de balanceamento existem e que tipo de problemas cada um resolve, e também onde empregar e onde evitar empregar cada um deles. 
+Compreender os tipos de algoritmos de balanceamento disponíveis e as problemáticas que cada um deles visa resolver é fundamental. Igualmente importante é saber onde cada um se encaixa melhor e onde sua utilização pode não ser recomendada.
 
-A seguir vamos encontrar uma série de algoritmos de balanceamento de carga que eu considerei mais importantes para entendimento. Existem vários outros que não estão listados, mas tem material de apoio no final do artigo caso se sinta a vontade para explorar mais. 
+A seguir, serão apresentados alguns dos algoritmos de balanceamento de carga que considero mais relevantes para o entendimento do tema. Existem muitos outros que não estão listados aqui, mas você pode encontrar material adicional no final deste artigo para explorar mais sobre o assunto.
+
 
 <br>
 
 ## Round Robin 
 
-Round Robin é um dos algoritmos mais comuns quando falamos sobre balanceamento de carga, e seu objetivo é **distribuir carga para os servidores disponíveis de forma uniforme e ciclica**. Sua implementação inicial vem para resolver problemas de escalonamento de processos a nível de CPU, e é baseado em uma variável de tempo identificada como `quantum`. Essa variáve identifica quanto tempo uma CPU vai dar de "atenção" para um processo na fila, esse tipo de técnica impede que os processos que estão sendo executados morram por `Starvation`, criando uma  uma rotatividade cíclica de forma equitativa. Entender esse conceito a nível de schueduling de processos é necessário para compreender como ele funciona a nível de um balanceador de carga. 
+Round Robin é um dos algoritmos mais utilizados em balanceamento de carga, com o objetivo de **distribuir a carga de maneira uniforme e cíclica entre os servidores disponíveis**. Originalmente concebido para o escalonamento de processos a nível de CPU, baseia-se na variável `quantum`, que define o tempo dedicado pela CPU a cada processo na fila. Essa abordagem previne o problema de `Starvation`, assegurando uma rotatividade cíclica e equitativa dos processos. Compreender esse conceito no contexto do escalonamento de processos é essencial para entender sua aplicação em balanceadores de carga.
 
-No contexto de balanceamento de carga, **Round Robin** é usado para distribuir as requisições de rede ou tráfego de maneira uniforme entre um conjunto de servidores. Cada nova requisição requisição consulta o atual host ativo dentro do calculo de tempo do quantum e encaminha a requisição para o mesmo. 
+No âmbito do balanceamento de carga, o **Round Robin** é empregado para distribuir uniformemente as requisições de rede ou o tráfego entre um grupo de servidores. Cada nova requisição é direcionada ao próximo servidor na fila, seguindo ou não a lógica do quantum.
 
-O objetivo é garantir que nenhum servidor seja sobrecarregado com muitos requests de forma desproporcional enquanto outros fiquem subutilizados. 
+O principal objetivo é assegurar que nenhum servidor seja desproporcionalmente sobrecarregado com requisições, enquanto outros permanecem subutilizados. O Round Robin é valorizado tanto no balanceamento de carga entre servidores quanto no escalonamento de CPU por sua simplicidade e abordagem justa, que distribui trabalho ou recursos de forma equânime, evitando a sobrecarga de um único recurso.
 
-Tanto no balanceamento de carga entre servidores quanto no escalonamento de CPU, o Round Robin é centrado na ideia de distribuir o trabalho ou recursos de maneira justa e equitativa, evitando a sobrecarga de um único recurso, em ambos os casos, o Round Robin é apreciado por sua simplicidade e abordagem justa.
+Sua natureza cíclica faz com que o algoritmo seja particularmente eficaz em ambientes com escalabilidade horizontal, facilitando a adição ou remoção de hosts do pool.
 
-Essa forma de balanceamento ciclico torna esse tipo de algoritmo altamente receptivo em ambientes que possuam escalabilidade horizontal, tornando muito fácil remover e adicionar novos hosts do pool. 
+Analogamente, em um supermercado, o Round Robin seria como direcionar os clientes para cada caixa em sequência, um após o outro, independentemente do tamanho da fila de cada um.
 
-No exemplo do supermercado, imagine que podemos direcionar os clientes para cada caixa em ordem, um após o outro, independentemente do tamanho da fila.
 
 ### Limitações do Round Robin
 
-A grande crítica ao Round Robin é que por mais que seu funcionamento cíclico entre os hosts entregue requests de forma igualitária, nem todos os requests tem o mesmo peso de processamento, e isso pode resultar em ineficiências se os servidores tiverem capacidades variadas. 
+Uma crítica frequente ao método Round Robin é que, apesar de distribuir requisições de forma igualitária entre os hosts, ele não leva em conta que nem todas as requisições demandam o mesmo nível de processamento. Isso pode levar a ineficiências, especialmente se os servidores envolvidos possuírem capacidades variadas.
 
-Em uma aplicação Web alguns requests podem requerer mais poder computacional que outros, fazendo com que diferentes hosts da lista apresentem saturação e tempos de resposta diferentes. Um exemplo nem tão lúdico assim, um request para salvar um pedido de compra pode concorrer no mesmo host com um request que está gerando um relatório de fechamento contábil da empresa, fazendo com que essa solicitação demore mais do que normalmente demoraria. 
+Na prática, em aplicações web, alguns requests podem exigir mais recursos computacionais do que outros. Por exemplo, uma requisição para salvar um pedido de compra pode acabar competindo no mesmo host com uma requisição que gera um relatório de fechamento contábil da empresa. Isso pode resultar em uma resposta mais lenta para a solicitação, devido à saturação desigual dos hosts.
 
-Outra grande desvantagem pode ser encontrada em alguns balanceadores que respeitam a variável de tempo `quantum`. Workloads que se utilizam desses algoritmos podem receber cargas repentinas dentro do curto espaço de tempo do quantum, e todas essas requisições acabarem sendo encaminhadas para o mesmo host. 
+Outra desvantagem do Round Robin se manifesta em balanceadores que adotam a variável de tempo `quantum`. Em cenários onde workloads experimentam picos de carga repentina dentro do breve intervalo do quantum, todas essas requisições podem ser direcionadas para o mesmo host. Isso pode sobrecarregar temporariamente um servidor específico, enquanto os outros permanecem subutilizados.
+
 
 ### Exemplo de um Algoritmo de Round Robin
 
@@ -218,17 +221,18 @@ Requisição 20 direcionada para: http://host1.com
 
 ## Least Request
 
-O algoritmo de "Least Request" é uma abordagem de balanceamento simples mas bem eficiente que nos permite direcionar o request atual para o servidor que processo menos requisições até o momento. Ele trabalha com um contador vinculado aos hosts ativos que incrementa individualmente conforme as requisições vão sendo distribuídas. Para selecionar o proximo host para o qual o request será redirecionado, ele prioriza o host com o menor valor entre as possibilidades.  Dependendo da implementação esse contador pode zerado dentro de um período razoável de tempo, o tornando escalável para ambientes que possuam escalabilidade horizontal. 
+O algoritmo "Least Request" é uma abordagem de balanceamento de carga simples, porém eficiente, que direciona a requisição atual para o servidor que processou o menor número de requisições até aquele momento. Este método utiliza um contador associado a cada host ativo, que incrementa individualmente à medida que as requisições são distribuídas. Para escolher o próximo host, o algoritmo prioriza aquele com o menor contador dentre as opções disponíveis. Dependendo da implementação, este contador pode ser reiniciado após um período específico, tornando-o escalável em ambientes com escalabilidade horizontal.
 
-O objetivo do Least Request é **garantir uma distribuição de carga equitativa baseada na frequência de requisições atendidas** em vez de sua duração ou complexidade, o que faz ele **uma alternativa vantajosa para cenários que possuam requisições uniformes e curtas**, como um microserviço que possuam poucas rotas que sejam muito bem performáticas por exemplo um serviço de consulta de usuários que receba um `id` e retorne o recurso muito rapidamente. 
+O objetivo do "Least Request" é **garantir uma distribuição equitativa de carga baseada na frequência com que as requisições são atendidas**, ao invés de focar na duração ou complexidade delas. Isso o torna **uma opção vantajosa para cenários com requisições uniformes e curtas**. Um exemplo seria um microserviço com poucas rotas, mas de alta performance, como um serviço de consulta de usuários que recebe um `id` e retorna o recurso rapidamente.
 
-No mercado, imagine que podemos direcionar clientes para o caixa que tem menos pessoas na fila, assegurando uma distribuição mais equilibrada.
+Analogamente, no supermercado, seria como direcionar os clientes para o caixa com a menor fila, buscando uma distribuição mais equilibrada.
 
 ### Limitações do Least Request
 
-Por mais que o Least Request resolva o grande problema de uniformidade de requisições, ele ainda pode apresentar problemas de desbalanceamento em ambientes que possuam requisicões muito diversificadas que possuam durações muito diferentes. Assim como o Round Robin, ele não leva em conta a saturação dos hosts, fazendo com que apenas "contar" as requisições não sejam suficientes para representar a real distribuição de carga.
+Embora o "Least Request" aborde a uniformidade das requisições, ele ainda pode enfrentar problemas de desbalanceamento em ambientes com requisições muito diversificadas e de durações variadas. Assim como o Round Robin, ele não considera a saturação dos hosts, o que pode tornar a simples contagem de requisições insuficiente para representar a real distribuição de carga.
 
-Implementações que não tenham uma forma de "zerar" o contador de requisições podem se tornar altamente problematicos em ambientes sucetiveis a escabalilidade horizontal. Uma má implementação desse algoritmo pode acarretar em uma "negação de serviço" involuntária em novos hosts que entrarem no pool do balanceador. 
+Implementações que não possuem um mecanismo para "zerar" o contador de requisições podem se tornar problemáticas em ambientes com escalabilidade horizontal. Uma má implementação desse algoritmo pode resultar em uma "negação de serviço" involuntária para novos hosts que entram no pool do balanceador.
+
 
 ### Exemplo de Implementação 
 
@@ -515,6 +519,8 @@ func main() {
 
 
 #### Revisores
+
+* [Tarsila, o amor da minha vida]()
 
 * Teste
 
