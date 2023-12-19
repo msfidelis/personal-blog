@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering ]
-title: System Design - Load Balancing, Proxy Reverso e Alguma Coisa
+title: System Design - Load Balancing, Proxy Reversos e Algoritmos
 ---
 
 # Balanceamento de Carga
@@ -18,19 +18,19 @@ title: System Design - Load Balancing, Proxy Reverso e Alguma Coisa
 
 Imagine um supermercado pequeno do seu bairro. Imagine esse estabeleciomento lotado num horário de pico. **Esse supermercado possui apenas um caixa de atendimento para todos os clientes presentes**. Nesse ambiente, podemos fazer a seguinte leitura: 
 
-Todos os clientes têm que esperar na mesma fila, e como ela está longa, isso causa atrasos e frustração. 
+Todos os clientes têm que esperar na mesma fila, e como ela está longa, isso causa atrasos e deixa todos irritados. 
 
 O único caixa eletrônico está sobrecarregado, aumentando o estresse do atendente, podendo ocasionar erros devido à pressão constante.
 
-Mesmo que alguns clientes tenham apenas poucos itens, como por exemplo um litro de refrigerante, eles ainda têm que esperar sua vez, disputando com pessoas com carrinhos extremamente lotados com sua compra do mês. 
+Mesmo que alguns clientes tenham apenas poucos itens, como por exemplo um litro de refrigerante, eles ainda têm que esperar sua vez, disputando com pessoas com carrinhos extremamente lotados com sua compra do mês de algumas pessoas. 
 
 Se esse caixa por ventura falhar, quebrar, queimar, toda a operação do mercadinho será comprometida. 
 
-Nesse exemplo podemos traçar um paralelo para um ambiente que não faz uso de um balanceamento de carga. 
+Nesse exemplo podemos traçar um paralelo para um ambiente que não faz uso de um balanceamento de carga e podemos começar a entender que tipo de problemas esse tipo de abordagem resolve. 
 
 <br>
 
-### A Funcionalidade de um Balanceamento de Carga
+### Resolvendo problemas com balanceamento de carga
 
 ![com load balancing](/assets/images/system-design/com-balance.png)
 
@@ -44,22 +44,46 @@ Alguns desses caixas podem ser utilizados para um numero menor de volumes, ou pa
 
 Dessa forma, os clientes podem ser atendidos de forma mais rápida aumentado a eficiência do estabelecimento, o que acarreta por tabela em uma experiência melhor para os clientes. 
 
-Esse cenário exemplifica o funcionamento do balanceamento de carga no seu dia a dia. 
-
-Agora que entendemos o funcionamento lúdico, podemos entrar em detalhes: 
-
+Esse cenário exemplifica o funcionamento do balanceamento de carga no seu dia a dia, agora podemos entrar em termos técnicos do funcionamento e aplicações de balanceadores de carga. 
 
 <br>
 
 # Fundamentos de Balanceadores de Carga
 
-Um Load Balancer é uma ferramenta para gestão de tráfego de rede em ambientes com múltiplos servidores, como data centers privados, clouds públicas e aplicações web distribuídas. Seu principal objetivo é distribuir as requisições de entrada entre vários hosts de forma eficiente e equitativa, otimizando o uso de recursos, melhorando tempos de resposta, minimizando a carga em cada servidor e garantindo a disponibilidade do serviço em caso de falha de algum dos hosts de seu pool. 
+Um Load Balancer é uma ferramenta para gestão de tráfego de rede em ambientes com múltiplos servidores, como datacenters privados, clouds públicas e aplicações web distribuídas. Seu principal objetivo é **distribuir as requisições de entrada entre vários hosts de forma eficiente e equitativa, otimizando o uso de recursos, melhorando tempos de resposta, minimizando a carga em cada servidor e garantindo a disponibilidade do serviço em caso de falha de algum dos hosts de seu pool**. 
 
-Quando olhamos para o lado de resiliência, um load balancer desempenha uma função crucial, evitando que qualquer host de seu pool de servidores se torne um ponto único de falha. 
+Quando olhamos para o lado de resiliência, um load balancer desempenha uma função crucial, **evitando que qualquer host de seu pool de servidores se torne um ponto único de falha**. 
+
+As aplicações de um balanceador de carga pode variar desde hardwares de networking até softwares específicos que atuam em alguma camada de rede para distribuir carga entre hosts que falem o mesmo protocolo do balanceador. 
+
+Alguns balanceadores podem desempenhar algumas outras funções além da distribuição de tráfego propriamente dita, podendo aceitar customizações de camada 7 para fazer roteamentos especificos com base em basepaths, querystrings, headers e ip's de origem. Outra função muito comum de ser encontrada em softwares e apliances de balanceamento de carga é o offload de certificados SSL/TLS tirando essa responsabilidade de cada uma das aplicações do pool. 
+
+Abaixo podemos ver um exemplo do funcionamento de de um balanceador de carga: 
+
+
+![GIT Load Balancer](/assets/images/system-design/load-balancer.gif)
 
 <br>
 
 ## Proxy Reverso vs Load Balancer
+
+Um Reverse Proxy, ou Proxy Reverso, atua como um intermediário para requisições destinadas a um ou mais servidores internos. Ele recebe as requisições dos clientes e as encaminha para o servidor apropriado. Após o servidor processar a requisição, o reverse proxy retorna a resposta do servidor ao cliente inicial. 
+
+> Ué, não é exatamente isso que um Load Balancer faz? 
+
+A definição dos dois soam bem parecidas, pois ambas as aplicações se baseiam em ficar entre clientes e servidores para cumprir o papel de ponto único de acesso entre N hosts de aplicação, então é compreensivel que exista muita confusão sobre o papel de cada um. 
+
+A implementação de um load balancer faz bastante sentido **quando temos muitos hosts no pool**, **quando o volume é grande demais para ser endereçado para apenas um servidor**, e quando a resiliência e diminuição de pontos únicos de falha são requisitos essenciais. 
+
+Um load balancer também é bem vindo em ambientes onde a **escalabilidade horizontal é presente e constante**, pois é um requisito de design balanceadores serem **receptíveis a entrada e saída de novos hosts do pool** a todo momento, e inclusive serem capazes disponibilizar algum mecanismo de **checar a saúde dos hosts** constantemente para evitar degradação da experiência do cliente por falha ou degradação de algum deles.
+
+Comparando com um proxy reverso, a implementação do mesmo pode estar ligado mais ser uma simples camada entre cliente e servidor servindo como uma camada de controle intermediária, aplicando regras de roteamento, fazendo offload de SSL e implementando **caching**. 
+
+Enquanto é presumido que o load balancer é implementado quando existem vários hosts da mesma aplicação, o reverse proxy pode ser implementado de 1:1. Quando um servidor expõe a aplicação que está servindo atrás de uma camada de proxy reverso, que é encarregada de gerenciar pool de conexões, limites de upload, tipos de conteúdo e cacheamento. 
+
+Também é possível encontrar configurações de proxy reverso onde temos mais de um host no pool assim no presumido no load balancer, e também uma aplicação sendo servida pelo mesmo proxy, fazendo um controle por Header Host, IP e etc.
+
+Soluções modernas de balanceamento de carga podem cumprir tanto o papel inicial de load balancing quanto de reverse proxy em alguma escala. 
 
 
 <br>
@@ -472,15 +496,50 @@ func main() {
 
 # Implamentações e Tecnologias
 
+## Envoy Proxy
+
+## Nginx 
+
+## HAProxy
+
+## Cloud Load Balancers
+
+## Kubernetes Ingress Controllers
+
 
 
 #### Revisores
+
+* Teste
 
 > Imagens geradas pelo DALL-E
 
 #### Referencias
 
-[Load Balancing 101 - Priyanka Hariharan](https://medium.com/the-kickstarter/load-balancing-101-81710aa7a3d7)
-[What is Round Robin Scheduling in OS?](https://www.scaler.com/topics/round-robin-scheduling-in-os/)
-[https://www.nginx.com/resources/glossary/load-balancing/](What Is Load Balancing?)
+[Load balancing in cloud computing: A big picture](https://www.sciencedirect.com/science/article/pii/S1319157817303361)
 
+[Availability and Load Balancing in Cloud Computing](https://d1wqtxts1xzle7.cloudfront.net/76748183/25-ICCSM2011-S0063-libre.pdf?1639832780=&response-content-disposition=inline%3B+filename%3DAvailability_and_Load_Balancing_in_Cloud.pdf&Expires=1703003902&Signature=gAi9-DNn~~xSieqOS~ZWrtG-Nf9QRUHyfad0uYjSTtSU~3mdPfguO7LTxYoIjio2j8asc2B62qSLA8QuN3p5xkPNte5jfbLnykFJseai~hiB01wATbxInnWwPwmz73WWs1tNxQ4gvODIof1t4jhS8AN9n2UfHHkMcwXFhgLsHSIk9FkXDp1MCXrIsQzK8728nb55fbQ7E312yVT7BstOlkQxwF62rFo8GpO-bFShYs7a5a~ZVpjTT-lAozeYDWrvG8Etn2nA5RncuWFDisU4MmN29-4bksPdX-7f1rOvbP8nBpVtG4UKqyQSN4Mx2bv7PZDvkkdlMPktu1mvGcw55w__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA)
+
+[Singh, Gurasis, and Kamalpreet Kaur. "An improved weighted least connection scheduling algorithm for load balancing in web cluster systems."](https://d1wqtxts1xzle7.cloudfront.net/56786000/IRJET-V5I3455-libre.pdf?1528867659=&response-content-disposition=inline%3B+filename%3DAn_Improved_Weighted_Least_Connection_Sc.pdf&Expires=1703004066&Signature=E~zGV5JM41QwUw29m~Hv836Zr9FotHK0ahR5Ss5i5LBFx324-Fj1sDmHN70lQYa3vWnOxOKFFOMPWqAgeK~OgEaaeFS1aHX0twhCFZkTJyXc5wdOHu2gc9Xwp6RFuFjt14jHFU83Ztg~Sat2VgAElLwgAv6VypmMtU1aZSgu65Xy8BRHLReLugC9WgE5K7Mefk-5D3WDl4LlCiS32SMeZiN2cRRAsAnwSrnk94Hpp5cGAd1~sxAqCQydhIkWUoKpIY2JCtsXBpGTAa0rqjLCIfSmhzwdu4fJEm2e0q85c~QzXvZZ6Ki2NNrwyyppHogXONTy21zA4HVn8Sx1Es2HCQ__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA)
+
+[S. Kaur, K. Kumar, J. Singh and Navtej Singh Ghumman, "Round-robin based load balancing in Software Defined Networking", 2015](https://ieeexplore.ieee.org/abstract/document/7100616/)
+
+[Load Balancing 101 - Priyanka Hariharan](https://medium.com/the-kickstarter/load-balancing-101-81710aa7a3d7)
+
+[What is Round Robin Scheduling in OS?](https://www.scaler.com/topics/round-robin-scheduling-in-os/)
+
+[What Is Load Balancing?](https://www.nginx.com/resources/glossary/load-balancing/)
+
+[AWS - Application Load Balancers / Routing algorithms](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#modify-routing-algorithm)
+
+[](https://medium.com/dazn-tech/aws-application-load-balancer-algorithms-765be2eca158)
+
+[Reverse Proxy vs Load Balancer](https://www.nginx.com/resources/glossary/reverse-proxy-vs-load-balancer/)
+
+[Maglev: A Fast and Reliable Software Network Load Balancer](https://static.googleusercontent.com/media/research.google.com/pt-BR//pubs/archive/44824.pdf)
+
+[Envoy - Supported load balancers](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers)
+
+[Load balancing services in Consul service mesh with Envoy](https://developer.hashicorp.com/consul/tutorials/developer-mesh/load-balancing-envoy)
+
+[Kubernetes Networking: Load Balancing Techniques and Algorithms](https://romanglushach.medium.com/kubernetes-networking-load-balancing-techniques-and-algorithms-5da85c5c7253)
