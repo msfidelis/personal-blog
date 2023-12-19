@@ -79,9 +79,9 @@ Um load balancer também é bem vindo em ambientes onde a **escalabilidade horiz
 
 Comparando com um proxy reverso, a implementação do mesmo pode estar ligado mais ser uma simples camada entre cliente e servidor servindo como uma camada de controle intermediária, aplicando regras de roteamento, fazendo offload de SSL e implementando **caching**. 
 
-Enquanto é presumido que o load balancer é implementado quando existem vários hosts da mesma aplicação, o reverse proxy pode ser implementado de 1:1. Quando um servidor expõe a aplicação que está servindo atrás de uma camada de proxy reverso, que é encarregada de gerenciar pool de conexões, limites de upload, tipos de conteúdo e cacheamento. 
+Enquanto o load balancer é implementado quando existem vários hosts da mesma aplicação, o reverse proxy pode ser implementado de 1:1. É comum um servidor expor a aplicação atrás de uma camada de proxy reverso que é encarregada de gerenciar pool de conexões, limites de upload, tipos de conteúdo, restrições, segurança e cacheamento. É o caso por exemplo de **Sidecars de Envoy no Kubernetes**, A Stack** Nginx com PHP FPM**, Servidores Web rodando NodeJS, Java com Spring, Golang serem disponibilizados atrás de um proxy reverso para fazer a gestão das requisições e etc. 
 
-Também é possível encontrar configurações de proxy reverso onde temos mais de um host no pool assim no presumido no load balancer, e também uma aplicação sendo servida pelo mesmo proxy, fazendo um controle por Header Host, IP e etc.
+Também é possível encontrar configurações de proxy reverso onde temos mais de um host no pool assim no presumido no load balancer, e também mais de uma aplicação sendo servida pelo mesmo proxy fazendo um controle de redirecionamento através de URL's, Basepaths, Headers, IP de origem e etc. 
 
 Soluções modernas de balanceamento de carga podem cumprir tanto o papel inicial de load balancing quanto de reverse proxy em alguma escala. 
 
@@ -89,6 +89,12 @@ Soluções modernas de balanceamento de carga podem cumprir tanto o papel inicia
 <br>
 
 # Algoritmos de Balanceamento de Carga
+
+Existem várias abordagens diferentes quando falamos de balanceamento de carga. Alguns algoritmos podem ter melhor performance e eficiência que outros em determinados cenários como também podem ser causadores de mais problemas. 
+
+É interessante entender quais os tipos de algoritmos de balanceamento existem e que tipo de problemas cada um resolve, e também onde empregar e onde evitar empregar cada um deles. 
+
+A seguir vamos encontrar uma série de algoritmos de balanceamento de carga que eu considerei mais importantes para entendimento. Existem vários outros que não estão listados, mas tem material de apoio no final do artigo caso se sinta a vontade para explorar mais. 
 
 <br>
 
