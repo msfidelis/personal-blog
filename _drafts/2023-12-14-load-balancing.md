@@ -4,11 +4,17 @@ image: assets/images/system-design/balance-1.png
 author: matheus
 featured: false
 published: true
-categories: [ system-design, engineering ]
+categories: [ system-design, engineering, cloud ]
 title: System Design - Load Balancing, Proxy Reversos e Algoritmos
 ---
 
-# Balanceamento de Carga
+Este é o terceiro artigo da série sobre System Design. Hoje, vamos dar um *deep dive* em um tópico interessante e frequentemente subestimado em detalhes: os **Balanceadores de Carga** e os **Proxies Reversos**.
+
+Escrever este artigo foi particularmente interessante, pois o tema dos balanceadores de carga é muitas vezes abstraído por soluções Open Source e por plataformas de Cloud Públicas. No entanto, entender seu funcionamento em ambientes que permitem um nível maior de customização pode ser valioso para aprimorar aspectos de escalabilidade, performance e resiliência.
+
+Este texto foi concebido para ser útil e informativo para todos os níveis de conhecimento sobre o assunto. Iniciaremos com uma abstração lúdica para ilustrar o problema real resolvido por um balanceador de carga, seguindo depois para tópicos mais complexos relacionados a este tema.
+
+Vamos iniciar desenhando um cenário do "mundo real" que exemplifica a necessidade e a eficácia de um balanceador de carga.
 
 <br>
 
@@ -304,60 +310,81 @@ func main() {
 
 	fmt.Println("Distribuição de requisições executadas:", leastRequest.requests)
 }
+```
 
+```
+Requisição 1 direcionada para: http://host1.com
+Requisição 2 direcionada para: http://host2.com
+Requisição 3 direcionada para: http://host3.com
+Requisição 4 direcionada para: http://host1.com
+Requisição 5 direcionada para: http://host2.com
+// ...
+Requisição 21 direcionada para: http://host3.com
+Requisição 22 direcionada para: http://host1.com
+Requisição 23 direcionada para: http://host2.com
+Requisição 24 direcionada para: http://host3.com
+Requisição 25 direcionada para: http://host1.com
+Requisição 26 direcionada para: http://host2.com
+Requisição 27 direcionada para: http://host3.com
+Requisição 28 direcionada para: http://host1.com
+Requisição 29 direcionada para: http://host2.com
+Requisição 30 direcionada para: http://host3.com
+Distribuição de requisições executadas: [10 10 10]
 ```
 
 <br>
 
 ## Least Connection
 
-Os algoritmos de "Least Connection" são técnicas mais avançadas de balanceamento de carga que são utilizadas para distribuir requisições de maneira mais inteligente em uma série de hosts. Diferentemente do Round Robin e Least Request que tem objetivo de distribuir requisições de maneira uniforme sem considerar o estado atual dos servidores, esta abordagem é uma tentativa de levar em conta a carga de trabalho presente em cada um deles.
+Os algoritmos de "Least Connection" representam técnicas mais sofisticadas de balanceamento de carga, utilizadas para distribuir requisições de forma inteligente entre os hosts do pool de um balanceador. Ao contrário do Round Robin e Least Request, que visam distribuir requisições uniformemente sem considerar o estado atual dos servidores, essa abordagem tenta levar em conta a carga de trabalho de cada servidor.
 
-O método de **Least Connection** **encaminha a solicitação atual para o servidor que detêm menos conexões ativas no momento**. Uma "conexão ativa" significa uma **sessão ou interação em andamento entre o cliente e o servidor**, independentemente de a requisição ter sido processada ou não, como implementações que suporte keep alive, web sockets, grpc persistentes e etc. 
+O método **Least Connection** **direciona a solicitação atual para o servidor com o menor número de conexões ativas no momento**. Uma "conexão ativa" se refere a **uma sessão ou interação em andamento entre cliente e servidor**, independentemente de a requisição já ter sido processada, como em casos de implementações que suportam keep alive, web sockets, GRPC persistentes, etc.
 
-Se um host está gerenciando 5 conexões ativas e outro está gerenciando 3, o próximo request será direcionado para o host com apenas 3 conexões, mesmo que essas conexões possam ser tarefas de baixa demanda.
+Por exemplo, se um host está gerenciando 5 conexões ativas e outro apenas 3, a próxima requisição será direcionada para o host com 3 conexões, mesmo que essas possam ser tarefas de menor demanda.
 
+### Limitações do Least Connection
 
-### Limitações do Least Connection 
+Uma desvantagem menos crítica, mas ainda relevante, é que tanto o Least Connection quanto algoritmos semelhantes são mais complexos de implementar em comparação à simplicidade do Round Robin. No entanto, essa complexidade pode ser facilmente superada ao se utilizar tecnologias que já suportam esses cenários.
 
-A "não tão importante" desvantagem que podemos citar é que ambos os algoritmos são muito mais complexos de se implementar em comparação a simplicidade do Round Robin, porém essa característica pode ser fácilmente vencida se nos limitarmos a sermos meros usuários de algum tipo de tecnologia que já possui suporte para esses cenários. 
+O Least Connection se concentra no número de conexões ativas, sem avaliar a carga de cada uma delas. Isso pode levar à sobrecarga de servidores que lidam com conexões mais exigentes, um problema semelhante ao observado nas opções anteriores. Além disso, a necessidade de gerenciar essas conexões pode consumir recursos significativos do balanceador.
 
-O Least Connection foca no número de conexões ativas, sem avaliar a carga associada a cada conexão, o que pode resultar em sobrecarga de servidores com conexões mais intensivas assim como as opções anteriores e o fato de ter que fazer essa gestão pode acabar consumindo recursos significativos no balanceador. 
+Servidores com muitas conexões de longa duração, como as mantidas por keep alive, podem aparentar estar menos ocupados do que realmente estão. Isso cria um potencial para ineficiências na distribuição de carga, levando a um desbalanceamento.
 
-Servidores com várias conexões de longa duração (keep alive) podem parecer menos ocupados do que realmente estão, criando um potencial para ineficiências na distribuição da carga gerando desbalanceamento.
 
 
 <br>
 
 ## Least Outstanding Requests (LOR)
 
-O **Least Outstanding Request** ou **LOR** é um algoritmo de balanceamento de carga muito sofitsticado que resolve o maior problema dos algoritmos anteriores, que é a **saturação dos hosts**. De certa forma é fácil confundir as abordagens do LOR e do Least Connections. Enquanto o Least Connection se concentra em gerenciar conexões ativas, independente de estarem sendo utilizadas ou não, o Least Outstanding Request considera o número de **requisições pendentes em cada host**. Uma **"requisição pendente" é uma requisição que foi iniciada, mas ainda não foi concluída**, independentemente de haver uma conexão ativa contínua ou não, fazendo o mesmo ser mais eficiente quando comparado ao Least Connection na hora de identificar hosts que estejam com um processamento maior, segurando mais conexões, tendo um tempo de resposta maior e etc.
+O **Least Outstanding Requests (LOR)** é um algoritmo de balanceamento de carga muito sofisticado que aborda o principal problema encontrado nos algoritmos anteriores: a **saturação dos hosts**. Há uma uma diferença sutíl entre o **LOR** e o **Least Connection**. Enquanto o **Least Connection foca em gerenciar conexões ativas (independente de estarem em uso ou não)**, o LOR considera o número de **requisições pendentes em cada host**. Uma **"requisição pendente"** é aquela que foi iniciada, mas ainda não concluída, seja ou não parte de uma conexão ativa contínua. Isso torna o LOR mais eficiente do que o Least Connection na identificação de hosts com maior carga de processamento, mais conexões em espera, e tempos de resposta mais longos.
 
-Resumindo, o Least Connection foca em "quantas conexões" estão ativas, enquanto o LOR olha para "quantas requisições" estão ainda sendo processadas.
+Em resumo, enquanto o **Least Connection considera "quantas conexões"** estão ativas, o **LOR foca em "quantas requisições" ainda estão sendo processadas**.
 
-O LOR procura equilibrar a carga de trabalho distribuindo novas requisições para os hosts com menos requisições pendentes, tentando garantir que todos os servidores tenham um volume de trabalho semelhante e gerenciável. Ou seja, o foco de balanceamento do LOR é a possível saturação, e não a quantidade de requests, fazendo o mesmo ser uma alternativa eficaz em ambientes onde as requisições podem ter tempos de resposta variáveis e imprevisíveis.
+O LOR busca equilibrar a carga de trabalho, direcionando novas requisições para os hosts com menos requisições pendentes. Dessa forma, ele visa garantir que todos os servidores mantenham um volume de trabalho semelhante e gerenciável, concentrando-se na possível saturação em vez da quantidade de requisições. Isso o torna uma opção eficaz em ambientes onde as requisições podem ter tempos de resposta variáveis e imprevisíveis.
 
 ### Limitações do Least Outstanding Requests
 
-O LOR requer um monitoramento contínuo e detalhado do estado das requisições em cada host implementado junto ao algoritmo. Isso pode aumentar a complexidade da implementação em si e exigir mais recursos computacionais para manter o acompanhamento em tempo real, e mais ainda onde esse controle precise funcionar de forma distribuída. 
+O LOR exige monitoramento contínuo e detalhado do estado das requisições em cada servidor. Essa necessidade aumenta a complexidade da implementação e exige mais recursos computacionais para manter o acompanhamento em tempo real, especialmente em sistemas distribuídos.
 
-Essa complexidade pode invariavelmente impactar em performance do balanceador em caso de variações de carga de trabalho repentina.  Além do mais, pode ser um desafio entender quando uma conexão foi concluída ou não.
+Essa complexidade pode impactar negativamente no desempenho do balanceador, principalmente em situações de variação repentina de carga de trabalho. Além disso, determinar com precisão quando uma requisição é concluída pode ser um desafio significativo.
+
 
 <br>
 
 ## IP Hash Balancing
 
-O algoritmo de IP Hash é uma técnica de balanceamento de carga frequentemente utilizada em componentes de networking, mas a lógica também pode ser implementada em vários outros tipos de algoritmos de balanceadores de aplicação. Essa técnica é especialmente útil para manter a persistência da sessão em aplicações web. 
+O algoritmo de IP Hash é uma técnica de balanceamento de carga frequentemente empregada em componentes de rede, mas sua lógica também pode ser aplicada em diversos outros tipos de algoritmos de balanceamento em aplicações. É particularmente útil para manter a persistência da sessão em aplicações web.
 
-Os algoritmos que se baseiam em IP Hash se baseia na criação de um hash consistente a partir do endereço IP do cliente para decidir para qual host a requisição ou pacotes de rede serão encaminhados. 
+Algoritmos baseados em IP Hash criam um hash consistente a partir do endereço IP do cliente para determinar para qual host as requisições ou pacotes de rede serão direcionados.
 
-O hashing do IP do cliente, ou origem, sempre resultará no mesmo hash, o que significa que todas as requisições de um cliente específico serão consistentemente encaminhadas para o mesmo host de destino, **desde que o mesmo esteja disponível**. 
+O processo de hashing do IP do cliente sempre resulta no mesmo hash, o que significa que as requisições de um cliente específico serão consistentemente encaminhadas para o mesmo host de destino, **contanto que este esteja disponível**.
 
-Esse tipo de técnica é encontrada em diversos outros algoritmos como o **manglev** que vamos ver a seguir. Ela é aplicada em workloads onde manter certo tipo de "sessão" é crúcial, ou onde as requisições precisam ser resolvidas em uma certa ordem de dependencia, ou sendo facilitada por caching, tenham a necessidade de sumarizar chunks de dados ou executar operações de persistencia de forma contínua. 
+Essa técnica é utilizada em diversos outros algoritmos, como o **Maglev** que será discutido posteriormente. Ela se mostra eficaz em workloads onde é crucial manter um tipo de "sessão", em situações que exigem que as requisições sejam resolvidas em uma certa ordem de dependência, facilitadas por caching, ou que necessitem sumarizar chunks de dados ou executar operações de persistência de maneira contínua.
 
-### Limitações de implementar uma técnica de IP Hashing
+### Limitações ao Implementar a Técnica de IP Hashing
 
-O algoritmo é menos eficaz em situações onde os usuários estão atrás de NAT ou proxies, onde muitos usuários podem compartilhar o mesmo endereço IP público, e também pode levar a uma distribuição desigual de carga entre os servidores, especialmente se a base de usuários não estiver uniformemente distribuída em termos de endereços IP.
+O IP Hashing é menos eficaz quando os usuários estão atrás de NATs ou proxies, situação em que muitos podem compartilhar o mesmo endereço IP público. Além disso, pode resultar em uma distribuição desigual de carga entre os servidores, especialmente se a base de usuários não estiver distribuída uniformemente em termos de endereços IP. Como alternativa a isso a lógica de IP Hash pode se extender a outros valores vindos de headers, URL's e etc. 
+
 
 ### Exemplo de Implementação 
 
@@ -405,8 +432,8 @@ func main() {
 		"172.16.1.1", "172.16.1.2", "192.168.2.1", "192.168.2.2",
 	}
 
-	// Simula 30 Requisições
-	for i := 0; i < 30; i++ {
+	// Simula 20 Requisições
+	for i := 0; i < 20; i++ {
 		clientIP := clientIPs[i%len(clientIPs)]
 		host := ipHashBalancer.getHost(clientIP)
 		fmt.Printf("Requisição %d do IP %s direcionada para: %s\n", i+1, clientIP, host)
@@ -414,39 +441,64 @@ func main() {
 }
 ```
 
+```
+Requisição 1 do IP 192.168.1.1 direcionada para: http://host1.com
+Requisição 2 do IP 10.0.0.2 direcionada para: http://host1.com
+Requisição 3 do IP 10.0.0.3 direcionada para: http://host2.com
+Requisição 4 do IP 172.16.1.1 direcionada para: http://host3.com
+Requisição 5 do IP 172.16.1.2 direcionada para: http://host3.com
+Requisição 6 do IP 192.168.2.1 direcionada para: http://host3.com
+Requisição 7 do IP 192.168.2.2 direcionada para: http://host2.com
+Requisição 8 do IP 192.168.1.1 direcionada para: http://host1.com
+Requisição 9 do IP 10.0.0.2 direcionada para: http://host1.com
+Requisição 10 do IP 10.0.0.3 direcionada para: http://host2.com
+Requisição 11 do IP 172.16.1.1 direcionada para: http://host3.com
+Requisição 12 do IP 172.16.1.2 direcionada para: http://host3.com
+Requisição 13 do IP 192.168.2.1 direcionada para: http://host3.com
+Requisição 14 do IP 192.168.2.2 direcionada para: http://host2.com
+Requisição 15 do IP 192.168.1.1 direcionada para: http://host1.com
+Requisição 16 do IP 10.0.0.2 direcionada para: http://host1.com
+Requisição 17 do IP 10.0.0.3 direcionada para: http://host2.com
+Requisição 18 do IP 172.16.1.1 direcionada para: http://host3.com
+Requisição 19 do IP 172.16.1.2 direcionada para: http://host3.com
+Requisição 20 do IP 192.168.2.1 direcionada para: http://host3.com
+```
+
 <br>
 
-## Manglev
+## Maglev
 
-O Manglev é um algoritmo relativamente novo desenvolvido pela Google e é considerado uma técnica avançada de balanceamento de carga, usada principalmente em sistemas complexos de computação distribuída, por mais que ainda bem pouco utilizada. 
+O Maglev é um algoritmo desenvolvido pela Google e representa uma técnica avançada de balanceamento de carga, ideal para sistemas complexos de computação distribuída. Apesar de ser uma inovação relativamente recente, ainda não é amplamente utilizado fora de certos contextos.
 
-O algoritmo Maglev distribui as requisições de clientes para um conjunto de servidores de maneira que cada cliente sempre seja encaminhado para o mesmo servidor, **desde que este esteja disponível**. Isso é alcançado através do uso de **tabelas de hash consistentes**, que mapeiam clientes para servidores de uma forma determinística, mas equilibrada.
+Este algoritmo distribui as requisições de clientes para um conjunto de servidores de maneira que cada cliente seja consistentemente encaminhado para o mesmo servidor, **desde que este esteja disponível**. Isso é realizado através do uso de **tabelas de hash consistentes** que mapeiam clientes para servidores de forma determinística, mas equilibrada, assim tendo familiaridade com o que foi discutido em **IP Hash**,
 
-O Manglev busca garantir uma **distribuição consistente priorizando cache de dados e manutenção de sessão do usuário**. O Manglev passa uma ideia de "persistência", o que acarretaria em N outros problemas de escalabilidade quando comparado com outras opções apresentadas anteriormente. Isso se dá pois os cenários de aplicação do Manglev são diferentes de um balanceamento stateless entre várias replicas de uma API REST por exemplo. 
+O Maglev tem como objetivo garantir uma **distribuição consistente das requisições, priorizando o cache de dados e a manutenção da sessão do usuário**. Ele oferece uma noção de "persistência", o que pode gerar desafios de escalabilidade em comparação com outras opções de balanceamento de carga. Isso ocorre porque os cenários de aplicação do Maglev são distintos dos encontrados em um balanceamento stateless entre várias réplicas de uma API REST, por exemplo.
 
-O Objetivo do Manglev é garantir mínima flutuação no mapeamento das requisições, garantindo consistencia baseada em algo parecido com uma "sessão". 
+O objetivo principal do Maglev é assegurar uma mínima flutuação no mapeamento das requisições, garantindo consistência e algo similar a uma "sessão".
 
-Esse algoritmo é ideal para balanceamento entre datacenters, ingestão de dados e outros cenários que exijam uma continuidade e persistências entre as requisições. Também pode fornecer a possibilidade de se trabalhar com produtos Multi-Tenants, onde a segregação do ambiente dá pelo IP de origem do cliente. 
+Esse algoritmo é especialmente adequado para balanceamento entre datacenters, ingestão de dados e outros cenários que exigem continuidade e persistência entre as requisições. Também é aplicável em soluções multi-tenant, onde a segregação do ambiente é feita com base no IP de origem do cliente.
 
-### Limitações do Manglev
+### Limitações do Maglev
 
-O algoritmo Maglev, apesar de ser altamente eficiente para balanceamento de carga em grandes sistemas e ambientes de data center, pode ser um desafio lidar com mudanças rápidas no pool de hosts, como por exemplo em ambientes sucetíveis a escalabilidade horizontal, além de precisar muitas vezes de software e hardwares específicos para operar em todo seu potencial. 
+O Maglev, embora eficiente para balanceamento de carga em grandes sistemas e ambientes de data center, enfrenta desafios ao lidar com mudanças rápidas no pool de hosts, como em ambientes com escalabilidade horizontal. Além disso, muitas vezes requer hardware e software específicos para operar em seu pleno potencial.
+
 
 <br>
 
 ## Random Load Balancing
 
-Talvez de todos os algoritmos apresentados, o **Random** é o mais simples, mas também o menos utilizado. Ao contrário de outros métodos, como Round Robin ou Least Connections, este algoritmo não se baseia no estado atual ou na carga de trabalho dos servidores para tomar sua decisão, apenas pega um host aleatoriamente do seu pool de servidores e encaminha a resquisição. 
+Dentre todos os algoritmos apresentados, o **Random** pode ser considerado o mais simples, embora seja um dos menos utilizados. Diferentemente de outros métodos, como Round Robin ou Least Connections, este algoritmo não leva em conta o estado atual ou a carga de trabalho dos servidores ao tomar decisões. Ele simplesmente seleciona um host aleatoriamente do pool de servidores para encaminhar a requisição.
 
-O balanceador de carga mantém uma lista de todos os hosts disponíveis, e quando uma requisição chega, o balanceador de carga seleciona um servidor de maneira aleatória. Isso geralmente é feito usando um gerador de números aleatórios para escolher um índice na lista de servidores como vamos exemplificar no exemplo a seguir. 
+O balanceador de carga mantém uma lista de todos os servidores disponíveis, e quando uma requisição chega, ele escolhe um servidor de maneira aleatória. Esse processo é geralmente realizado por meio de um gerador de números aleatórios para selecionar um índice na lista de servidores.
 
-O algoritmo é extremamente simples de implementar e não requer estado ou monitoramento contínuo dos servidores, e também possui baixa **"latência"** na decisão, pois não possui nenhum estado para ser controlado em nenhum local. 
+Sua implementação é extremamente simples, não requerendo estado ou monitoramento contínuo dos servidores. O algoritmo também tem a vantagem de baixa **"latência"** na decisão, já que não há estados a serem gerenciados.
 
-É frequentemente utilizado em cenários onde a carga de trabalho é leve ou uniformemente distribuída por natureza, e em ambientes onde a escalabilidade rápida e fácil é uma prioridade. Caso contrário, sua utilização é amplamente desaconselhada. 
+É mais frequentemente utilizado em cenários onde a carga de trabalho é leve ou uniformemente distribuída, e em ambientes que priorizam a escalabilidade rápida e fácil. Em outros contextos, o uso deste método é geralmente desaconselhado.
 
 ### Limitações do Random
 
-A natureza aleatória significa que a distribuição da carga pode não ser uniforme, especialmente com um número menor de requisições. Isso pode acarretar em sobrecarga não prevista, como também subutilização de recursos. 
+A natureza aleatória do algoritmo pode resultar em uma distribuição desigual da carga, especialmente quando o número de requisições é baixo. Isso pode levar tanto à sobrecarga inesperada de alguns servidores quanto à subutilização de outros recursos.
+
 
 ```go
 package main
@@ -495,13 +547,26 @@ func main() {
 	// Inicia o mecanismo Random
 	randomBalancer := NewRandomBalancer(hosts)
 
-	// Simula 30 requisições
-	for i := 0; i < 30; i++ {
+	// Simula 10 requisições
+	for i := 0; i < 10; i++ {
 		host := randomBalancer.getHost()
 		fmt.Printf("Requisição %d direcionada para: %s\n", i+1, host)
 	}
 }
+```
 
+```
+❯ go run main.go
+Requisição 1 direcionada para: http://host2.com
+Requisição 2 direcionada para: http://host3.com
+Requisição 3 direcionada para: http://host2.com
+Requisição 4 direcionada para: http://host3.com
+Requisição 5 direcionada para: http://host3.com
+Requisição 6 direcionada para: http://host3.com
+Requisição 7 direcionada para: http://host2.com
+Requisição 8 direcionada para: http://host1.com
+Requisição 9 direcionada para: http://host1.com
+Requisição 10 direcionada para: http://host2.com
 ```
 
 # Implamentações e Tecnologias
