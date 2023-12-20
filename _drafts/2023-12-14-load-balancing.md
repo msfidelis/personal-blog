@@ -571,15 +571,65 @@ Requisição 10 direcionada para: http://host2.com
 
 # Implamentações e Tecnologias
 
-## Envoy Proxy
 
-## Nginx 
+### Envoy Proxy
 
-## HAProxy
+![Envoy Logo](/assets/images/system-design/envoy-logo.png)
 
-## Cloud Load Balancers
+O [Envoy Proxy](https://www.envoyproxy.io) é um proxy construído para suportar altos volumes, de alto desempenho, e que precisem de alta confiabilidade e escalabiliade utilizando muito pouco recurso computacional. O Envoy é projetado para aplicações Cloud Native e arquiteturas baseadas em microserviços. Criado pela Lyft e agora um projeto da [Cloud Native Computing Foundation](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers), o Envoy é uma solução de código aberto que ganhou popularidade por sua flexível para o gerenciamento de tráfego de rede, e por ser fácilmente extensível para vários cenários.
 
-## Kubernetes Ingress Controllers
+Várias outras tecnologias Cloud Native se baseiam no Envoy para cumprir tarefas de controle de rede, como o [Istio Service Mesh](), o [Contor Ingress Controller](), [Gloo Ingress Controller](), [Emissary Ingress Controller](), [enRoute API Gateway](), [Higress API Gateway](), [Kusk Gateway]() e o próprio [Envoy Gateway](). 
+
+São várias tecnologias que desemprenham papel de Load Balancers, Reverse Proxys e API Gateways (vamos tratar especificamente desse tópico nos proximos capítulos) que são construídos em torno do Envoy por conta de suas facilidades e extrema performance para lidar com alto volume de forma econômica. Particularmente considero o Envoy Proxy como o coração dos ecossistemas Cloud native tal como o proprio Kubernetes. 
+
+O Envoy trabalha como Proxy de Layer 7 na camada de Aplicação para HTTP, gRPC e Websockets da mesma forma como consegue desempenhar o mesmo papel em Layers 3/4, o que torna o Envoy muito interessante quando existem vários cenários de uso dentro do mesmo workload. 
+
+Ele possui suporte [a vários algoritmos de balanceamento de carga apresentados no texto](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers) e também a monitoramento avançado para praticamente todas as funcionalidades. 
+
+
+### Nginx 
+
+![Nginx Controller](/assets/images/system-design/nginx-logo.png)
+
+O [Nginx]() é um servidor web e proxy reverso de alto desempenho, conhecido por sua estabilidade, rico conjunto de recursos, configuração simples e baixo consumo de recursos. Originalmente criado por Igor Sysoev em 2002, o Nginx rapidamente se tornou uma escolha muito moderna e bem vinda entre os aplicações de baixo, médio e alto tráfego por sua eficiência e escalabilidade.
+
+O Nginx é conhecido por sua capacidade de lidar com um grande número de conexões simultâneas com um uso de memória relativamente baixo, sem perder simplicidade e interface intuitíva de configuração. 
+
+Além de ser um servidor web, o Nginx funciona eficientemente como proxy reverso e balanceador de carga, suportando protocolos como HTTP, HTTPS, SMTP, POP3 e IMAP e inclui recursos de segurança como autenticação básica HTTP, SSL/TLS, e suporte para firewalls de aplicações web.
+
+Sua capacidade de funcionar tanto como um servidor web quanto como um proxy reverso e balanceador de carga o torna uma ferramenta extremamente versátil em qualquer stack de tecnologia moderna.
+
+### HAProxy
+
+![Haproxy Logo](/assets/images/system-design/haproxy-logo.png)
+
+O [HAProxy]() é um dos balanceadores de carga e proxies reversos mais populares e confiáveis, amplamente reconhecido por sua alta eficiência, robustez e flexibilidade. Desenvolvido por Willy Tarreau em 2000, ele é uma solução open-source que se destaca em ambientes de alto tráfego e é frequentemente usado para melhorar a performance e a confiabilidade de sites e aplicações, sendo a principal alternativa para o Nginx em alguns cenários. 
+
+Oferece algoritmos sofisticados de balanceamento de carga, como **Round Robin**, **Least Connections** e **Source IP** hash que abordamos por aqui, permitindo uma distribuição eficiente do tráfego em vários tipos de cenários, podendo atuar como um proxy reverso para HTTP e TCP, oferecendo recursos como SSL/TLS offloading, HTTP/2 support e WebSockets.
+
+
+### Traefik
+
+![Traefik Logo](/assets/images/system-design/traefik-logo.png)
+
+O [Traefik]() é um moderno proxy reverso e balanceador de carga HTTP de código aberto, conhecido por sua simplicidade de configuração e capacidade de se integrar automaticamente a serviços em ambientes de containerização, como Docker e Kubernetes. Lançado em 2015, o Traefik rapidamente ganhou popularidade na comunidade de DevOps e Cloud devido à sua facilidade de uso. Além do HTTP e HTTPS, o Traefik também suporta outros protocolos, como TCP e UDP.
+
+O Traefik detecta automaticamente as alterações na configuração dos serviços, como quando containers são iniciados ou parados em ambientes como Docker ou Kubernetes, e ajusta as rotas de tráfego em tempo real sem necessidade de downtime. Essa funcionalidade de atualização dinamica é talvez um dos principais motivos de adoção do mesmo para cumprir papel de proxys reversos e balanceamento de carga. 
+
+### Kubernetes Ingress Controllers
+
+![Kubernetes Ingress Controllers](/assets/images/system-design/kubernetes-ingress-controller.png)
+
+Kubernetes Ingress Controllers são componentes vitais em clusters Kubernetes, oferecendo uma forma eficiente de gerenciar o acesso externo às aplicações rodando em um cluster. Eles atuam como um ponto de entrada para o tráfego HTTP e HTTPS, permitindo a definição de regras de roteamento para distribuir o tráfego para diferentes serviços dentro do cluster, cumprindo um papel de Load Balancer externo de várias formas.
+
+Existem uma variedade de implementações, incluindo Nginx, HAProxy, Traefik, Service Meshes, Envoy e outros, cada um com suas características e benefícios específicos que devem ser avaliados caso a caso. .
+
+Ambos permitem de alguma forma a definição de regras de roteamento, SSL/TLS offloading e outras configurações em um único recurso, facilitando o gerenciamento e a manutenção.
+
+Eles não apenas simplificam o gerenciamento de tráfego, mas também oferecem recursos avançados que são fundamentais para a segurança, desempenho e escalabilidade das aplicações em um ou mais clusters.
+
+
+#### Cloud Load Balancers
 
 
 
@@ -620,3 +670,5 @@ Requisição 10 direcionada para: http://host2.com
 [Load balancing services in Consul service mesh with Envoy](https://developer.hashicorp.com/consul/tutorials/developer-mesh/load-balancing-envoy)
 
 [Kubernetes Networking: Load Balancing Techniques and Algorithms](https://romanglushach.medium.com/kubernetes-networking-load-balancing-techniques-and-algorithms-5da85c5c7253)
+
+[Customizing Load Balancing Algorithms in HAProxy](https://mhsamsal.wordpress.com/2021/10/14/customizing-load-balancing-algorithms-in-haproxy/)
