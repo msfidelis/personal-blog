@@ -42,7 +42,7 @@ Este exemplo ilustra os desafios de um ambiente sem balanceamento de carga, ajud
 
 Agora para entender o funcionamento e diferencial de um balanceamento de carga, imagine que o dono desse mercadinho fez um investimento e comprou mais alguns caixas e contratou mais alguns atendentes para acelerar a fila de espera. 
 
-Com a presença de múltiplos caixas, os clientes têm a opção de escolher entre diferentes filas, levando a uma redução significativa no tempo de espera. Cada caixa, enfrentando uma menor carga de trabalho, tem menos probabilidade de estresse e erro.
+Com a presença de múltiplos caixas, os clientes têm a opção de escolher entre diferentes filas, levando a uma redução significativa no tempo de espera. Cada caixa, enfrentando uma menor carga de trabalho, tem menor probabilidade de estresse e erro.
 
 No caso de um caixa apresentar problemas e necessitar de manutenção, o impacto no fluxo geral de clientes é apenas parcial, permitindo que a operação continue, embora de forma degradada.
 
