@@ -28,7 +28,7 @@ Todos os clientes são forçados a esperar na mesma fila gigante, gerando atraso
 
 O único caixa eletrônico fica sobrecarregado, aumentando o risco de erros cometidos pelo atendente devido ao estresse constante.
 
-Clientes com compras pequenas, como uma garrafa de refrigerante ou um pacote de papel higienico, são obrigados a aguardar o mesmo tempo que aqueles com carrinhos lotados com suas compras do mês, tornando o processo ineficiente.
+Clientes com compras pequenas, como uma garrafa de refrigerante ou um pacote de papel higienico, são obrigados a aguardar no mesmo lugar que aqueles com carrinhos lotados com suas compras do mês, tornando o processo ineficiente.
 
 Se, por alguma razão, esse caixa falhar ou se quebrar, toda a operação do mercadinho será afetada.
 
