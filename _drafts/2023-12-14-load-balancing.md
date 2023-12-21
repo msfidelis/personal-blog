@@ -56,7 +56,7 @@ Esse cenário exemplifica o funcionamento do balanceamento de carga no seu dia a
 
 # Fundamentos de Balanceadores de Carga
 
-Um Load Balancer é uma ferramenta essencial para a gestão de tráfego de rede em ambientes com múltiplos servidores, tais como datacenters privados, nuvens públicas e aplicações web distribuídas. Sua função principal é **distribuir as requisições de entrada entre vários hosts de maneira eficiente e equitativa, otimizando o uso dos recursos, aprimorando os tempos de resposta, reduzindo a carga em cada servidor e assegurando a disponibilidade do serviço, mesmo em caso de falhas em algum dos hosts do pool**.
+Um Load Balancer é uma ferramenta essencial para a gestão de tráfego de rede em ambientes com múltiplos servidores, tais como datacenters privados, nuvens públicas e aplicações web distribuídas. Sua função principal é **distribuir as requisições de entrada entre vários hosts de maneira eficiente e estatégia, otimizando o uso dos recursos, aprimorando os tempos de resposta, reduzindo a carga em cada servidor e assegurando a disponibilidade do serviço, mesmo em caso de falhas em algum dos hosts do pool**. Existem várias estratégias de balanceamento de carga que possuem diferenças entre si, vamos abordar essas nuâncias no tópico de **Algoritmos de Balanceamento de Carga**.
 
 Do ponto de vista da resiliência, o load balancer desempenha um papel crucial, **evitando que qualquer servidor individual do pool se torne um ponto único de falha**.
 
@@ -84,7 +84,7 @@ A implementação de um Load Balancer é ideal **quando há muitos hosts no pool
 
 Um Load Balancer também é apropriado em ambientes com **escalabilidade horizontal constante**, pois é projetado para ser **adaptável à inclusão e remoção de hosts do pool a qualquer momento**. Além disso, ele geralmente oferece mecanismos para **verificar constantemente a saúde dos hosts**, evitando a degradação da experiência do usuário devido a falhas ou problemas de desempenho.
 
-Comparado ao proxy reverso, que pode atuar como uma camada intermediária simples entre cliente e servidor, aplicando regras de roteamento, realizando offload de SSL e implementando **cache**.
+Comparado ao proxy reverso, que pode atuar como uma camada intermediária simples entre cliente e servidor, aplicando regras de roteamento, realizando offload de SSL/TLS e implementando **cache**.
 
 Enquanto o Load Balancer é utilizado quando existem vários hosts da mesma aplicação, o Proxy Reverso pode ser aplicado em uma relação de 1:1. É comum um servidor expor sua aplicação por trás de um Proxy Reverso, responsável pela gestão de pools de conexões, limites de upload, tipos de conteúdo, restrições, segurança e cacheamento. Um exemplo é o uso de **Sidecars de Envoy no Kubernetes**, a stack **Nginx com PHP FPM**, ou servidores Web rodando NodeJS, Java com Spring, Golang, entre outros, posicionados atrás de um proxy reverso para gerir as requisições.
 
@@ -109,7 +109,7 @@ A seguir, apresentarei alguns dos algoritmos de balanceamento de carga que consi
 
 ## Round Robin 
 
-**Round Robin** é um dos algoritmos mais utilizados em balanceamento de carga, com o objetivo de **distribuir a carga de maneira uniforme e cíclica entre os servidores disponíveis**. Originalmente concebido para o escalonamento de processos a nível de CPU, baseia-se na variável `quantum`, que define o tempo dedicado pela CPU a cada processo na fila. Essa abordagem previne o problema de `Starvation`, assegurando uma rotatividade cíclica e equitativa dos processos. Compreender esse conceito no contexto do escalonamento de processos é essencial para entender sua aplicação em balanceadores de carga.
+**Round Robin** é um dos algoritmos mais utilizados em balanceamento de carga, com o objetivo de **distribuir a carga de maneira uniforme e cíclica entre os servidores disponíveis**. Originalmente concebido para o escalonamento de processos a nível de CPU, baseia-se na variável `quantum`, que define o tempo dedicado pela CPU a cada processo na fila. Essa abordagem previne o problema de `Starvation` ou também conhecido como `Inanição`, fenômeno que ocorre quando um processo nunca é executado por conta de processos com prioridade maior. O Round Robin trabalha assegurando uma rotatividade cíclica e equitativa dos processos. Compreender esse conceito no contexto do escalonamento de processos é essencial para entender sua aplicação em balanceadores de carga.
 
 No âmbito do balanceamento de carga, o **Round Robin** é empregado para distribuir uniformemente as requisições de rede ou o tráfego entre um grupo de servidores. Cada nova requisição é direcionada ao próximo servidor na fila, seguindo ou não a lógica do `quantum`.
 
@@ -637,7 +637,10 @@ Eles não apenas simplificam o gerenciamento de tráfego, mas também oferecem r
 
 * [Tarsila, o amor da minha vida]()
 * [Ramon Borges](https://twitter.com/RamonBoorges)
-* Teste
+* [Sergio Soares](https://twitter.com/sergsoares)
+* [Bernardo](https://twitter.com/indiepagodeiro)
+* [Vinicius Silva](https://twitter.com/bl4cktux89)
+* [Clayton Silva](https://twitter.com/claydeveloper)
 
 > Imagens geradas pelo DALL-E
 
