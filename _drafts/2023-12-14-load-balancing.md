@@ -102,7 +102,7 @@ Existem diversas abordagens quando se trata de balanceamento de carga, cada uma 
 
 Compreender os tipos de algoritmos de balanceamento disponíveis e as problemáticas que cada um deles visa resolver é fundamental. Igualmente importante é saber onde cada um se encaixa melhor e onde sua utilização pode não ser recomendada.
 
-A seguir, serão apresentados alguns dos algoritmos de balanceamento de carga que considero mais relevantes para o entendimento do tema. Existem muitos outros que não estão listados aqui, mas você pode encontrar material adicional no final deste artigo para explorar mais sobre o assunto.
+A seguir, apresentarei alguns dos algoritmos de balanceamento de carga que considero mais relevantes para o entendimento do tema. Existem muitos outros que não estão listados aqui, mas você pode encontrar material adicional no final deste artigo para explorar mais sobre o assunto.
 
 
 <br>
