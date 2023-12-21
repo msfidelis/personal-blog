@@ -8,7 +8,7 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Load Balancing, Proxy Reversos e Algoritmos
 ---
 
-Este é o terceiro artigo da série sobre System Design. Hoje, vamos dar um *deep dive* em um tópico interessante e frequentemente subestimado em detalhes: os **Balanceadores de Carga** e os **Proxies Reversos**.
+Este é o terceiro artigo da série sobre System Design. Hoje, vamos dar um *deep dive* em um tópico interessante e frequentemente subestimado: os **Balanceadores de Carga** e os **Proxies Reversos**.
 
 Escrever este artigo foi particularmente interessante, pois o tema dos balanceadores de carga é muitas vezes abstraído por soluções Open Source e por plataformas de Cloud Públicas. No entanto, entender seu funcionamento em ambientes que permitem um nível maior de customização pode ser valioso para aprimorar aspectos de escalabilidade, performance e resiliência.
 
