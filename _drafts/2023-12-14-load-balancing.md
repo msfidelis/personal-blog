@@ -227,15 +227,15 @@ Requisição 20 direcionada para: http://host1.com
 
 ## Least Request
 
-O algoritmo "Least Request" é uma abordagem de balanceamento de carga simples, porém eficiente, que direciona a requisição atual para o servidor que processou o menor número de requisições até aquele momento. Este método utiliza um contador associado a cada host ativo, que incrementa individualmente à medida que as requisições são distribuídas. Para escolher o próximo host, o algoritmo prioriza aquele com o menor contador dentre as opções disponíveis. Dependendo da implementação, este contador pode ser reiniciado após um período específico, tornando-o escalável em ambientes com escalabilidade horizontal.
+O algoritmo **Least Request** é uma abordagem de balanceamento de carga simples, porém eficiente, que direciona a requisição atual para o servidor que processou o menor número de requisições até aquele momento. Este método utiliza um contador associado a cada host ativo, que incrementa individualmente à medida que as requisições são distribuídas. Para escolher o próximo host, o algoritmo prioriza aquele com o menor contador dentre as opções disponíveis. Dependendo da implementação, este contador pode ser reiniciado após um período específico, tornando-o escalável em ambientes com escalabilidade horizontal.
 
-O objetivo do "Least Request" é **garantir uma distribuição equitativa de carga baseada na frequência com que as requisições são atendidas**, ao invés de focar na duração ou complexidade delas. Isso o torna **uma opção vantajosa para cenários com requisições uniformes e curtas**. Um exemplo seria um microserviço com poucas rotas, mas de alta performance, como um serviço de consulta de usuários que recebe um `id` e retorna o recurso rapidamente.
+O objetivo do **Least Request** é **garantir uma distribuição equitativa de carga baseada na frequência com que as requisições são atendidas**, ao invés de focar na duração ou complexidade delas. Isso o torna **uma opção vantajosa para cenários com requisições uniformes e curtas**. Um exemplo seria um microserviço com poucas rotas, mas de alta performance, como um serviço de consulta de usuários que recebe um `id` e retorna o recurso rapidamente.
 
 Analogamente, no supermercado, seria como direcionar os clientes para o caixa com a menor fila, buscando uma distribuição mais equilibrada.
 
 ### Limitações do Least Request
 
-Embora o "Least Request" aborde a uniformidade das requisições, ele ainda pode enfrentar problemas de desbalanceamento em ambientes com requisições muito diversificadas e de durações variadas. Assim como o Round Robin, ele não considera a saturação dos hosts, o que pode tornar a simples contagem de requisições insuficiente para representar a real distribuição de carga.
+Embora o **Least Request** aborde a uniformidade das requisições, ele ainda pode enfrentar problemas de desbalanceamento em ambientes com requisições muito diversificadas e de durações variadas. Assim como o Round Robin, ele não considera a saturação dos hosts, o que pode tornar a simples contagem de requisições insuficiente para representar a real distribuição de carga.
 
 Implementações que não possuem um mecanismo para "zerar" o contador de requisições podem se tornar problemáticas em ambientes com escalabilidade horizontal. Uma má implementação desse algoritmo pode resultar em uma "negação de serviço" involuntária para novos hosts que entram no pool do balanceador.
 
