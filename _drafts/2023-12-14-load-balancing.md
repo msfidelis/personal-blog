@@ -645,6 +645,8 @@ A maioria dos provedores de nuvem disponibiliza mais de um tipo de serviço de b
 * [Bernardo](https://twitter.com/indiepagodeiro)
 * [Vinicius Silva](https://twitter.com/bl4cktux89)
 * [Clayton Silva](https://twitter.com/claydeveloper)
+* [Gomex](https://twitter.com/gomex)
+* [Marcos Vinicius](https://twitter.com/m_maltrapilho)
 
 > Imagens geradas pelo DALL-E
 
