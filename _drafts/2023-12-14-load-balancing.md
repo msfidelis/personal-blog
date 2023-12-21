@@ -78,7 +78,7 @@ Um Proxy Reverso, ou Reverse Proxy, atua como um intermediário para requisiçõ
 
 > Ué, não é isso que um Load Balancer faz?
 
-A definição de ambos pode soar semelhante, já que as duas ferramentas atuam entre clientes e servidores como pontos únicos de acesso a múltiplos hosts de aplicação. Portanto, é compreensível a confusão sobre o papel de cada um.
+A definição de ambos parece semelhante, já que as duas ferramentas atuam entre clientes e servidores como pontos únicos de acesso a múltiplos hosts de aplicação. Portanto, é compreensível a confusão sobre o papel de cada um.
 
 A implementação de um Load Balancer é ideal **quando há muitos hosts no pool**, **quando o volume de requisições é extenso demais para ser gerido por apenas um servidor**, e quando a resiliência e a minimização de pontos únicos de falha são essenciais.
 
