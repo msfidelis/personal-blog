@@ -46,7 +46,7 @@ Com a presença de múltiplos caixas, os clientes têm a opção de escolher ent
 
 No caso de um caixa apresentar problemas e necessitar de manutenção, o impacto no fluxo geral de clientes é apenas parcial, permitindo que a operação continue, embora de forma degradada.
 
-Alguns desses caixas podem ser utilizados para um numero menor de volumes, ou para atendimento preferncial, fazendo com que os mesmos evitem concorrência com clientes com carrinhos lotados. 
+Alguns desses caixas podem ser utilizados para um numero menor de volumes, ou para atendimento preferencial, fazendo com que os mesmos evitem concorrência com clientes com carrinhos lotados. 
 
 Esta abordagem não só agiliza o atendimento, aumentando a eficiência do estabelecimento, mas também melhora significativamente a experiência dos clientes.
 
