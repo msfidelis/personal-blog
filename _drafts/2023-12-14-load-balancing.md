@@ -603,7 +603,7 @@ Sua capacidade de funcionar tanto como um servidor web quanto como um proxy reve
 
 ![Haproxy Logo](/assets/images/system-design/haproxy-logo.png)
 
-O [HAProxy]() é um dos balanceadores de carga e proxies reversos mais populares e confiáveis, amplamente reconhecido por sua alta eficiência, robustez e flexibilidade. Desenvolvido por Willy Tarreau em 2000, ele é uma solução open-source que se destaca em ambientes de alto tráfego e é frequentemente usado para melhorar a performance e a confiabilidade de sites e aplicações, sendo a principal alternativa para o Nginx em alguns cenários. 
+O [HAProxy](https://www.haproxy.org/) é um dos balanceadores de carga e proxies reversos mais populares e confiáveis, amplamente reconhecido por sua alta eficiência, robustez e flexibilidade. Desenvolvido por Willy Tarreau em 2000, ele é uma solução open-source que se destaca em ambientes de alto tráfego e é frequentemente usado para melhorar a performance e a confiabilidade de sites e aplicações, sendo a principal alternativa para o Nginx em alguns cenários. 
 
 Oferece algoritmos sofisticados de balanceamento de carga, como **Round Robin**, **Least Connections** e **Source IP** hash que abordamos por aqui, permitindo uma distribuição eficiente do tráfego em vários tipos de cenários, podendo atuar como um proxy reverso para HTTP e TCP, oferecendo recursos como SSL/TLS offloading, HTTP/2 support e WebSockets.
 
