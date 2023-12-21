@@ -569,7 +569,7 @@ Requisição 9 direcionada para: http://host1.com
 Requisição 10 direcionada para: http://host2.com
 ```
 
-# Implamentações e Tecnologias
+# Implementações e Tecnologias
 
 
 ### Envoy Proxy
