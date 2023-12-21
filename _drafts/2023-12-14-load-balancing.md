@@ -612,7 +612,7 @@ Oferece algoritmos sofisticados de balanceamento de carga, como **[Round Robin](
 
 ![Traefik Logo](/assets/images/system-design/traefik-logo.png)
 
-O [Traefik]() é um moderno proxy reverso e balanceador de carga HTTP de código aberto, conhecido por sua simplicidade de configuração e capacidade de se integrar automaticamente a serviços em ambientes de containerização, como Docker e Kubernetes. Lançado em 2015, o Traefik rapidamente ganhou popularidade na comunidade de DevOps e Cloud devido à sua facilidade de uso. Além do HTTP e HTTPS, o Traefik também suporta outros protocolos, como TCP e UDP.
+O [Traefik](https://traefik.io/traefik/) é um moderno proxy reverso e balanceador de carga HTTP de código aberto, conhecido por sua simplicidade de configuração e capacidade de se integrar automaticamente a serviços em ambientes de containerização, como Docker e Kubernetes. Lançado em 2015, o Traefik rapidamente ganhou popularidade na comunidade de DevOps e Cloud devido à sua facilidade de uso. Além do HTTP e HTTPS, o Traefik também suporta outros protocolos, como TCP e UDP.
 
 O Traefik detecta automaticamente as alterações na configuração dos serviços, como quando containers são iniciados ou parados em ambientes como Docker ou Kubernetes, e ajusta as rotas de tráfego em tempo real sem necessidade de downtime. Essa funcionalidade de atualização dinamica é talvez um dos principais motivos de adoção do mesmo para cumprir papel de proxys reversos e balanceamento de carga. 
 
