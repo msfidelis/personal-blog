@@ -622,7 +622,7 @@ O Traefik detecta automaticamente as alterações na configuração dos serviço
 
 Kubernetes Ingress Controllers são componentes importantíssimos em clusters Kubernetes, oferecendo uma forma eficiente e padronizada de gerenciar o acesso externo às aplicações rodando em um cluster. Eles atuam como um ponto de entrada para o tráfego TCP, HTTP e HTTPS, permitindo a definição de regras de roteamento para distribuir o tráfego para diferentes serviços dentro do cluster, cumprindo um papel de Load Balancer externo de várias formas.
 
-Existem uma variedade de implementações, incluindo Nginx, HAProxy, Traefik, Service Meshes, Envoy e outros, cada um com suas características e benefícios específicos que devem ser avaliados caso a caso. .
+Existem uma variedade de implementações, incluindo [Nginx](#nginx), [HAProxy](#haproxy), [Traefik](#traefik), Service Meshes, [Envoy](#envoy-proxy) e outros, cada um com suas características e benefícios específicos que devem ser avaliados caso a caso. .
 
 Ambos permitem de alguma forma a definição de regras de roteamento, SSL/TLS offloading e outras configurações em um único recurso, facilitando o gerenciamento e a manutenção.
 
@@ -636,7 +636,7 @@ Eles não apenas simplificam o gerenciamento de tráfego, mas também oferecem r
 #### Revisores
 
 * [Tarsila, o amor da minha vida]()
-
+* [Ramon Borges](https://twitter.com/RamonBoorges)
 * Teste
 
 > Imagens geradas pelo DALL-E
