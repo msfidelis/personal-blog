@@ -28,11 +28,11 @@ Todos os clientes são forçados a esperar na mesma longa fila, gerando atrasos 
 
 O único caixa eletrônico fica sobrecarregado, aumentando o risco de erros cometidos pelo atendente devido ao estresse constante.
 
-Clientes com compras pequenas, como um litro de refrigerante, são obrigados a aguardar o mesmo tempo que aqueles com carrinhos repletos, tornando o processo ineficiente.
+Clientes com compras pequenas, como uma garrafa de refrigerante ou um pacote de papel higienico, são obrigados a aguardar o mesmo tempo que aqueles com carrinhos lotados com suas compras do mês, tornando o processo ineficiente.
 
-Se, por alguma razão, esse caixa falhar ou se danificar, toda a operação do mercado será afetada.
+Se, por alguma razão, esse caixa falhar ou se quebrar, toda a operação do mercadinho será afetada.
 
-Este exemplo ilustra os desafios de um ambiente sem balanceamento de carga, ajudando-nos a compreender que tipos de problemas essa abordagem visa solucionar.
+Este exemplo ilustra os desafios de um ambiente sem balanceamento de carga, ajudando a compreender que tipos de problemas essa abordagem se propõe a solucionar.
 
 <br>
 
