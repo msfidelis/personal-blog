@@ -373,9 +373,9 @@ Essa complexidade pode impactar negativamente no desempenho do balanceador, prin
 
 ## IP Hash Balancing
 
-O algoritmo de IP Hash é uma técnica de balanceamento de carga frequentemente empregada em componentes de rede, mas sua lógica também pode ser aplicada em diversos outros tipos de algoritmos de balanceamento em aplicações. É particularmente útil para manter a persistência da sessão em aplicações web.
+O algoritmo de **IP Hash** é uma técnica de balanceamento de carga frequentemente empregada em componentes de rede, mas sua lógica também pode ser aplicada em diversos outros tipos de algoritmos de balanceamento em aplicações. É particularmente útil para manter a persistência da sessão em aplicações web.
 
-Algoritmos baseados em IP Hash criam um hash consistente a partir do endereço IP do cliente para determinar para qual host as requisições ou pacotes de rede serão direcionados.
+Algoritmos baseados em **IP Hash** criam um hash consistente a partir do endereço IP do cliente para determinar para qual host as requisições ou pacotes de rede serão direcionados.
 
 O processo de hashing do IP do cliente sempre resulta no mesmo hash, o que significa que as requisições de um cliente específico serão consistentemente encaminhadas para o mesmo host de destino, **contanto que este esteja disponível**.
 
@@ -383,7 +383,7 @@ Essa técnica é utilizada em diversos outros algoritmos, como o **Maglev** que 
 
 ### Limitações ao Implementar a Técnica de IP Hashing
 
-O IP Hashing é menos eficaz quando os usuários estão atrás de NATs ou proxies, situação em que muitos podem compartilhar o mesmo endereço IP público. Além disso, pode resultar em uma distribuição desigual de carga entre os servidores, especialmente se a base de usuários não estiver distribuída uniformemente em termos de endereços IP. Como alternativa a isso a lógica de IP Hash pode se extender a outros valores vindos de headers, URL's e etc. 
+O **IP Hashing** é menos eficaz quando os usuários estão atrás de NATs ou proxies, situação em que muitos podem compartilhar o mesmo endereço IP público. Além disso, pode resultar em uma distribuição desigual de carga entre os servidores, especialmente se a base de usuários não estiver distribuída uniformemente em termos de endereços IP. Como alternativa a isso a lógica de **IP Hash** pode se extender a outros valores vindos de headers, URL's e etc. 
 
 
 ### Exemplo de Implementação 
