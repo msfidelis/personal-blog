@@ -576,7 +576,7 @@ Requisição 10 direcionada para: http://host2.com
 
 ![Envoy Logo](/assets/images/system-design/envoy-logo.png)
 
-O [Envoy Proxy](https://www.envoyproxy.io) é um proxy construído para suportar altos volumes, de alto desempenho, e que precisem de alta confiabilidade e escalabiliade utilizando muito pouco recurso computacional. O Envoy é projetado para aplicações Cloud Native e arquiteturas baseadas em microserviços. Criado pela Lyft e agora um projeto da [Cloud Native Computing Foundation](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers), o Envoy é uma solução de código aberto que ganhou popularidade por sua flexível para o gerenciamento de tráfego de rede, e por ser fácilmente extensível para vários cenários.
+O [Envoy Proxy](https://www.envoyproxy.io) é um proxy construído para suportar altos volumes, de alto desempenho, e que precisem de alta confiabilidade e escalabiliade utilizando pouquíssimo recurso computacional. O Envoy é projetado para aplicações Cloud Native e arquiteturas baseadas em microserviços. Criado pela Lyft e agora um projeto da [Cloud Native Computing Foundation](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers), o Envoy é uma solução de código aberto que ganhou popularidade por sua flexível para o gerenciamento de tráfego de rede, e por ser fácilmente extensível para vários cenários.
 
 Várias outras tecnologias Cloud Native se baseiam no Envoy para cumprir tarefas de controle de rede, como o [Istio Service Mesh](), o [Contor Ingress Controller](), [Gloo Ingress Controller](), [Emissary Ingress Controller](), [enRoute API Gateway](), [Higress API Gateway](), [Kusk Gateway]() e o próprio [Envoy Gateway](). 
 
