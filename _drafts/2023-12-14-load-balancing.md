@@ -109,24 +109,24 @@ A seguir, apresentarei alguns dos algoritmos de balanceamento de carga que consi
 
 ## Round Robin 
 
-Round Robin é um dos algoritmos mais utilizados em balanceamento de carga, com o objetivo de **distribuir a carga de maneira uniforme e cíclica entre os servidores disponíveis**. Originalmente concebido para o escalonamento de processos a nível de CPU, baseia-se na variável `quantum`, que define o tempo dedicado pela CPU a cada processo na fila. Essa abordagem previne o problema de `Starvation`, assegurando uma rotatividade cíclica e equitativa dos processos. Compreender esse conceito no contexto do escalonamento de processos é essencial para entender sua aplicação em balanceadores de carga.
+**Round Robin** é um dos algoritmos mais utilizados em balanceamento de carga, com o objetivo de **distribuir a carga de maneira uniforme e cíclica entre os servidores disponíveis**. Originalmente concebido para o escalonamento de processos a nível de CPU, baseia-se na variável `quantum`, que define o tempo dedicado pela CPU a cada processo na fila. Essa abordagem previne o problema de `Starvation`, assegurando uma rotatividade cíclica e equitativa dos processos. Compreender esse conceito no contexto do escalonamento de processos é essencial para entender sua aplicação em balanceadores de carga.
 
 No âmbito do balanceamento de carga, o **Round Robin** é empregado para distribuir uniformemente as requisições de rede ou o tráfego entre um grupo de servidores. Cada nova requisição é direcionada ao próximo servidor na fila, seguindo ou não a lógica do `quantum`.
 
-O principal objetivo é assegurar que nenhum servidor seja desproporcionalmente sobrecarregado com requisições, enquanto outros permanecem subutilizados. O Round Robin é valorizado tanto no balanceamento de carga entre servidores quanto no escalonamento de CPU por sua simplicidade e abordagem justa, que distribui trabalho ou recursos de forma equânime, evitando a sobrecarga de um único recurso.
+O principal objetivo é assegurar que nenhum servidor seja desproporcionalmente sobrecarregado com requisições, enquanto outros permanecem subutilizados. O **Round Robin** é valorizado tanto no balanceamento de carga entre servidores quanto no escalonamento de CPU por sua simplicidade e abordagem justa, que distribui trabalho ou recursos de forma equânime, evitando a sobrecarga de um único recurso.
 
 Sua natureza cíclica faz com que o algoritmo seja particularmente eficaz em ambientes com escalabilidade horizontal, facilitando a adição ou remoção de hosts do pool.
 
-Analogamente, em um supermercado, o Round Robin seria como direcionar os clientes para cada caixa em sequência, um após o outro, independentemente do tamanho da fila de cada um.
+Analogamente, em um supermercado, o **Round Robin** seria como direcionar os clientes para cada caixa em sequência, um após o outro, independentemente do tamanho da fila de cada um.
 
 
 ### Limitações do Round Robin
 
-Uma crítica frequente ao método Round Robin é que, apesar de distribuir requisições de forma igualitária entre os hosts, ele não leva em conta que nem todas as requisições demandam o mesmo nível de processamento. Isso pode levar a ineficiências, especialmente se os servidores envolvidos possuírem capacidades variadas.
+Uma crítica frequente ao método **Round Robin** é que, apesar de distribuir requisições de forma igualitária entre os hosts, ele não leva em conta que nem todas as requisições demandam o mesmo nível de processamento. Isso pode levar a ineficiências, especialmente se os servidores envolvidos possuírem capacidades variadas.
 
 Na prática, em aplicações web, alguns requests podem exigir mais recursos computacionais do que outros. Por exemplo, uma requisição para salvar um pedido de compra pode acabar competindo no mesmo host com uma requisição que gera um relatório de fechamento contábil da empresa. Isso pode resultar em uma resposta mais lenta para a solicitação, devido à saturação desigual dos hosts.
 
-Outra desvantagem do Round Robin se manifesta em balanceadores que adotam a variável de tempo `quantum`. Em cenários onde workloads experimentam picos de carga repentina dentro do breve intervalo do `quantum`, todas essas requisições podem ser direcionadas para o mesmo host. Isso pode sobrecarregar temporariamente um servidor específico, enquanto os outros permanecem subutilizados.
+Outra desvantagem do **Round Robin** se manifesta em balanceadores que adotam a variável de tempo `quantum`. Em cenários onde workloads experimentam picos de carga repentina dentro do breve intervalo do `quantum`, todas essas requisições podem ser direcionadas para o mesmo host. Isso pode sobrecarregar temporariamente um servidor específico, enquanto os outros permanecem subutilizados.
 
 
 ### Exemplo de um Algoritmo de Round Robin
