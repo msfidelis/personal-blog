@@ -24,7 +24,7 @@ Vamos iniciar desenhando um cenário do "mundo real" que exemplifica a necessida
 
 Imagine um pequeno supermercado em seu bairro, lotado em um horário de pico. **Este estabelecimento conta apenas com um caixa para atender todos os clientes presentes**. Podemos observar o seguinte cenário: 
 
-Todos os clientes são forçados a esperar na mesma longa fila, gerando atrasos e irritação generalizada.
+Todos os clientes são forçados a esperar na mesma fila gigante, gerando atrasos e irritação generalizada.
 
 O único caixa eletrônico fica sobrecarregado, aumentando o risco de erros cometidos pelo atendente devido ao estresse constante.
 
