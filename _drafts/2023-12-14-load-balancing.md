@@ -336,7 +336,7 @@ Distribuição de requisições executadas: [10 10 10]
 
 ## Least Connection
 
-Os algoritmos de "Least Connection" representam técnicas mais sofisticadas de balanceamento de carga, utilizadas para distribuir requisições de forma inteligente entre os hosts do pool de um balanceador. Ao contrário do Round Robin e Least Request, que visam distribuir requisições uniformemente sem considerar o estado atual dos servidores, essa abordagem tenta levar em conta a carga de trabalho de cada servidor.
+Os algoritmos de **Least Connection** representam técnicas mais sofisticadas de balanceamento de carga, utilizadas para distribuir requisições de forma inteligente entre os hosts do pool de um balanceador. Ao contrário do Round Robin e Least Request, que visam distribuir requisições uniformemente sem considerar o estado atual dos servidores, essa abordagem tenta levar em conta a carga de trabalho de cada servidor.
 
 O método **Least Connection** **direciona a solicitação atual para o servidor com o menor número de conexões ativas no momento**. Uma "conexão ativa" se refere a **uma sessão ou interação em andamento entre cliente e servidor**, independentemente de a requisição já ter sido processada, como em casos de implementações que suportam keep alive, web sockets, GRPC persistentes, etc.
 
@@ -344,9 +344,9 @@ Por exemplo, se um host está gerenciando 5 conexões ativas e outro apenas 3, a
 
 ### Limitações do Least Connection
 
-Uma desvantagem menos crítica, mas ainda relevante, é que tanto o Least Connection quanto algoritmos semelhantes são mais complexos de implementar em comparação à simplicidade do Round Robin. No entanto, essa complexidade pode ser facilmente superada ao se utilizar tecnologias que já suportam esses cenários.
+Uma desvantagem menos crítica, mas ainda relevante, é que tanto o **Least Connection** quanto algoritmos semelhantes são mais complexos de implementar em comparação à simplicidade do Round Robin. No entanto, essa complexidade pode ser facilmente superada ao se utilizar tecnologias que já suportam esses cenários.
 
-O Least Connection se concentra no número de conexões ativas, sem avaliar a carga de cada uma delas. Isso pode levar à sobrecarga de servidores que lidam com conexões mais exigentes, um problema semelhante ao observado nas opções anteriores. Além disso, a necessidade de gerenciar essas conexões pode consumir recursos significativos do balanceador.
+O **Least Connection** se concentra no número de conexões ativas, sem avaliar a carga de cada uma delas. Isso pode levar à sobrecarga de servidores que lidam com conexões mais exigentes, um problema semelhante ao observado nas opções anteriores. Além disso, a necessidade de gerenciar essas conexões pode consumir recursos significativos do balanceador.
 
 Servidores com muitas conexões de longa duração, como as mantidas por keep alive, podem aparentar estar menos ocupados do que realmente estão. Isso cria um potencial para ineficiências na distribuição de carga, levando a um desbalanceamento.
 
