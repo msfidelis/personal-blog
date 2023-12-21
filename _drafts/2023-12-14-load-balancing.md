@@ -468,19 +468,19 @@ Requisição 20 do IP 192.168.2.1 direcionada para: http://host3.com
 
 ## Maglev
 
-O Maglev é um algoritmo desenvolvido pela Google e representa uma técnica avançada de balanceamento de carga, ideal para sistemas complexos de computação distribuída. Apesar de ser uma inovação relativamente recente, ainda não é amplamente utilizado fora de certos contextos.
+O **Maglev** é um algoritmo desenvolvido pela Google e representa uma técnica avançada de balanceamento de carga, ideal para sistemas complexos de computação distribuída. Apesar de ser uma inovação relativamente recente, ainda não é amplamente utilizado fora de certos contextos.
 
 Este algoritmo distribui as requisições de clientes para um conjunto de servidores de maneira que cada cliente seja consistentemente encaminhado para o mesmo servidor, **desde que este esteja disponível**. Isso é realizado através do uso de **tabelas de hash consistentes** que mapeiam clientes para servidores de forma determinística, mas equilibrada, assim tendo familiaridade com o que foi discutido em **IP Hash**,
 
-O Maglev tem como objetivo garantir uma **distribuição consistente das requisições, priorizando o cache de dados e a manutenção da sessão do usuário**. Ele oferece uma noção de "persistência", o que pode gerar desafios de escalabilidade em comparação com outras opções de balanceamento de carga. Isso ocorre porque os cenários de aplicação do Maglev são distintos dos encontrados em um balanceamento stateless entre várias réplicas de uma API REST, por exemplo.
+O **Maglev** tem como objetivo garantir uma **distribuição consistente das requisições, priorizando o cache de dados e a manutenção da sessão do usuário**. Ele oferece uma noção de "persistência", o que pode gerar desafios de escalabilidade em comparação com outras opções de balanceamento de carga. Isso ocorre porque os cenários de aplicação do **Maglev** são distintos dos encontrados em um balanceamento stateless entre várias réplicas de uma API REST, por exemplo.
 
-O objetivo principal do Maglev é assegurar uma mínima flutuação no mapeamento das requisições, garantindo consistência e algo similar a uma "sessão".
+O objetivo principal do **Maglev** é assegurar uma mínima flutuação no mapeamento das requisições, garantindo consistência e algo similar a uma "sessão".
 
 Esse algoritmo é especialmente adequado para balanceamento entre datacenters, ingestão de dados e outros cenários que exigem continuidade e persistência entre as requisições. Também é aplicável em soluções multi-tenant, onde a segregação do ambiente é feita com base no IP de origem do cliente.
 
 ### Limitações do Maglev
 
-O Maglev, embora eficiente para balanceamento de carga em grandes sistemas e ambientes de data center, enfrenta desafios ao lidar com mudanças rápidas no pool de hosts, como em ambientes com escalabilidade horizontal. Além disso, muitas vezes requer hardware e software específicos para operar em seu pleno potencial.
+O **Maglev**, embora eficiente para balanceamento de carga em grandes sistemas e ambientes de data center, enfrenta desafios ao lidar com mudanças rápidas no pool de hosts, como em ambientes com escalabilidade horizontal. Além disso, muitas vezes requer hardware e software específicos para operar em seu pleno potencial.
 
 
 <br>
