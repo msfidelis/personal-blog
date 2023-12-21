@@ -235,7 +235,7 @@ Analogamente, no supermercado, seria como direcionar os clientes para o caixa co
 
 ### Limitações do Least Request
 
-Embora o **Least Request** aborde a uniformidade das requisições, ele ainda pode enfrentar problemas de desbalanceamento em ambientes com requisições muito diversificadas e de durações variadas. Assim como o Round Robin, ele não considera a saturação dos hosts, o que pode tornar a simples contagem de requisições insuficiente para representar a real distribuição de carga.
+Embora o **Least Request** aborde a uniformidade das requisições, ele ainda pode enfrentar problemas de desbalanceamento em ambientes com requisições muito diversificadas e de durações variadas. Assim como o [Round Robin](#round-robin), ele não considera a saturação dos hosts, o que pode tornar a simples contagem de requisições insuficiente para representar a real distribuição de carga.
 
 Implementações que não possuem um mecanismo para "zerar" o contador de requisições podem se tornar problemáticas em ambientes com escalabilidade horizontal. Uma má implementação desse algoritmo pode resultar em uma "negação de serviço" involuntária para novos hosts que entram no pool do balanceador.
 
