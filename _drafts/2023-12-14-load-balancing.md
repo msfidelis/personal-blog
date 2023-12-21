@@ -487,7 +487,7 @@ O **Maglev**, embora eficiente para balanceamento de carga em grandes sistemas e
 
 ## Random Load Balancing
 
-Dentre todos os algoritmos apresentados, o **Random** pode ser considerado o mais simples, embora seja um dos menos utilizados. Diferentemente de outros métodos, como Round Robin ou Least Connections, este algoritmo não leva em conta o estado atual ou a carga de trabalho dos servidores ao tomar decisões. Ele simplesmente seleciona um host aleatoriamente do pool de servidores para encaminhar a requisição.
+Dentre todos os algoritmos apresentados, o **Random** pode ser considerado o mais simples, embora seja um dos menos utilizados. Diferentemente de outros métodos, como [Round Robin](#round-robin) ou [Least Connections](#least-connection), este algoritmo não leva em conta o estado atual ou a carga de trabalho dos servidores ao tomar decisões. Ele simplesmente seleciona um host aleatoriamente do pool de servidores para encaminhar a requisição.
 
 O balanceador de carga mantém uma lista de todos os servidores disponíveis, e quando uma requisição chega, ele escolhe um servidor de maneira aleatória. Esse processo é geralmente realizado por meio de um gerador de números aleatórios para selecionar um índice na lista de servidores.
 
