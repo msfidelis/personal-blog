@@ -379,7 +379,7 @@ Algoritmos baseados em **IP Hash** criam um hash consistente a partir do endere�
 
 O processo de hashing do IP do cliente sempre resulta no mesmo hash, o que significa que as requisições de um cliente específico serão consistentemente encaminhadas para o mesmo host de destino, **contanto que este esteja disponível**.
 
-Essa técnica é utilizada em diversos outros algoritmos, como o **Maglev** que será discutido posteriormente. Ela se mostra eficaz em workloads onde é crucial manter um tipo de "sessão", em situações que exigem que as requisições sejam resolvidas em uma certa ordem de dependência, facilitadas por caching, ou que necessitem sumarizar chunks de dados ou executar operações de persistência de maneira contínua.
+Essa técnica é utilizada em diversos outros algoritmos, como o **[Maglev](#maglev)** que será discutido posteriormente. Ela se mostra eficaz em workloads onde é crucial manter um tipo de "sessão", em situações que exigem que as requisições sejam resolvidas em uma certa ordem de dependência, facilitadas por caching, ou que necessitem sumarizar chunks de dados ou executar operações de persistência de maneira contínua.
 
 ### Limitações ao Implementar a Técnica de IP Hashing
 
