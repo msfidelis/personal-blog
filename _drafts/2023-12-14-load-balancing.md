@@ -356,15 +356,15 @@ Servidores com muitas conexões de longa duração, como as mantidas por keep al
 
 ## Least Outstanding Requests (LOR)
 
-O **Least Outstanding Requests (LOR)** é um algoritmo de balanceamento de carga muito sofisticado que aborda o principal problema encontrado nos algoritmos anteriores: a **saturação dos hosts**. Há uma uma diferença sutíl entre o **LOR** e o **Least Connection**. Enquanto o **Least Connection foca em gerenciar conexões ativas (independente de estarem em uso ou não)**, o LOR considera o número de **requisições pendentes em cada host**. Uma **"requisição pendente"** é aquela que foi iniciada, mas ainda não concluída, seja ou não parte de uma conexão ativa contínua. Isso torna o LOR mais eficiente do que o Least Connection na identificação de hosts com maior carga de processamento, mais conexões em espera, e tempos de resposta mais longos.
+O **Least Outstanding Requests (LOR)** é um algoritmo de balanceamento de carga muito sofisticado que aborda o principal problema encontrado nos algoritmos anteriores: a **saturação dos hosts**. Há uma uma diferença sutíl entre o **LOR** e o **Least Connection**. Enquanto o **Least Connection foca em gerenciar conexões ativas (independente de estarem em uso ou não)**, o **LOR** considera o número de **requisições pendentes em cada host**. Uma **"requisição pendente"** é aquela que foi iniciada, mas ainda não concluída, seja ou não parte de uma conexão ativa contínua. Isso torna o **LOR** mais eficiente do que o Least Connection na identificação de hosts com maior carga de processamento, mais conexões em espera, e tempos de resposta mais longos.
 
 Em resumo, enquanto o **Least Connection considera "quantas conexões"** estão ativas, o **LOR foca em "quantas requisições" ainda estão sendo processadas**.
 
-O LOR busca equilibrar a carga de trabalho, direcionando novas requisições para os hosts com menos requisições pendentes. Dessa forma, ele visa garantir que todos os servidores mantenham um volume de trabalho semelhante e gerenciável, concentrando-se na possível saturação em vez da quantidade de requisições. Isso o torna uma opção eficaz em ambientes onde as requisições podem ter tempos de resposta variáveis e imprevisíveis.
+O **LOR** busca equilibrar a carga de trabalho, direcionando novas requisições para os hosts com menos requisições pendentes. Dessa forma, ele visa garantir que todos os servidores mantenham um volume de trabalho semelhante e gerenciável, concentrando-se na possível saturação em vez da quantidade de requisições. Isso o torna uma opção eficaz em ambientes onde as requisições podem ter tempos de resposta variáveis e imprevisíveis.
 
 ### Limitações do Least Outstanding Requests
 
-O LOR exige monitoramento contínuo e detalhado do estado das requisições em cada servidor. Essa necessidade aumenta a complexidade da implementação e exige mais recursos computacionais para manter o acompanhamento em tempo real, especialmente em sistemas distribuídos.
+O **LOR** exige monitoramento contínuo e detalhado do estado das requisições em cada servidor. Essa necessidade aumenta a complexidade da implementação e exige mais recursos computacionais para manter o acompanhamento em tempo real, especialmente em sistemas distribuídos.
 
 Essa complexidade pode impactar negativamente no desempenho do balanceador, principalmente em situações de variação repentina de carga de trabalho. Além disso, determinar com precisão quando uma requisição é concluída pode ser um desafio significativo.
 
