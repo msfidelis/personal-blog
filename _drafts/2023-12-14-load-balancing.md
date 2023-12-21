@@ -591,7 +591,7 @@ Ele possui suporte [a vários algoritmos de balanceamento de carga apresentados 
 
 ![Nginx Controller](/assets/images/system-design/nginx-logo.png)
 
-O [Nginx]() é um servidor web e proxy reverso de alto desempenho, conhecido por sua estabilidade, rico conjunto de recursos, configuração simples e baixo consumo de recursos. Originalmente criado por Igor Sysoev em 2002, o Nginx rapidamente se tornou uma escolha muito moderna e bem vinda entre os aplicações de baixo, médio e alto tráfego por sua eficiência e escalabilidade.
+O [Nginx](https://www.nginx.com/) é um servidor web e proxy reverso de alto desempenho, conhecido por sua estabilidade, rico conjunto de recursos, configuração simples e baixo consumo de recursos. Originalmente criado por Igor Sysoev em 2002, o Nginx rapidamente se tornou uma escolha muito moderna e bem vinda entre os aplicações de baixo, médio e alto tráfego por sua eficiência e escalabilidade.
 
 O Nginx é conhecido por sua capacidade de lidar com um grande número de conexões simultâneas com um uso de memória relativamente baixo, sem perder simplicidade e interface intuitíva de configuração. 
 
