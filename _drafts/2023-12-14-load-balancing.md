@@ -64,7 +64,7 @@ As aplicações de um balanceador de carga são diversas, abrangendo desde hardw
 
 Além da distribuição de tráfego, muitos balanceadores de carga oferecem funcionalidades adicionais. Eles podem permitir customizações na camada 7 da rede, como roteamento específico baseado em basepaths, querystrings, headers e IPs de origem. Uma função comum em softwares e dispositivos de balanceamento de carga é o offload de certificados SSL/TLS, removendo essa carga de processamento das aplicações individuais do pool.
 
-A seguir, apresentamos um exemplo ilustrativo do funcionamento de um balanceador de carga:
+A seguir, apresentaremos um exemplo ilustrativo do funcionamento de um balanceador de carga:
 
 
 
