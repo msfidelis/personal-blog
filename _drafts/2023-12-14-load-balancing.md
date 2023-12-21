@@ -470,7 +470,7 @@ Requisição 20 do IP 192.168.2.1 direcionada para: http://host3.com
 
 O **Maglev** é um algoritmo desenvolvido pela Google e representa uma técnica avançada de balanceamento de carga, ideal para sistemas complexos de computação distribuída. Apesar de ser uma inovação relativamente recente, ainda não é amplamente utilizado fora de certos contextos.
 
-Este algoritmo distribui as requisições de clientes para um conjunto de servidores de maneira que cada cliente seja consistentemente encaminhado para o mesmo servidor, **desde que este esteja disponível**. Isso é realizado através do uso de **tabelas de hash consistentes** que mapeiam clientes para servidores de forma determinística, mas equilibrada, assim tendo familiaridade com o que foi discutido em **IP Hash**,
+Este algoritmo distribui as requisições de clientes para um conjunto de servidores de maneira que cada cliente seja consistentemente encaminhado para o mesmo servidor, **desde que este esteja disponível**. Isso é realizado através do uso de **tabelas de hash consistentes** que mapeiam clientes para servidores de forma determinística, mas equilibrada, assim tendo familiaridade com o que foi discutido em **[IP Hash](#ip-hash-balancing)**,
 
 O **Maglev** tem como objetivo garantir uma **distribuição consistente das requisições, priorizando o cache de dados e a manutenção da sessão do usuário**. Ele oferece uma noção de "persistência", o que pode gerar desafios de escalabilidade em comparação com outras opções de balanceamento de carga. Isso ocorre porque os cenários de aplicação do **Maglev** são distintos dos encontrados em um balanceamento stateless entre várias réplicas de uma API REST, por exemplo.
 
