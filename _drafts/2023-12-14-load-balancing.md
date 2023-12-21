@@ -26,7 +26,7 @@ Imagine um pequeno supermercado em seu bairro, lotado em um horário de pico. **
 
 Todos os clientes são forçados a esperar na mesma longa fila, gerando atrasos e irritação generalizada.
 
-O único caixa eletrônico, sob intensa pressão, fica sobrecarregado, aumentando o risco de erros cometidos pelo atendente devido ao estresse constante.
+O único caixa eletrônico fica sobrecarregado, aumentando o risco de erros cometidos pelo atendente devido ao estresse constante.
 
 Clientes com compras pequenas, como um litro de refrigerante, são obrigados a aguardar o mesmo tempo que aqueles com carrinhos repletos, tornando o processo ineficiente.
 
