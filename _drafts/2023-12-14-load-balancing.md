@@ -628,9 +628,13 @@ Ambos permitem de alguma forma a definição de regras de roteamento, SSL/TLS of
 
 Eles não apenas simplificam o gerenciamento de tráfego, mas também oferecem recursos avançados que são fundamentais para a segurança, desempenho e escalabilidade das aplicações em um ou mais clusters.
 
-
 #### Cloud Load Balancers
 
+![Cloud Public](/assets/images/system-design/cloud-public.png)
+
+Os Load Balancers oferecidos pelos principais provedores de nuvem, como **AWS (Amazon Web Services)**, **Google Cloud Platform (GCP)** e **Microsoft Azure**, são soluções altamente escaláveis e especificamente projetadas para operar eficientemente nas respectivas plataformas de nuvem. Eles oferecem suporte a uma ampla gama de integrações com outros serviços fornecidos pelas mesmas plataformas, incluindo segurança, monitoramento, escalabilidade e auditoria.
+
+A maioria dos provedores de nuvem disponibiliza mais de um tipo de serviço de balanceamento de carga, cada um com características únicas para atender eficientemente a diferentes tipos de arquiteturas. Esses serviços geralmente suportam balanceamento de carga na Camada 7 (HTTP/HTTPS), bem como opções dedicadas à Camada 4 (TCP/UDP), oferecendo funcionalidades personalizáveis como roteamento avançado, segurança aprimorada, resiliência, circuit breaking, verificação de saúde dos hosts, entre outras.
 
 
 #### Revisores
