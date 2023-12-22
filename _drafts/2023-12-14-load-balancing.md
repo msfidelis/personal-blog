@@ -66,9 +66,11 @@ Além da distribuição de tráfego, muitos balanceadores de carga oferecem func
 
 A seguir, apresentaremos um exemplo ilustrativo do funcionamento de um balanceador de carga:
 
+<div style="text-align:center;">
+    <img src="/assets/images/system-design/load-balancer.gif" alt="Seu GIF" />
+</div>
 
-
-![GIF Load Balancer](/assets/images/system-design/load-balancer.gif)
+<!-- ![GIF Load Balancer](/assets/images/system-design/load-balancer.gif) -->
 
 <br>
 
@@ -346,7 +348,7 @@ Por exemplo, se um host está gerenciando 5 conexões ativas e outro apenas 3, a
 
 Uma desvantagem menos crítica, mas ainda relevante, é que tanto o **Least Connection** quanto algoritmos semelhantes são mais complexos de implementar em comparação à simplicidade do [Round Robin](#round-robin). No entanto, essa complexidade pode ser facilmente superada ao se utilizar tecnologias que já suportam esses cenários.
 
-O **Least Connection** se concentra no número de conexões ativas, sem avaliar a carga de cada uma delas. Isso pode levar à sobrecarga de servidores que lidam com conexões mais exigentes, um problema semelhante ao observado nas opções anteriores. Além disso, a necessidade de gerenciar essas conexões pode consumir recursos significativos do balanceador.
+O **Least Connection** se concentra no número de conexões ativas, sem avaliar a carga de cada uma delas. Isso pode levar à sobrecarga de servidores que lidam com conexões mais exigentes, um problema semelhante que também foi observado nas opções anteriores. Além disso, a necessidade de gerenciar essas conexões pode consumir recursos significativos do balanceador.
 
 Servidores com muitas conexões de longa duração, como as mantidas por keep alive, podem aparentar estar menos ocupados do que realmente estão. Isso cria um potencial para ineficiências na distribuição de carga, levando a um desbalanceamento.
 
@@ -470,7 +472,7 @@ Requisição 20 do IP 192.168.2.1 direcionada para: http://host3.com
 
 O **Maglev** é um algoritmo desenvolvido pela Google e representa uma técnica avançada de balanceamento de carga, ideal para sistemas complexos de computação distribuída. Apesar de ser uma inovação relativamente recente, ainda não é amplamente utilizado fora de certos contextos.
 
-Este algoritmo distribui as requisições de clientes para um conjunto de servidores de maneira que cada cliente seja consistentemente encaminhado para o mesmo servidor, **desde que este esteja disponível**. Isso é realizado através do uso de **tabelas de hash consistentes** que mapeiam clientes para servidores de forma determinística, mas equilibrada, assim tendo familiaridade com o que foi discutido em **[IP Hash](#ip-hash-balancing)**,
+Este algoritmo distribui as requisições de clientes para um conjunto de servidores de maneira que cada cliente seja consistentemente encaminhado para o mesmo servidor, **desde que este esteja disponível**. Isso é realizado através do uso de **tabelas de hash consistentes** que mapeiam clientes para servidores de forma determinística, mas equilibrada, assim tendo familiaridade com o que foi discutido sobre o funcionamento do **[IP Hash](#ip-hash-balancing)**.
 
 O **Maglev** tem como objetivo garantir uma **distribuição consistente das requisições, priorizando o cache de dados e a manutenção da sessão do usuário**. Ele oferece uma noção de "persistência", o que pode gerar desafios de escalabilidade em comparação com outras opções de balanceamento de carga. Isso ocorre porque os cenários de aplicação do **Maglev** são distintos dos encontrados em um balanceamento stateless entre várias réplicas de uma API REST, por exemplo.
 
@@ -491,7 +493,7 @@ Dentre todos os algoritmos apresentados, o **Random** pode ser considerado o mai
 
 O balanceador de carga mantém uma lista de todos os servidores disponíveis, e quando uma requisição chega, ele escolhe um servidor de maneira aleatória. Esse processo é geralmente realizado por meio de um gerador de números aleatórios para selecionar um índice na lista de servidores.
 
-Sua implementação é extremamente simples, não requerendo estado ou monitoramento contínuo dos servidores. O algoritmo também tem a vantagem de baixa **"latência"** na decisão, já que não há estados a serem gerenciados.
+Sua implementação é extremamente simples, não requerendo estado ou monitoramento contínuo dos servidores. O algoritmo também tem a vantagem de **baixa "latência"** na decisão, já que não há estados a serem gerenciados.
 
 É mais frequentemente utilizado em cenários onde a carga de trabalho é leve ou uniformemente distribuída, e em ambientes que priorizam a escalabilidade rápida e fácil. Em outros contextos, o uso deste método é geralmente desaconselhado.
 
@@ -576,11 +578,11 @@ Requisição 10 direcionada para: http://host2.com
 
 ![Envoy Logo](/assets/images/system-design/envoy-logo.png)
 
-O [Envoy Proxy](https://www.envoyproxy.io) é um proxy construído para suportar altos volumes, de alto desempenho, e que precisem de alta confiabilidade e escalabiliade utilizando pouquíssimo recurso computacional. O Envoy é projetado para aplicações Cloud Native e arquiteturas baseadas em microserviços. Criado pela Lyft e agora um projeto da [Cloud Native Computing Foundation](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers), o Envoy é uma solução de código aberto que ganhou popularidade por sua flixibilidade para o gerenciamento de tráfego de rede, e por ser fácilmente extensível para vários cenários.
+O [Envoy Proxy](https://www.envoyproxy.io) é um proxy construído para suportar altos volumes, de alto desempenho, e que precisem de alta confiabilidade e escalabiliade utilizando pouquíssimo recurso computacional. O Envoy é projetado para aplicações Cloud Native e arquiteturas baseadas em microserviços. Criado pela Lyft e agora um projeto da [Cloud Native Computing Foundation](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers), o Envoy é uma solução de código aberto que ganhou popularidade por sua flexibilidade para o gerenciamento de tráfego de rede, e por ser fácilmente extensível para vários cenários.
 
 Várias outras tecnologias Cloud Native se baseiam no Envoy para cumprir tarefas de controle de rede, como o [Istio Service Mesh](https://istio.io/latest/about/service-mesh/), o [Contour Ingress Controller](https://projectcontour.io/), [Gloo Ingress Controller](https://docs.solo.io/gloo-edge/latest/), [Emissary Ingress Controller](https://www.getambassador.io/products/api-gateway), [enRoute API Gateway](https://docs.getenroute.io/docs/prologue/introduction/), [Higress API Gateway](), [Kusk Gateway](https://kusk.io/) e o próprio [Envoy Gateway](https://gateway.envoyproxy.io/). 
 
-São várias tecnologias que desemprenham papel de Load Balancers, Reverse Proxys e API Gateways (vamos tratar especificamente desse tópico nos proximos capítulos) que são construídos em torno do Envoy por conta de suas facilidades e extrema performance para lidar com alto volume de forma econômica. Particularmente considero o Envoy Proxy como o coração dos ecossistemas Cloud native tal como o proprio Kubernetes. 
+São várias tecnologias que desemprenham papel de Load Balancers, Reverse Proxys e API Gateways (vamos tratar especificamente desse tópico nos proximos capítulos) que são construídos em torno do Envoy por conta de suas facilidades e extrema performance para lidar com alto volume de forma econômica. Particularmente considero o Envoy Proxy como o coração dos ecossistemas Cloud native tal como o próprio Kubernetes. 
 
 O Envoy trabalha como Proxy de Layer 7 na camada de Aplicação para HTTP, gRPC e Websockets da mesma forma como consegue desempenhar o mesmo papel em Layers 3/4, o que torna o Envoy muito interessante quando existem vários cenários de uso dentro do mesmo workload. 
 
@@ -591,7 +593,7 @@ Ele possui suporte [a vários algoritmos de balanceamento de carga apresentados 
 
 ![Nginx Controller](/assets/images/system-design/nginx-logo.png)
 
-O [Nginx](https://www.nginx.com/) é um servidor web e proxy reverso de alto desempenho, conhecido por sua estabilidade, rico conjunto de recursos, configuração simples e baixo consumo de recursos. Originalmente criado por Igor Sysoev em 2002, o Nginx rapidamente se tornou uma escolha muito moderna e bem vinda entre os aplicações de baixo, médio e alto tráfego por sua eficiência e escalabilidade.
+O [Nginx](https://www.nginx.com/) é um servidor web e proxy reverso de alto desempenho, conhecido por sua estabilidade, rico conjunto de recursos, configuração simples e baixo consumo de recursos. Originalmente criado por Igor Sysoev em 2002, o Nginx rapidamente se tornou uma escolha muito moderna e bem vinda entre as aplicações de baixo, médio e alto tráfego por sua eficiência e escalabilidade.
 
 O Nginx é conhecido por sua capacidade de lidar com um grande número de conexões simultâneas com um uso de memória relativamente baixo, sem perder simplicidade e interface intuitíva de configuração. 
 
@@ -622,7 +624,7 @@ O Traefik detecta automaticamente as alterações na configuração dos serviço
 
 Kubernetes Ingress Controllers são componentes importantíssimos em clusters Kubernetes, oferecendo uma forma eficiente e padronizada de gerenciar o acesso externo às aplicações rodando em um cluster. Eles atuam como um ponto de entrada para o tráfego TCP, HTTP e HTTPS, permitindo a definição de regras de roteamento para distribuir o tráfego para diferentes serviços dentro do cluster, cumprindo um papel de Load Balancer externo de várias formas.
 
-Existem uma variedade de implementações, incluindo [Nginx](#nginx), [HAProxy](#haproxy), [Traefik](#traefik), Service Meshes, [Envoy](#envoy-proxy) e outros, cada um com suas características e benefícios específicos que devem ser avaliados caso a caso. .
+Existem uma variedade de implementações, incluindo [Nginx](#nginx), [HAProxy](#haproxy), [Traefik](#traefik), Service Meshes, [Envoy](#envoy-proxy) e outros, cada um com suas características e benefícios específicos que devem ser avaliados caso a caso.
 
 Ambos permitem de alguma forma a definição de regras de roteamento, SSL/TLS offloading e outras configurações em um único recurso, facilitando o gerenciamento e a manutenção.
 
@@ -647,6 +649,7 @@ A maioria dos provedores de nuvem disponibiliza mais de um tipo de serviço de b
 * [Clayton Silva](https://twitter.com/claydeveloper)
 * [Gomex](https://twitter.com/gomex)
 * [Marcos Vinicius](https://twitter.com/m_maltrapilho)
+* [Klecianny Melo](https://twitter.com/kecbm)
 
 > Imagens geradas pelo DALL-E
 
