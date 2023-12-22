@@ -66,11 +66,7 @@ Além da distribuição de tráfego, muitos balanceadores de carga oferecem func
 
 A seguir, apresentaremos um exemplo ilustrativo do funcionamento de um balanceador de carga:
 
-<div style="text-align:center;">
-    <img src="/assets/images/system-design/load-balancer.gif" alt="Seu GIF" />
-</div>
-
-<!-- ![GIF Load Balancer](/assets/images/system-design/load-balancer.gif) -->
+![GIF Load Balancer](/assets/images/system-design/load-balancer.gif)
 
 <br>
 
