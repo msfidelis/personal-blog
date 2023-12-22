@@ -639,7 +639,7 @@ A maioria dos provedores de nuvem disponibiliza mais de um tipo de serviço de b
 
 #### Revisores
 
-* [Tarsila, o amor da minha vida]()
+* [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
 * [Ramon Borges](https://twitter.com/RamonBoorges)
 * [Sergio Soares](https://twitter.com/sergsoares)
 * [Bernardo](https://twitter.com/indiepagodeiro)
@@ -647,6 +647,7 @@ A maioria dos provedores de nuvem disponibiliza mais de um tipo de serviço de b
 * [Clayton Silva](https://twitter.com/claydeveloper)
 * [Gomex](https://twitter.com/gomex)
 * [Marcos Vinicius](https://twitter.com/m_maltrapilho)
+* [Klecianny Melo](https://twitter.com/Kecbm)
 
 > Imagens geradas pelo DALL-E
 
