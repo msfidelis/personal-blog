@@ -26,14 +26,16 @@ Um monólito em termos de arquitetura de software refere-se a **uma aplicação 
 
 Essa abordagem, tradicionalmente, favorece a simplicidade de desenvolvimento e implantação, pois tudo está fortemente integrado, além de ser simples manter consistência de dados, que é um dos maiores desafios de sistemas modernos. 
 
+Erroneamente se associa ao monolito uma característica "errada", "arcaica" ou "legada". Usar ou não arquitetura monolitica em uma aplicação de negócio não caracteriza a mesma como moderna ou legada. Monolito é, ou deveria ser, o estágio inicial de qualquer produto, a não ser é claro que esse produto seja projetado para nascer com uma alta demanda prevista, cenário que comumente acontece em grandes empresas com grandes cases de mercado.
+
+
+![Monolito](/assets/images/system-design/app-monolito.png)
+
 ### Vantagens de uma arquitetura monolitica
 
 
 ### Desvantagens de uma arquitetura monolitica
 
-
-
-![Monolito](/assets/images/system-design/app-monolito.png)
 
 <br>
 
@@ -42,6 +44,8 @@ Essa abordagem, tradicionalmente, favorece a simplicidade de desenvolvimento e i
 Agora pense numa **grande caixa de LEGO**. Cada bloco de LEGO é uma **parte pequena e separada**. Você pode construir muitas coisas diferentes, como uma casa, um carro, ou um avião, usando blocos diferentes. Se um bloco quebrar ou se você quiser mudar algo, é fácil! Você só troca o bloco que precisa sem mexer nos outros. Podemos imaginar agora como funcionam microserviços de forma lúdica. 
 
 Microserviços são um estilo de arquitetura de software onde uma **aplicação é dividida em um conjunto de pequenos serviços**, cada um operando **de forma independente**. Cada microserviço é **focado em uma única função ou recurso de negócios e pode ser desenvolvido**, implantado e **escalado independentemente**.
+
+Basicamente, uma arquitetura de microservicos se baseia em pegar um gigante bloco de funcionalidades e quebrá-lo em blocos menores
 
 As adoções de arquiteturas desse tipo normalmente são decorrentes de problemas de escalabilidade e manutenção, onde a necessidade de chamadas hetegêneas começa a fazer sentido para lidar com escala e demanda, ou quando precisamos trabalhar com processamentos assincronos, diminuir acoplamento de sistemas criticos, de alto volume e diminuir pontos unicos de falha. 
 
