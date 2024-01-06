@@ -30,12 +30,27 @@ Erroneamente se associa ao monolito uma característica "errada", "arcaica" ou "
 
 
 ![Monolito](/assets/images/system-design/app-monolito.png)
+> Exemplo de uma arquitetura monolitica aplicada a um produto de venda de viagens
+
+<br>
 
 ### Vantagens de uma arquitetura monolitica
 
+Quando olhamos para uma arquitetura monolitica, podemos entender que teremos mais simplicidade na gestão de dependências e interações entre funcionalidades específicas do sistema sem a necessidade de fazer uso de um protocolo e estratégias de comunicação extras como requests *HTTP*, *gRPC*, *Webhooks* e *mensageria*, além de termos maior facilidade na construção de features devido ao processo de desenvolvimento, testes e implantações serem unificados. Isso é claro, se avaliarmos o melhor cenário possível. 
+
+Uma das principais vantagens, como já comentado, é a facilidade de manter consistência de dados pela natureza da arquitetura de manter todos os contextos dentro de um único banco de dados. 
+
+Falando de simplicidade, também temos uma vantagem para construção e evolução de MVP's, novos produtos e prototipagens, pois é muito simples começar e evoluir produtos de tecnologia comparado com as outras alternativas. 
+
+Uma arquitetura monolitica é ideal onde a complexidade é gerenciável facilmente e a escalabilidade não é uma preocupação primária, mais especificamente para aplicações de pequeno ou médio porte ou equipes muito pequenas, onde a comunicação e gestão de multiplos serviços diversificados seria um desafio muito custoso. 
 
 ### Desvantagens de uma arquitetura monolitica
 
+À medida que uma aplicação monolítica cresce, os desafios associados à sua escala e manutenção se tornam cada vez mais evidentes, e esse talvez seja o fluxo "natural" do ciclo de vida da engenharia de software. 
+
+Conforme temos um crescimento na diversificação de funcionalidades, requisições e fluxos de negócio, podemos encontrar dificuldades em escalar horizontalmente, o que é uma necessidade em ambientes de cloud e de alto tráfego, além de que a facilidade de manutenção que seria uma vantagem inicialmente, pode crescer mal e se tornar um ponto negativo no ciclo de vida da arquitetura, gerando a necessidade de rebases constantes, revisões mais atenciosas e processos de implantação mais dolorosos. 
+
+É relativamente comum a escala vertifical de serviços monoliticos serem constantes e se tornarem um problema financeiro para o produto, devido a necessidade constante de recapacity para atender ao crescimento da demanda paralelamente ao consumo de recursos centralizados da aplicação e suas dependencias. 
 
 <br>
 
@@ -66,6 +81,10 @@ Imagine um cenário onde sua aplicação monolitica possui funcionalidades difer
 # Sistemas Distribuídos 
 
 # Domínios e Design
+
+Em arquiteturas de software, especialmente em microserviços, é crucial entender e modelar corretamente os domínios de negócio. Um domínio de negócio é basicamente uma esfera de conhecimento, influência ou atividade. A modelagem de domínio envolve identificar as entidades chave, suas relações e como elas interagem para realizar as funções de negócio.
+
+Domínio Conduzido por Design (DDD) é uma abordagem para o desenvolvimento de software que coloca o foco principal no domínio de negócio e na lógica de domínio
 
 # Lei de Cownway na arquitetura de sistemas
 
