@@ -31,6 +31,7 @@ Imagine uma aplicação que é responsável por gerenciar o backoffice de uma ag
 <br>
 
 ![Monolito](/assets/images/system-design/app-monolito.png)
+
 > Exemplo de uma arquitetura monolitica aplicada a um produto de venda de viagens
 
 Erroneamente se associa ao monolito uma característica "errada", "arcaica" ou "legada". Usar ou não arquitetura monolitica em uma aplicação de negócio não caracteriza a mesma como uma abordagem moderna ou antiga. Monolito é, ou deveria ser, o estágio inicial de qualquer produto, a não ser é claro que esse produto seja projetado para nascer com uma alta demanda prevista, cenário que comumente acontece em grandes empresas com grandes cases de mercado.
@@ -73,6 +74,7 @@ Basicamente, uma arquitetura de microservicos se baseia em pegar um gigante bloc
 Usando o mesmo exemplo anterior de um software de backoffice para uma agência de viagens, podemos entender que as funcionalidades como gestão de clientes, pacotes, reservas de serviços e pagamentos podem ser divididos em pequenos serviços menores que podem se comunicar entre si através de algum protocolo, ou acessados diretamente pela requisição do cliente através de endpoints e rotas especificas. 
 
 ![Microserviços](/assets/images/system-design/app-ms.png)
+
 
 > Exemplo de uma arquitetura de microserviços aplicada a um produto de venda de viagens
 
@@ -138,7 +140,21 @@ E em ambientes onde o nível de complexidade total é muito grande, o número de
 
 # Lei de Conway na arquitetura de sistemas
 
+![Lei Conway](/assets/images/system-design/lei-de-conway.png)
+
+A Lei de Conway foi formulada por **Melvin Conway**, um programador e cientista da computação, inicialmente para um paper rejeitado por Harvard em 1967 alegando "que ele não conseguiu provar sua tese" e posteriormente publicado em uma revista de tecnologia chamada "Datamation", na qual iniciou sua repercução por mais de 50 anos. Ele publicou um artigo que em tradução literal se chama ["Como os comitês se inventam?"](https://www.melconway.com/Home/Committees_Paper.html) onde introduziu o conceito de que a **estrutura organizacional de uma empresa influencia a arquitetura do software que ela cria**. Essencialmente, ele observou que os **designs dos sistemas eram uma cópia da estrutura de comunicação das organizações**. 
+
+Esse artigo, em resumo, se refere à ideia de que **a maneira como uma empresa está organizada - ou seja, como as equipes são formadas e como elas se comunicam entre si - tende a moldar a maneira como o software é desenvolvido**. Um primeiro momento, se imagine em uma organização que tem muitos grupos pequenos que trabalham de forma independente, o software provavelmente terá muitos componentes independentes. Se a organização tem uma estrutura mais integrada, o software também pode ser mais integrado.
+
+Mais um exemplo, se uma empresa tem times separados responsáveis por frontend, backend e gestão de dados, o software resultante provavelmente terá módulos distintos para cada uma dessas funções, fazendo uso de forma segregada de tecnologias como SPA's, Microfrontends, Backend for Frontends, API's REST, GraphQL's, Procedures, flavors de banco de dados padronizados e etc. Em startups pequenas, onde a equipe é unificada e as decisões são rápidas vindas de todos os lados a todo momento, o software tende a ser mais integrado e menos modular, refletindo a estrutura ágil e flexível da equipe. Em grandes empresas, onde diferentes áreas podem ter pouca comunicação entre si, é comum encontrar sistemas fragmentados ou com várias funcionalidades redundantes perante a arquitetura total. 
+
+A Lei de Conway tem implicações diretas como a construção de monolitos e microserviços de dão de forma organica nas organizações, além de diversas outras decisões arquiteturais. Em organizações com uma estrutura mais centralizada e hierárquica, onde a comunicação é mais vertical, é mais provável que os sistemas desenvolvidos sejam monolíticos, refletindo essa centralização e unificação em uma única base de código. Isso também pode ser encontrado em ambientes mais "informais" que possuem de alta comunicação entre pessoas, facil definição de processos e integração de pessoas. Por outro lado, em organizações com equipes pequenas, autônomas e com alta comunicação entre si, mas menos comunicação intergrupal, é mais provável que surjam sistemas baseados em microserviços. Isso reflete a independência e especialização de cada equipe, com cada microserviço representando um aspecto isolado do negócio.
+
 #### Obrigado aos Revisores
+
+* [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
+
+> Imagens geradas pelo DALL-E e Bing
 
 #### Referências 
 
@@ -154,6 +170,20 @@ E em ambientes onde o nível de complexidade total é muito grande, o número de
 
 [Martin Fowler: Anemic Domain Model](https://martinfowler.com/bliki/AnemicDomainModel.html)
 
+[Martin Fowler: Conway's Law](https://martinfowler.com/bliki/ConwaysLaw.html)
+
 [Livro: Domain-driven design: atacando as complexidades no coração do software (2016) ](https://www.amazon.com.br/Domain-driven-design-atacando-complexidades-software/dp/8550800651)
 
 [Domain-Driven Design, do início ao código](https://medium.com/cwi-software/domain-driven-design-do-in%C3%ADcio-ao-c%C3%B3digo-569b23cb3d47)
+
+[Conway's Law](https://www.melconway.com/Home/Conways_Law.html)
+
+[How Do Committees Invent?](https://www.melconway.com/Home/Committees_Paper.html)
+
+[Como a lei de Conway afeta o desenvolvimento de softwares?](https://www.supero.com.br/blog/como-a-lei-de-conway-afeta-o-desenvolvimento-de-softwares/)
+
+[The enduring link between Conway's Law and microservices](https://www.techtarget.com/searchapparchitecture/tip/The-enduring-link-between-Conways-Law-and-microservices)
+
+
+
+{% include mermaid.html %}
