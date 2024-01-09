@@ -83,15 +83,6 @@ Imagine um cenário onde sua aplicação monolitica possui funcionalidades difer
 É comum a construção de microserviços quando temos um aumento significativo na quantidade de equipes, produtos e profissionais, onde faz sentido gerenciar o ciclo de vida das aplicações de forma mais isolada e intimista dentro de determinados contextos. Iremos abordar um pouco mais desse tópico quando entrarmos na discussão da **Lei de Conway**. 
 
 
-
-### Comunicação entre microserviços
-
-A comunicação entre microserviços é geralmente realizada através de APIs, mensagens assíncronas ou eventos. Isso garante que os serviços possam operar de forma independente, mas ainda colaborar para a funcionalidade geral do sistema.
-
-A ideia desse tópico não é abordar com muita profundidade os protocolos e formas de comunicação entre os microserviços, pois vão existir capítulos especificos para detalhar cada um deles futuramente, mas vou deixar aqui os que valem a pena citar.
-
-
-
 ### Vantagens de uma arquitetura de microserviços
 
 A principal vantagem que possivelmente será citada por qualquer pessoa na hora em que lhe for perguntada a respeito de microserviços, é a descentralização. Isso pode ser entendido de algumas formas, como a possibilidade de diferentes serviços serem desenvolvidos com diferentes linguagens, tecnologias, frameworks, componentes e databases sob medida para atender da melhor forma as necessidades daquela funcionalidade. Como um microserviço que necessite de recursos de transactions, onde a acurácia e segurança do dado são mais cruciais do que qualquer outro requisito pode ser projetado para usar bancos de dados transacionais que garantam o ACID, outro que precisa realizar buscas textuais entre diversos campos como uma busca de e-commerce ser desenvolvido isoladamente utilizando tecnologias que possibilitem full-text search como o Elasticsearch e MongoDB e etc. Esse tipo de flexibilidade, por mais que venha com um peso de complexidade de manutenção, documentação e gestão, talvez seja o exemplo mais lembrado quando o assunto vem a tona. 
@@ -117,11 +108,17 @@ O monitoramento, observabilidade e alertas tendem a ser assuntos mais quentes e 
 
 Como os microserviços frequentemente se comunicam através da rede interna do seu ambiente, eles são mais suscetíveis a problemas relacionados a latência de rede e falhas de comunicação entre suas dependências. A necessidade de implementação de padrões de resiliência como circuit breakers, retries, construção de fallbacks, filas de reprocessamento, dead letter queues para análise tendem a ser mais necessários e precisam ser inseridos no formato cultural no ciclo do desenvolvimento dos serviços.
 
-# Domínios e Design
+# Domínios e Design 
 
 Em arquiteturas de software, especialmente em microserviços, é crucial entender e modelar corretamente os domínios de negócio. Um domínio de negócio é basicamente uma esfera de conhecimento, influência ou atividade. A modelagem de domínio envolve identificar as entidades chave, suas relações e como elas interagem para realizar as funções de negócio.
 
-Domínio Conduzido por Design (DDD) é uma abordagem para o desenvolvimento de software que coloca o foco principal no domínio de negócio e na lógica de domínio
+Domínio Conduzido por Design, ou Domain Driven Design (DDD) é uma abordagem para o desenvolvimento de software que coloca o foco principal no domínio de negócio e na lógica de domínio. 
+
+O DDD enfatiza a criação de um modelo de domínio rico e expressivo que incorpora regras e lógica de negócios, fazendo uso de uma linguagem comum entre desenvolvedores e especialistas de negócios para garantir que todos entendam claramente os conceitos do domínio, **definindo claramente os limites e as responsabilidades de cada parte do sistema**.
+
+Um dos maiores desafios no design de microserviços é identificar os limites de serviço corretos. Usando DDD, os serviços são geralmente organizados em torno de limites de contexto delimitado, onde cada serviço gerencia um conjunto distinto de entidades e lógicas de negócio. Isso ajuda a manter os serviços pequenos, focados e independentes.
+
+O Domínio Conduzido por Design (DDD) busca evitar várias armadilhas comuns no desenvolvimento de software, mas principalmente na construcão de microserviços. O DDD busca **evitar criar modelos de domínio que são apenas coleções de dados sem comportamento ou lógica de negócio**, também conhecidos como **modelagem e entidades anêmicas**. Essa abordagem enfatiza a importância de um modelo rico, incorporando regras e lógicas de negócio, além de arbitrariamente evitar estruturas de software complexas e altamente acopladas, que são difíceis de entender, manter e escalar. Em vez disso, promove a modularidade e a definição clara de limites de contexto.
 
 # Lei de Cownway na arquitetura de sistemas
 
