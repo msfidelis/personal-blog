@@ -8,11 +8,11 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Microserviços, Monolitos e Sistemas Distribuídos
 ---
 
-Esse é o quarto artigo da série de System Design, e estou muito feliz com o rumo que esse material está tomando, e analisando onde quero chegar com a estruturação desses textos, esse deveria ter sido o primeiro de todos. 
+Esse é o quarto artigo da série de System Design, e estou muito feliz com o rumo que esse material está tomando, e analisando onde quero chegar com a estruturação desses textos, esse deveria ter sido o primeiro de todos. Ele talvez seja  o mais "alto nível" até o momento. Não tenho a intenção de explorar os componentes complexos debaixo do capô nesse primeiro momento, apenas trabalhar com tópicos e definições conceituais, pois muitos dos pontos abordados aqui terão artigos dedicados para destrinchar cada um deles a seguir, como escalabilidade, resiliência e protocolos de comunicação que nesse momento apenas serão citados. 
 
-Este artigo busca explorar as definições, vantagens e desafios das arquiteturas de monólitos e microserviços, proporcionando uma compreensão simples de como projetar sistemas para demandas modernas. O objetivo é fornecer uma análise detalhada que não apenas destaque as diferenças entre monólitos e microserviços, mas também explore como os sistemas distribuídos, os domínios de negócios e a Lei de Conway influenciam as decisões arquitetônicas dos times de engenharia sobre esse tema. 
+No mais, esse artigo busca explorar as definições, vantagens e desafios das arquiteturas de monólitos e microserviços, proporcionando uma compreensão simples de como projetar sistemas para demandas modernas. O objetivo é fornecer uma análise detalhada que não apenas destaque as diferenças entre monólitos e microserviços, mas também explore como os sistemas distribuídos, os domínios de negócios e a Lei de Conway influenciam as decisões arquitetônicas dos times de engenharia sobre esse tema. 
 
-Eu sei que é um pouco difícil falar desse tema de maneira totalmente cientifica e sem filosofar demais a respeito, pois muitas definições, exemplos, vantagens e desvantegens vem muito de experiências pessoais granulares e senso comum de muita gente, então perdão se em algum momento eu for pra esse caminho mesmo sem perceber, mas meu objetivo vai ser tentar ser totalmente conceitual e pragmático. 
+Eu sei que é um pouco difícil falar desse tema de maneira totalmente cientifica e sem filosofar demais a respeito, pois muitas definições, exemplos, vantagens e desvantegens vem muito de experiências pessoais granulares e senso comum de muita gente pela falta de definição formal de muitas coisas, então perdão se em algum momento eu for pra esse caminho mesmo sem perceber, mas meu objetivo vai ser tentar ser totalmente conceitual e pragmático. 
 
 <br>
 
@@ -110,15 +110,19 @@ Como os microserviços frequentemente se comunicam através da rede interna do s
 
 # Domínios e Design 
 
-Em arquiteturas de software, especialmente em microserviços, é crucial entender e modelar corretamente os domínios de negócio. Um domínio de negócio é basicamente uma esfera de conhecimento, influência ou atividade. A modelagem de domínio envolve identificar as entidades chave, suas relações e como elas interagem para realizar as funções de negócio.
+Em arquiteturas de software, especialmente em microserviços, é crucial entender e modelar corretamente os domínios de negócio. Um domínio de negócio é basicamente uma esfera de conhecimento, influência ou atividade. A modelagem de domínio envolve identificar as entidades chave, suas relações e como elas interagem para realizar as funções de negócio, e é especialmente útil em sistemas complexos, onde a profundidade do domínio de negócios é grande.
 
 Domínio Conduzido por Design, ou Domain Driven Design (DDD) é uma abordagem para o desenvolvimento de software que coloca o foco principal no domínio de negócio e na lógica de domínio. 
 
 O DDD enfatiza a criação de um modelo de domínio rico e expressivo que incorpora regras e lógica de negócios, fazendo uso de uma linguagem comum entre desenvolvedores e especialistas de negócios para garantir que todos entendam claramente os conceitos do domínio, **definindo claramente os limites e as responsabilidades de cada parte do sistema**.
 
-Um dos maiores desafios no design de microserviços é identificar os limites de serviço corretos. Usando DDD, os serviços são geralmente organizados em torno de limites de contexto delimitado, onde cada serviço gerencia um conjunto distinto de entidades e lógicas de negócio. Isso ajuda a manter os serviços pequenos, focados e independentes.
+O Domínio Conduzido por Design também busca evitar várias armadilhas comuns no desenvolvimento de software. O DDD busca **evitar criar modelos de domínio que são apenas coleções de dados sem comportamento ou lógica de negócio**, também conhecidos como **modelagem e entidades anêmicas**. Essa abordagem enfatiza a importância de um modelo rico, incorporando regras e lógicas de negócio, além de arbitrariamente evitar estruturas de software complexas e altamente acopladas, que são difíceis de entender, manter e escalar. Em vez disso, promove a modularidade e a definição clara de limites de contexto.
 
-O Domínio Conduzido por Design (DDD) busca evitar várias armadilhas comuns no desenvolvimento de software, mas principalmente na construcão de microserviços. O DDD busca **evitar criar modelos de domínio que são apenas coleções de dados sem comportamento ou lógica de negócio**, também conhecidos como **modelagem e entidades anêmicas**. Essa abordagem enfatiza a importância de um modelo rico, incorporando regras e lógicas de negócio, além de arbitrariamente evitar estruturas de software complexas e altamente acopladas, que são difíceis de entender, manter e escalar. Em vez disso, promove a modularidade e a definição clara de limites de contexto.
+![DDD Viagens](/assets/images/system-design/ddd-viagem.png)
+
+Um dos maiores desafios no design de microserviços é identificar os limites de serviço corretos. Usando DDD, os serviços são geralmente organizados em torno de limites de contexto delimitado, onde cada serviço gerencia um conjunto distinto de entidades e lógicas de negócio. Isso ajuda a manter os serviços pequenos, focados e independentes. 
+
+E em ambientes onde o nível de complexidade total é muito grande, o número de equipes e serviços são gigantescos, uma modelagem de negócio e arquitetura a nível de domínio ajuda a mapear os responsáveis por cada funcionalidade e evitar que times criem soluções duplicadas para necessidades diferentes ao invés de reaproveitarem os blocos de lego já construídos. Em uma grande corporação, ter dois sistemas completamente diferentes, desenvolvido por times diferentes em periodos diferentes que cumpram funções parecidas como reservar uma passagem de vôo, cobrar utilizando algum método de pagamento ou fazer gestão de clientes pode ser uma falha grave de governança. 
 
 # Lei de Cownway na arquitetura de sistemas
 
@@ -130,7 +134,14 @@ O Domínio Conduzido por Design (DDD) busca evitar várias armadilhas comuns no 
 
 [Microsserviços x arquitetura monolítica: entenda a diferença](https://viceri.com.br/insights/microsservicos-x-arquitetura-monolitica-entenda-a-diferenca/)
 
+[Domain Driven Design](https://en.wikipedia.org/wiki/Domain-driven_design)
+
 [Pattern: Monolithic Architecture](https://microservices.io/patterns/monolithic.html)
 
 [Martin Fowler: Microservices](https://martinfowler.com/articles/microservices.html)
 
+[Martin Fowler: Anemic Domain Model](https://martinfowler.com/bliki/AnemicDomainModel.html)
+
+[Livro: Domain-driven design: atacando as complexidades no coração do software (2016) ](https://www.amazon.com.br/Domain-driven-design-atacando-complexidades-software/dp/8550800651)
+
+[Domain-Driven Design, do início ao código](https://medium.com/cwi-software/domain-driven-design-do-in%C3%ADcio-ao-c%C3%B3digo-569b23cb3d47)

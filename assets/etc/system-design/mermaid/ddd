@@ -1,0 +1,82 @@
+classDiagram
+  class Cliente {
+    +Integer id
+    +String nome
+    +Integer cpf
+    +String email
+    +String telefone
+    +Cadastrar()
+    +AtualizarDados()
+  }
+  class Pacote {
+    +Integer id
+    +String descricao
+    +String destino
+    +Float valor
+    +Integer id_cliente
+    +Datetime data_ida
+    +Datetime data_volta
+    +Boolean reserva_voo
+    +Integer id_voo
+    +Boolean reserva_carro
+    +Integer id_carro
+    +Boolean reserva_hotel
+    +Integer id_hotel
+    +Boolean pago
+    +Datetime data_pagamento
+    +Reservar()
+    +Cancelar()
+  }
+  class Voo {
+    +Integer id
+    +String numero
+    +String companhia
+    +Float valor
+    +Integer id_reserva
+    +Datetime data
+    +Reservar()
+    +Cancelar()
+  }
+  class Hotel {
+    +Integer id
+    +String nome
+    +String localizacao
+    +Float valor
+    +Datetime data_checkin
+    +Datetime data_checkout
+    +Integer id_reserva
+
+    +Reservar()
+    +Cancelar()
+  }
+  class Carro {
+    +Integer id
+    +String modelo
+    +String marca
+    +Float valor
+    +Integer id_reserva
+    +Datetime data
+    +Reservar()
+    +Devolver()
+  }
+  class Pagamento {
+    +Integer id
+    +Datetime data
+    +Float valor
+    +RealizarPagamento()
+    +Estornar()
+  }
+
+  Cliente --o db_cliente : usa >
+  Pacote --o db_pacote : usa >
+  Voo --o db_voo : usa >
+  Hotel --o db_hotel : usa >
+  Carro --o db_carro : usa >
+  Pagamento --o db_pagamento : usa >
+
+  Fechamento de Pacote --> Cliente : /cliente
+  Fechamento de Pacote --> Pacote : /pacote
+  Fechamento de Pacote --> Voo : /passagem
+  Fechamento de Pacote --> Hotel : /hotel
+  Fechamento de Pacote --> Carro : /carros
+  Fechamento de Pacote --> Pagamento : /pagamentos
