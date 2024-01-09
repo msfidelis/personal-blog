@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Microserviços, Monolitos e Sistemas Distribuídos
+title: System Design - Microserviços, Monolitos e Domínios
 ---
 
 Esse é o quarto artigo da série de System Design, e estou muito feliz com o rumo que esse material está tomando, e analisando onde quero chegar com a estruturação desses textos, esse deveria ter sido o primeiro de todos. Ele talvez seja  o mais "alto nível" até o momento. Não tenho a intenção de explorar os componentes complexos debaixo do capô nesse primeiro momento, apenas trabalhar com tópicos e definições conceituais, pois muitos dos pontos abordados aqui terão artigos dedicados para destrinchar cada um deles a seguir, como escalabilidade, resiliência e protocolos de comunicação que nesse momento apenas serão citados. 
@@ -74,6 +74,8 @@ Usando o mesmo exemplo anterior de um software de backoffice para uma agência d
 
 ![Microserviços](/assets/images/system-design/app-ms.png)
 
+> Exemplo de uma arquitetura de microserviços aplicada a um produto de venda de viagens
+
 <br>
 
 As adoções de arquiteturas desse tipo normalmente são decorrentes de problemas de escalabilidade e manutenção, onde a necessidade de chamadas hetegêneas começa a fazer sentido para lidar com escala e demanda, ou quando precisamos trabalhar com processamentos assincronos, diminuir acoplamento de sistemas criticos, de alto volume e diminuir pontos unicos de falha. 
@@ -108,6 +110,8 @@ O monitoramento, observabilidade e alertas tendem a ser assuntos mais quentes e 
 
 Como os microserviços frequentemente se comunicam através da rede interna do seu ambiente, eles são mais suscetíveis a problemas relacionados a latência de rede e falhas de comunicação entre suas dependências. A necessidade de implementação de padrões de resiliência como circuit breakers, retries, construção de fallbacks, filas de reprocessamento, dead letter queues para análise tendem a ser mais necessários e precisam ser inseridos no formato cultural no ciclo do desenvolvimento dos serviços.
 
+<br>
+
 # Domínios e Design 
 
 Em arquiteturas de software, especialmente em microserviços, é crucial entender e modelar corretamente os domínios de negócio. Um domínio de negócio é basicamente uma esfera de conhecimento, influência ou atividade. A modelagem de domínio envolve identificar as entidades chave, suas relações e como elas interagem para realizar as funções de negócio, e é especialmente útil em sistemas complexos, onde a profundidade do domínio de negócios é grande.
@@ -118,13 +122,21 @@ O DDD enfatiza a criação de um modelo de domínio rico e expressivo que incorp
 
 O Domínio Conduzido por Design também busca evitar várias armadilhas comuns no desenvolvimento de software. O DDD busca **evitar criar modelos de domínio que são apenas coleções de dados sem comportamento ou lógica de negócio**, também conhecidos como **modelagem e entidades anêmicas**. Essa abordagem enfatiza a importância de um modelo rico, incorporando regras e lógicas de negócio, além de arbitrariamente evitar estruturas de software complexas e altamente acopladas, que são difíceis de entender, manter e escalar. Em vez disso, promove a modularidade e a definição clara de limites de contexto.
 
+O DDD não é algo voltado para microserviços apenas, ele tanto pode, como também é muito aplicado dentro de uma única base de código, o que pode simplificar a gestão da lógica de domínio e reduzir a complexidade operacional definindo limites de escopo entre classes e módulos dentro de uma aplicação monolitica. Usando a ótica de modelagem de microserviços, a mesma terminologia do DDD pode ser utilizada para definir claramente os limites e responsabilidades dos microserviços, arquitetar e diminuir a complexidade entre eles, definindo uma gestão cuidadosa de comunicação e dados entre eles.
+
+Em ambos os casos, o DDD foca em alinhar o design do software com o domínio de negócio, mas a arquitetura escolhida (microserviços ou monolítico) influencia como esse alinhamento é realizado e gerenciado.
+
 ![DDD Viagens](/assets/images/system-design/ddd-viagem.png)
+
+> Exemplo de DDD aplicado a construção da aplicação de vendas de pacotes de viagens. 
+
+Esse exemplo pode ser utilizado tanto para elaborar um diagrama de classes e módulos dentro de uma aplicação monolítica quanto para definir as responsabilidades em microserviços caso cada um desses contextos limitados seja separado em uma aplicação independente. 
 
 Um dos maiores desafios no design de microserviços é identificar os limites de serviço corretos. Usando DDD, os serviços são geralmente organizados em torno de limites de contexto delimitado, onde cada serviço gerencia um conjunto distinto de entidades e lógicas de negócio. Isso ajuda a manter os serviços pequenos, focados e independentes. 
 
 E em ambientes onde o nível de complexidade total é muito grande, o número de equipes e serviços são gigantescos, uma modelagem de negócio e arquitetura a nível de domínio ajuda a mapear os responsáveis por cada funcionalidade e evitar que times criem soluções duplicadas para necessidades diferentes ao invés de reaproveitarem os blocos de lego já construídos. Em uma grande corporação, ter dois sistemas completamente diferentes, desenvolvido por times diferentes em periodos diferentes que cumpram funções parecidas como reservar uma passagem de vôo, cobrar utilizando algum método de pagamento ou fazer gestão de clientes pode ser uma falha grave de governança. 
 
-# Lei de Cownway na arquitetura de sistemas
+# Lei de Conway na arquitetura de sistemas
 
 #### Obrigado aos Revisores
 
