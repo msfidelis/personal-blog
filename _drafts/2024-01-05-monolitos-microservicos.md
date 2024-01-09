@@ -98,22 +98,24 @@ A principal vantagem que possivelmente será citada por qualquer pessoa na hora 
 
 A facilidade de desenvolvimento e implantação pode ser como também pode não ser uma grande vantagem. Quando precisamos realizar uma correção ou criar uma nova feature numa funcionalidade específica, podemos entender que é muito mais simples entregar uma nova versão isoladamente em um componente especifico. No melhor dos mundos, de fato é, se conseguirmos realizar versionamento das funcionalidades de forma pragmática, gestão de contratos eficiente para os protocolos de comunicação que o microserviço se comunica e etc. A falta desses fatores pode tornar essa vantagem no maior terror dos processos de implantação em ambientes corporativos. 
 
+Como podemos quebrar funcionalidades em pequenos serviços, temos a capacidade de escalar horizontalmente independentemente cada um desses serviços conforme a necessidade de uso e overhead cada um deles, de fato com que o scale in e scale out não impacte todas as dependencias do sistema de uma só vez. 
 
-Cada serviço pode ser escalado independentemente conforme a necessidade.
+No melhor dos mundos, podemos presumir também que em uma arquitetura de microserviços o "Blast Radius", ou  "Raio de Explosão" decorrente da falha de um dos componentes que compõe o sistema não impactariam os demais, deixando o sistema funcionando de forma parcial ou total caso exista alguma implementação de fallback ou processamento assincrono. Esse cenário é altamente dependente da adoção de design patterns de resiliência na comunicação entre as dependências. 
 
-Falhas em um serviço não afetam os outros ( em teoria )
 
 ### Desvantagens de uma arquitetura de microserviços
 
-O gerenciamento de múltiplos serviços pode ser trabalhoso
+Gerenciar múltiplos serviços pode ser mais complexo do que lidar com uma única aplicação monolítica como já conseguimos ver claramente. Essa complexidade se estende a tarefas como implantação, monitoramento, e gerenciamento de falhas. 
 
-Deployment em cascata (citado nas vantagens)
+Testar uma aplicação composta por muitos microserviços independentes pode ser mais difícil do que testar uma aplicação monolítica. Isso inclui a necessidade de testes de integração e end-to-end mais abrangentes e que precisam ser revisitados constantemente, e de a maturidade de ambientes de homologação semelhantes aos produtivos para execução dos mesmos com segurança e maxima fidelidade possível. 
 
-A comunicação entre serviços separados pode ser complexa e lenta por requeerer chamadas extras com protocolos de comunicação especificas. 
+Manter a consistência e integridade de dados em um ambientes distribuídos é pra mim um dos assuntos mais complicados na hora de falar desse tipo de arquitetura. Problemas como transações distribuídas, de longa duração, sincronização de dados e compensação retroativa (desfazer transações em cascata em caso de falha de algum componente entre vários) podem gerar discussões difíceis e muita engenharia para manter a confiabilidade dos dados, caches e replicas que diversas responsabilidades distribuídas mantém entre si. 
 
-Manter a consistência dos dados entre serviços é um desafio
+O monitoramento, observabilidade e alertas tendem a ser assuntos mais quentes e complexos também. Além de ter equipes trabalhando simultaneamente em diferentes domínios do seu projeto, você precisa de um monitoramento robusto para gerenciar efetivamente toda a infraestrutura, aplicação, dependência e regras de negócio. Tendem a surgir necessidades de ferramentas que permitam efetuar rastreabilidade de transações e agragação de logs e métricas de diversas fontes. Evoluir a  maturidade desse tipo de ferramental pode se tornar até mesmo mais complexo que os microserviços propriamente ditos. 
 
-# Sistemas Distribuídos 
+É necessária a constante atenção com as estratégias de comunicação entre os serviços. Em sistemas monolíticos essa comunicação normalmente é efetuada por meio de funções e bibliotecas disponíveis entre os modulos, em ambientes distribuídos essa comunicação requer a utilização de protocolos extras como chamadas HTTP diretamente entre si, publicação de mensagens em filas, publicação de eventos em tópicos de streams utilizando componentes intermediários para receber e entregar as mensagens aos seus interessados. 
+
+Como os microserviços frequentemente se comunicam através da rede interna do seu ambiente, eles são mais suscetíveis a problemas relacionados a latência de rede e falhas de comunicação entre suas dependências. A necessidade de implementação de padrões de resiliência como circuit breakers, retries, construção de fallbacks, filas de reprocessamento, dead letter queues para análise tendem a ser mais necessários e precisam ser inseridos no formato cultural no ciclo do desenvolvimento dos serviços.
 
 # Domínios e Design
 
@@ -132,4 +134,6 @@ Domínio Conduzido por Design (DDD) é uma abordagem para o desenvolvimento de s
 [Microsserviços x arquitetura monolítica: entenda a diferença](https://viceri.com.br/insights/microsservicos-x-arquitetura-monolitica-entenda-a-diferenca/)
 
 [Pattern: Monolithic Architecture](https://microservices.io/patterns/monolithic.html)
+
+[Martin Fowler: Microservices](https://martinfowler.com/articles/microservices.html)
 
