@@ -30,7 +30,7 @@ CPU, RAM. Embora seja uma solução mais simples, frequentemente encontra limite
 
 ### Scale Up e Scale Down
 
-As operações de `Scale-up` e `Scale-down` são atividades que ocorrem nas operações de escalabilidade vertical, que se dedicam a aumentar ou reduzir recursos computacionais de determinado servidor que desempenha alguma funcionalidade. A otividade de Scale-Up (escale para cima) se refere ao ato de aumentar recursos, sendo esses CPU, memória, disco, rede. E Scale-down (escale para baixo) é a operação de diminuir esses recursos quando necessário. Resumidamente, Scale-up (para cima) se consiste em adicionar recursos de hardware cada vez maiores, aumentando o número de disco, CPU's e memória ram do servidor e Scale-down (para baixo) seria diretamente associado a diminuir esses recursos quando necessário. 
+As operações de `Scale-up` e `Scale-down` são atividades que ocorrem nas operações de escalabilidade vertical, que se dedicam a aumentar ou reduzir recursos computacionais de determinado servidor que desempenha alguma funcionalidade. A otividade de `Scale-Up` *(escale para cima)* **se refere ao ato de aumentar recursos**, sendo esses CPU, memória, disco, rede. E `Scale-down` *(escale para baixo)* **é a operação de diminuir esses recursos quando necessário**. Resumidamente, Scale-up *(para cima)* se consiste em adicionar recursos de hardware cada vez maiores, aumentando o número de disco, CPU's e memória ram do servidor e Scale-down *(para baixo)* seria diretamente associado a diminuir esses recursos quando necessário. 
 
 ## Escalabilidade Horizontal
 
@@ -38,7 +38,7 @@ As operações de `Scale-up` e `Scale-down` são atividades que ocorrem nas oper
 
 Escalabilidade Horizontal: Adicionar mais máquinas ou instâncias no sistema para lidar com a carga. É frequentemente associada à flexibilidade e à capacidade de crescimento contínuo.
 
-A escalabilidade horizontal refere-se à adição de mais nós como servidores, containers, replicas a um componente ou um sistema. Isso é também conhecido como "scale out". Por exemplo, se você está executando uma aplicação web em um único nó, mas começa a receber muito tráfego, você pode adicionar mais replicas ao sistema para compartilhar a carga de trabalho. Este método é chamado de escalabilidade horizontal 
+A escalabilidade horizontal **refere-se à adição de mais nós como servidores, containers, replicas a um componente ou um sistema**. Isso é também conhecido como `"scale out"`. Por exemplo, se você está executando uma aplicação web em um único nó, mas começa a receber muito tráfego, você pode adicionar mais replicas ao sistema para compartilhar a carga de trabalho através de um [Balanceador de Carga](/load-balancing/). Este método é chamado de escalabilidade horizontal 
 
 ![Escalabilidade Horizontal](/assets/images/system-design/scale-out.png)
 
@@ -49,7 +49,9 @@ As operações de `Scale-in` e `Scale-out` são as atividades demandadas pela es
 
 ## Capacity Planning e Autoscaling Horizontal
 
-A ideia desse tópico é apresentar uma das várias formas de se calcular ajustes de capacidade que podem ser vinculados com estratégias de escalabilidade horizontal. Iremos utilizar um calculo base que pode ser adaptado para uma quantidade muito grande de cenários para definir capacidade horizontal de aplicações. Esse calculo foi portado 
+A ideia desse tópico é apresentar uma das várias formas de se calcular ajustes de capacidade que podem ser vinculados com estratégias de escalabilidade horizontal. Iremos utilizar um calculo base que pode ser adaptado para uma quantidade muito grande de cenários para definir capacidade horizontal de aplicações. Esse será apenas um exemplo de inúmeras abordagens que podem ser encontradas no mercado que funcionam ativamente como mecanismos de escalabilidade automática de recursos. A formula base que iremos aplicar a seguir foi retirada do funcionamento dos `Horizontal Pod Autoscaler` ou `HPA` do `Kubernetes`, mas pode ser implementado de forma isolada para vários contextos de forma livre. 
+
+Vamos apresentar vários cenários e métricas pertinentes para monitorar ativamente a escalabilidade de um sistema, aplicar a formula e verificar a quantidade necessária de recursos computacionais para um sistema se adaptar a um cenário de gargalo. 
 
 
 ### Calculo Base Para Capacity
