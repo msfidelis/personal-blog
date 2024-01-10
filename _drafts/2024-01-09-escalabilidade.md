@@ -46,6 +46,17 @@ A escalabilidade horizontal refere-se à adição de mais nós como servidores, 
 
 Scale-In e Scale-Out são as atividades demandadas pela escalabilidade **horizontal**. Scale-Out (Escale para Fora) se refere a incrementar o número de servidores ou replicas que atendem exercem a mesma função, para dividir a carga de processamento entre eles. Scale-In é a operação inversa, onde reduzimos o número de servidores ou replicas do pool de maquinas.
 
+
+## Capacity Planning e Autoscaling
+
+\begin{equation} \text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Utilização Atual da CPU}}{\text{Utilização Alvo da CPU}} \right) \end{equation} 
+
+
+\begin{equation} \text{Réplicas Desejadas} = 4 \times \left( \frac{300\}{80\} \right)\ \end{equation} 
+
+
+\begin{equation} \text{Réplicas Desejadas} = 4 \end{equation} 
+
 # Escalabilidade de Software
 
 # Outros principios de escalabilidade
@@ -55,3 +66,6 @@ Scale-In e Scale-Out são as atividades demandadas pela escalabilidade **horizon
 
 [Test of the New Infortrend CS Scale-Out NAS Cluster (Part 1)](https://www.digistor.com.au/the-latest/cat/digistor-blog/post/test-new-infortrend-cs-scale-out-nas-cluster/)
 
+
+
+{% include latex.html %}
