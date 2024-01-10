@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/logo-ms-monolito.png
+image: assets/images/system-design/escalabilidade-capa.png
 author: matheus
 featured: false
 published: true
@@ -66,6 +66,6 @@ Scale-In e Scale-Out são as atividades demandadas pela escalabilidade **horizon
 
 [Test of the New Infortrend CS Scale-Out NAS Cluster (Part 1)](https://www.digistor.com.au/the-latest/cat/digistor-blog/post/test-new-infortrend-cs-scale-out-nas-cluster/)
 
-
+[Horizontal Pod Autoscaling - Algorithm details](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#algorithm-details)
 
 {% include latex.html %}
