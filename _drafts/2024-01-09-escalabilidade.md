@@ -49,6 +49,50 @@ Scale-In e Scale-Out são as atividades demandadas pela escalabilidade **horizon
 
 ## Capacity Planning e Autoscaling
 
+
+### Calculo Base Para Capacity
+
+Para entender a forma como os processos de escalonamento funcionam, iremos utilizar a função base a seguir, onde o objetivo é encontrar a quantidade ideal de replicas para atender os requisitos de sistema observado. 
+
+\begin{equation} \text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Valor Atual da Variável}}{\text{Valor de Base da Variável}} \right) \end{equation} 
+
+Inicialmente, pode parecer um pouco abstrato, mas a seguir iremos abordar alguns exemplos onde vamos colocar essa formula em prática para diferentes cenários. Antes disso vamos considerar as `Replicas Desejadas` como a quantidade de replicas ideal para o momento da aplicação, `Valor Base da Variável` como o threshold máximo da métrica que estamos observando e o `Valor atual da Variável` como o valor atual da mesma métrica. Vamos entender.
+
+### Utilização de Recursos 
+
+A forma mais simples de entender esse calculo de capacity é utilizando recursos computacionais como CPU e memória, que são métricas mais comumente utilizadas para configurar processos de escala automática de aplicações, pois fazem parte do processo mais "natural" de planejar capacity e escalabilidade automática por serem métricas fáceis de serem calculadas, planejadas e monitoradas. 
+
+O objetivo desse tipo de abordagem é determinar o quanto de cada recurso (CPU, memória, disco, rede) está sendo usado. A utilização excessiva pode indicar um gargalo, e a formula nos ajudará a recapacitar o sistema para contornar esse gargá-lo. 
+
+A formula base aplicada ao cenário seria: 
+
+\begin{equation} \text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Utilização de CPU}}{\text{Utilização Base de CPU}} \right) \end{equation} 
+
+Antes de aplicarmos formula precisamos calcular a `Utilização de CPU`, pra isso vamos precisar de uma formula intermediária, onde precisamos dividir a **quantidade de recurso utilizado** pela **quantidade de recurso autorizado para o uso** perante a todo recurso computacional disponível. Vamos presumir que 1 core de CPU é composto por 1000m (milicores) para calcular a utilização. Esse exemplo é proximo das unidades utilizadas para capacity de workloads em clusters de Kubernetes. 
+
+\begin{equation} \text{Utilização de Recurso} = \left( \frac{\text{Recurso Solicitado}}{\text{Recurso Disponível}} \right) \times 100\ \end{equation} 
+
+
+Nesse cenário vamos presumir que: 
+* **Replicas Atuais**: 6 replicas
+* **Recurso de Cada Replica**: Cada replica pode utilizar 200m (200 milicores do sistema)
+* **Recurso Solicitado**: 1200m (1200 milicores do sistema, ou 1 core e 200 milicores)
+* **Recurso Disponível**: 600m (600 milicores do sistema)
+* **Utilização base de CPU**: 80% 
+
+\begin{equation} \text{Utilização de CPU} = \left( \frac{\text{1200m}}{\text{600m}} \right) \times 100\ \end{equation} 
+
+\begin{equation} \text{Utilização de CPU} =  \{\text{200%}}\ \end{equation} 
+
+Agora chemados ao valor base de `Utilização de CPU` em `200%`, podemos aplicá-lo a formula base usando como utilização base de escala os 80% do uso da CPU e contabilizando as `Replicas atuais` como `6`. 
+
+\begin{equation} \text{Réplicas Desejadas} = \text{6} \times \left( \frac{\text{200}}{\text{80}} \right) \end{equation}
+
+\begin{equation} \text{Réplicas Desejadas} = \text{15} \end{equation}
+
+Podemos entender que nesse cenário de avaliação de capacity, caso uma ação de recapacity em escalabilidade horizontal fosse realizada, o ideal para se contornar o gargalo devido a utilização de recursos seria recapacitar o número de replicas para 15 unidades. 
+
+
 ### Throughput
 
 Mede quantas unidades de trabalho (como transações ou requisições) o sistema pode processar por unidade de tempo. É uma métrica fundamental para entender a capacidade do sistema.
@@ -72,12 +116,6 @@ A porcentagem de todas as requisições que resultam em um erro. Um sistema esca
 
 \begin{equation} \text{Taxa de Erro} = \left( \frac{\text{Número de Requisições com Erro}}{\text{Total de Requisições}} \right) \times 100\% \end{equation} 
 
-
-### Utilização de Recursos 
-
-Mede o quanto de cada recurso (CPU, memória, disco, rede) está sendo usado. A utilização excessiva pode indicar um gargalo.
-
-\begin{equation} \text{Utilização de Recurso} = \left( \frac{\text{Recurso Usado}}{\text{Recurso Total Disponível}} \right) \times 100\% \end{equation} 
 
 ### Quantidade de Replicas Desejada baseada no Uso de Recursos
 
