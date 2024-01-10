@@ -49,6 +49,38 @@ Scale-In e Scale-Out são as atividades demandadas pela escalabilidade **horizon
 
 ## Capacity Planning e Autoscaling
 
+### Throughput
+
+Mede quantas unidades de trabalho (como transações ou requisições) o sistema pode processar por unidade de tempo. É uma métrica fundamental para entender a capacidade do sistema.
+
+
+\begin{equation} \ \text{Throughput} = \frac{\text{Total de Unidades de Trabalho Processadas}}{\text{Tempo Total}} \ \end{equation} 
+
+### Transações Por Segundo/Minuto
+
+\begin{equation} \ \text{TPS} = \frac{\text{Total de Requisições Atendidas}}{\text{Unidade de Tempo}} \ \end{equation} 
+
+### Latência
+
+Refere-se ao tempo necessário para completar uma tarefa ou transação específica. Em sistemas escaláveis, é importante que a latência não aumente significativamente à medida que o sistema escala.
+
+\begin{equation}  \text{Latência} = \text{Tempo de Resposta Final} - \text{Tempo de Requisição Inicial} \end{equation} 
+
+### Taxa de Erros 
+
+A porcentagem de todas as requisições que resultam em um erro. Um sistema escalável deve manter ou reduzir sua taxa de erro à medida que a carga aumenta.
+
+\begin{equation} \text{Taxa de Erro} = \left( \frac{\text{Número de Requisições com Erro}}{\text{Total de Requisições}} \right) \times 100\% \end{equation} 
+
+
+### Utilização de Recursos 
+
+Mede o quanto de cada recurso (CPU, memória, disco, rede) está sendo usado. A utilização excessiva pode indicar um gargalo.
+
+\begin{equation} \text{Utilização de Recurso} = \left( \frac{\text{Recurso Usado}}{\text{Recurso Total Disponível}} \right) \times 100\% \end{equation} 
+
+### Quantidade de Replicas Desejada baseada no Uso de Recursos
+
 \begin{equation} \text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Utilização Atual da CPU}}{\text{Utilização Alvo da CPU}} \right) \end{equation} 
 
 
@@ -56,6 +88,13 @@ Scale-In e Scale-Out são as atividades demandadas pela escalabilidade **horizon
 
 
 \begin{equation} \text{Réplicas Desejadas} = 4 \end{equation} 
+
+
+### Custo de Transação 
+
+Uma análise de custo-benefício que determina o custo operacional por unidade de trabalho processada.
+
+\begin{equation} \text{Custo por Transação} = \frac{\text{Custo Total Operacional}}{\text{Total de Transações}} \end{equation} 
 
 # Escalabilidade de Software
 
