@@ -4,9 +4,16 @@ Copyright: Sal, WowThemes.net, https://www.wowthemes.net
 License: https://www.wowthemes.net/freebies-license/ 
 */
 @media screen and (min-width:1500px) {
-    html { font-size:18px; } /* Increase the font size on higher resolutions */
-    .container {max-width:80%;}
+    html {
+        font-size: 18px;
+    }
+
+    /* Increase the font size on higher resolutions */
+    .container {
+        max-width: 80%;
+    }
 }
+
 .mainheading {
     padding: 1rem 0rem;
 }
@@ -85,7 +92,7 @@ section.recent-posts {
 
 .text-justify {
     text-align: justify;
-  }
+}
 
 .article-post ol ol,
 .article-post ul ul {
@@ -912,50 +919,54 @@ iframe {
 .jekyll-linkpreview-wrapper {
     max-width: 800px;
     margin-bottom: 20px;
-  }
-  
-  .jekyll-linkpreview-wrapper-inner {
-    border: 1px solid rgba(0,0,0,.1);
+}
+
+.jekyll-linkpreview-wrapper-inner {
+    border: 1px solid rgba(0, 0, 0, .1);
     padding: 12px;
-  }
-  
-  .jekyll-linkpreview-content {
+}
+
+.jekyll-linkpreview-content {
     position: relative;
     height: 100px;
     overflow: hidden;
     margin-bottom: 10px;
-  }
-  
-  .jekyll-linkpreview-image {
+}
+
+.jekyll-linkpreview-image {
     position: absolute;
     top: 0;
     right: 0;
-  }
-  
-  .jekyll-linkpreview-image img {
+}
+
+.jekyll-linkpreview-image img {
     width: 100px;
     height: 100px;
-  }
-  
-  .jekyll-linkpreview-body {
+}
+
+.jekyll-linkpreview-body {
     margin-right: 110px;
-  }
-  
-  .jekyll-linkpreview-body-nog {
+}
+
+.jekyll-linkpreview-body-nog {
     margin-right: 10px;
-  }
-  
-  .jekyll-linkpreview-title {
+}
+
+.jekyll-linkpreview-title {
     font-size: 17px;
     margin: 0 0 2px;
     line-height: 1.3;
-  }
-  
-  .jekyll-linkpreview-description {
+}
+
+.jekyll-linkpreview-description {
     line-height: 1.5;
     font-size: 13px;
-  }
-  
-  .jekyll-linkpreview-footer {
+}
+
+.jekyll-linkpreview-footer {
     font-size: 11px;
-  }
+}
+
+.MathJax {
+    text-align: left !important;
+}

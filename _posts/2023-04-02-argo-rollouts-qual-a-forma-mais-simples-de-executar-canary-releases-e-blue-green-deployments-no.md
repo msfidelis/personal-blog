@@ -3,7 +3,7 @@ layout: post
 author: matheus
 # image: https://cdn-images-1.medium.com/max/1024/0*srEMHw3PKt7Ac3_R.png
 image: assets/images/argo-logo-vg.png
-title: Argo-Rollouts — "Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?"
+title: Argo-Rollouts — 'Qual a forma mais simples de executar Canary Releases e Blue/Green Deployments no Kubernetes?'
 canonical_url: https://medium.com/@fidelissauro/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no-e030c2ee3af5?source=rss-fc2fda5e9bc2------2
 categories: [ aws, kubernetes, terraform, argo-rollouts ]
 ---

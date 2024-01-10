@@ -28,9 +28,9 @@ CPU, RAM. Embora seja uma solução mais simples, frequentemente encontra limite
 
 ![Escalabilidade Vertical](/assets/images/system-design/scale-up.png)
 
-### Scale UP e Scale Down
+### Scale Up e Scale Down
 
-Scale-UP e Scale-Down são atividades que ocorrem nas operações de escalabilidade vertical, que se dedicam a aumentar ou reduzir recursos computacionais de determinado servidor que desempenha alguma funcionalidade. Scale-Up se refere ao ato de aumentar recursos, sendo esses CPU, memória, disco, rede. E Scale-Down é a operação de diminuir esses recursos quando necessário. 
+As operações de `Scale-up` e `Scale-down` são atividades que ocorrem nas operações de escalabilidade vertical, que se dedicam a aumentar ou reduzir recursos computacionais de determinado servidor que desempenha alguma funcionalidade. A otividade de Scale-Up (escale para cima) se refere ao ato de aumentar recursos, sendo esses CPU, memória, disco, rede. E Scale-down (escale para baixo) é a operação de diminuir esses recursos quando necessário. Resumidamente, Scale-up (para cima) se consiste em adicionar recursos de hardware cada vez maiores, aumentando o número de disco, CPU's e memória ram do servidor e Scale-down (para baixo) seria diretamente associado a diminuir esses recursos quando necessário. 
 
 ## Escalabilidade Horizontal
 
@@ -44,10 +44,12 @@ A escalabilidade horizontal refere-se à adição de mais nós como servidores, 
 
 ### Scale Out e Scale In
 
-Scale-In e Scale-Out são as atividades demandadas pela escalabilidade **horizontal**. Scale-Out (Escale para Fora) se refere a incrementar o número de servidores ou replicas que atendem exercem a mesma função, para dividir a carga de processamento entre eles. Scale-In é a operação inversa, onde reduzimos o número de servidores ou replicas do pool de maquinas.
+As operações de `Scale-in` e `Scale-out` são as atividades demandadas pela escalabilidade **horizontal**. Scale-out (Escale para Fora) se refere a incrementar o número de servidores ou replicas que atendem exercem a mesma função, para dividir a carga de processamento entre eles. Scale-in é a operação inversa, onde reduzimos o número de servidores ou replicas do pool de maquinas. Resumidamente, Scale-out (para fora) aumentamos o número de servidores, e Scale-in (para dentro) diminuimos o numero deles. As duas operações podem operar em conjunto para ajustar a capacidade da carga de trabalho dinamicamente. 
 
 
-## Capacity Planning e Autoscaling
+## Capacity Planning e Autoscaling Horizontal
+
+A ideia desse tópico é apresentar uma das várias formas de se calcular ajustes de capacidade que podem ser vinculados com estratégias de escalabilidade horizontal. Iremos utilizar um calculo base que pode ser adaptado para uma quantidade muito grande de cenários para definir capacidade horizontal de aplicações. Esse calculo foi portado 
 
 
 ### Calculo Base Para Capacity
@@ -57,6 +59,8 @@ Para entender a forma como os processos de escalonamento funcionam, iremos utili
 \begin{equation} \text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Valor Atual da Variável}}{\text{Valor de Base da Variável}} \right) \end{equation} 
 
 Inicialmente, pode parecer um pouco abstrato, mas a seguir iremos abordar alguns exemplos onde vamos colocar essa formula em prática para diferentes cenários. Antes disso vamos considerar as `Replicas Desejadas` como a quantidade de replicas ideal para o momento da aplicação, `Valor Base da Variável` como o threshold máximo da métrica que estamos observando e o `Valor atual da Variável` como o valor atual da mesma métrica. Vamos entender.
+
+<br>
 
 ### Utilização de Recursos 
 
@@ -90,19 +94,55 @@ Agora chemados ao valor base de `Utilização de CPU` em `200%`, podemos aplicá
 
 \begin{equation} \text{Réplicas Desejadas} = \text{15} \end{equation}
 
-Podemos entender que nesse cenário de avaliação de capacity, caso uma ação de recapacity em escalabilidade horizontal fosse realizada, o ideal para se contornar o gargalo devido a utilização de recursos seria recapacitar o número de replicas para 15 unidades. 
+Podemos entender que nesse cenário de avaliação, caso uma ação de recapacity em escalabilidade horizontal fosse realizada, o ideal para contornar o gargalo devido a utilização de recursos de CPU seria aumentar o número de replicas para 15 unidades. Essa lógica utilizou CPU como base, mas pode ser replicada para qualquer outro tipo de recurso. 
 
+<br>
+
+### Requisições e Transações por períodos de tempo
+
+Uma das minhas formas favoritas de projetar capacity e desenhar estratégias de escalabilidade horizontal é contabilizando a quantidade de requisições que a aplicação está recebendo dentro de um período de tempo. Basicamente, essa estratégia se baseia em presumir que cada replica da aplicação consegue receber um determinado número de requisições de forma isolada sem degradar. Em resumo, se cada replica da nossa aplicação suporta 10 transações por segundo (TPS) sem degradar performance e tempo de resposta, em um momento que a aplicação estiver recebendo 100 transações por segundo o ideal seria ter 10 replicas da mesma disponíveis para atender a demanda.
+
+\begin{equation} \text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Requisições p/ Replica}}{\text{Base de Requisições}} \right) \end{equation}
+
+
+Nesse cenário vamos presumir que: 
+* **Replicas Atuais**: 6 replicas
+* **Cada Replica Aguenta**: 15 transações por segundo
+* **Total de Requisições Recebidas no ultimo minuto**: 10.000
+
+Para aplicar a formula, precisamos antes definir o valor das `Requisições por Replica`. Para calcular essa variável, precisamos primeiro **calcular a quantidade de transações que estamos recebendo por segundo** dividindo o total de requisições recebidas no ultimo minuto por 60, e depois **dividir esse valor pelo número de replicas atuais**. 
+
+\begin{equation} \ \text{Transações por Segundo} = \frac{\text{Total de Requisições Atendidas}}{\text{Período de Tempo}} \ \end{equation} 
+
+\begin{equation} \ \text{Transações por Segundo} = \frac{\text{10000}}{\text{60}} \end{equation} 
+
+\begin{equation} \ \text{Transações por Segundo} = \text{166.66} \end{equation} 
+
+Segundo o exemplo, estamos recebendo em todo o sistema `166.66` requisições por segundo. Agora para chegarmos a dimensão de requisições por replica, para determinar quanto cada unidade disponível da aplicação está recebendo em média, basta dividir essa quantidade de transações pelo numero de replicas: 
+
+\begin{equation} \ \text{Requisições por Replica} = \frac{\text{Transações por Segundo}}{\text{Replicas Atuais}} \ \end{equation} 
+
+\begin{equation} \ \text{Requisições por Replica} = \frac{\text{166.66}}{\text{6}} \ \end{equation} 
+
+\begin{equation} \ \text{Requisições por Replica} = \text{27.78} \end{equation} 
+
+Agora já temos todas as variáveis necessárias para aplicarmos a formula de capacity e escalabilidade. Vamos substituir a variável `Requisições por Replica` por `27.78`, a `Base de Requisições` por `15` para representar quanto gostariamos que cada unidade da aplicação estivesse recebendo sem maiores problemas e podemos calcular a quantidade ideal de replicas: 
+
+
+\begin{equation} \text{Réplicas Desejadas} = \text{6} \times \left( \frac{\text{27.78}}{\text{15}} \right) \end{equation}
+
+\begin{equation} \text{Réplicas Desejadas} = \text{11}\ \end{equation}
+
+Seguindo esse o exemplo, podemos presumir que em uma operação de recapacity horizontal olhando o cenário atual, o número ideal de replicas a ser definido para a aplicação seria 11 unidades. 
 
 ### Throughput
 
 Mede quantas unidades de trabalho (como transações ou requisições) o sistema pode processar por unidade de tempo. É uma métrica fundamental para entender a capacidade do sistema.
 
 
+
 \begin{equation} \ \text{Throughput} = \frac{\text{Total de Unidades de Trabalho Processadas}}{\text{Tempo Total}} \ \end{equation} 
 
-### Transações Por Segundo/Minuto
-
-\begin{equation} \ \text{TPS} = \frac{\text{Total de Requisições Atendidas}}{\text{Unidade de Tempo}} \ \end{equation} 
 
 ### Latência
 
@@ -115,17 +155,6 @@ Refere-se ao tempo necessário para completar uma tarefa ou transação específ
 A porcentagem de todas as requisições que resultam em um erro. Um sistema escalável deve manter ou reduzir sua taxa de erro à medida que a carga aumenta.
 
 \begin{equation} \text{Taxa de Erro} = \left( \frac{\text{Número de Requisições com Erro}}{\text{Total de Requisições}} \right) \times 100\% \end{equation} 
-
-
-### Quantidade de Replicas Desejada baseada no Uso de Recursos
-
-\begin{equation} \text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Utilização Atual da CPU}}{\text{Utilização Alvo da CPU}} \right) \end{equation} 
-
-
-\begin{equation} \text{Réplicas Desejadas} = 4 \times \left( \frac{300\}{80\} \right)\ \end{equation} 
-
-
-\begin{equation} \text{Réplicas Desejadas} = 4 \end{equation} 
 
 
 ### Custo de Transação 
@@ -144,5 +173,9 @@ Uma análise de custo-benefício que determina o custo operacional por unidade d
 [Test of the New Infortrend CS Scale-Out NAS Cluster (Part 1)](https://www.digistor.com.au/the-latest/cat/digistor-blog/post/test-new-infortrend-cs-scale-out-nas-cluster/)
 
 [Horizontal Pod Autoscaling - Algorithm details](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#algorithm-details)
+
+[HorizontalPodAutoscaler Walkthrough](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/)
+
+[Stupid Simple Scalability](https://www.suse.com/c/rancher_blog/stupid-simple-scalability/)
 
 {% include latex.html %}
