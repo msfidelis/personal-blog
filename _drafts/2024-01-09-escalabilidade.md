@@ -5,12 +5,67 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Escalabilidade e Capacidade
+title: System Design - Escalabilidade, Performance e Capacidade
 ---
 
-# Definindo escalabilidade
+# Definindo Performance 
 
-Escalabilidade é a capacidade de um sistema, aplicação ou negócio de crescer e lidar com um aumento na carga de trabalho, sem comprometer a qualidade, desempenho e eficiência. Isso pode incluir o aumento de usuários, transações, dados ou recursos. É um atributo crítico para sistemas que esperam um aumento no volume de usuários ou dados.
+Performance, em seus termos mais simplistas, se refere ao **quão rápido um sistema ou algoritmo consegue processar uma única transação**, isso pode ser medido de forma isolada ou em meio a um grande volume de outras transações. A parte prática da "performance" pode envolver vários termos técnicos e complexos dentro de todas as disciplinas que compõe a engenharia de software no geral, mas principalmente é sentida pelos usuários finais das nossas soluções. 
+
+O *Throughput* de maneira geral descreve o número de transações que um sistema consegue processar dentro de um determinado período de tempo. 
+
+<br>
+
+# Definindo Capacidade 
+
+
+Capacidade, ou "capacity", no contexto da engenharia de software, refere-se à **quantidade máxima de trabalho que o sistema pode receber e processar de maneira eficaz em um determinado período de tempo**, é uma forma de medir e **encontrar limite atual do sistema**, incluindo recursos como CPU, memória, armazenamento e largura de banda de rede e performance de algoritmos. 
+
+Este conceito é fundamental na arquitetura e design de sistemas, bem como no planejamento de infraestrutura e operações. A capacidade abrange vários aspectos do sistema, que vão desde a habilidade do sistema de processar dados ou transações, vinculado diretamente ao poder de processamento computacional, velocidade desse processamento e eficácia e eficiência, suportar uma quantidade de usuários ou processos simultaneamente, sem degradação do desempenho e se adaptar a cargas de trabalho crescentes, aumentando recursos conforme necessário para manter a experiência constante em meio a variações desses cenários. 
+
+Pensar e medir a capacidade de sistemas envolve não apenas o dimensionamento adequado dos recursos computacionais do sistema, mas também a implementação de estratégias para monitoramento, observabilidade, gerenciamento de desempenho, automações e escalabilidade.
+
+
+## Gargalos de Capacidade 
+
+Dentro do contexto de capacidade de software, "gargalos" referem-se a pontos no sistema onde o desempenho ou a capacidade são limitados devido a uma componente específica que não consegue lidar eficientemente com a carga atual. Estes gargalos podem afetar negativamente a capacidade geral do sistema de funcionar de maneira otimizada e podem ocorrer em várias áreas, incluindo hardware, software ou na arquitetura de rede. Isso pode incluir CPU insuficiente, memória, espaço em disco, ou capacidade de rede. Por exemplo, um servidor com CPU sobrecarregada não conseguirá processar requisições rapidamente. Erroneamente profissionais de diversos níveis de senioridade podem associar gargalos sistemicos a infraestrutura da aplicação, porém é muito mais comum cenários onde código mal otimizado ou algoritmos ineficientes, gerenciamento de concorrência, como deadlocks ou uso excessivo de bloqueios, podem limitar a capacidade do sistema e se tornar gargalos muitos dificeis de lidar e se superar no dia a dia de times de engenharia. 
+
+Um design de sistema que não distribui carga de maneira eficiente pode criar gargalos invariávelmente. Por exemplo, um ponto central de processamento de alguma rotina em uma arquitetura que deveria ter a capacidade de quebrar essa carga em várias partes e poder se tornar distribuída.
+
+dentificar e resolver gargalos é crucial para otimizar a performance e a escalabilidade de sistemas de software. Isso geralmente envolve monitoramento detalhado, testes de desempenho e ajuste fino do sistema. Em ambientes de nuvem e sistemas distribuídos, a identificação de gargalos também pode incluir a análise da distribuição de carga e da escalabilidade dinâmica.
+
+## Backpressure de Capacidade
+
+O conceito de `"backpressure"`, ou `"repressão"` em software e, especialmente, em arquiteturas baseadas em microserviços, também pode ter várias definições dependendo de onde foi empregado. Em alguns locais, o backpressure pode ser a capacidade ou um mecanismo intensional de um sistema de gerenciar seu Input/Output evitando gargalos de processamento. Aqui, vamos emprestar o da engenharia física, de gestão de flúidos, onde o mesmo se refere à resistência oposta ao movimento de um fluido. 
+
+De acordo com o Wikipédia
+
+> Backpressure, Repressão ou Pressão Traseira é o termo para definir **uma resistência ao fluxo desejado de fluido através de tubos**. Obstruções ou curvas apertadas criam **contrapressão através de perda de atrito e queda de pressão**.
+
+![Backpressure - Pipes](/assets/images/system-design/Back_pressure.jpg)
+
+No contexto de software, **backpressure ocorre quando um componente ou serviço em um sistema distribuído começa a receber mais dados ou solicitações do que é capaz de processar**. Isso pode levar a uma série de problemas, como o aumento do tempo de resposta, falhas e perda de dados.
+
+Vamos ilustrar uma solicitação em um sistema fictício que é atendida pelo pelos serviços A, B e C sequencialmente. Respectivamente esses serviços que compõe a transação suportam 100, 60 e 300 transações por segundo. Em uma volumetria de 90 transações por segundo, todos os componentes desse sistema conseguem receber e dar vazão de forma eficiente para toda a carga de trabalho inserida sem maiores problemas. 
+
+Nesse mesmo cenário, caso esse sistema receba 100 transações por segundo, o que é suportado a níveis de capacidade por 2 dos 3 serviços do conjunto, o serviço B terá um backpressure de 40 transações a cada segundo, pois o mesmo só suporta dar vasão para 60 delas. 
+
+![Backpressure - warning](/assets/images/system-design/Scale-Backpressure.drawio.png)
+
+Em um cenário mais crítico, entendendo que o serviço C consegue suportar até 300 transações, se injetarmos 120 transações por segundo nesse conjunto, a diferença do input do serviço A para o B será de 20 transações, pois o mesmo só suporta 100 delas nesse tempo, e em seguida, 100 dessas transações que foram repassadas para o serviço B que só suporta 60 serão represadas por capacidade computacional, fazendo com que o backpressure total dessa solicitação seja de 60 TPS, 50% de degradação entre o input inicial e output final, independentemente da capacidade do sistema mais performático de todo o fluxo, que em 100% do tempo terá sua real capacidade sempre ociosa devido aos delimitadores de capacidade dos serviços anteriores. 
+
+![Backpressure - danger](/assets/images/system-design/Scale-Backpressure%20-%20Danger.drawio.png)
+
+**Henry Ford** popularizou a frase que dizia que *“uma corrente é tão forte quanto seu elo mais fraco”*. O Backpressure nos ajuda a evidenciar que por mais que existam serviços mais performáticos que outros compondo um todo de um sistema, nosso throughput e capacidade serão limitados ao componente mais degradado. 
+
+<br>
+
+# Definindo Escalabilidade
+
+Escalabilidade é a capacidade de um sistema, aplicação ou negócio de crescer e lidar com um aumento na carga de trabalho, sem comprometer a qualidade, desempenho e eficiência. Isso pode incluir o aumento de usuários, transações, dados ou recursos. É um atributo crítico para sistemas que esperam um aumento no volume de usuários ou dados. É uma característica de design que indica quão bem um sistema pode se adaptar a cargas de trabalho maiores ou menores.
+
+
+De acordo com o livro "Relese It!" de Michael T. Nygard, a escalabilidade pode ser definida de duas formas: A primeira para descrever como o Throughput muda de acordo com variações de demanda, como um grafico de *requests por segundo* comparado com *tempo de resposta*  de um sistema, e em segundo momento se refere aos modos de escala que um sistema possui. Aqui, assim como no livro, vamos definir escalabilidade como a **capacidade de adicionar ou remover capacidade computacional a um sistema**. 
 
 A escalabilidade é um conceito importante no design de sistemas, pois é crucial para garantir que as aplicações e produtos possam lidar com um aumento na carga de trabalho sem sacrificar a qualidade ou o desempenho. Isso é especialmente importante em ambientes de nuvem, onde as demandas podem mudar rapidamente e os sistemas devem ser capazes de se adaptar a essas mudanças
 
@@ -36,9 +91,8 @@ As operações de `Scale-up` e `Scale-down` são atividades que ocorrem nas oper
 
 ![Escalabilidade Horizontal](/assets/images/system-design/onibus-horizontal.png)
 
-Escalabilidade Horizontal: Adicionar mais máquinas ou instâncias no sistema para lidar com a carga. É frequentemente associada à flexibilidade e à capacidade de crescimento contínuo.
 
-A escalabilidade horizontal **refere-se à adição de mais nós como servidores, containers, replicas a um componente ou um sistema**. Isso é também conhecido como `"scale out"`. Por exemplo, se você está executando uma aplicação web em um único nó, mas começa a receber muito tráfego, você pode adicionar mais replicas ao sistema para compartilhar a carga de trabalho através de um [Balanceador de Carga](/load-balancing/). Este método é chamado de escalabilidade horizontal 
+A escalabilidade horizontal **refere-se à adição de mais nós como servidores, containers, replicas a um componente ou um sistema**. Isso é também conhecido como `"scale out"`. Por exemplo, se você está executando uma aplicação web em um único nó, mas começa a receber muito tráfego, você pode adicionar mais replicas ao sistema para compartilhar a carga de trabalho através de um [Balanceador de Carga](/load-balancing/). Este método é chamado de escalabilidade horizontal, e pode ser interpretado também como a capacidade de crescimento de contínuo da capacidade de um sistema se for utilizado em conjunto com ferramentas de escalabilidade automática.
 
 ![Escalabilidade Horizontal](/assets/images/system-design/scale-out.png)
 
@@ -179,5 +233,13 @@ Uma análise de custo-benefício que determina o custo operacional por unidade d
 [HorizontalPodAutoscaler Walkthrough](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/)
 
 [Stupid Simple Scalability](https://www.suse.com/c/rancher_blog/stupid-simple-scalability/)
+
+[Livro: Release It: Design and Deploy Production-Ready Software](https://www.amazon.com.br/Release-Design-Deploy-Production-Ready-Software/dp/0978739213)
+
+[Kubernetes Instance Calculator](https://learnk8s.io/kubernetes-instance-calculator)
+
+[Backpressure explained — the resisted flow of data through software](https://medium.com/@jayphelps/backpressure-explained-the-flow-of-data-through-software-2350b3e77ce7)
+
+[Back-Pressure](https://en.wikipedia.org/wiki/Back_pressure)
 
 {% include latex.html %}
