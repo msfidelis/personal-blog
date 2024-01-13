@@ -10,7 +10,7 @@ title: System Design - Escalabilidade, Performance e Capacidade
 
 # Definindo Performance 
 
-Performance, em seus termos mais simplistas, se refere ao **quão rápido um sistema ou algoritmo consegue processar uma única transação**, isso pode ser medido de forma isolada ou em meio a um grande volume de outras transações. A parte prática da "performance" pode envolver vários termos técnicos e complexos dentro de todas as disciplinas que compõe a engenharia de software no geral, mas principalmente é sentida pelos usuários finais das nossas soluções. 
+Performance, em seus termos mais simplistas, se refere ao **quão rápido um sistema ou algoritmo consegue processar uma única transação**, isso pode ser medido de **forma isolada** ou em meio a um **grande volume de outras transações**. A parte prática da "performance" pode envolver vários termos técnicos e complexos dentro de todas as disciplinas que compõe a engenharia de software no geral, mas principalmente é sentida pelos usuários finais das nossas soluções. 
 
 O *Throughput* de maneira geral descreve o número de transações que um sistema consegue processar dentro de um determinado período de tempo. 
 
@@ -18,17 +18,16 @@ O *Throughput* de maneira geral descreve o número de transações que um sistem
 
 # Definindo Capacidade 
 
-
 Capacidade, ou "capacity", no contexto da engenharia de software, refere-se à **quantidade máxima de trabalho que o sistema pode receber e processar de maneira eficaz em um determinado período de tempo**, é uma forma de medir e **encontrar limite atual do sistema**, incluindo recursos como CPU, memória, armazenamento e largura de banda de rede e performance de algoritmos. 
 
-Este conceito é fundamental na arquitetura e design de sistemas, bem como no planejamento de infraestrutura e operações. A capacidade abrange vários aspectos do sistema, que vão desde a habilidade do sistema de processar dados ou transações, vinculado diretamente ao poder de processamento computacional, velocidade desse processamento e eficácia e eficiência, suportar uma quantidade de usuários ou processos simultaneamente, sem degradação do desempenho e se adaptar a cargas de trabalho crescentes, aumentando recursos conforme necessário para manter a experiência constante em meio a variações desses cenários. 
+Este conceito é fundamental na arquitetura e design de sistemas, bem como no planejamento de infraestrutura geral dos componentes de software. A capacidade abrange vários aspectos do sistema, que vão desde a habilidade do sistema de **processar dados ou transações**, vinculado diretamente ao **poder de processamento computacional**, **velocidade desse processamento** e eficácia e eficiência, **suportar uma quantidade de usuários ou processos simultaneamente**, **sem degradação do desempenho e se adaptar a cargas de trabalho crescentes**, aumentando recursos conforme necessário para manter a experiência constante em meio a variações desses cenários. 
 
 Pensar e medir a capacidade de sistemas envolve não apenas o dimensionamento adequado dos recursos computacionais do sistema, mas também a implementação de estratégias para monitoramento, observabilidade, gerenciamento de desempenho, automações e escalabilidade.
 
 
 ## Gargalos de Capacidade 
 
-Dentro do contexto de capacidade de software, "gargalos" referem-se a pontos no sistema onde o desempenho ou a capacidade são limitados devido a uma componente específica que não consegue lidar eficientemente com a carga atual. Estes gargalos podem afetar negativamente a capacidade geral do sistema de funcionar de maneira otimizada e podem ocorrer em várias áreas, incluindo hardware, software ou na arquitetura de rede. Isso pode incluir CPU insuficiente, memória, espaço em disco, ou capacidade de rede. Por exemplo, um servidor com CPU sobrecarregada não conseguirá processar requisições rapidamente. Erroneamente profissionais de diversos níveis de senioridade podem associar gargalos sistemicos a infraestrutura da aplicação, porém é muito mais comum cenários onde código mal otimizado ou algoritmos ineficientes, gerenciamento de concorrência, como deadlocks ou uso excessivo de bloqueios, podem limitar a capacidade do sistema e se tornar gargalos muitos dificeis de lidar e se superar no dia a dia de times de engenharia. 
+Dentro do contexto de capacidade de software, "gargalos" referem-se a **pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual**. Estes gargalos podem afetar negativamente a capacidade geral do sistema de funcionar de maneira otimizada e podem ocorrer em várias áreas, incluindo hardware, software ou na arquitetura de rede. Isso pode incluir CPU insuficiente, memória, espaço em disco, ou capacidade de rede. Por exemplo, um servidor com CPU sobrecarregada não conseguirá processar requisições rapidamente. Erroneamente profissionais de diversos níveis de senioridade podem associar gargalos sistemicos a infraestrutura da aplicação, porém é muito mais comum cenários onde código mal otimizado ou algoritmos ineficientes, gerenciamento de concorrência, como deadlocks ou uso excessivo de bloqueios, podem limitar a capacidade do sistema e se tornar gargalos muitos dificeis de lidar e se superar no dia a dia de times de engenharia. 
 
 Um design de sistema que não distribui carga de maneira eficiente pode criar gargalos invariávelmente. Por exemplo, um ponto central de processamento de alguma rotina em uma arquitetura que deveria ter a capacidade de quebrar essa carga em várias partes e poder se tornar distribuída.
 
@@ -46,13 +45,13 @@ De acordo com o Wikipédia
 
 No contexto de software, **backpressure ocorre quando um componente ou serviço em um sistema distribuído começa a receber mais dados ou solicitações do que é capaz de processar**. Isso pode levar a uma série de problemas, como o aumento do tempo de resposta, falhas e perda de dados.
 
-Vamos ilustrar uma solicitação em um sistema fictício que é atendida pelo pelos serviços A, B e C sequencialmente. Respectivamente esses serviços que compõe a transação suportam 100, 60 e 300 transações por segundo. Em uma volumetria de 90 transações por segundo, todos os componentes desse sistema conseguem receber e dar vazão de forma eficiente para toda a carga de trabalho inserida sem maiores problemas. 
+Vamos ilustrar uma solicitação em um sistema fictício que é atendida pelo pelos Serviços `A`, `B` e `C` sequencialmente. Respectivamente esses serviços que compõe a transação suportam `100`, `60` e `300`  transações por segundo. Em uma volumetria de 90 transações por segundo, todos os componentes desse sistema conseguem receber e dar vazão de forma eficiente para toda a carga de trabalho inserida sem maiores problemas. 
 
 Nesse mesmo cenário, caso esse sistema receba 100 transações por segundo, o que é suportado a níveis de capacidade por 2 dos 3 serviços do conjunto, o serviço B terá um backpressure de 40 transações a cada segundo, pois o mesmo só suporta dar vasão para 60 delas. 
 
 ![Backpressure - warning](/assets/images/system-design/Scale-Backpressure.drawio.png)
 
-Em um cenário mais crítico, entendendo que o serviço C consegue suportar até 300 transações, se injetarmos 120 transações por segundo nesse conjunto, a diferença do input do serviço A para o B será de 20 transações, pois o mesmo só suporta 100 delas nesse tempo, e em seguida, 100 dessas transações que foram repassadas para o serviço B que só suporta 60 serão represadas por capacidade computacional, fazendo com que o backpressure total dessa solicitação seja de 60 TPS, 50% de degradação entre o input inicial e output final, independentemente da capacidade do sistema mais performático de todo o fluxo, que em 100% do tempo terá sua real capacidade sempre ociosa devido aos delimitadores de capacidade dos serviços anteriores. 
+Em um cenário mais crítico, entendendo que o `serviço C` consegue suportar até 300 transações, se injetarmos 120 transações por segundo nesse conjunto, a diferença do input do serviço A para o B será de 20 transações, pois o mesmo só suporta 100 delas nesse tempo, e em seguida, 100 dessas transações que foram repassadas para o serviço B que só suporta 60 serão represadas por capacidade computacional, fazendo com que o backpressure total dessa solicitação seja de 60 TPS, 50% de degradação entre o input inicial e output final, independentemente da capacidade do sistema mais performático de todo o fluxo, que em 100% do tempo terá sua real capacidade sempre ociosa devido aos delimitadores de capacidade dos serviços anteriores. 
 
 ![Backpressure - danger](/assets/images/system-design/Scale-Backpressure%20-%20Danger.drawio.png)
 
@@ -191,6 +190,8 @@ Agora já temos todas as variáveis necessárias para aplicarmos a formula de ca
 
 Seguindo esse o exemplo, podemos presumir que em uma operação de recapacity horizontal olhando o cenário atual, o número ideal de replicas a ser definido para a aplicação seria 11 unidades. 
 
+<br>
+
 ### Throughput
 
 Mede quantas unidades de trabalho (como transações ou requisições) o sistema pode processar por unidade de tempo. É uma métrica fundamental para entender a capacidade do sistema.
@@ -199,19 +200,40 @@ Mede quantas unidades de trabalho (como transações ou requisições) o sistema
 
 \begin{equation} \ \text{Throughput} = \frac{\text{Total de Unidades de Trabalho Processadas}}{\text{Tempo Total}} \ \end{equation} 
 
+<br>
 
-### Latência
+### Tempo de Resposta
 
-Refere-se ao tempo necessário para completar uma tarefa ou transação específica. Em sistemas escaláveis, é importante que a latência não aumente significativamente à medida que o sistema escala.
+Refere-se ao tempo total necessário para completar uma tarefa ou transação específica. Em sistemas escaláveis, é importante que a latência não aumente significativamente à medida que a utilização da aplicação se eleva. O tempo de resposta é composto da soma da latência e do tempo de processamento, e é medido através de um client e um server. 
 
-\begin{equation}  \text{Latência} = \text{Tempo de Resposta Final} - \text{Tempo de Requisição Inicial} \end{equation} 
+A `Latência` pode ser definida como o **atraso de rede ou o tempo que uma solicitação para viajar do remetente ao receptor**. Em outras palavras, é o atraso entre o início de uma ação e o início da reação, pode ser influenciado pela distância física entre os comunicantes, a velocidade do meio de transmissão, e qualquer atraso introduzido por dispositivos intermediários (como roteadores).
+
+O `Tempo de Processamento` é o tempo que um sistema leva para **processar uma solicitação após recebê-la**. Esse termo é frequentemente usado para descrever o tempo necessário para uma CPU ou servidor processar uma tarefa específica.
+
+O `Tempo de Resposta` é o **tempo total que leva desde o envio de uma solicitação até o recebimento da resposta**. Ele inclui tanto a latência (tempo de ida e volta da rede) quanto o tempo de processamento no servidor, sendo uma soma de ambas na maioria dos casos. Em um contexto de usuário final, é o tempo que leva desde que um usuário faz uma ação (como clicar em um link ou pressionar uma tecla) até que ele vê o resultado dessa ação.
+
+No mais, o calculo do tempo de resposta pode ser representado dessa forma a partir do cliente, contabilizando o tempo final subtraindo o tempo inicial da requisição observada:
+
+\begin{equation}  \text{Tempo de Resposta} = \text{Timestamp da Resposta} - \text{Timestamp da Requisição} \end{equation} 
+
+
+<br>
 
 ### Taxa de Erros 
 
 A porcentagem de todas as requisições que resultam em um erro. Um sistema escalável deve manter ou reduzir sua taxa de erro à medida que a carga aumenta.
 
-\begin{equation} \text{Taxa de Erro} = \left( \frac{\text{Número de Requisições com Erro}}{\text{Total de Requisições}} \right) \times 100\% \end{equation} 
+Para calcular a taxa de erros de um sistema, geralmente usamos uma fórmula simples que relaciona o número de eventos de erro com o número total de eventos ou tentativas. A taxa de erros é frequentemente expressa como uma porcentagem. Aqui está a fórmula básica:
 
+\begin{equation} \text{Taxa de Erro} = \left( \frac{\text{Número de Erros}}{\text{Número Total de Tentativas ou Eventos}} \right) \times 100\ \end{equation} 
+
+Suponha que você tenha um sistema que processou 1.000 transações, das quais 50 resultaram em erros. A taxa de erros seria calculada como:
+
+\begin{equation} \text{Taxa de Erro} = \left( \frac{\text{50}}{\text{1000}} \right) \times 100\ \end{equation} 
+
+\begin{equation} \ \text{Taxa de Erro} = \text{5.0}\% \end{equation} 
+
+<br>
 
 ### Custo de Transação 
 
