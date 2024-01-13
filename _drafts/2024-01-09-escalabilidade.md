@@ -61,20 +61,19 @@ Em um cenário mais crítico, entendendo que o `serviço C` consegue suportar at
 
 # Definindo Escalabilidade
 
-Escalabilidade é a capacidade de um sistema, aplicação ou negócio de crescer e lidar com um aumento na carga de trabalho, sem comprometer a qualidade, desempenho e eficiência. Isso pode incluir o aumento de usuários, transações, dados ou recursos. É um atributo crítico para sistemas que esperam um aumento no volume de usuários ou dados. É uma característica de design que indica quão bem um sistema pode se adaptar a cargas de trabalho maiores ou menores.
+Escalabilidade é a **capacidade de um sistema, aplicação ou negócio de crescer e lidar com um aumento na carga de trabalho, sem comprometer a qualidade, desempenho e eficiência**. Isso pode incluir o aumento de usuários, transações, dados ou recursos. É um atributo crítico para sistemas que esperam um aumento no volume de usuários ou dados. É uma característica de design que indica quão bem um sistema pode se adaptar a cargas de trabalho maiores ou menores.
 
-
-De acordo com o livro "Relese It!" de Michael T. Nygard, a escalabilidade pode ser definida de duas formas: A primeira para descrever como o Throughput muda de acordo com variações de demanda, como um grafico de *requests por segundo* comparado com *tempo de resposta*  de um sistema, e em segundo momento se refere aos modos de escala que um sistema possui. Aqui, assim como no livro, vamos definir escalabilidade como a **capacidade de adicionar ou remover capacidade computacional a um sistema**. 
+De acordo com o livro *"Relese It!" de Michael T. Nygard*, a escalabilidade pode ser definida de duas formas: A primeira para descrever como o Throughput muda de acordo com variações de demanda, como um grafico de *requests por segundo* comparado com *tempo de resposta*  de um sistema, e em segundo momento se refere aos modos de escala que um sistema possui. Aqui, assim como no livro, vamos definir escalabilidade como a **capacidade de adicionar ou remover capacidade computacional a um sistema**. 
 
 A escalabilidade é um conceito importante no design de sistemas, pois é crucial para garantir que as aplicações e produtos possam lidar com um aumento na carga de trabalho sem sacrificar a qualidade ou o desempenho. Isso é especialmente importante em ambientes de nuvem, onde as demandas podem mudar rapidamente e os sistemas devem ser capazes de se adaptar a essas mudanças
 
-# Importância da Escalabilidade em Sistemas Modernos
+## Importância da Escalabilidade em Sistemas Modernos
 
-# Escalabilidade Vertical e Escalabilidade Horizontal
+## Escalabilidade Vertical e Escalabilidade Horizontal
 
 Existem dois tipos principais de escalabilidade que são frequentemente discutidos no design de sistemas: escalabilidade horizontal e escalabilidade vertical.
 
-## Escalabilidade Vertical
+### Escalabilidade Vertical
 
 ![Escalabilidade Vertical](/assets/images/system-design/onibus-vertical.png)
 
@@ -82,11 +81,11 @@ CPU, RAM. Embora seja uma solução mais simples, frequentemente encontra limite
 
 ![Escalabilidade Vertical](/assets/images/system-design/scale-up.png)
 
-### Scale Up e Scale Down
+#### Scale Up e Scale Down
 
 As operações de `Scale-up` e `Scale-down` são atividades que ocorrem nas operações de escalabilidade vertical, que se dedicam a aumentar ou reduzir recursos computacionais de determinado servidor que desempenha alguma funcionalidade. A otividade de `Scale-Up` *(escale para cima)* **se refere ao ato de aumentar recursos**, sendo esses CPU, memória, disco, rede. E `Scale-down` *(escale para baixo)* **é a operação de diminuir esses recursos quando necessário**. Resumidamente, Scale-up *(para cima)* se consiste em adicionar recursos de hardware cada vez maiores, aumentando o número de disco, CPU's e memória ram do servidor e Scale-down *(para baixo)* seria diretamente associado a diminuir esses recursos quando necessário. 
 
-## Escalabilidade Horizontal
+### Escalabilidade Horizontal
 
 ![Escalabilidade Horizontal](/assets/images/system-design/onibus-horizontal.png)
 
@@ -95,14 +94,14 @@ A escalabilidade horizontal **refere-se à adição de mais nós como servidores
 
 ![Escalabilidade Horizontal](/assets/images/system-design/scale-out.png)
 
-### Scale Out e Scale In
+#### Scale Out e Scale In
 
 As operações de `Scale-in` e `Scale-out` são as atividades demandadas pela escalabilidade **horizontal**. Scale-out (Escale para Fora) se refere a incrementar o número de servidores ou replicas que atendem exercem a mesma função, para dividir a carga de processamento entre eles. Scale-in é a operação inversa, onde reduzimos o número de servidores ou replicas do pool de maquinas. Resumidamente, Scale-out (para fora) aumentamos o número de servidores, e Scale-in (para dentro) diminuimos o numero deles. As duas operações podem operar em conjunto para ajustar a capacidade da carga de trabalho dinamicamente. 
 
 
-## Capacity Planning e Autoscaling Horizontal
+# Capacity Planning e Autoscaling Horizontal
 
-A ideia desse tópico é apresentar uma das várias formas de se calcular ajustes de capacidade que podem ser vinculados com estratégias de escalabilidade horizontal. Iremos utilizar um calculo base que pode ser adaptado para uma quantidade muito grande de cenários para definir capacidade horizontal de aplicações. Esse será apenas um exemplo de inúmeras abordagens que podem ser encontradas no mercado que funcionam ativamente como mecanismos de escalabilidade automática de recursos. A formula base que iremos aplicar a seguir foi retirada do funcionamento dos `Horizontal Pod Autoscaler` ou `HPA` do `Kubernetes`, mas pode ser implementado de forma isolada para vários contextos de forma livre. 
+A ideia desse tópico é apresentar uma das várias métricas importantes para avaliar a capacidade e escalabilidade, além de utilizar essas métricas em formulas para se calcular ajustes de capacidade que podem ser vinculados com estratégias de escalabilidade horizontal. Iremos utilizar um calculo base que pode ser adaptado para uma quantidade muito grande de cenários para definir capacidade horizontal de aplicações. Esse será apenas um exemplo de inúmeras abordagens que podem ser encontradas no mercado que funcionam ativamente como mecanismos de escalabilidade automática de recursos. A formula base que iremos aplicar a seguir foi retirada do funcionamento dos `Horizontal Pod Autoscaler` ou `HPA` do `Kubernetes`, mas pode ser implementado de forma isolada para vários contextos de forma livre. 
 
 Vamos apresentar vários cenários e métricas pertinentes para monitorar ativamente a escalabilidade de um sistema, aplicar a formula e verificar a quantidade necessária de recursos computacionais para um sistema se adaptar a um cenário de gargalo. 
 
@@ -117,7 +116,7 @@ Inicialmente, pode parecer um pouco abstrato, mas a seguir iremos abordar alguns
 
 <br>
 
-### Utilização de Recursos 
+### Utilização de Recursos Computacionais
 
 A forma mais simples de entender esse calculo de capacity é utilizando recursos computacionais como CPU e memória, que são métricas mais comumente utilizadas para configurar processos de escala automática de aplicações, pois fazem parte do processo mais "natural" de planejar capacity e escalabilidade automática por serem métricas fáceis de serem calculadas, planejadas e monitoradas. 
 
@@ -221,7 +220,9 @@ No mais, o calculo do tempo de resposta pode ser representado dessa forma a part
 
 ### Taxa de Erros 
 
-A porcentagem de todas as requisições que resultam em um erro. Um sistema escalável deve manter ou reduzir sua taxa de erro à medida que a carga aumenta.
+Uma das principais métricas que podem ser utilizadas para avaliar capacidade e disponibilidade de sistemas é a taxa de erros. Essa métrica pode ser utilizada junto a métricas de tempo de resposta e Throughput para tirar  conclusões valiosas a respeito do comportanto de um sistema. 
+
+A taxa de erros corresponde porcentagem de todas as requisições que resultam em um erro perante a soma das requisições totais. Entedemos que um sistema escalável com capacidade planejada, **deve manter ou reduzir sua taxa de erro à medida que a carga aumenta**.
 
 Para calcular a taxa de erros de um sistema, geralmente usamos uma fórmula simples que relaciona o número de eventos de erro com o número total de eventos ou tentativas. A taxa de erros é frequentemente expressa como uma porcentagem. Aqui está a fórmula básica:
 
@@ -232,6 +233,8 @@ Suponha que você tenha um sistema que processou 1.000 transações, das quais 5
 \begin{equation} \text{Taxa de Erro} = \left( \frac{\text{50}}{\text{1000}} \right) \times 100\ \end{equation} 
 
 \begin{equation} \ \text{Taxa de Erro} = \text{5.0}\% \end{equation} 
+
+Essa métrica é particularmente útil para avaliar a confiabilidade e a qualidade de sistemas de software, especialmente em ambientes de produção onde a estabilidade é crítica. Acompanhar a taxa de erros ao longo do tempo pode ajudar a identificar tendências, avaliar o impacto de mudanças ou atualizações no sistema e determinar áreas que podem precisar de melhorias.
 
 <br>
 
