@@ -42,16 +42,27 @@ Vamos imaginar um caso onde precisamos analisar o uso de memória alocado para u
 
 \begin{equation} \ \text{Utilização de Memória} = \text{50%} \end{equation} 
 
-O calculo de utilização de memória se encontra em 50% do uso da capacidade disponível. Analisar a utilização de recursos é crucial para otimização de performance, nos fornecendo insumos necessários para criar sistemas mais baratos, performáticos e eficiêntes. 
+Segundo calculo no cenário hopotético, a utilização de memória do sistema se encontra em 50% do uso da capacidade disponível. Analisar a utilização de recursos é crucial para otimização de performance, nos fornecendo insumos necessários para criar sistemas mais baratos, performáticos e eficiêntes. 
 
 <br>
 
 ### Throughput, ou Tráfego
 
-O *Throughput* de maneira geral descreve o número de operações que um sistema consegue realizar dentro de um determinado período de tempo. Mede quantas unidades de trabalho (como transações ou requisições) um determinado sistema ou algoritmo pode processar por unidade de tempo, como requisições por segundo, vendas por minuto, arquivos por dia ou eventos por mês. É uma métrica fundamental para entender a capacidade e performance de aplicações.
+O *Throughput* de maneira geral descreve o número de operações que um sistema consegue realizar dentro de um determinado período de tempo. Mede quantas unidades de trabalho (como transações ou requisições) um determinado sistema ou algoritmo pode processar por unidade de tempo, como requisições por segundo, vendas por minuto, arquivos por dia ou eventos por mês. É uma métrica fundamental para entender a capacidade e performance de aplicações. Em sistema projetados para lidar com protocolos web, o Throughput  é contabilizado a partir de quantas requisições HTTP a aplicação recebeu e respondeu. 
 
+A formula utilizada para calcular o throughput pode ser representada matematicamente da seguinte forma:
 
 \begin{equation} \ \text{Throughput} = \frac{\text{Total de Unidades de Trabalho Processadas}}{\text{Tempo Total}} \ \end{equation} 
+
+Desenhando um cenário hipotético onde um sistema recebeu `6.000` requisiçõe no ultimo minuto, podemos podemos calcular o throughput `por segundo` da seguinte forma:
+
+
+\begin{equation} \ \text{Throughput} = \frac{\text{6000}}{\text{60}} \ \end{equation} 
+
+\begin{equation} \ \text{Throughput} = \text{100.00 rps} \end{equation} 
+
+Representar matematicamente o Throughput do sistema é muito valioso em termos de performance, nos ajuda a entender até quanto em termos de uso nosso sistema consegue atender até começar a mudar suas métricas de aceitação de tempo de resposta e taxa de erros. Podemos utilizar o Throughput dentro de periodos lógicos de tempo para efetuar operações escalabilidade dinâmica, como veremos na sessão de **escalabilidade**.
+
 
 <br>
 
@@ -158,15 +169,21 @@ A escalabilidade é um conceito importante no design de sistemas, pois é crucia
 
 ## Importância da Escalabilidade em Sistemas Modernos
 
+A escalabilidade permite que os sistemas se adaptem rapidamente a mudanças no volume de tráfego ou demanda de recursos, garantindo um desempenho consistente mesmo sob carga variável. Em ambientes de negócios dinâmicos, a capacidade de escalar recursos conforme necessário é crucial para manter a continuidade e a eficiência operacional, além de ser capazes de manter tempos de resposta rápidos e desempenho confiável mesmo sob cargas leves, médias e pesadas, resultando em uma experiência de usuário mais satisfatória.
+
+Sistemas escaláveis podem ser mais econômicos, pois permitem um dimensionamento eficiente de recursos. Isso significa pagar apenas pelos recursos que são usados, reduzindo o desperdício e otimizando os custos operacionais, além de facilitar a implementação de novas funcionalidades e a expansão de negócio, sem a necessidade de reestruturar completamente a infraestrutura projetada já existente.
+
 ## Escalabilidade Vertical e Escalabilidade Horizontal
 
-Existem dois tipos principais de escalabilidade que são frequentemente discutidos no design de sistemas: escalabilidade horizontal e escalabilidade vertical.
+Existem dois tipos principais de escalabilidade que são frequentemente discutidos no design de sistemas: `Escalabilidade Horizontal` e `Escalabilidade Vertical`. Vamos usar esse tópico para 
 
 ### Escalabilidade Vertical
 
 ![Escalabilidade Vertical](/assets/images/system-design/onibus-vertical.png)
 
-CPU, RAM. Embora seja uma solução mais simples, frequentemente encontra limites físicos e de custo.
+No design de sistemas que se baseiam em escalabilidade vertical, o foco está na **maximização do processamento e eficiência de um único servidor ou recurso**. Isso pode incluir a otimização de algoritmos e a escolha de tecnologias que maximizam o uso da CPU e da memória.
+
+No mais, a escalabilidade vertical pode ser majoritariamente resumida em aumetar capacidade de CPU, RAM, Disco ou Rede de um único recurso. Embora seja uma solução mais simples, frequentemente encontra limites físicos e de custo.
 
 ![Escalabilidade Vertical](/assets/images/system-design/scale-up.png)
 
@@ -178,8 +195,9 @@ As operações de `Scale-up` e `Scale-down` são atividades que ocorrem nas oper
 
 ![Escalabilidade Horizontal](/assets/images/system-design/onibus-horizontal.png)
 
-
 A escalabilidade horizontal **refere-se à adição de mais nós como servidores, containers, replicas a um componente ou um sistema**. Isso é também conhecido como `"scale out"`. Por exemplo, se você está executando uma aplicação web em um único nó, mas começa a receber muito tráfego, você pode adicionar mais replicas ao sistema para compartilhar a carga de trabalho através de um [Balanceador de Carga](/load-balancing/). Este método é chamado de escalabilidade horizontal, e pode ser interpretado também como a capacidade de crescimento de contínuo da capacidade de um sistema se for utilizado em conjunto com ferramentas de escalabilidade automática.
+
+Para efetivamente implementar a escalabilidade horizontal, os sistemas devem ser projetados com uma arquitetura distribuída. 
 
 ![Escalabilidade Horizontal](/assets/images/system-design/scale-out.png)
 
@@ -241,7 +259,7 @@ Podemos entender que nesse cenário de avaliação, caso uma ação de recapacit
 
 <br>
 
-## Requisições e Transações por Períodos de Tempo (Througput)
+## Requisições e Transações por Períodos de Tempo (Throughput)
 
 Uma das minhas formas favoritas de projetar capacity e desenhar estratégias de escalabilidade horizontal é contabilizando a quantidade de requisições que a aplicação está recebendo dentro de um período de tempo. Basicamente, essa estratégia se baseia em presumir que cada replica da aplicação consegue receber um determinado número de requisições de forma isolada sem degradar. Em resumo, se cada replica da nossa aplicação suporta 10 transações por segundo (TPS) sem degradar performance e tempo de resposta, em um momento que a aplicação estiver recebendo 100 transações por segundo o ideal seria ter 10 replicas da mesma disponíveis para atender a demanda.
 
