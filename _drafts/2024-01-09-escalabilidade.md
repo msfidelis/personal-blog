@@ -259,22 +259,22 @@ Para implementar a escalabilidade horizontal de forma eficaz, os sistemas devem 
 
 As operações de `Scale-out` e `Scale-in` são atividades que se enquadram na escalabilidade horizontal. `Scale-out` (escalar para fora) refere-se a **aumentar o número de servidores ou réplicas** que desempenham a mesma função, distribuindo assim a carga de processamento entre eles. `Scale-in` (escalar para dentro) é a operação inversa, onde **reduzimos o número de servidores ou réplicas** no pool de máquinas. Em resumo, `Scale-out` (para fora) envolve o aumento do número de servidores, enquanto `Scale-in` (para dentro) envolve a diminuição desse número. Essas duas operações podem ser usadas em conjunto para ajustar dinamicamente a capacidade da carga de trabalho.
 
+# Planejamento de Capacidade e Escalabilidade
 
+Neste tópico, vamos explorar uma das métricas essenciais para avaliar a capacidade e a escalabilidade de sistemas, além de como utilizar essas métricas em fórmulas para calcular os ajustes de capacidade que podem ser vinculados a estratégias de escalabilidade horizontal. Apresentaremos uma fórmula base que pode ser adaptada para uma variedade de cenários, ajudando a determinar a capacidade horizontal necessária para aplicações. Este exemplo é apenas uma das várias abordagens disponíveis no mercado, que atuam como mecanismos de escalabilidade automática de recursos. A fórmula base que apresentaremos a seguir foi retirada do funcionamento do "Horizontal Pod Autoscaler" ou "HPA" do Kubernetes, mas pode ser implementada independentemente em diversos contextos.
 
-# Capacity Planning e Escalabilidade
+Vamos começar explorando vários cenários e métricas relevantes para monitorar a escalabilidade de um sistema. Em seguida, aplicaremos a fórmula para determinar a quantidade necessária de recursos computacionais a fim de que um sistema possa se adaptar a um cenário de gargalo.
 
-A ideia desse tópico é apresentar uma das várias métricas importantes para avaliar a capacidade e escalabilidade, além de utilizar essas métricas em formulas para se calcular ajustes de capacidade que podem ser vinculados com estratégias de escalabilidade horizontal. Iremos utilizar um calculo base que pode ser adaptado para uma quantidade muito grande de cenários para definir capacidade horizontal de aplicações. Esse será apenas um exemplo de inúmeras abordagens que podem ser encontradas no mercado que funcionam ativamente como mecanismos de escalabilidade automática de recursos. A formula base que iremos aplicar a seguir foi retirada do funcionamento dos `Horizontal Pod Autoscaler` ou `HPA` do `Kubernetes`, mas pode ser implementado de forma isolada para vários contextos de forma livre. 
+## Fórmula Básica para Capacidade
 
-Vamos apresentar vários cenários e métricas pertinentes para monitorar ativamente a escalabilidade de um sistema, aplicar a formula e verificar a quantidade necessária de recursos computacionais para um sistema se adaptar a um cenário de gargalo. 
+Para compreender como os processos de escalonamento funcionam, utilizaremos a seguinte fórmula base. O objetivo é encontrar a quantidade ideal de réplicas para atender aos requisitos do sistema observado:
 
+\[
+\text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Valor Atual da Variável}}{\text{Valor de Referência da Variável}} \right)
+\]
 
-## Calculo Base Para Capacity
+Inicialmente, essa fórmula pode parecer um tanto abstrata, mas exploraremos alguns exemplos para aplicá-la a diferentes cenários. Antes disso, é importante entender os termos usados na fórmula: "Réplicas Desejadas" representam a quantidade ideal de réplicas para o momento da aplicação, "Valor de Referência da Variável" é o limite máximo da métrica que estamos observando, e "Valor Atual da Variável" é o valor atual dessa métrica. Vamos aprofundar o entendimento por meio de exemplos.
 
-Para entender a forma como os processos de escalonamento funcionam, iremos utilizar a função base a seguir, onde o objetivo é encontrar a quantidade ideal de replicas para atender os requisitos de sistema observado. 
-
-\begin{equation} \text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Valor Atual da Variável}}{\text{Valor de Base da Variável}} \right) \end{equation} 
-
-Inicialmente, pode parecer um pouco abstrato, mas a seguir iremos abordar alguns exemplos onde vamos colocar essa formula em prática para diferentes cenários. Antes disso vamos considerar as `Replicas Desejadas` como a quantidade de replicas ideal para o momento da aplicação, `Valor Base da Variável` como o threshold máximo da métrica que estamos observando e o `Valor atual da Variável` como o valor atual da mesma métrica. Vamos entender.
 
 <br>
 
