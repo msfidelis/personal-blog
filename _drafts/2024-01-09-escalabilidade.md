@@ -40,8 +40,6 @@ Vamos abordar essas métricas não do ponto de observabilidade, pois mais adiant
 
 ### Utilização e Saturação de Recursos
 
-### Utilização e Saturação de Recursos
-
 A `Saturação` de Recursos refere-se a **quanto do recurso disponível está sendo usado**. Um sistema pode estar saturado em termos de CPU, memória, disco ou mesmo um pool de conexões de rede. **Medir a saturação ajuda a prever problemas de desempenho e a entender quando é necessário escalar recursos**.
 
 **Algoritmos que fazem uso intensivo de recursos computacionais como CPU, Memória, Disco e Rede costumam ser muito sensíveis a otimizações e degradações desses recursos**. Ter visibilidade da utilização de todas as capacidades disponíveis para um sistema é essencial para **determinar a saúde do serviço e fornecer insights sobre otimização, custos e desempenho**.
@@ -249,7 +247,7 @@ As operações de `Scale-up` e `Scale-down` são atividades que ocorrem no conte
 
 Outra proposta considerada para resolver o problema da superlotação de passageiros foi investir em mais unidades dos modelos de ônibus existentes em vez de substituir a frota por modelos que comportassem mais passageiros. Isso resultaria em mais veículos operando na rota, distribuindo os passageiros entre eles. Esse paralelo pode ser facilmente associado à forma como a escalabilidade horizontal funciona.
 
-A escalabilidade horizontal **refere-se à adição de mais nós, como servidores, contêineres ou réplicas, a um componente ou sistema existente**. Isso é conhecido como "scale out". Por exemplo, se você estiver executando uma aplicação web em um único nó e começar a receber muito tráfego, poderá adicionar mais réplicas ao sistema para compartilhar a carga de trabalho, normalmente usando um [Balanceador de Carga](/load-balancing/). Esse método é chamado de escalabilidade horizontal e pode ser implementado de forma eficaz com ferramentas de escalabilidade automática.
+A escalabilidade horizontal **refere-se à adição de mais nós, como servidores, contêineres ou réplicas, a um componente ou sistema existente**. Isso é conhecido como "scale out". Por exemplo, se você estiver executando uma aplicação web em um único nó e começar a receber muito tráfego, poderá adicionar mais réplicas ao sistema para compartilhar a carga de trabalho, normalmente usando um [Balanceador de Carga](/load-balancing/). Esse método é chamado de escalabilidade horizontal e pode ser implementado de forma eficaz com ferramentas de escalabilidade automática. Esse tipo de conceito também é conhecido como `elasticidade`. 
 
 Para implementar a escalabilidade horizontal de forma eficaz, os sistemas devem ser projetados com uma arquitetura distribuída que seja capaz de processar solicitações com paralelismo externo.
 
@@ -280,88 +278,118 @@ Inicialmente, essa fórmula pode parecer um tanto abstrata, mas exploraremos alg
 
 ## Utilização de Recursos Computacionais
 
-A forma mais simples de entender esse calculo de capacity é utilizando recursos computacionais como CPU e memória, que são métricas mais comumente utilizadas para configurar processos de escala automática de aplicações, pois fazem parte do processo mais "natural" de planejar capacity e escalabilidade automática por serem métricas fáceis de serem calculadas, planejadas e monitoradas. 
+Uma das maneiras mais simples de compreender o cálculo de capacidade é através da utilização de recursos computacionais, como CPU e memória. Essas métricas são comumente usadas para configurar processos de escalonamento automático de aplicações, devido à sua facilidade de cálculo, planejamento e monitoramento. O objetivo dessa abordagem é determinar o quanto de cada recurso (CPU, memória, disco, rede) está sendo utilizado. Uma utilização excessiva pode indicar um gargalo, e a fórmula nos ajudará a reajustar o sistema para contornar esse gargalo.
 
-O objetivo desse tipo de abordagem é determinar o quanto de cada recurso (CPU, memória, disco, rede) está sendo usado. A utilização excessiva pode indicar um gargalo, e a formula nos ajudará a recapacitar o sistema para contornar esse gargá-lo. 
+A fórmula básica aplicada a esse cenário seria:
 
-A formula base aplicada ao cenário seria: 
+\begin{equation} 
+\text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Utilização de CPU}}{\text{Utilização Base de CPU}} \right) 
+\end{equation}
 
-\begin{equation} \text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Utilização de CPU}}{\text{Utilização Base de CPU}} \right) \end{equation} 
+Antes de aplicarmos a fórmula, precisamos calcular a `Utilização de CPU`. Para isso, usaremos uma fórmula intermediária, onde dividimos a **quantidade de recurso utilizado** pela **quantidade de recurso autorizado para uso** em relação a todos os recursos computacionais disponíveis. Vamos presumir que 1 core de CPU é composto por 1000m (milicores) para calcular a utilização. Esse exemplo é próximo das unidades utilizadas para capacidade de workloads em clusters de Kubernetes.
 
-Antes de aplicarmos formula precisamos calcular a `Utilização de CPU`, pra isso vamos precisar de uma formula intermediária, onde precisamos dividir a **quantidade de recurso utilizado** pela **quantidade de recurso autorizado para o uso** perante a todo recurso computacional disponível. Vamos presumir que 1 core de CPU é composto por 1000m (milicores) para calcular a utilização. Esse exemplo é proximo das unidades utilizadas para capacity de workloads em clusters de Kubernetes. 
+\begin{equation} 
+\text{Utilização de Recurso} = \left( \frac{\text{Recurso Solicitado}}{\text{Recurso Disponível}} \right) \times 100\ 
+\end{equation}
 
-\begin{equation} \text{Utilização de Recurso} = \left( \frac{\text{Recurso Solicitado}}{\text{Recurso Disponível}} \right) \times 100\ \end{equation} 
+Nesse cenário, vamos presumir o seguinte:
+- **Replicas Atuais**: 6 réplicas
+- **Recurso de Cada Réplica**: Cada réplica pode utilizar 200m (200 milicores do sistema)
+- **Recurso Solicitado**: 1200m (1200 milicores do sistema, ou 1 core e 200 milicores)
+- **Recurso Disponível**: 600m (600 milicores do sistema)
+- **Utilização base de CPU**: 80%
 
+\begin{equation} 
+\text{Utilização de CPU} = \left( \frac{\text{1200m}}{\text{600m}} \right) \times 100\ 
+\end{equation}
 
-Nesse cenário vamos presumir que: 
-* **Replicas Atuais**: 6 replicas
-* **Recurso de Cada Replica**: Cada replica pode utilizar 200m (200 milicores do sistema)
-* **Recurso Solicitado**: 1200m (1200 milicores do sistema, ou 1 core e 200 milicores)
-* **Recurso Disponível**: 600m (600 milicores do sistema)
-* **Utilização base de CPU**: 80% 
+\begin{equation} 
+\text{Utilização de CPU} =  \{200\%\} 
+\end{equation}
 
-\begin{equation} \text{Utilização de CPU} = \left( \frac{\text{1200m}}{\text{600m}} \right) \times 100\ \end{equation} 
+Agora, com o valor base de `Utilização de CPU` em `200%`, podemos aplicá-lo à fórmula base, usando uma utilização base de escala de 80% do uso da CPU e contabilizando as `Réplicas Atuais` como `6`.
 
-\begin{equation} \text{Utilização de CPU} =  \{\text{200%}}\ \end{equation} 
+\begin{equation} 
+\text{Réplicas Desejadas} = \text{6} \times \left( \frac{\text{200}}{\text{80}} \right) 
+\end{equation}
 
-Agora chemados ao valor base de `Utilização de CPU` em `200%`, podemos aplicá-lo a formula base usando como utilização base de escala os 80% do uso da CPU e contabilizando as `Replicas atuais` como `6`. 
+\begin{equation} 
+\text{Réplicas Desejadas} = \text{15} 
+\end{equation}
 
-\begin{equation} \text{Réplicas Desejadas} = \text{6} \times \left( \frac{\text{200}}{\text{80}} \right) \end{equation}
+Podemos concluir que, nesse cenário de avaliação, caso uma ação de reajuste na capacidade em escalabilidade horizontal fosse realizada, o ideal para contornar o gargalo devido à utilização de recursos de CPU seria aumentar o número de réplicas para 15 unidades. Essa lógica pode ser aplicada não apenas a CPU, mas também a qualquer outro tipo de recurso.
 
-\begin{equation} \text{Réplicas Desejadas} = \text{15} \end{equation}
-
-Podemos entender que nesse cenário de avaliação, caso uma ação de recapacity em escalabilidade horizontal fosse realizada, o ideal para contornar o gargalo devido a utilização de recursos de CPU seria aumentar o número de replicas para 15 unidades. Essa lógica utilizou CPU como base, mas pode ser replicada para qualquer outro tipo de recurso. 
 
 <br>
 
 ## Requisições e Transações por Períodos de Tempo (Throughput)
 
-Uma das minhas formas favoritas de projetar capacity e desenhar estratégias de escalabilidade horizontal é contabilizando a quantidade de requisições que a aplicação está recebendo dentro de um período de tempo. Basicamente, essa estratégia se baseia em presumir que cada replica da aplicação consegue receber um determinado número de requisições de forma isolada sem degradar. Em resumo, se cada replica da nossa aplicação suporta 10 transações por segundo (TPS) sem degradar performance e tempo de resposta, em um momento que a aplicação estiver recebendo 100 transações por segundo o ideal seria ter 10 replicas da mesma disponíveis para atender a demanda.
+Uma das minhas abordagens favoritas para planejar capacidade e desenvolver estratégias de escalabilidade horizontal é considerar a quantidade de requisições que a aplicação recebe dentro de um período de tempo. Essencialmente, essa estratégia se baseia na premissa de que cada réplica da aplicação pode processar um determinado número de requisições de forma independente, sem degradar o desempenho e o tempo de resposta. Em resumo, se cada réplica da nossa aplicação é capaz de suportar 10 transações por segundo (TPS) sem comprometer a performance e o tempo de resposta, e a aplicação está recebendo 100 transações por segundo, o ideal seria ter 10 réplicas disponíveis para atender à demanda.
 
-\begin{equation} \text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Requisições p/ Replica}}{\text{Base de Requisições}} \right) \end{equation}
+A fórmula para calcular as réplicas desejadas é a seguinte:
 
+\begin{equation} 
+\text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Requisições por Réplica}}{\text{Base de Requisições}} \right) 
+\end{equation}
 
-Nesse cenário vamos presumir que: 
-* **Replicas Atuais**: 6 replicas
-* **Cada Replica Aguenta**: 15 transações por segundo
-* **Total de Requisições Recebidas no ultimo minuto**: 10.000
+Nesse cenário, vamos presumir o seguinte:
+- **Réplicas Atuais**: 6 réplicas
+- **Capacidade de Cada Réplica**: Cada réplica pode lidar com 15 transações por segundo
+- **Total de Requisições Recebidas no Último Minuto**: 10.000
 
-Para aplicar a formula, precisamos antes definir o valor das `Requisições por Replica`. Para calcular essa variável, precisamos primeiro **calcular a quantidade de transações que estamos recebendo por segundo** dividindo o total de requisições recebidas no ultimo minuto por 60, e depois **dividir esse valor pelo número de replicas atuais**. 
+Para aplicar a fórmula, precisamos primeiro calcular o valor das `Requisições por Réplica`. Para isso, dividimos o **total de requisições recebidas no último minuto** pelo **período de tempo**, que é 60 segundos, e depois dividimos esse valor pelo número de réplicas atualmente em uso.
 
-\begin{equation} \ \text{Transações por Segundo} = \frac{\text{Total de Requisições Atendidas}}{\text{Período de Tempo}} \ \end{equation} 
+\begin{equation} 
+\text{Transações por Segundo} = \frac{\text{Total de Requisições Atendidas}}{\text{Período de Tempo}} 
+\end{equation}
 
-\begin{equation} \ \text{Transações por Segundo} = \frac{\text{10000}}{\text{60}} \end{equation} 
+\begin{equation} 
+\text{Transações por Segundo} = \frac{10.000}{60} 
+\end{equation}
 
-\begin{equation} \ \text{Transações por Segundo} = \text{166.66} \end{equation} 
+\begin{equation} 
+\text{Transações por Segundo} = 166,66 
+\end{equation}
 
-Segundo o exemplo, estamos recebendo em todo o sistema `166.66` requisições por segundo. Agora para chegarmos a dimensão de requisições por replica, para determinar quanto cada unidade disponível da aplicação está recebendo em média, basta dividir essa quantidade de transações pelo numero de replicas: 
+No exemplo, estamos recebendo uma média de 166,66 requisições por segundo em todo o sistema. Agora, para determinar a quantidade média de requisições que cada réplica da aplicação está recebendo, dividimos essa quantidade de transações pelo número atual de réplicas:
 
-\begin{equation} \ \text{Requisições por Replica} = \frac{\text{Transações por Segundo}}{\text{Replicas Atuais}} \ \end{equation} 
+\begin{equation} 
+\text{Requisições por Réplica} = \frac{\text{Transações por Segundo}}{\text{Réplicas Atuais}} 
+\end{equation}
 
-\begin{equation} \ \text{Requisições por Replica} = \frac{\text{166.66}}{\text{6}} \ \end{equation} 
+\begin{equation} 
+\text{Requisições por Réplica} = \frac{166,66}{6} 
+\end{equation}
 
-\begin{equation} \ \text{Requisições por Replica} = \text{27.78} \end{equation} 
+\begin{equation} 
+\text{Requisições por Réplica} = 27,78 
+\end{equation}
 
-Agora já temos todas as variáveis necessárias para aplicarmos a formula de capacity e escalabilidade. Vamos substituir a variável `Requisições por Replica` por `27.78`, a `Base de Requisições` por `15` para representar quanto gostariamos que cada unidade da aplicação estivesse recebendo sem maiores problemas e podemos calcular a quantidade ideal de replicas: 
+Agora temos todas as variáveis necessárias para aplicar a fórmula de capacidade e escalabilidade. Substituindo a variável `Requisições por Réplica` por `27,78` e a `Base de Requisições` por `15`, que representa a quantidade desejada de requisições por réplica sem maiores problemas, podemos calcular a quantidade ideal de réplicas:
 
+\begin{equation} 
+\text{Réplicas Desejadas} = 6 \times \left( \frac{27,78}{15} \right) 
+\end{equation}
 
-\begin{equation} \text{Réplicas Desejadas} = \text{6} \times \left( \frac{\text{27.78}}{\text{15}} \right) \end{equation}
+\begin{equation} 
+\text{Réplicas Desejadas} = 11 
+\end{equation}
 
-\begin{equation} \text{Réplicas Desejadas} = \text{11}\ \end{equation}
+Com base nesse exemplo, podemos concluir que, em uma operação de reajuste de capacidade com foco na escalabilidade horizontal, o número ideal de réplicas a serem definidas para a aplicação seria 11 unidades.
 
-Seguindo esse o exemplo, podemos presumir que em uma operação de recapacity horizontal olhando o cenário atual, o número ideal de replicas a ser definido para a aplicação seria 11 unidades. 
 
 <br>
 
 ## Escalabilidade de Software
 
-Como já comentado, o conceito de escalabilidade poder ir muito além de ajustar elasticamente uma infraestrutura para lidar com demandas específicas. A escalabilidade é amplamente aplicada na arquitetura de software e tem papel fundamental que anda "de mãos dadas" a escalabilidade de infraestrutura. É um erro muito grande associar conceitos de escalabilidade apenas a componentes e dependência de infraestrutura. Olhar para escalabilidade quando se projeta um software levando em conta arquitetura, necessidades e fluxos de negócios é essencial para projetar soluções modernas sem elevar o custo de operação das mesmas de forma exponencial. 
+Como mencionado anteriormente, o conceito de escalabilidade vai muito além do ajuste elástico da infraestrutura para lidar com demandas específicas. A escalabilidade é amplamente aplicada na arquitetura de software e desempenha um papel fundamental que está intimamente ligado à escalabilidade de infraestrutura. É um erro associar conceitos de escalabilidade apenas a componentes e dependências de infraestrutura. Olhar para a escalabilidade ao projetar um software, considerando a arquitetura, as necessidades e os fluxos de negócios, é essencial para criar soluções modernas sem aumentar exponencialmente os custos operacionais.
 
-Uma das formas mais diretas de melhorar a performance é **otimizar os algoritmos do código existente**. Isso inclui refinar algoritmos para reduzir a complexidade computacional, eliminar gargalos de processamento e melhorar a eficiência de uso da memória e avaliar oportunidade de paralelismo e tarefas concorrêntes. 
+Uma das abordagens mais diretas para melhorar o desempenho é **otimizar os algoritmos no código existente**. Isso envolve refinar os algoritmos para reduzir a complexidade computacional, eliminar gargalos de processamento, melhorar a eficiência no uso da memória e avaliar oportunidades de paralelismo e tarefas concorrentes.
 
-Otimizar esquemas de banco de dados, índices e consultas pode reduzir significativamente o tempo de resposta e aumentar a capacidade e escalabilidade de um sistema. O mesmo vale para distribuição de carga entre vários servidores disponíveis que estejam aptos a processar uma tarefa, considerar o uso de bancos de dados NoSQL ou soluções de armazenamento distribuído para cenários de alta demanda, implementar caching onde apropriado pode reduzir significativamente o tempo de resposta e a carga sobre os sistemas de backend. Isso pode incluir caching em memória, caching distribuído e otimizações de cache no lado do cliente. Para processamento de tarefas pesadas ou operações de I/O, usar filas e mensagens assíncronas para distribuir a carga e melhorar a eficiência geral do sistema.
+A otimização de esquemas de banco de dados, índices e consultas pode reduzir significativamente o tempo de resposta e aumentar a capacidade e escalabilidade de um sistema. O mesmo se aplica à distribuição de carga entre vários servidores disponíveis que são capazes de processar uma tarefa. Considere o uso de bancos de dados NoSQL ou soluções de armazenamento distribuído para cenários de alta demanda. Implementar caching onde for apropriado pode reduzir significativamente o tempo de resposta e a carga nos sistemas de backend. Isso pode incluir caching em memória, caching distribuído e otimizações de cache no lado do cliente. Para o processamento de tarefas intensivas ou operações de I/O, usar filas e mensagens assíncronas para distribuir a carga e melhorar a eficiência geral do sistema é uma estratégia eficaz.
 
-São muitas as possibilidades que permeiam a escalabilidade, e ao integrar essas estratégias ao desenvolvimento e manutenção de software, é possível criar sistemas não apenas mais escaláveis, mas também mais eficientes e confiáveis. Isso requer um compromisso contínuo com a qualidade do código, a arquitetura do sistema e o monitoramento contínuo, garantindo que o sistema possa se adaptar e evoluir com as demandas crescentes.
+Existem muitas possibilidades relacionadas à escalabilidade, e ao integrar essas estratégias ao desenvolvimento e à manutenção de software, é possível criar sistemas não apenas mais escaláveis, mas também mais eficientes e confiáveis. Isso requer um compromisso contínuo com a qualidade do código, a arquitetura do sistema e o monitoramento contínuo, garantindo que o sistema possa se adaptar e evoluir com as crescentes demandas.
+
 
 #### Referências
 
