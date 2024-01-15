@@ -191,13 +191,16 @@ Em um cenário mais crítico, entendendo que o `serviço C` consegue suportar at
 
 ## Custo de Transação por Capacidade
 
-Analisar o custo por transação é muito interessante para avaliar a eficiência e custo-beneficio da capacidade alocada para o sistema. O cálculo do custo de transação em sistemas é uma métrica financeira que avalia o custo total associado à execução de uma operação ou transação. Essa métrica é muito interessante quando construímos sistemas em núvens públicas onde o financeiro é muito sensível. Podemos calcular o custo de transação através de insumos vindo da contabilização total de transações do cliente. Normalmente essa métrica é coletada somente de requisições que vem do cliente final, não sendo multiplicada pelo numero de subsistemas e microserviços transparantes aos estimulos do mesmo.  
+Analisar o custo por transação é muito interessante para avaliar a **eficiência e o custo-benefício da capacidade alocada para o sistema**. O cálculo do custo de transação em sistemas é uma métrica financeira que avalia o custo total associado à execução de uma operação ou transação. Essa métrica é particularmente relevante quando construímos sistemas em nuvens públicas, onde as considerações financeiras são altamente sensíveis. Podemos calcular o custo de transação com base nos dados de transações totais do cliente. Normalmente, essa métrica é coletada apenas das requisições provenientes do cliente final, não sendo multiplicada pelo número de subsistemas e microserviços transparentes às interações com o cliente.
 
-Ele ajuda as organizações a entenderem melhor onde e como seus recursos estão sendo gastos e onde podem ser feitas economias ou melhorias, e pode ser representado pelo custo total da operação em questão dividido pelo total de transações dentro do mesmo período de tempo. 
+Essa métrica ajuda as organizações a entenderem melhor onde e como seus recursos estão sendo gastos e onde podem ser feitas economias ou melhorias. Ela pode ser representada pelo custo total da operação em questão dividido pelo número total de transações dentro do mesmo período de tempo.
 
-\begin{equation} \text{Custo por Transação} = \frac{\text{Custo Total Operacional}}{\text{Total de Transações}} \end{equation} 
+\[
+\text{Custo por Transação} = \frac{\text{Custo Total Operacional}}{\text{Total de Transações}}
+\]
 
-Em sistemas com padrões de demanda variáveis, o custo por transação pode mudar com o tempo. É importante considerar picos de demanda e como eles afetam o custo médio. Um custo por transação mais baixo geralmente indica maior eficiência e uso eficaz dos recursos.
+Em sistemas com padrões de demanda variáveis, o custo por transação pode mudar ao longo do tempo. É importante considerar os picos de demanda e como eles afetam o custo médio. **Geralmente, um custo por transação mais baixo indica maior eficiência e uso eficaz dos recursos.**
+
 
 <br>
 
@@ -205,54 +208,57 @@ Em sistemas com padrões de demanda variáveis, o custo por transação pode mud
 
 Escalabilidade é a **capacidade de um sistema, aplicação ou negócio de crescer e lidar com um aumento na carga de trabalho, sem comprometer a qualidade, desempenho e eficiência**. Isso pode incluir o aumento de usuários, transações, dados ou recursos. É um atributo crítico para sistemas que esperam um aumento no volume de usuários ou dados. É uma característica de design que indica quão bem um sistema pode se adaptar a cargas de trabalho maiores ou menores.
 
-De acordo com o livro *"Relese It!" de Michael T. Nygard*, a escalabilidade pode ser definida de duas formas: A primeira para descrever como o Throughput muda de acordo com variações de demanda, como um grafico de *requests por segundo* comparado com *tempo de resposta*  de um sistema, e em segundo momento se refere aos modos de escala que um sistema possui. Aqui, assim como no livro, vamos definir escalabilidade como a **capacidade de adicionar ou remover capacidade computacional a um sistema**. 
+De acordo com o livro *"Release It!" de Michael T. Nygard*, a escalabilidade pode ser definida de duas formas: A primeira forma descreve como o *Throughput* muda de acordo com variações de demanda, utilizando um gráfico de *requests por segundo* comparado com *tempo de resposta* de um sistema. A segunda forma se refere aos modos de escala que um sistema possui. Aqui, assim como no livro, vamos definir escalabilidade como a **capacidade de adicionar ou remover capacidade computacional a um sistema**. 
 
 A escalabilidade é um conceito importante no design de sistemas, pois é crucial para garantir que as aplicações e produtos possam lidar com um aumento na carga de trabalho sem sacrificar a qualidade ou o desempenho. Isso é especialmente importante em ambientes de nuvem, onde as demandas podem mudar rapidamente e os sistemas devem ser capazes de se adaptar a essas mudanças.
 
 ## Importância da Escalabilidade em Sistemas Modernos
 
-A escalabilidade permite que os sistemas se adaptem rapidamente a mudanças no volume de tráfego ou demanda de recursos, garantindo um desempenho consistente mesmo sob carga variável. Em ambientes de negócios dinâmicos, a capacidade de escalar recursos conforme necessário é crucial para manter a continuidade e a eficiência operacional, além de ser capazes de manter tempos de resposta rápidos e desempenho confiável mesmo sob cargas leves, médias e pesadas, resultando em uma experiência de usuário mais satisfatória.
+A escalabilidade permite que os sistemas se adaptem rapidamente a mudanças no volume de tráfego ou demanda de recursos, garantindo um desempenho consistente mesmo sob carga variável. Em ambientes de negócios dinâmicos, a capacidade de escalar recursos conforme necessário é crucial para manter a continuidade e a eficiência operacional. Além disso, permite manter tempos de resposta rápidos e desempenho confiável, mesmo sob cargas leves, médias e pesadas, resultando em uma experiência de usuário mais satisfatória.
 
-Sistemas escaláveis podem ser mais econômicos, pois permitem um dimensionamento eficiente de recursos. Isso significa pagar apenas pelos recursos que são usados, reduzindo o desperdício e otimizando os custos operacionais, além de facilitar a implementação de novas funcionalidades e a expansão de negócio, sem a necessidade de reestruturar completamente a infraestrutura projetada já existente.
+Sistemas escaláveis podem ser mais econômicos, pois permitem um dimensionamento eficiente de recursos. Isso significa pagar apenas pelos recursos que são usados, reduzindo o desperdício e otimizando os custos operacionais. Além disso, facilita a implementação de novas funcionalidades e a expansão de negócios sem a necessidade de reestruturar completamente a infraestrutura existente já projetada.
+
 
 ## Escalabilidade Vertical e Escalabilidade Horizontal
 
-Existem dois tipos principais de escalabilidade que são frequentemente discutidos no design de sistemas: `Escalabilidade Horizontal` e `Escalabilidade Vertical`. Vamos usar esse tópico para discutir a terminologia em volta desses temas. 
+Existem dois tipos principais de escalabilidade frequentemente discutidos no design de sistemas: a `Escalabilidade Horizontal` e a `Escalabilidade Vertical`. Vamos usar este tópico para discutir a terminologia em torno desses conceitos.
 
-Para falar sobre isso, vamos avaliar um exemplo lúdico de uma empresa que gerencia uma frota de ônibus. Essa empresa por definição tem a missão de levar passageiros de um ponto A a um ponto B dentro da cidade. Essa empresa teve investimento inicial para comprar sua primeira frota que comportaria em torno de 100 passageiros simultâneos por horário de ônibus. Recentemente esse número de passageiros passou por um aumento gradativo, de fato de que gerou filas de espera nos pontos de embarque, atrasos e reclamações constantes. Com base nesse cenário, vamos começar a desenhar os exemplos de escalabilidade. 
+Para ilustrar essas ideias, consideremos um exemplo lúdico de uma empresa que gerencia uma frota de ônibus. Essa empresa tem como missão levar passageiros de um ponto A a um ponto B dentro da cidade. Inicialmente, a empresa investiu em uma frota que comportava aproximadamente 100 passageiros simultaneamente por horário de ônibus. Recentemente, esse número de passageiros aumentou gradualmente, levando a filas de espera nos pontos de embarque, atrasos e reclamações constantes. Com base nesse cenário, vamos começar a explorar os exemplos de escalabilidade.
+
 
 ### Escalabilidade Vertical
 
 ![Escalabilidade Vertical](/assets/images/system-design/onibus-vertical.png)
 
-Uma das hipóteses levantadas para resolver os problemas da superlotação dos ônibus foi substituir alguns veículos da frota por ônibus de 2 andares, dobrando a capacidade de cada um dos carros de carregar passageiros. Esse paralelo exemplifica como funciona a escalabilidade vertical. 
+Uma das abordagens consideradas para resolver os problemas de superlotação dos ônibus foi substituir alguns veículos da frota por ônibus de 2 andares, o que dobraria a capacidade de cada veículo para transportar passageiros. Esse paralelo exemplifica como funciona a escalabilidade vertical.
 
-Podemos olhar a escalabilidade vertical como o **processo de aumentar a capacidade de qualquer coisa adicionando ou removendo mais recursos da mesma**.  A escalabilidade vertical pode ser majoritariamente definida em **aumentar a capacidade de CPU, RAM, Disco ou Rede de um único recurso**, mas não limitada apenas a isso, pode ser enquadrada também no ato de otimizar um algoritmo de fato com que o mesmo tenha sua capacidade de processamento de input/output aumentada. Embora seja uma solução mais simples, frequentemente encontra limites físicos e de custo. 
+Podemos entender a escalabilidade vertical como o **processo de aumentar a capacidade de um componente, adicionando ou removendo mais recursos desse mesmo componente**. A escalabilidade vertical geralmente envolve **aumentar a capacidade de CPU, RAM, disco ou rede de um único recurso**, mas não se limita apenas a isso; também pode incluir otimizações em algoritmos para aumentar a capacidade de processamento de entrada/saída. Embora seja uma solução mais simples, a escalabilidade vertical frequentemente encontra limitações físicas e de custo.
 
-Resumindo, no design de sistemas que se baseiam em escalabilidade vertical, o foco está na **maximização do processamento e eficiência de um único servidor ou recurso**. Isso pode incluir a otimização de algoritmos e a escolha de tecnologias que maximizam o uso da CPU e da memória.
-
+Em resumo, no design de sistemas que se baseiam na escalabilidade vertical, o foco está na **maximização do processamento e eficiência de um único servidor ou recurso**. Isso pode incluir a otimização de algoritmos e a escolha de tecnologias que maximizem o uso da CPU e da memória.
 
 ![Escalabilidade Vertical](/assets/images/system-design/scale-up.png)
 
 #### Scale Up e Scale Down
 
-As operações de `Scale-up` e `Scale-down` são atividades que ocorrem nas operações de escalabilidade vertical, que se dedicam a aumentar ou reduzir recursos computacionais de determinado servidor que desempenha alguma funcionalidade. A otividade de `Scale-up` *(escale para cima)* **se refere ao ato de aumentar recursos**, sendo esses CPU, memória, disco, rede. E `Scale-down` *(escale para baixo)* **é o ato de diminuir esses recursos** quando faz sentido. Resumidamente, Scale-up *(para cima)* se consiste em adicionar recursos de hardware cada vez maiores, aumentando o número de disco, CPU's e memória ram do servidor e Scale-down *(para baixo)* seria diretamente associado a diminuir esses recursos quando necessário. 
+As operações de `Scale-up` e `Scale-down` são atividades que ocorrem no contexto da escalabilidade vertical. Elas envolvem o aumento ou redução dos recursos computacionais de um servidor específico que desempenha determinada funcionalidade. A operação de `Scale-up` *(escalonar para cima)* refere-se ao ato de **aumentar recursos**, como CPU, memória, disco ou rede, para um servidor. Por outro lado, a operação de `Scale-down` *(escalonar para baixo)* envolve o **reduzir esses recursos** quando necessário. Em resumo, `Scale-up` significa adicionar mais recursos de hardware, aumentando o número de CPUs, a quantidade de memória RAM ou a capacidade de armazenamento do servidor, enquanto `Scale-down` está relacionado a diminuir esses recursos quando apropriado.
+
 
 ### Escalabilidade Horizontal
 
 ![Escalabilidade Horizontal](/assets/images/system-design/onibus-horizontal.png)
 
-Uma segunda proposta para resolver o problema dos passageiros foi, ao invés de trocar os ônibus da frota para modelos que comportem mais passageiros, fosse mais viável fazer o investimento em mais unidades dos mesmos modelos existentes. Tendo mais carros rodando no trajeto e dispersando os passageiros entre eles. Esse paralelo seria facilmente associado a como a escabilidade horizontal funciona. 
+Outra proposta considerada para resolver o problema da superlotação de passageiros foi investir em mais unidades dos modelos de ônibus existentes em vez de substituir a frota por modelos que comportassem mais passageiros. Isso resultaria em mais veículos operando na rota, distribuindo os passageiros entre eles. Esse paralelo pode ser facilmente associado à forma como a escalabilidade horizontal funciona.
 
-A escalabilidade horizontal **refere-se à adição de mais nós como servidores, containers, replicas a um componente ou um sistema**. Isso é também conhecido como `"scale out"`. Por exemplo, se você está executando uma aplicação web em um único nó, mas começa a receber muito tráfego, você pode adicionar mais replicas ao sistema para compartilhar a carga de trabalho através de um [Balanceador de Carga](/load-balancing/). Este método é chamado de escalabilidade horizontal, e pode ser interpretado também como a capacidade de crescimento de contínuo da capacidade de um sistema se for utilizado em conjunto com ferramentas de escalabilidade automática.
+A escalabilidade horizontal **refere-se à adição de mais nós, como servidores, contêineres ou réplicas, a um componente ou sistema existente**. Isso é conhecido como "scale out". Por exemplo, se você estiver executando uma aplicação web em um único nó e começar a receber muito tráfego, poderá adicionar mais réplicas ao sistema para compartilhar a carga de trabalho, normalmente usando um [Balanceador de Carga](/load-balancing/). Esse método é chamado de escalabilidade horizontal e pode ser implementado de forma eficaz com ferramentas de escalabilidade automática.
 
-Para efetivamente implementar a escalabilidade horizontal, os sistemas devem ser projetados com uma arquitetura distribuída, de fato com que consigam processar as solicitações com paralelismo externo. 
+Para implementar a escalabilidade horizontal de forma eficaz, os sistemas devem ser projetados com uma arquitetura distribuída que seja capaz de processar solicitações com paralelismo externo.
 
 ![Escalabilidade Horizontal](/assets/images/system-design/scale-out.png)
 
 #### Scale Out e Scale In
 
-As operações de `Scale-in` e `Scale-out` são as atividades demandadas pela escalabilidade **horizontal**. Scale-out (Escale para Fora) se refere a incrementar o número de servidores ou replicas que atendem exercem a mesma função, para dividir a carga de processamento entre eles. Scale-in é a operação inversa, onde reduzimos o número de servidores ou replicas do pool de maquinas. Resumidamente, Scale-out (para fora) aumentamos o número de servidores, e Scale-in (para dentro) diminuimos o numero deles. As duas operações podem operar em conjunto para ajustar a capacidade da carga de trabalho dinamicamente. 
+As operações de `Scale-out` e `Scale-in` são atividades que se enquadram na escalabilidade horizontal. `Scale-out` (escalar para fora) refere-se a **aumentar o número de servidores ou réplicas** que desempenham a mesma função, distribuindo assim a carga de processamento entre eles. `Scale-in` (escalar para dentro) é a operação inversa, onde **reduzimos o número de servidores ou réplicas** no pool de máquinas. Em resumo, `Scale-out` (para fora) envolve o aumento do número de servidores, enquanto `Scale-in` (para dentro) envolve a diminuição desse número. Essas duas operações podem ser usadas em conjunto para ajustar dinamicamente a capacidade da carga de trabalho.
+
 
 
 # Capacity Planning e Escalabilidade
