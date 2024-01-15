@@ -8,15 +8,16 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Escalabilidade, Performance e Capacidade
 ---
 
-Esse é mais um artigo da série sobre System Design. Nele vamos abordar três tópicos, falaremos sobre conceitos de **Capacidade**, **Performance** e **Capacidade** (*não necessariamente nessa ordem*) com os olhos conceituais de System Design. Escrevendo esse capitulo fiquei me questionando se deveria quebrá-lo em 3 textos, mas gostei muito do resultado e não tive coragem pra tomar essa decisão. A medida que eu ia criando tópicos, estudando e coletando referências para escrever esse capítulo, fiquei com uma sensação estranha querendo que ele nunca acabasse, com base nisso consegui levantar muitos outros tópicos sobre o que escrever e abordar nos proximos artigos. 
+Esse é mais um artigo da série sobre System Design. Nele, vamos abordar três tópicos: **Capacidade**, **Performance** e **Escalabilidade** (*não necessariamente nessa ordem*), sempre com uma perspectiva conceitual de System Design. Ao escrever este capítulo, questionei-me se deveria dividí-lo em três textos separados. Contudo, fiquei tão satisfeito com o resultado que não consegui tomar essa decisão. À medida que criava tópicos, estudava e coletava referências, uma estranha sensação de querer que este capítulo nunca terminasse surgiu. Com base nisso, levantei muitos outros tópicos para explorar e abordar nos próximos artigos.
+
 
 <br>
 
 # Definindo Performance 
 
-Performance, em seus termos mais simplistas, se refere ao **quão rápido e eficiênte um sistema ou algoritmo consegue ser ao processar uma única transação**, isso pode ser medido de **forma isolada** ou em meio a um **grande volume de outras transações**. A parte prática da "performance" pode envolver vários termos técnicos e complexos dentro de todas as disciplinas que compõe a engenharia de software no geral, mas principalmente é sentida pelos usuários finais das nossas soluções. 
+Performance, em termos simplistas, refere-se a **quão rápido e eficiente um sistema ou algoritmo pode ser ao processar uma única transação**. Isso pode ser medido de **forma isolada** ou em meio a um **grande volume de outras transações**. A aplicação prática da "performance" envolve diversos termos técnicos e complexidades dentro das disciplinas que compõem a engenharia de software em geral, sendo mais perceptível pelos usuários finais de nossas soluções.
 
-A performance deve ser considerada em relação aos requisitos funcionais e não funcionais do sistema. Por exemplo, um sistema projetado para processamento de dados em tempo real terá diferentes expectativas de performance comparado a um sistema de armazenamento de dados de longo prazo. 
+A performance deve ser considerada em relação aos requisitos funcionais e não funcionais do sistema. Por exemplo, um sistema projetado para processamento de dados em tempo real terá diferentes expectativas de performance em comparação a um sistema de armazenamento de dados de longo prazo.
 
 <br>
 
