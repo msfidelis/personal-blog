@@ -8,6 +8,8 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Escalabilidade, Performance e Capacidade
 ---
 
+Esse é mais um artigo da série sobre System Design. Nele vamos abordar três tópicos, falaremos sobre conceitos de **Capacidade**, **Performance** e **Capacidade** (*não necessariamente nessa ordem*) com os olhos conceituais de System Design. Escrevendo esse capitulo fiquei me questionando se deveria quebrá-lo em 3 textos, mas gostei muito do resultado e não tive coragem pra tomar essa decisão. A medida que eu ia criando tópicos, estudando e coletando referências para escrever esse capítulo, fiquei com uma sensação estranha querendo que ele nunca acabasse, com base nisso consegui levantar muitos outros tópicos sobre o que escrever e abordar nos proximos artigos. 
+
 # Definindo Performance 
 
 Performance, em seus termos mais simplistas, se refere ao **quão rápido e eficiênte um sistema ou algoritmo consegue ser ao processar uma única transação**, isso pode ser medido de **forma isolada** ou em meio a um **grande volume de outras transações**. A parte prática da "performance" pode envolver vários termos técnicos e complexos dentro de todas as disciplinas que compõe a engenharia de software no geral, mas principalmente é sentida pelos usuários finais das nossas soluções. 
@@ -121,6 +123,8 @@ Dentro do contexto de capacidade de software, "gargalos" referem-se a **pontos n
 
 Um design de sistema que não distribui carga de maneira eficiente pode criar gargalos invariávelmente. Por exemplo, um ponto central de processamento de alguma rotina em uma arquitetura que deveria ter a capacidade de quebrar essa carga em várias partes e poder se tornar distribuída.
 
+\begin{equation} \text{Gargalo} = \text{Demanda}\ > \text{Capacidade}\ \end{equation}
+
 dentificar e resolver gargalos é crucial para otimizar a performance e a escalabilidade de sistemas de software. Isso geralmente envolve monitoramento detalhado, testes de desempenho e ajuste fino do sistema. Em ambientes de nuvem e sistemas distribuídos, a identificação de gargalos também pode incluir a análise da distribuição de carga e da escalabilidade dinâmica.
 
 ## Backpressure de Capacidade
@@ -175,29 +179,36 @@ Sistemas escaláveis podem ser mais econômicos, pois permitem um dimensionament
 
 ## Escalabilidade Vertical e Escalabilidade Horizontal
 
-Existem dois tipos principais de escalabilidade que são frequentemente discutidos no design de sistemas: `Escalabilidade Horizontal` e `Escalabilidade Vertical`. Vamos usar esse tópico para 
+Existem dois tipos principais de escalabilidade que são frequentemente discutidos no design de sistemas: `Escalabilidade Horizontal` e `Escalabilidade Vertical`. Vamos usar esse tópico para discutir a terminologia em volta desses temas. 
+
+Para falar sobre isso, vamos avaliar um exemplo lúdico de uma empresa que gerencia uma frota de ônibus. Essa empresa por definição tem a missão de levar passageiros de um ponto A a um ponto B dentro da cidade. Essa empresa teve investimento inicial para comprar sua primeira frota que comportaria em torno de 100 passageiros simultâneos por horário de ônibus. Recentemente esse número de passageiros passou por um aumento gradativo, de fato de que gerou filas de espera nos pontos de embarque, atrasos e reclamações constantes. Com base nesse cenário, vamos começar a desenhar os exemplos de escalabilidade. 
 
 ### Escalabilidade Vertical
 
 ![Escalabilidade Vertical](/assets/images/system-design/onibus-vertical.png)
 
-No design de sistemas que se baseiam em escalabilidade vertical, o foco está na **maximização do processamento e eficiência de um único servidor ou recurso**. Isso pode incluir a otimização de algoritmos e a escolha de tecnologias que maximizam o uso da CPU e da memória.
+Uma das hipóteses levantadas para resolver os problemas da superlotação dos ônibus foi substituir alguns veículos da frota por ônibus de 2 andares, dobrando a capacidade de cada um dos carros de carregar passageiros. Esse paralelo exemplifica como funciona a escalabilidade vertical. 
 
-No mais, a escalabilidade vertical pode ser majoritariamente resumida em aumetar capacidade de CPU, RAM, Disco ou Rede de um único recurso. Embora seja uma solução mais simples, frequentemente encontra limites físicos e de custo.
+Podemos olhar a escalabilidade vertical como o **processo de aumentar a capacidade de qualquer coisa adicionando ou removendo mais recursos da mesma**.  A escalabilidade vertical pode ser majoritariamente definida em **aumentar a capacidade de CPU, RAM, Disco ou Rede de um único recurso**, mas não limitada apenas a isso, pode ser enquadrada também no ato de otimizar um algoritmo de fato com que o mesmo tenha sua capacidade de processamento de input/output aumentada. Embora seja uma solução mais simples, frequentemente encontra limites físicos e de custo. 
+
+Resumindo, no design de sistemas que se baseiam em escalabilidade vertical, o foco está na **maximização do processamento e eficiência de um único servidor ou recurso**. Isso pode incluir a otimização de algoritmos e a escolha de tecnologias que maximizam o uso da CPU e da memória.
+
 
 ![Escalabilidade Vertical](/assets/images/system-design/scale-up.png)
 
 #### Scale Up e Scale Down
 
-As operações de `Scale-up` e `Scale-down` são atividades que ocorrem nas operações de escalabilidade vertical, que se dedicam a aumentar ou reduzir recursos computacionais de determinado servidor que desempenha alguma funcionalidade. A otividade de `Scale-Up` *(escale para cima)* **se refere ao ato de aumentar recursos**, sendo esses CPU, memória, disco, rede. E `Scale-down` *(escale para baixo)* **é a operação de diminuir esses recursos quando necessário**. Resumidamente, Scale-up *(para cima)* se consiste em adicionar recursos de hardware cada vez maiores, aumentando o número de disco, CPU's e memória ram do servidor e Scale-down *(para baixo)* seria diretamente associado a diminuir esses recursos quando necessário. 
+As operações de `Scale-up` e `Scale-down` são atividades que ocorrem nas operações de escalabilidade vertical, que se dedicam a aumentar ou reduzir recursos computacionais de determinado servidor que desempenha alguma funcionalidade. A otividade de `Scale-up` *(escale para cima)* **se refere ao ato de aumentar recursos**, sendo esses CPU, memória, disco, rede. E `Scale-down` *(escale para baixo)* **é o ato de diminuir esses recursos** quando faz sentido. Resumidamente, Scale-up *(para cima)* se consiste em adicionar recursos de hardware cada vez maiores, aumentando o número de disco, CPU's e memória ram do servidor e Scale-down *(para baixo)* seria diretamente associado a diminuir esses recursos quando necessário. 
 
 ### Escalabilidade Horizontal
 
 ![Escalabilidade Horizontal](/assets/images/system-design/onibus-horizontal.png)
 
+Uma segunda proposta para resolver o problema dos passageiros foi, ao invés de trocar os ônibus da frota para modelos que comportem mais passageiros, fosse mais viável fazer o investimento em mais unidades dos mesmos modelos existentes. Tendo mais carros rodando no trajeto e dispersando os passageiros entre eles. Esse paralelo seria facilmente associado a como a escabilidade horizontal funciona. 
+
 A escalabilidade horizontal **refere-se à adição de mais nós como servidores, containers, replicas a um componente ou um sistema**. Isso é também conhecido como `"scale out"`. Por exemplo, se você está executando uma aplicação web em um único nó, mas começa a receber muito tráfego, você pode adicionar mais replicas ao sistema para compartilhar a carga de trabalho através de um [Balanceador de Carga](/load-balancing/). Este método é chamado de escalabilidade horizontal, e pode ser interpretado também como a capacidade de crescimento de contínuo da capacidade de um sistema se for utilizado em conjunto com ferramentas de escalabilidade automática.
 
-Para efetivamente implementar a escalabilidade horizontal, os sistemas devem ser projetados com uma arquitetura distribuída. 
+Para efetivamente implementar a escalabilidade horizontal, os sistemas devem ser projetados com uma arquitetura distribuída, de fato com que consigam processar as solicitações com paralelismo externo. 
 
 ![Escalabilidade Horizontal](/assets/images/system-design/scale-out.png)
 
@@ -206,7 +217,7 @@ Para efetivamente implementar a escalabilidade horizontal, os sistemas devem ser
 As operações de `Scale-in` e `Scale-out` são as atividades demandadas pela escalabilidade **horizontal**. Scale-out (Escale para Fora) se refere a incrementar o número de servidores ou replicas que atendem exercem a mesma função, para dividir a carga de processamento entre eles. Scale-in é a operação inversa, onde reduzimos o número de servidores ou replicas do pool de maquinas. Resumidamente, Scale-out (para fora) aumentamos o número de servidores, e Scale-in (para dentro) diminuimos o numero deles. As duas operações podem operar em conjunto para ajustar a capacidade da carga de trabalho dinamicamente. 
 
 
-# Capacity Planning e Autoscaling Horizontal
+# Capacity Planning e Escalabilidade
 
 A ideia desse tópico é apresentar uma das várias métricas importantes para avaliar a capacidade e escalabilidade, além de utilizar essas métricas em formulas para se calcular ajustes de capacidade que podem ser vinculados com estratégias de escalabilidade horizontal. Iremos utilizar um calculo base que pode ser adaptado para uma quantidade muito grande de cenários para definir capacidade horizontal de aplicações. Esse será apenas um exemplo de inúmeras abordagens que podem ser encontradas no mercado que funcionam ativamente como mecanismos de escalabilidade automática de recursos. A formula base que iremos aplicar a seguir foi retirada do funcionamento dos `Horizontal Pod Autoscaler` ou `HPA` do `Kubernetes`, mas pode ser implementado de forma isolada para vários contextos de forma livre. 
 
