@@ -5,14 +5,14 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Microserviços, Monolitos e Domínios
+title: System Design - Microsserviços, Monolitos e Domínios
 ---
 
 Este é o quarto artigo da série sobre System Design, e estou muito satisfeito com a direção que este material está tomando. Analisando o artigo depois de finalizado, acho sinceramente que este deveria ter sido o primeiro. Até o momento, ele pode ser considerado o mais "alto nível". Neste artigo, não pretendo explorar os componentes complexos por baixo do capô" dos temas; o foco está em trabalhar com tópicos e definições conceituais. Muitos dos pontos mencionados aqui serão detalhados em artigos dedicados futuramente, abordando tópicos como escalabilidade, resiliência e protocolos de comunicação, que neste momento serão apenas citados.
 
-Este artigo busca explorar as definições, vantagens e desafios das arquiteturas de monólitos e microserviços, proporcionando uma compreensão básica de como projetar sistemas para demandas modernas. O objetivo é oferecer uma análise detalhada que destaque não apenas as diferenças entre monólitos e microserviços, mas também como os sistemas distribuídos, os domínios de negócios e a Lei de Conway influenciam as decisões arquitetônicas das equipes de engenharia.
+Este artigo busca explorar as definições, vantagens e desafios das arquiteturas de monólitos e microsserviços, proporcionando uma compreensão básica de como projetar sistemas para demandas modernas. O objetivo é oferecer uma análise detalhada que destaque não apenas as diferenças entre monólitos e microsserviços, mas também como os sistemas distribuídos, os domínios de negócios e a Lei de Conway influenciam as decisões arquiteturais das equipes de engenharia.
 
-Reconheço que discutir este tema de maneira totalmente científica, sem ser um filosofo de boteco, é um pouco difícil. Muitas definições, exemplos, vantagens e desvantagens vêm de experiências pessoais e do senso comum, devido à falta de uma definição formal em muitos aspectos. Portanto, peço desculpas se, em algum momento, o texto seguir um caminho de discutir "sexo dos anjos" sem querer. Meu objetivo é ser o mais conceitual e pragmático possível.
+Reconheço que discutir este tema de maneira totalmente científica, sem ser um filósofo de boteco, é um pouco difícil. Muitas definições, exemplos, vantagens e desvantagens vêm de experiências pessoais e do senso comum, devido à falta de uma definição formal em muitos aspectos. Portanto, peço desculpas se, em algum momento, o texto seguir um caminho de discutir "sexo dos anjos" sem querer. Meu objetivo é ser o mais conceitual e pragmático possível.
 
 
 <br>
@@ -58,88 +58,88 @@ Investir em testes unitários, de integração e seguir padrões de projeto cons
 
 Com o aumento na diversidade de funcionalidades, requisições e fluxos de negócios, surgem dificuldades em escalar horizontalmente. Essa necessidade é particularmente crítica em ambientes de nuvem e de alto tráfego. Além disso, a facilidade de manutenção, inicialmente vantajosa, pode se deteriorar e se tornar um problema ao longo do ciclo de vida da arquitetura. Isso gera a necessidade de rebases constantes, revisões mais detalhadas e processos de implantação mais complexos.
 
-Também é comum que a escala vertical de serviços monolíticos aumente constantemente, tornando-se um desafio financeiro. Isso se deve à necessidade contínua de maior capacidade para atender ao crescimento da demanda, paralelamente ao consumo crescente de recursos da aplicação e suas dependências.
+Também é comum que a escala vertical de serviços monolíticos, ou seja, o aumento de recursos computacionais, aumente constantemente, tornando-se um desafio financeiro. Isso se deve à necessidade contínua de maior capacidade para atender ao crescimento da demanda, paralelamente ao consumo crescente de recursos da aplicação e suas dependências.
 
 
 
 <br>
 
-# Arquitetura Microserviços
+# Arquitetura de Microsserviços
 
 ![Ms](/assets/images/system-design/ms.png)
 
-Agora, em vez de um robô de controle remoto, imagine uma **grande caixa de LEGO**. Cada bloco de LEGO representa uma **parte pequena e independente** do brinquedo. Com estes blocos, é possível construir diversas estruturas, como casas, carros, aviões e até robôs, utilizando diferentes peças. Se um bloco quebrar ou se desejar modificar algo na sua construção, a substituição ou alteração dos blocos necessários é relativamente simples, sem afetar os outros blocos. Essa analogia nos ajuda a compreender de forma lúdica como funcionam os microserviços.
+Agora, em vez de um robô de controle remoto, imagine uma **grande caixa de LEGO**. Cada bloco de LEGO representa uma **parte pequena e independente** do brinquedo. Com estes blocos, é possível construir diversas estruturas, como casas, carros, aviões e até robôs, utilizando diferentes peças. Se um bloco quebrar ou se desejar modificar algo na sua construção, a substituição ou alteração dos blocos necessários é relativamente simples, sem afetar os outros blocos. Essa analogia nos ajuda a compreender de forma lúdica como funcionam os microsserviços.
 
-Microserviços são um estilo de arquitetura de software onde uma **aplicação é dividida em um conjunto de serviços menores**, cada um operando **de forma independente**. Cada microserviço é **focado em uma função ou recurso de negócios específico e pode ser desenvolvido**, implantado e **escalado de forma independente**.
+Microsserviços são um estilo de arquitetura de software onde uma **aplicação é dividida em um conjunto de serviços menores**, cada um operando **de forma independente**. Cada microserviço é **focado em uma função ou recurso de negócios específico e pode ser desenvolvido**, implantado e **escalado de forma independente**.
 
-Essencialmente, uma arquitetura de microserviços se baseia na ideia de fragmentar um grande bloco de funcionalidades em unidades menores e mais gerenciáveis.
+Essencialmente, uma arquitetura de microsserviços se baseia na ideia de fragmentar um grande bloco de funcionalidades em unidades menores e mais gerenciáveis.
 
 Retomando o exemplo anterior do software de backoffice para uma agência de viagens, as funcionalidades como gestão de clientes, pacotes, reservas de serviços e processos de pagamento podem ser divididas em pequenos serviços autônomos. Estes serviços podem se comunicar entre si por meio de protocolos específicos, ou serem acessados diretamente pelas requisições dos clientes através de endpoints e rotas específicas.
 
-![Microserviços](/assets/images/system-design/app-ms.png)
+![microsserviços](/assets/images/system-design/app-ms.png)
 
 
-> Exemplo de uma arquitetura de microserviços aplicada a um produto de venda de viagens
+> Exemplo de uma arquitetura de microsserviços aplicada a um produto de venda de viagens
 
 <br>
 
-A adoção de arquiteturas de microserviços geralmente surge em resposta a problemas de escalabilidade e manutenção, onde a necessidade de chamadas heterogêneas começa a ser importante para lidar com a escala e a demanda. Isso é particularmente útil quando se trabalha com processamentos assíncronos, se busca diminuir o acoplamento de sistemas críticos de alto volume e reduzir pontos únicos de falha.
+A adoção de arquiteturas de microsserviços geralmente surge em resposta a problemas de escalabilidade e manutenção, onde a necessidade de chamadas heterogêneas começa a ser importante para lidar com a escala e a demanda. Isso é particularmente útil quando se trabalha com processamentos assíncronos, se busca diminuir o acoplamento de sistemas críticos de alto volume e reduzir pontos únicos de falha.
 
-Imagine um cenário onde sua aplicação monolítica abriga funcionalidades com diferentes demandas de processamento. Por exemplo, uma função de cadastro de cliente que normalmente consome 200ms e utiliza poucos recursos do servidor e do banco de dados, pode ter que compartilhar recursos computacionais com funções como fechamento de caixa ou geração de relatórios, que exigem uso intensivo de CPU, Memória e I/O. Essa concorrência heterogênea e desproporcional pode comprometer a performance e a experiência dos outros recursos, resultando em tempos de resposta mais longos ou em erros inesperados. Esse caso em específico poderia gerar uma discussão saudável e válida sobre a viabilidade de quebrar essas funcionalidades em microserviços diferentes.
+Imagine um cenário onde sua aplicação monolítica abriga funcionalidades com diferentes demandas de processamento. Por exemplo, uma função de cadastro de cliente que normalmente consome 200ms e utiliza poucos recursos do servidor e do banco de dados, pode ter que compartilhar recursos computacionais com funções como fechamento de caixa ou geração de relatórios, que exigem uso intensivo de CPU, Memória e I/O. Essa concorrência heterogênea e desproporcional pode comprometer a performance e a experiência dos outros recursos, resultando em tempos de resposta mais longos ou em erros inesperados. Esse caso em específico poderia gerar uma discussão saudável e válida sobre a viabilidade de quebrar essas funcionalidades em microsserviços diferentes.
 
-A construção de microserviços também se torna comum com o aumento significativo no número de equipes, produtos e profissionais, onde faz sentido gerenciar o ciclo de vida das aplicações de forma mais isolada e focada dentro de contextos específicos. Este tópico será explorado mais detalhadamente quando discutirmos a **Lei de Conway**.
-
-
-
-### Vantagens de uma Arquitetura de Microserviços
-
-A vantagem citada com mais frequência em relação aos microserviços é a descentralização. Isso se manifesta de diversas formas, como a capacidade de diferentes serviços serem desenvolvidos com distintas linguagens, tecnologias, frameworks, componentes e bancos de dados, cada um otimizado para atender às necessidades específicas de uma funcionalidade. Por exemplo, um microserviço que exige recursos de transações, onde a acurácia e a segurança dos dados são cruciais, pode ser projetado para usar bancos de dados que garantam propriedades [ACID](/teorema-cap/). Outro, focado em realizar buscas textuais, como uma busca de produtos em um e-commerce, pode ser desenvolvido com tecnologias adequadas para full-text search, como Elasticsearch e MongoDB.
-
-Embora essa flexibilidade traga um aumento na complexidade de manutenção, documentação e gestão, é um benefício significativo frequentemente associado aos microserviços.
-
-A facilidade de desenvolvimento e implantação pode ser vantajosa, mas também pode apresentar desafios. Quando é necessário corrigir um erro ou criar uma nova funcionalidade em um serviço específico, isolar e entregar uma nova versão desse componente pode ser mais simples. No entanto, isso depende da capacidade de versionar funcionalidades de forma inteligente, gerenciar contratos de forma eficiênte para os protocolos de comunicação e outros fatores. A ausência desses elementos pode transformar essa vantagem em um grande obstáculo nos processos de implantação em ambientes corporativos.
-
-A arquitetura de microserviços também permite escalar horizontalmente cada serviço de forma independente, conforme a necessidade e o consumo de recursos. Isso significa que o scale in e scale out não afetam todas as dependências do sistema simultaneamente.
-
-Idealmente, em uma arquitetura de microserviços, o "Blast Radius" – ou "Raio de Explosão" – resultante da falha de um componente não afetaria os demais, permitindo que o sistema continue funcionando parcial ou totalmente, especialmente se houver implementações de fallback ou processamento assíncrono. Contudo, esse cenário depende fortemente da adoção de padrões de design de resiliência na comunicação entre as dependências.
+A construção de microsserviços também se torna comum com o aumento significativo no número de equipes, produtos e profissionais, onde faz sentido gerenciar o ciclo de vida das aplicações de forma mais isolada e focada dentro de contextos específicos. Este tópico será explorado mais detalhadamente quando discutirmos a **Lei de Conway**.
 
 
 
-### Desvantagens de uma Arquitetura de Microserviços
+### Vantagens de uma Arquitetura de Microsserviços
 
-Gerenciar múltiplos microserviços é, sem dúvida, **mais complexo do que lidar com uma única aplicação monolítica**. Esta complexidade se estende a áreas como implantação, monitoramento e gerenciamento de falhas.
+A vantagem citada com mais frequência em relação aos microsserviços é a descentralização. Isso se manifesta de diversas formas, como a capacidade de diferentes serviços serem desenvolvidos com distintas linguagens, tecnologias, frameworks, componentes e bancos de dados, cada um otimizado para atender às necessidades específicas de uma funcionalidade. Por exemplo, um microserviço que exige recursos de transações, onde a acurácia e a segurança dos dados são cruciais, pode ser projetado para usar bancos de dados que garantam propriedades [ACID](/teorema-cap/). Outro, focado em realizar buscas textuais, como uma busca de produtos em um e-commerce, pode ser desenvolvido com tecnologias adequadas para full-text search, como Elasticsearch e MongoDB.
 
-Testar uma aplicação composta por diversos microserviços independentes pode ser mais desafiador do que testar um sistema monolítico. Isso inclui a **necessidade de testes de integração e end-to-end mais complexos** e frequentemente atualizados, além da importância de ambientes de homologação confiáveis que simulem fielmente os ambientes de produção.
+Embora essa flexibilidade traga um aumento na complexidade de manutenção, documentação e gestão, é um benefício significativo frequentemente associado aos microsserviços.
+
+A facilidade de desenvolvimento e implantação pode ser vantajosa, mas também pode apresentar desafios. Quando é necessário corrigir um erro ou criar uma nova funcionalidade em um serviço específico, isolar e entregar uma nova versão desse componente pode ser mais simples. No entanto, isso depende da capacidade de versionar funcionalidades de forma inteligente, gerenciar contratos de forma eficiente para os protocolos de comunicação e outros fatores. A ausência desses elementos pode transformar essa vantagem em um grande obstáculo nos processos de implantação em ambientes corporativos.
+
+A arquitetura de microsserviços também permite escalar horizontalmente cada serviço de forma independente, conforme a necessidade e o consumo de recursos. Isso significa que o scale in e scale out não afetam todas as dependências do sistema simultaneamente.
+
+Idealmente, em uma arquitetura de microsserviços, o "Blast Radius" – ou "Raio de Explosão" – resultante da falha de um componente não afetaria os demais, permitindo que o sistema continue funcionando parcial ou totalmente, especialmente se houver implementações de fallback ou processamento assíncrono. Contudo, esse cenário depende fortemente da adoção de padrões de design de resiliência na comunicação entre as dependências.
+
+
+
+### Desvantagens de uma Arquitetura de Microsserviços
+
+Gerenciar múltiplos microsserviços é, sem dúvida, **mais complexo do que lidar com uma única aplicação monolítica**. Esta complexidade se estende a áreas como implantação, monitoramento e gerenciamento de falhas.
+
+Testar uma aplicação composta por diversos microsserviços independentes pode ser mais desafiador do que testar um sistema monolítico. Isso inclui a **necessidade de testes de integração e end-to-end mais complexos** e frequentemente atualizados, além da importância de ambientes de homologação confiáveis que simulem fielmente os ambientes de produção.
 
 A **gestão da consistência e integridade dos dados em ambientes distribuídos é um dos aspectos mais desafiadores** desse tipo de arquitetura na minha sincera opinião. Problemas como transações distribuídas de longa duração, sincronização de dados e compensações retroativas (desfazer transações em cascata em caso de falhas) requerem soluções complexas para assegurar a confiabilidade dos dados, caches e réplicas de forma distribuída.
 
-O monitoramento, a observabilidade e a geração de alertas também se tornam tópicos mais complexos. Com equipes trabalhando simultaneamente em diferentes domínios seguindo diferentes padrões, é essencial trabalhar em estratégias de monitoramento para gerir de forma eficaz toda a infraestrutura, aplicação e dependências. Isso pode exigir ferramentas avançadas para tracing e rastreio de transações, agregação de logs e métricas coletadas de várias fontes. **A maturidade dessas ferramentas pode até superar a complexidade dos próprios microserviços**.
+O monitoramento, a observabilidade e a geração de alertas também se tornam tópicos mais complexos. Com equipes trabalhando simultaneamente em diferentes domínios seguindo diferentes padrões, é essencial trabalhar em estratégias de monitoramento para gerir de forma eficaz toda a infraestrutura, aplicação e dependências. Isso pode exigir ferramentas avançadas para tracing e rastreio de transações, agregação de logs e métricas coletadas de várias fontes. **A maturidade dessas ferramentas pode até superar a complexidade dos próprios microsserviços**.
 
 A comunicação entre os serviços requer atenção especial. Enquanto em sistemas monolíticos a comunicação normalmente ocorre por meio de métodos e bibliotecas internas, em ambientes distribuídos **é necessário utilizar protocolos adicionais** como chamadas HTTP diretamente para os serviços, filas de mensagens e publicação de eventos em streams, exigindo componentes intermediários para a transmissão e recepção das mensagens.
 
-Como os microserviços frequentemente se comunicam através da rede interna, eles estão mais expostos a problemas de latência de rede e falhas de comunicação. A implementação de padrões de resiliência, como **circuit breakers, retries, fallbacks, filas de reprocessamento e dead letter queues** para análise, se torna essencial e deve ser integrada à cultura de desenvolvimento dos serviços.
+Como os microsserviços frequentemente se comunicam através da rede interna, eles estão mais expostos a problemas de latência de rede e falhas de comunicação. A implementação de padrões de resiliência, como **circuit breakers, retries, fallbacks, filas de reprocessamento e dead letter queues** para análise, se torna essencial e deve ser integrada à cultura de desenvolvimento dos serviços.
 
 <br>
 
 # Domínios e Design 
 
-Em arquiteturas de software, especialmente em microserviços, é crucial compreender e modelar corretamente os domínios de negócio. Um domínio de negócio é, em essência, **uma esfera de conhecimento, influência ou atividade sobre algum assunto**. A modelagem de domínio envolve a identificação das entidades-chave, suas relações e interações para cumprir as funções de negócio, sendo especialmente relevante em sistemas complexos com domínios de negócios profundos.
+Em arquiteturas de software, especialmente em microsserviços, é crucial compreender e modelar corretamente os domínios de negócio. Um domínio de negócio é, em essência, **uma esfera de conhecimento, influência ou atividade sobre algum assunto**. A modelagem de domínio envolve a identificação das entidades-chave, suas relações e interações para cumprir as funções de negócio, sendo especialmente relevante em sistemas complexos com domínios de negócios profundos.
 
 O Domain-Driven Design (DDD), ou Domínio Conduzido por Design, é uma abordagem de desenvolvimento de software que **prioriza o domínio de negócio e a lógica de domínio**. O DDD enfatiza a criação de um modelo de domínio rico e expressivo, incorporando regras e lógica de negócios e utilizando uma **linguagem comum entre desenvolvedores e especialistas de negócios para assegurar uma compreensão clara dos conceitos do domínio**, **definindo com precisão os limites e responsabilidades de cada parte do sistema**.
 
 Essa abordagem também visa evitar armadilhas comuns no desenvolvimento de software, como a criação de modelos de domínio que são meras coleções de dados, sem comportamento ou lógica de negócios, conhecidos como **modelagem e entidades anêmicas**. O DDD destaca a importância de um modelo enriquecido, que incorpore regras e lógicas de negócios, e evita estruturas de software complexas e altamente acopladas, difíceis de compreender, manter e escalar. Em contrapartida, promove a modularidade e a clara definição de limites contextuais.
 
-Embora o DDD não seja exclusivo para microserviços, ele pode ser aplicado em uma única base de código, simplificando a gestão da lógica de domínio e **reduzindo a complexidade operacional**. Isso envolve **definir limites de escopo entre classes e módulos dentro de uma aplicação** monolítica. Quando aplicado à modelagem de microserviços, o DDD pode ser utilizado para definir claramente os **limites e responsabilidades dos microserviços, arquitetar e diminuir a complexidade entre eles, implementando uma gestão cuidadosa de comunicação e dados**.
+Embora o DDD não seja exclusivo para microsserviços, ele pode ser aplicado em uma única base de código, simplificando a gestão da lógica de domínio e **reduzindo a complexidade operacional**. Isso envolve **definir limites de escopo entre classes e módulos dentro de uma aplicação** monolítica. Quando aplicado à modelagem de microsserviços, o DDD pode ser utilizado para definir claramente os **limites e responsabilidades dos microsserviços, arquitetar e diminuir a complexidade entre eles, implementando uma gestão cuidadosa de comunicação e dados**.
 
-Em ambos os casos, o DDD alinha o design do software com o domínio de negócios, mas a arquitetura escolhida (microserviços ou monolítica) influencia como esse alinhamento é realizado e gerenciado.
+Em ambos os casos, o DDD alinha o design do software com o domínio de negócios, mas a arquitetura escolhida (microsserviços ou monolítica) influencia como esse alinhamento é realizado e gerenciado.
 
 ![DDD Viagens](/assets/images/system-design/ddd-viagem.png)
 
 > Exemplo de DDD aplicado à construção de uma aplicação de vendas de pacotes de viagens. 
 
-Este exemplo pode ser utilizado tanto para elaborar um diagrama de classes e módulos em uma aplicação monolítica quanto para definir as responsabilidades em microserviços, caso cada um desses contextos limitados seja separado em uma aplicação independente.
+Este exemplo pode ser utilizado tanto para elaborar um diagrama de classes e módulos em uma aplicação monolítica quanto para definir as responsabilidades em microsserviços, caso cada um desses contextos limitados seja separado em uma aplicação independente.
 
-Um dos maiores desafios no design de microserviços é identificar corretamente os limites de serviço. Com o DDD, os serviços são organizados em torno de limites de contexto delimitado, onde cada serviço gerencia um conjunto distinto de entidades e lógicas de negócio. Isso ajuda a manter os serviços pequenos, focados e independentes. 
+Um dos maiores desafios no design de microsserviços é identificar corretamente os limites de serviço. Com o DDD, os serviços são organizados em torno de limites de contexto delimitado, onde cada serviço gerencia um conjunto distinto de entidades e lógicas de negócio. Isso ajuda a manter os serviços pequenos, focados e independentes. 
 
 Em ambientes de alta complexidade, com muitas equipes e serviços, a modelagem de negócios e arquitetura a nível de domínio auxilia no mapeamento dos responsáveis por cada funcionalidade, evitando a duplicação de soluções e promovendo a reutilização de componentes existentes. Em grandes corporações, é crucial evitar a criação de sistemas diferentes, desenvolvidos por equipes distintas, que executam funções similares de forma redundante.
 
@@ -153,12 +153,20 @@ Essencialmente, a Lei de Conway sugere que **a forma como uma empresa está orga
 
 Considerando uma empresa com times separados para frontend, backend e gestão de dados, o software desenvolvido provavelmente terá módulos distintos para cada função, utilizando tecnologias específicas como SPA's, Microfrontends, Backend for Frontends, API's REST, GraphQL's, Procedures, entre outros. Em startups menores, onde a equipe é unificada e as decisões são rápidas e colaborativas, o software tende a ser mais integrado e menos modular, refletindo a agilidade e flexibilidade da equipe. Em grandes corporações com pouca comunicação interdepartamental, é comum encontrar sistemas fragmentados ou com funcionalidades redundantes.
 
-A Lei de Conway também influencia a adoção de arquiteturas como monolitos e microserviços quando acontecem de forma orgânica, além de outras decisões arquiteturais arbitrárias. Em organizações com estrutura mais centralizada e hierárquica, com comunicação vertical predominante, os sistemas desenvolvidos tendem a ser monolíticos, espelhando essa centralização em uma base de código unificada. Isso também ocorre em ambientes "informais" com alta comunicação e integração. Por outro lado, em organizações com equipes menores, autônomas e com comunicação interna intensa, mas menos interação intergrupal, é mais provável a emergência de sistemas baseados em microserviços, refletindo a independência e especialização de cada equipe, com cada microserviço representando um aspecto específico do negócio.
+A Lei de Conway também influencia a adoção de arquiteturas como monolitos e microsserviços quando acontecem de forma orgânica, além de outras decisões arquiteturais arbitrárias. Em organizações com estrutura mais centralizada e hierárquica, com comunicação vertical predominante, os sistemas desenvolvidos tendem a ser monolíticos, espelhando essa centralização em uma base de código unificada. Isso também ocorre em ambientes "informais" com alta comunicação e integração. Por outro lado, em organizações com equipes menores, autônomas e com comunicação interna intensa, mas menos interação intergrupal, é mais provável a emergência de sistemas baseados em microsserviços, refletindo a independência e especialização de cada equipe, com cada microserviço representando um aspecto específico do negócio.
 
 
 #### Obrigado aos Revisores
 
 * [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
+
+* [Gabriel Xará](https://twitter.com/gmxara)
+
+* [Pedro Amaral](https://twitter.com/predotaku)
+
+* [Felipe "Felps"](https://twitter.com/madfelps)
+
+* [Jorge Oliveira](https://twitter.com/JorgeOliveira00)
 
 > Imagens geradas pelo DALL-E e Bing
 
