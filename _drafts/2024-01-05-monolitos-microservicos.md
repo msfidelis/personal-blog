@@ -23,7 +23,7 @@ Reconheço que discutir este tema de maneira totalmente científica, sem ser um 
 
 Imagine um **robozinho de controle remoto**. Recém retirado da caixa, esse robô é um monolito. Ele é composto por várias partes com diferentes responsabilidades e mecanismos, mas todas estão unidas e interconectadas, formando a totalidade do brinquedo. Se qualquer parte desse robozinho quebrar, o **brinquedo inteiro para de funcionar**. Essa é uma analogia para um sistema monolítico.
 
-Um monólito, em termos de arquitetura de software, refere-se a **uma aplicação onde todos os componentes e serviços estão interligados e interdependentes**, constituindo uma unidade única e indivisível. Na prática, isso significa que **todas as funcionalidades de um sistema estão presentes na mesma base de código, no mesmo binário, na mesma aplicação e, na maioria das vezes, compartilham a mesma base de dados**.
+Um monolito, em termos de arquitetura de software, refere-se a **uma aplicação onde todos os componentes e serviços podem ser acessados diretamente em uma chamada local**, constituindo uma unidade única e indivisível. Na prática, isso significa que **todas as funcionalidades de um sistema estão presentes na mesma base de código, no mesmo binário, na mesma aplicação e, na maioria das vezes, compartilham a mesma base de dados**.
 
 Tradicionalmente, esta abordagem favorece a simplicidade no desenvolvimento e na implantação, pois tudo está fortemente integrado. Além disso, facilita a manutenção da consistência dos dados, que é um dos maiores desafios dos sistemas modernos.
 
@@ -35,17 +35,19 @@ Imagine, por exemplo, uma aplicação responsável por gerenciar o backoffice de
 
 > Exemplo de uma arquitetura monolitica aplicada a um produto de venda de viagens
 
-É um equívoco comum associar a arquitetura monolítica com características negativas como "errada", "arcaica" ou "legada". A escolha por uma arquitetura monolítica em uma aplicação de negócios não define automaticamente a abordagem como moderna ou antiquada. Na verdade, o monolito é, ou idealmente deveria ser, o estágio inicial de qualquer produto, exceto em casos onde o produto é projetado para lidar com uma alta demanda desde o início. Este cenário é mais comum em grandes empresas com projetos de grande escala no mercado.
+É um equívoco comum associar a arquitetura monolítica com características negativas como "errada", "arcaica" ou "legada". A escolha por uma arquitetura monolítica em uma aplicação de negócios não define automaticamente a abordagem como moderna ou antiquada. Na verdade, o monolito é, ou idealmente deveria ser, o estágio inicial de qualquer produto, exceto em casos onde o produto é projetado para lidar com uma alta demanda desde o início. Este cenário é mais comum em grandes empresas com projetos de grande escala no mercado. Empresas como [Facebook](https://softwareengineeringdaily.com/2019/07/15/facebook-php-with-keith-adams/), [Twitter](https://blog.twitter.com/engineering/en_us/a/2013/observability-at-twitter), [Uber](https://www.uber.com/en-CA/blog/up-portable-microservices-ready-for-the-cloud/) e [Netflix](https://netflixtechblog.com/seamlessly-swapping-the-api-backend-of-the-netflix-android-app-3d4317155187) começaram como monolítos e mantiveram essa arquitetura em grande escala e sob alta demanda.
 
 <br>
 
 ### Vantagens de uma Arquitetura Monolítica
 
-Ao considerar uma arquitetura monolítica, percebemos benefícios como maior simplicidade na gestão de dependências e interações entre funcionalidades do sistema. Isso elimina a necessidade de protocolos e estratégias de comunicação adicionais, como *HTTP*, *gRPC*, *Webhooks* e *mensageria*. Além disso, há uma facilidade maior na construção de funcionalidades, visto que os processos de desenvolvimento, teste e implantação são unificados — considerando, é claro, o melhor cenário possível.
+Ao considerar uma arquitetura monolítica, percebemos benefícios como maior simplicidade na gestão de dependências e interações entre funcionalidades do sistema. Isso elimina a necessidade de protocolos e estratégias de comunicação adicionais, como *HTTP*, *gRPC*, *Webhooks* e *mensageria*. Além disso, é mais fácil construir novas funcionalidades, visto que os processos de desenvolvimento, teste e implantação são unificados — considerando, é claro, o melhor cenário possível.
 
 Uma vantagem chave, como mencionado anteriormente, é a facilidade em manter a consistência dos dados, devido à natureza da arquitetura que centraliza todos os contextos em um único banco de dados.
 
-A arquitetura monolítica é ideal em situações onde a complexidade é facilmente gerenciável e a escalabilidade não é uma preocupação primordial. Isso é particularmente encontrado em aplicações de pequeno ou médio porte, ou em equipes pequenas, onde a comunicação e gestão de múltiplos serviços diversificados seriam desafios muito custosos de energia, tempo e dinheiro.
+A arquitetura monolítica é ideal em situações onde a complexidade de código e lógica de negócio é facilmente gerenciável e a escalabilidade não é uma preocupação imediata. Isso é particularmente encontrado em aplicações de pequeno ou médio porte, ou em equipes pequenas, onde a comunicação e gestão de múltiplos serviços diversificados seriam desafios muito custosos de energia, tempo e dinheiro.
+
+Em situações onde as pessoas responsáveis por rodar o serviço não necessariamente conhecem os detalhes da arquitetura do software, monolitos apresentam uma solução mais simples de colocar esses sitemas em produção por serem compostos por apenas uma unidade. Por exemplo, ferramentas como [Istio](https://ieeexplore.ieee.org/document/9520758) mudaram de microserviços para um monolito por ser mais simples rodar e geranciar uma aplicação única ao invés de multiplos componentes.
 
 No que diz respeito aos ciclos de vida dos produtos, essa abordagem também oferece vantagens na construção e evolução de MVPs (Produtos Mínimos Viáveis), novos produtos e prototipações. Isso se deve à simplicidade de iniciar e evoluir projetos de tecnologia em comparação com outras alternativas.
 
@@ -60,7 +62,7 @@ Com o aumento na diversidade de funcionalidades, requisições e fluxos de negó
 
 Também é comum que a escala vertical de serviços monolíticos, ou seja, o aumento de recursos computacionais, aumente constantemente, tornando-se um desafio financeiro. Isso se deve à necessidade contínua de maior capacidade para atender ao crescimento da demanda, paralelamente ao consumo crescente de recursos da aplicação e suas dependências.
 
-
+Arquiteturas monolíticas também apresentam desafios de tolerância a falhas. Por todos os componentes estarem juntos na mesma unidade, uma falha em uma parte do sistema pode causar indisponibilidade da unidade inteira.
 
 <br>
 
@@ -70,12 +72,13 @@ Também é comum que a escala vertical de serviços monolíticos, ou seja, o aum
 
 Agora, em vez de um robô de controle remoto, imagine uma **grande caixa de LEGO**. Cada bloco de LEGO representa uma **parte pequena e independente** do brinquedo. Com estes blocos, é possível construir diversas estruturas, como casas, carros, aviões e até robôs, utilizando diferentes peças. Se um bloco quebrar ou se desejar modificar algo na sua construção, a substituição ou alteração dos blocos necessários é relativamente simples, sem afetar os outros blocos. Essa analogia nos ajuda a compreender de forma lúdica como funcionam os microsserviços.
 
-Microsserviços são um estilo de arquitetura de software onde uma **aplicação é dividida em um conjunto de serviços menores**, cada um operando **de forma independente**. Cada microserviço é **focado em uma função ou recurso de negócios específico e pode ser desenvolvido**, implantado e **escalado de forma independente**.
+Microsserviços são um estilo de arquitetura de software onde uma **aplicação é dividida em um conjunto de serviços menores**, cada um operando **de forma independente** e se comunicando **indiretamente** através de um protocolo de comunicação. Cada microserviço é **focado em uma função ou recurso de negócios específico e pode ser desenvolvido**, implantado e **escalado de forma independente**.
 
 Essencialmente, uma arquitetura de microsserviços se baseia na ideia de fragmentar um grande bloco de funcionalidades em unidades menores e mais gerenciáveis.
 
 Retomando o exemplo anterior do software de backoffice para uma agência de viagens, as funcionalidades como gestão de clientes, pacotes, reservas de serviços e processos de pagamento podem ser divididas em pequenos serviços autônomos. Estes serviços podem se comunicar entre si por meio de protocolos específicos, ou serem acessados diretamente pelas requisições dos clientes através de endpoints e rotas específicas.
 
+<!-- NOTA: Não sei se ficaria muito bagunçado, mas acho que seria interessante colocar umas setas entre os serviços, mostrando que uma requisição pode precisar de vários serviços. -->
 ![microsserviços](/assets/images/system-design/app-ms.png)
 
 
@@ -97,8 +100,6 @@ A vantagem citada com mais frequência em relação aos microsserviços é a des
 
 Embora essa flexibilidade traga um aumento na complexidade de manutenção, documentação e gestão, é um benefício significativo frequentemente associado aos microsserviços.
 
-A facilidade de desenvolvimento e implantação pode ser vantajosa, mas também pode apresentar desafios. Quando é necessário corrigir um erro ou criar uma nova funcionalidade em um serviço específico, isolar e entregar uma nova versão desse componente pode ser mais simples. No entanto, isso depende da capacidade de versionar funcionalidades de forma inteligente, gerenciar contratos de forma eficiente para os protocolos de comunicação e outros fatores. A ausência desses elementos pode transformar essa vantagem em um grande obstáculo nos processos de implantação em ambientes corporativos.
-
 A arquitetura de microsserviços também permite escalar horizontalmente cada serviço de forma independente, conforme a necessidade e o consumo de recursos. Isso significa que o scale in e scale out não afetam todas as dependências do sistema simultaneamente.
 
 Idealmente, em uma arquitetura de microsserviços, o "Blast Radius" – ou "Raio de Explosão" – resultante da falha de um componente não afetaria os demais, permitindo que o sistema continue funcionando parcial ou totalmente, especialmente se houver implementações de fallback ou processamento assíncrono. Contudo, esse cenário depende fortemente da adoção de padrões de design de resiliência na comunicação entre as dependências.
@@ -109,11 +110,13 @@ Idealmente, em uma arquitetura de microsserviços, o "Blast Radius" – ou "Raio
 
 Gerenciar múltiplos microsserviços é, sem dúvida, **mais complexo do que lidar com uma única aplicação monolítica**. Esta complexidade se estende a áreas como implantação, monitoramento e gerenciamento de falhas.
 
+A facilidade de desenvolvimento e implantação pode ser vantajosa, mas também pode apresentar desafios. Quando é necessário corrigir um erro ou criar uma nova funcionalidade em um serviço específico, isolar e entregar uma nova versão desse componente pode ser mais simples. No entanto, isso depende da capacidade de versionar funcionalidades de forma inteligente, gerenciar contratos de forma eficiente para os protocolos de comunicação e outros fatores. A ausência desses elementos pode transformar essa vantagem em um grande obstáculo nos processos de implantação em ambientes corporativos.
+
 Testar uma aplicação composta por diversos microsserviços independentes pode ser mais desafiador do que testar um sistema monolítico. Isso inclui a **necessidade de testes de integração e end-to-end mais complexos** e frequentemente atualizados, além da importância de ambientes de homologação confiáveis que simulem fielmente os ambientes de produção.
 
 A **gestão da consistência e integridade dos dados em ambientes distribuídos é um dos aspectos mais desafiadores** desse tipo de arquitetura na minha sincera opinião. Problemas como transações distribuídas de longa duração, sincronização de dados e compensações retroativas (desfazer transações em cascata em caso de falhas) requerem soluções complexas para assegurar a confiabilidade dos dados, caches e réplicas de forma distribuída.
 
-O monitoramento, a observabilidade e a geração de alertas também se tornam tópicos mais complexos. Com equipes trabalhando simultaneamente em diferentes domínios seguindo diferentes padrões, é essencial trabalhar em estratégias de monitoramento para gerir de forma eficaz toda a infraestrutura, aplicação e dependências. Isso pode exigir ferramentas avançadas para tracing e rastreio de transações, agregação de logs e métricas coletadas de várias fontes. **A maturidade dessas ferramentas pode até superar a complexidade dos próprios microsserviços**.
+O monitoramento, a observabilidade e a geração de alertas também se tornam tópicos mais complexos. Com equipes trabalhando simultaneamente em diferentes domínios seguindo diferentes padrões, é essencial trabalhar em estratégias de monitoramento para gerir de forma eficaz e homogênea toda a infraestrutura, aplicação e dependências. Isso pode exigir ferramentas avançadas para tracing e rastreio de transações, agregação de logs e métricas coletadas de várias fontes. **A maturidade dessas ferramentas pode até superar a complexidade dos próprios microsserviços**.
 
 A comunicação entre os serviços requer atenção especial. Enquanto em sistemas monolíticos a comunicação normalmente ocorre por meio de métodos e bibliotecas internas, em ambientes distribuídos **é necessário utilizar protocolos adicionais** como chamadas HTTP diretamente para os serviços, filas de mensagens e publicação de eventos em streams, exigindo componentes intermediários para a transmissão e recepção das mensagens.
 
@@ -121,7 +124,7 @@ Como os microsserviços frequentemente se comunicam através da rede interna, el
 
 <br>
 
-# Domínios e Design 
+# Domínios e Design
 
 Em arquiteturas de software, especialmente em microsserviços, é crucial compreender e modelar corretamente os domínios de negócio. Um domínio de negócio é, em essência, **uma esfera de conhecimento, influência ou atividade sobre algum assunto**. A modelagem de domínio envolve a identificação das entidades-chave, suas relações e interações para cumprir as funções de negócio, sendo especialmente relevante em sistemas complexos com domínios de negócios profundos.
 
@@ -129,17 +132,17 @@ O Domain-Driven Design (DDD), ou Domínio Conduzido por Design, é uma abordagem
 
 Essa abordagem também visa evitar armadilhas comuns no desenvolvimento de software, como a criação de modelos de domínio que são meras coleções de dados, sem comportamento ou lógica de negócios, conhecidos como **modelagem e entidades anêmicas**. O DDD destaca a importância de um modelo enriquecido, que incorpore regras e lógicas de negócios, e evita estruturas de software complexas e altamente acopladas, difíceis de compreender, manter e escalar. Em contrapartida, promove a modularidade e a clara definição de limites contextuais.
 
-Embora o DDD não seja exclusivo para microsserviços, ele pode ser aplicado em uma única base de código, simplificando a gestão da lógica de domínio e **reduzindo a complexidade operacional**. Isso envolve **definir limites de escopo entre classes e módulos dentro de uma aplicação** monolítica. Quando aplicado à modelagem de microsserviços, o DDD pode ser utilizado para definir claramente os **limites e responsabilidades dos microsserviços, arquitetar e diminuir a complexidade entre eles, implementando uma gestão cuidadosa de comunicação e dados**.
+O DDD não é exclusivo para microsserviços, ele também pode ser aplicado em uma única base de código, simplificando a gestão da lógica de domínio e **reduzindo a complexidade operacional**. Isso envolve **definir limites de escopo entre classes e módulos dentro de uma aplicação** monolítica, criando um [monolito mais modular](https://shopify.engineering/shopify-monolith). Quando aplicado à modelagem de microsserviços, o DDD pode ser utilizado para definir claramente os **limites e responsabilidades dos microsserviços, arquitetar e diminuir a complexidade entre eles, implementando uma gestão cuidadosa de comunicação e dados**.
 
-Em ambos os casos, o DDD alinha o design do software com o domínio de negócios, mas a arquitetura escolhida (microsserviços ou monolítica) influencia como esse alinhamento é realizado e gerenciado.
+Em ambos os casos, o DDD alinha o design do software com o domínio de negócios, mas a arquitetura escolhida (microsserviços ou monolítica) influencia como esse alinhamento é realizado, gerenciado e colocado em produção.
 
 ![DDD Viagens](/assets/images/system-design/ddd-viagem.png)
 
-> Exemplo de DDD aplicado à construção de uma aplicação de vendas de pacotes de viagens. 
+> Exemplo de DDD aplicado à construção de uma aplicação de vendas de pacotes de viagens.
 
 Este exemplo pode ser utilizado tanto para elaborar um diagrama de classes e módulos em uma aplicação monolítica quanto para definir as responsabilidades em microsserviços, caso cada um desses contextos limitados seja separado em uma aplicação independente.
 
-Um dos maiores desafios no design de microsserviços é identificar corretamente os limites de serviço. Com o DDD, os serviços são organizados em torno de limites de contexto delimitado, onde cada serviço gerencia um conjunto distinto de entidades e lógicas de negócio. Isso ajuda a manter os serviços pequenos, focados e independentes. 
+Um dos maiores desafios no design de microsserviços é identificar corretamente os limites de serviço. Com o DDD, os serviços são organizados em torno de limites de contexto delimitado, onde cada serviço gerencia um conjunto distinto de entidades e lógicas de negócio. Isso ajuda a manter os serviços pequenos, focados e independentes.
 
 Em ambientes de alta complexidade, com muitas equipes e serviços, a modelagem de negócios e arquitetura a nível de domínio auxilia no mapeamento dos responsáveis por cada funcionalidade, evitando a duplicação de soluções e promovendo a reutilização de componentes existentes. Em grandes corporações, é crucial evitar a criação de sistemas diferentes, desenvolvidos por equipes distintas, que executam funções similares de forma redundante.
 
@@ -170,7 +173,7 @@ A Lei de Conway também influencia a adoção de arquiteturas como monolitos e m
 
 > Imagens geradas pelo DALL-E e Bing
 
-#### Referências 
+#### Referências
 
 [AWS - Qual é a diferença entre arquitetura monolítica e de microsserviços?](https://aws.amazon.com/pt/compare/the-difference-between-monolithic-and-microservices-architecture/)
 
