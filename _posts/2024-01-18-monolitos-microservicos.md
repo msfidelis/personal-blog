@@ -146,6 +146,8 @@ Um dos maiores desafios no design de microsserviços é identificar corretamente
 
 Em ambientes de alta complexidade, com muitas equipes e serviços, a modelagem de negócios e arquitetura a nível de domínio auxilia no mapeamento dos responsáveis por cada funcionalidade, evitando a duplicação de soluções e promovendo a reutilização de componentes existentes. Em grandes corporações, é crucial evitar a criação de sistemas diferentes, desenvolvidos por equipes distintas, que executam funções similares de forma redundante.
 
+<br>
+
 # Lei de Conway na arquitetura de sistemas
 
 ![Lei Conway](/assets/images/system-design/lei-de-conway.png)
