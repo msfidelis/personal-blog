@@ -171,6 +171,8 @@ A Lei de Conway também influencia a adoção de arquiteturas como monolitos e m
 
 * [Jorge Oliveira](https://twitter.com/JorgeOliveira00)
 
+* [Luiz Aoqui, o revisor universal da comunidade](https://twitter.com/luiz_aoqui)
+
 > Imagens geradas pelo DALL-E e Bing
 
 #### Referências
