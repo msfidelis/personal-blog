@@ -160,6 +160,7 @@ Considerando uma empresa com times separados para frontend, backend e gestão de
 
 A Lei de Conway também influencia a adoção de arquiteturas como monolitos e microsserviços quando acontecem de forma orgânica, além de outras decisões arquiteturais arbitrárias. Em organizações com estrutura mais centralizada e hierárquica, com comunicação vertical predominante, os sistemas desenvolvidos tendem a ser monolíticos, espelhando essa centralização em uma base de código unificada. Isso também ocorre em ambientes "informais" com alta comunicação e integração. Por outro lado, em organizações com equipes menores, autônomas e com comunicação interna intensa, mas menos interação intergrupal, é mais provável a emergência de sistemas baseados em microsserviços, refletindo a independência e especialização de cada equipe, com cada microserviço representando um aspecto específico do negócio.
 
+<br>
 
 #### Obrigado aos Revisores
 
