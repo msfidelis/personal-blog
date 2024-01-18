@@ -23,7 +23,7 @@ Reconheço que discutir este tema de maneira totalmente científica, sem ser um 
 
 Imagine um **robozinho de controle remoto**. Recém retirado da caixa, esse robô é um monolito. Ele é composto por várias partes com diferentes responsabilidades e mecanismos, mas todas estão unidas e interconectadas, formando a totalidade do brinquedo. Se qualquer parte desse robozinho quebrar, o **brinquedo inteiro para de funcionar**. Essa é uma analogia para um sistema monolítico.
 
-Um monolito, em termos de arquitetura de software, refere-se a **uma aplicação onde todos os componentes e serviços podem ser acessados diretamente em uma chamada local**, constituindo uma unidade única e indivisível. Na prática, isso significa que **todas as funcionalidades de um sistema estão presentes na mesma base de código, no mesmo binário, na mesma aplicação e, na maioria das vezes, compartilham a mesma base de dados**.
+Um monolito, em termos de arquitetura de software, refere-se a **uma aplicação onde todos os componentes e serviços podem ser acessados diretamente em uma chamada local através de métodos e componentes do próprio sistema interligados**, constituindo uma unidade única e indivisível. Na prática, isso significa que **todas as funcionalidades de um sistema estão presentes na mesma base de código, no mesmo binário, na mesma aplicação e, na maioria das vezes, compartilham a mesma base de dados**.
 
 Tradicionalmente, esta abordagem favorece a simplicidade no desenvolvimento e na implantação, pois tudo está fortemente integrado. Além disso, facilita a manutenção da consistência dos dados, que é um dos maiores desafios dos sistemas modernos.
 
