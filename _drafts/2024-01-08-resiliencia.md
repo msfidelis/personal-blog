@@ -3,7 +3,7 @@ layout: post
 image: assets/images/system-design/resiliencia-cover.png
 author: matheus
 featured: false
-published: true
+published: false
 categories: [ system-design, engineering, cloud ]
 title: System Design - Resiliência
 ---

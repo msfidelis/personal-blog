@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ resumo ]
-title: Resumo - Staff Engineer: Leadership beyond the management track
+title: "Resumo - Staff Engineer & Leadership beyond the management track"
 ---
 
 O livro "Staff Engineering: Leadership beyond the Management Track", de Will Larson, é um guia para engenheiros de software e outros profissionais técnicos que aspiram a papéis de liderança sênior, mas fora da trilha tradicional de gerenciamento. O livro aborda as competências, responsabilidades e desafios enfrentados pelos engenheiros em posições de alto nível, como Engenheiros de Staff, Principals, Distiguished, Fellows e outros.
