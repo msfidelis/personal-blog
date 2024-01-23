@@ -8,7 +8,7 @@ categories: [ opiniao, livres ]
 title: Teoria das Janelas Quebradas e a Engenharia de Software
 ---
 
-> Este artigo é um exercício de um curso de escrita que eu estou fazendo. O objetivo era produzir um artigo abstrato e de opinião. Inicialmente ele não seria publicado, mas achei o resultado divertido. 
+> Este artigo é um exercício de um curso de escrita que eu estou fazendo. O objetivo era produzir um artigo abstrato e de opinião. Inicialmente ele não seria publicado, mas achei o resultado divertido. Não levem tão a sério.
 
 <br>
 
