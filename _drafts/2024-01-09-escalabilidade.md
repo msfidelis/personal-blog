@@ -44,7 +44,7 @@ Não vamos abordar essas métricas do ponto de observabilidade, pois mais adiant
 
 A `Utilização` de Recursos refere-se a **quanto do recurso disponível está sendo usado**. Um recurso é considerado `Saturado` quando a sua taxa de utilização se aproxima do máximo valor possível ou esperado. Um sistema pode estar saturado em termos de CPU, memória, disco ou mesmo um pool de conexões de rede. **Medir a saturação ajuda a prever problemas de desempenho e a entender quando é necessário escalar recursos**.
 
-**Algoritmos que fazem uso intensivo de recursos computacionais como CPU, Memória, Disco e Rede costumam ser muito sensíveis a otimizações e degradações desses recursos**. Ter visibilidade da taxa de utilização em relação às capacidades disponíveis desses recurses em um sistema é essencial para **determinar a saúde do serviço e fornecer insights sobre otimização, custos e desempenho**.
+**Algoritmos que fazem uso intensivo de recursos computacionais como CPU, Memória, Disco e Rede costumam ser muito sensíveis a otimizações e degradações desses recursos**. Ter visibilidade da taxa de utilização em relação às capacidades disponíveis desses recursos em um sistema é essencial para **determinar a saúde do serviço e fornecer insights sobre otimização, custos e desempenho**.
 
 O objetivo de avaliar a saturação, juntamente com outras métricas de desempenho, é poder identificar gargalos de recursos como, por exemplo, "a partir de qual porcentagem de uso de CPU meu tempo de resposta e taxa de erro começam a ser afetados?" ou "a partir de qual uso de I/O de escrita e leitura de disco meu banco de dados começa a degradar o tempo de consulta?". Responder a essas perguntas de forma eficiente evidencia a maturidade e a senioridade de equipes e produtos.
 
@@ -54,7 +54,7 @@ Podemos representar matematicamente a utilização e saturação de um recurso c
 \text{Utilização de Recurso} = \left( \frac{\text{Recurso Utilizado}}{\text{Recurso Disponível}} \right) \times 100
 \end{equation}
 
-Vamos imaginar um caso em que precisamos analisar o uso de memória alocada para um sistema. Basicamente, presumimos um cenário em que temos disponível para executar um algoritmo `2 GB` de RAM, ou `2048 MB`. Após coletar métricas e observar o algoritme em execução, foi constatado que o uso atual dessa memória disponível está em `1 GB`, ou `1024 MB`.
+Vamos imaginar um caso em que precisamos analisar o uso de memória alocada para um sistema. Basicamente, presumimos um cenário em que temos disponível para executar um algoritmo `2 GB` de RAM, ou `2048 MB`. Após coletar métricas e observar o algoritmo em execução, foi constatado que o uso atual dessa memória disponível está em `1 GB`, ou `1024 MB`.
 
 \begin{equation}
 \text{Utilização de Memória} = \left( \frac{1024}{2048} \right) \times 100
@@ -156,7 +156,7 @@ Pensar e medir a capacidade de sistemas envolve não apenas o dimensionamento ad
 
 Dentro do contexto de capacidade de software, "gargalos" referem-se a **pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual**. Esses gargalos podem afetar negativamente a capacidade geral do sistema de funcionar de maneira otimizada e podem ocorrer em várias áreas, incluindo hardware, software ou na arquitetura de rede. Isso pode incluir **CPU, memória, espaço em disco ou capacidade de rede insuficientes**, entre várias outras coisas. Por exemplo, um servidor com CPU sobrecarregada não conseguirá processar requisições rapidamente. Erroneamente, profissionais de diversos níveis de senioridade podem associar gargalos sistêmicos à infraestrutura da aplicação, porém é muito mais comum cenários onde código mal otimizado, algoritmos ineficientes ou gerenciamento de concorrência (como deadlocks ou uso excessivo de bloqueios) podem limitar a capacidade do sistema e se tornar gargalos muito difíceis de lidar e superar no dia a dia de times de engenharia.
 
-Um design de sistema que não distribui a carga de maneira eficiente pode, invariavelmente, criar gargalos. Por exemplo, um ponto central de processamento de um rotina em que a arquitetura  deveria ter a capacidade de quebrar essa carga em várias partes e tornar-la distribuída.
+Um design de sistema que não distribui a carga de maneira eficiente pode, invariavelmente, criar gargalos. Por exemplo, um ponto central de processamento de uma rotina em que a arquitetura  deveria ter a capacidade de quebrar essa carga em várias partes e tornar-la distribuída.
 
 \begin{equation}
 \text{Gargalo} = \text{Demanda} > \text{Capacidade}
@@ -172,7 +172,7 @@ O conceito de `"backpressure"`, ou `"repressão"` em software e, especialmente, 
 
 De acordo com o Wikipedia,
 
-> Backpressure, ou Repressão, é o termo usado para definir **uma resistência ao fluxo desejado de fluido através de tubos**. Obstruções ou curvas apertadas criam **contrapressão devido a perda de carga e queda de pressão**.
+> Backpressure, ou Repressão, é o termo usado para definir **uma resistência ao fluxo desejado de fluido através de tubos**. Obstruções ou curvas apertadas criam **contrapressão devido a perda de carga por atrito e queda de pressão**.
 
 ![Backpressure - Pipes](/assets/images/system-design/Back_pressure.jpg)
 
