@@ -92,7 +92,6 @@ Desenhando um cenário hipotético onde um sistema recebeu `6.000` requisições
 Representar matematicamente o throughput do sistema é muito valioso em termos de performance, **pois nos ajuda a entender até que ponto nosso sistema consegue atender antes de começar a mudar suas métricas de aceitação de tempo de resposta e taxa de erros**. Podemos utilizar o throughput dentro de períodos lógicos de tempo para efetuar operações de escalabilidade dinâmica, como veremos na seção de **escalabilidade**.
 
 
-
 <br>
 
 ### Tempo de Resposta
@@ -149,14 +148,14 @@ Essa métrica é particularmente útil para avaliar a confiabilidade e a qualida
 
 A capacidade, ou "capacity", no contexto da engenharia de software, refere-se à **quantidade máxima de trabalho que o sistema pode receber e processar de maneira eficaz em um determinado período de tempo**. É uma forma de medir e **encontrar o limite atual do sistema**, incluindo recursos como CPU, memória, armazenamento e largura de banda de rede, bem como a performance de algoritmos. Quando olhamos para a capacidade, monitorar os recursos e dependências pertinentes ao sistema é tão importante quanto monitorar o desempenho, principalmente quando trabalhamos em oportunidades de projetar sistemas pensados para curto, médio e longo prazo.
 
-Este conceito é fundamental na arquitetura e no design de sistemas, bem como no planejamento da infraestrutura geral dos componentes de software. A capacidade abrange vários aspectos do sistema, que vão desde a habilidade do sistema de **processar dados ou transações**, vinculado diretamente ao **poder de processamento computacional**, **velocidade desse processamento** e eficácia e eficiência, até a **capacidade de suportar uma quantidade de usuários ou processos simultaneamente**, **sem degradação do desempenho e com a capacidade de se adaptar a cargas de trabalho crescentes**, aumentando recursos conforme necessário para manter a experiência constante em meio a variações desses cenários.
+Este conceito é fundamental na arquitetura e no design de sistemas, bem como no planejamento da infraestrutura geral dos componentes de software. A capacidade abrange vários aspectos do sistema, que vão desde a habilidade do sistema de **processar dados ou transações**, vinculado diretamente ao **poder de processamento computacional**, **velocidade desse processamento**, eficácia e eficiência, até a **capacidade de suportar uma quantidade de usuários ou processos simultaneamente**, **sem degradação do desempenho e com a capacidade de se adaptar a cargas de trabalho crescentes**, aumentando recursos conforme necessário para manter a experiência constante em meio a variações desses cenários.
 
 Pensar e medir a capacidade de sistemas envolve não apenas o dimensionamento adequado dos recursos computacionais do sistema, mas também a implementação de estratégias para monitoramento, observabilidade, gerenciamento de desempenho, automações e escalabilidade.
 
 
 ## Gargalos de Capacidade
 
-Dentro do contexto de capacidade de software, "gargalos" referem-se a **pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual**. Esses gargalos podem afetar negativamente a capacidade geral do sistema de funcionar de maneira otimizada e podem ocorrer em várias áreas, incluindo hardware, software ou na arquitetura de rede. Isso pode incluir **CPU insuficiente, memória, espaço em disco, capacidade de rede**, entre várias outras coisas. Por exemplo, um servidor com CPU sobrecarregada não conseguirá processar requisições rapidamente. Erroneamente, profissionais de diversos níveis de senioridade podem associar gargalos sistêmicos à infraestrutura da aplicação, porém é muito mais comum cenários onde código mal otimizado ou algoritmos ineficientes, gerenciamento de concorrência, como deadlocks ou uso excessivo de bloqueios, podem limitar a capacidade do sistema e se tornar gargalos muito difíceis de lidar e superar no dia a dia de times de engenharia.
+Dentro do contexto de capacidade de software, "gargalos" referem-se a **pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual**. Esses gargalos podem afetar negativamente a capacidade geral do sistema de funcionar de maneira otimizada e podem ocorrer em várias áreas, incluindo hardware, software ou na arquitetura de rede. Isso pode incluir **CPU insuficiente, memória, espaço em disco e capacidade de rede**, entre várias outras coisas. Por exemplo, um servidor com CPU sobrecarregada não conseguirá processar requisições rapidamente. Erroneamente, profissionais de diversos níveis de senioridade podem associar gargalos sistêmicos à infraestrutura da aplicação, porém é muito mais comum cenários onde o código é mal otimizado ou possui algoritmos ineficientes, gerenciamento de concorrência, como deadlocks ou uso excessivo de bloqueios, podem limitar a capacidade do sistema e se tornar gargalos muito difíceis de lidar e superar no dia a dia de times de engenharia.
 
 Um design de sistema que não distribui a carga de maneira eficiente pode criar gargalos invariavelmente. Por exemplo, um ponto central de processamento de alguma rotina em uma arquitetura que deveria ter a capacidade de quebrar essa carga em várias partes e tornar-se distribuída.
 
@@ -165,6 +164,7 @@ Um design de sistema que não distribui a carga de maneira eficiente pode criar 
 \end{equation} 
 
 Identificar e resolver gargalos é crucial para otimizar a performance e a escalabilidade de sistemas de software. Isso geralmente envolve monitoramento detalhado, testes de desempenho e ajustes finos do sistema. Em ambientes de nuvem e sistemas distribuídos, a identificação de gargalos também pode incluir a análise da distribuição de carga e a escalabilidade dinâmica.
+
 
 ## Backpressure de Capacidade
 
@@ -195,7 +195,7 @@ Em um cenário mais crítico, entendendo que o `serviço C` consegue suportar at
 
 Analisar o custo por transação é muito interessante para avaliar a **eficiência e o custo-benefício da capacidade alocada para o sistema**. O cálculo do custo de transação em sistemas é uma métrica financeira que avalia o custo total associado à execução de uma operação ou transação. Essa métrica é particularmente relevante quando construímos sistemas em nuvens públicas, onde as considerações financeiras são altamente sensíveis. Podemos calcular o custo de transação com base nos dados de transações totais do cliente. Normalmente, essa métrica é coletada apenas das requisições provenientes do cliente final, não sendo multiplicada pelo número de subsistemas e microserviços transparentes às interações com o cliente.
 
-Essa métrica ajuda as organizações a entenderem melhor onde e como seus recursos estão sendo gastos e onde podem ser feitas economias ou melhorias. Ela pode ser representada pelo custo total da operação em questão dividido pelo número total de transações dentro do mesmo período de tempo.
+Essa métrica ajuda as organizações a entenderem melhor onde e como seus recursos estão sendo gastos e como podem ser feitas economias ou melhorias. Ela pode ser representada pelo custo total da operação em questão dividido pelo número total de transações dentro do mesmo período de tempo.
 
 \begin{equation} 
 \text{Custo por Transação} = \frac{\text{Custo Total Operacional}}{\text{Total de Transações}}
@@ -319,7 +319,7 @@ Nesse cenário, vamos presumir o seguinte:
 \text{Utilização de CPU} =  \{200\%\} 
 \end{equation}
 
-Agora, com o valor base de `Utilização de CPU` em `200%`, podemos aplicá-lo à fórmula base, usando uma utilização base de escala de 80% do uso da CPU e contabilizando as `Réplicas Atuais` como `6`.
+Agora, com o valor de `Utilização de CPU` em `200%`, podemos aplicá-lo à fórmula base, usando uma utilização de escala de 80% do uso da CPU e contabilizando as `Réplicas Atuais` como `6`.
 
 \begin{equation} 
 \text{Réplicas Desejadas} = \text{6} \times \left( \frac{\text{200}}{\text{80}} \right) 
@@ -406,6 +406,7 @@ Existem muitas possibilidades relacionadas à escalabilidade, e ao integrar essa
 #### Obrigado aos Revisores
 
 * [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
+* [Klecianny Melo](https://twitter.com/kecbm)
 
 > Imagens geradas pelo DALL-E e Bing
 
