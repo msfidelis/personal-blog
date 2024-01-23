@@ -13,7 +13,7 @@ Esse é mais um artigo da série sobre System Design. Nele, vamos abordar três 
 
 <br>
 
-# Definindo Performance 
+# Definindo Performance
 
 Performance, em termos simplistas, refere-se a **quão rápido e eficiente um sistema ou algoritmo pode ser ao processar uma única transação**. Isso pode ser medido de **forma isolada** ou em meio a um **grande volume de outras transações**. A aplicação prática da "performance" envolve diversos termos técnicos e complexidades dentro das disciplinas que compõem a engenharia de software em geral, sendo mais perceptível pelos usuários finais de nossas soluções.
 
@@ -27,44 +27,44 @@ A performance deve ser considerada em relação aos requisitos funcionais e não
 
 É crucial entender como o desempenho do sistema varia sob diferentes condições, como picos de carga, falhas de componentes ou mudanças no padrão de uso.
 
-A avaliação de performance de um sistema ou algoritmo **requer mecanismos de monitoramento de indicadores chave**, também conhecidos como KPIs, Service Levels, entre outros. **Observar essas métricas de forma sequencial e contínua por vários períodos de tempo pode trazer ideias valiosas sobre como o sistema está operando** e dar autonomia para as times de engenharia tomarem decisões sobre design, manutenção e operação do mesmo, além de fornecer dados para identificação de tendências, fazer comparação de benchmarks, projetar e prever capacidade e identificar e priorizar quais partes precisam de melhoria de forma mais urgente.
+A avaliação de performance de um sistema ou algoritmo **requer mecanismos de monitoramento de indicadores chave**, também conhecidos como KPIs, Service Levels, entre outros. **Observar essas métricas de forma sequencial e contínua por vários períodos de tempo pode trazer ideias valiosas sobre como o sistema está operando** e dar autonomia para os times de engenharia tomarem decisões sobre design, manutenção e operação do mesmo, além de fornecer dados para identificar tendências, fazer comparação de benchmarks, projetar e prever capacidade e identificar e priorizar quais partes precisam de melhoria de forma mais urgente.
 
 Existem várias métricas importantes na hora de avaliar um sistema, algumas são padrões quase universais e podem ser aplicadas em quase todos os cenários, enquanto outras são provenientes de negócios e necessidades mais específicas que só são aplicadas e fazem sentido em contextos muito específicos. **Saber identificar oportunidades de métricas a serem monitoradas representa um trabalho árduo e contínuo que depende muito da maturidade e das "horas de voo" de um software**.
 
 Para este texto, vamos trabalhar com o "feijão com arroz" das métricas de performance, também conhecidas no mercado como `Four Golden Signals`.
 
-Os "Four Golden Signals" são um conceito dentro do monitoramento e observabilidade de sistemas, popularizado pelo Google no livro "Site Reliability Engineering" (SRE). Eles representam as quatro métricas mais importantes que você deve monitorar para entender a saúde de um sistema distribuído. Essas métricas ajudam os engenheiros a detectar problemas rapidamente e a manter sistemas estáveis e eficientes. Essas métricas são Saturação, Tráfego, Tempo de Resposta e Taxa de Erros.
+Os "Four Golden Signals" são um conceito dentro do monitoramento e observabilidade de sistemas, popularizado pelo Google no livro "[Site Reliability Engineering](https://sre.google/sre-book/table-of-contents/)" (SRE). Eles representam as quatro métricas mais importantes que você deve monitorar para entender a saúde de um sistema distribuído. Essas métricas ajudam os engenheiros a detectar problemas rapidamente e a manter sistemas estáveis e eficientes. Essas métricas são `Saturação`, `Tráfego`, `Tempo de Resposta` e `Taxa de Erros`.
 
-Vamos abordar essas métricas não do ponto de observabilidade, pois mais adiante teremos um capítulo dedicado a esse tema onde vamos abordar esse e mais alguns conceitos de forma mais profunda, mas sim do ponto de vista de performance.
+Não vamos abordar essas métricas do ponto de observabilidade, pois mais adiante teremos um capítulo dedicado a esse tema onde vamos abordar esse e mais alguns conceitos de forma mais profunda, mas sim do ponto de vista de performance.
 
 
 <br>
 
 ### Utilização e Saturação de Recursos
 
-A `Saturação` de Recursos refere-se a **quanto do recurso disponível está sendo usado**. Um sistema pode estar saturado em termos de CPU, memória, disco ou mesmo um pool de conexões de rede. **Medir a saturação ajuda a prever problemas de desempenho e a entender quando é necessário escalar recursos**.
+A `Utilização` de Recursos refere-se a **quanto do recurso disponível está sendo usado**. Um recurso é considerado `Saturado` quando a sua taxa de utilização se aproxima do máximo valor possível ou esperado. Um sistema pode estar saturado em termos de CPU, memória, disco ou mesmo um pool de conexões de rede. **Medir a saturação ajuda a prever problemas de desempenho e a entender quando é necessário escalar recursos**.
 
-**Algoritmos que fazem uso intensivo de recursos computacionais como CPU, Memória, Disco e Rede costumam ser muito sensíveis a otimizações e degradações desses recursos**. Ter visibilidade da utilização de todas as capacidades disponíveis para um sistema é essencial para **determinar a saúde do serviço e fornecer insights sobre otimização, custos e desempenho**.
+**Algoritmos que fazem uso intensivo de recursos computacionais como CPU, Memória, Disco e Rede costumam ser muito sensíveis a otimizações e degradações desses recursos**. Ter visibilidade da taxa de utilização em relação às capacidades disponíveis desses recurses em um sistema é essencial para **determinar a saúde do serviço e fornecer insights sobre otimização, custos e desempenho**.
 
-O objetivo de avaliar a saturação, juntamente com outras métricas de desempenho, nos possibilita identificar gargalos de recursos, como por exemplo, "a partir de qual porcentagem de uso de CPU meu tempo de resposta e taxa de erro começam a ser afetados?" ou "a partir de qual uso de I/O de escrita e leitura de disco meu banco de dados começa a degradar o tempo de consulta?". Responder a essas perguntas de forma eficiente evidencia a maturidade e a senioridade de equipes e produtos.
+O objetivo de avaliar a saturação, juntamente com outras métricas de desempenho, é poder identificar gargalos de recursos como, por exemplo, "a partir de qual porcentagem de uso de CPU meu tempo de resposta e taxa de erro começam a ser afetados?" ou "a partir de qual uso de I/O de escrita e leitura de disco meu banco de dados começa a degradar o tempo de consulta?". Responder a essas perguntas de forma eficiente evidencia a maturidade e a senioridade de equipes e produtos.
 
-Podemos representar matematicamente a utilização e saturação de um recurso computacional disponível por meio de uma fórmula simples:
+Podemos representar matematicamente a utilização e saturação de um recurso computacional por meio de uma fórmula simples:
 
-\begin{equation} 
+\begin{equation}
 \text{Utilização de Recurso} = \left( \frac{\text{Recurso Utilizado}}{\text{Recurso Disponível}} \right) \times 100
-\end{equation} 
+\end{equation}
 
-Vamos imaginar um caso em que precisamos analisar o uso de memória alocada para um sistema. Basicamente, presumimos um cenário em que temos disponível para executar um algoritmo `2 GB` de RAM, ou `2048 MB`. Após coletar métricas e observar, foi constatado que o uso atual dessa memória disponível está em `1 GB`, ou `1024 MB`.
+Vamos imaginar um caso em que precisamos analisar o uso de memória alocada para um sistema. Basicamente, presumimos um cenário em que temos disponível para executar um algoritmo `2 GB` de RAM, ou `2048 MB`. Após coletar métricas e observar o algoritme em execução, foi constatado que o uso atual dessa memória disponível está em `1 GB`, ou `1024 MB`.
 
-\begin{equation} 
+\begin{equation}
 \text{Utilização de Memória} = \left( \frac{1024}{2048} \right) \times 100
-\end{equation} 
+\end{equation}
 
-\begin{equation} 
+\begin{equation}
 \text{Utilização de Memória} = 50\%
-\end{equation} 
+\end{equation}
 
-De acordo com o cálculo no cenário hipotético, a utilização de memória do sistema está em 50% da capacidade disponível. Analisar a utilização de recursos é crucial para otimizar o desempenho, fornecendo informações necessárias para criar sistemas mais econômicos, eficientes e performáticos.
+De acordo com o cálculo no cenário hipotético, a utilização de memória do sistema está em 50% da capacidade disponível. Um recurso pode estar saturado e começar a afetar o desempenho do sistema mesmo antes da utilização chegar a 100%. Analisar a utilização de recursos é crucial para otimizar o desempenho de um serviço e fornecer informações necessárias para criar sistemas mais econômicos, eficientes e performáticos.
 
 
 <br>
@@ -75,21 +75,21 @@ O `Throughput`, de maneira geral, descreve o **número de operações que um sis
 
 A fórmula utilizada para calcular o throughput pode ser representada matematicamente da seguinte forma:
 
-\begin{equation} 
-\text{Throughput} = \frac{\text{Total de Unidades de Trabalho Processadas}}{\text{Tempo Total}}
-\end{equation} 
+\begin{equation}
+\text{Throughput} = \frac{\text{Unidades de Trabalho Processadas}}{\text{Tempo}}
+\end{equation}
 
 Desenhando um cenário hipotético onde um sistema recebeu `6.000` requisições no último minuto, podemos calcular o throughput **por segundo** da seguinte forma:
 
-\begin{equation} 
+\begin{equation}
 \text{Throughput} = \frac{6000}{60}
-\end{equation} 
+\end{equation}
 
-\begin{equation} 
+\begin{equation}
 \text{Throughput} = 100.00 rps
-\end{equation} 
+\end{equation}
 
-Representar matematicamente o throughput do sistema é muito valioso em termos de performance, **pois nos ajuda a entender até que ponto nosso sistema consegue atender antes de começar a mudar suas métricas de aceitação de tempo de resposta e taxa de erros**. Podemos utilizar o throughput dentro de períodos lógicos de tempo para efetuar operações de escalabilidade dinâmica, como veremos na seção de **escalabilidade**.
+Representar matematicamente o throughput do sistema é muito valioso em termos de performance, **pois nos ajuda a entender até que ponto nosso sistema consegue atender requisições antes de começar a afetar suas métricas de aceitação de tempo de resposta e taxa de erros**. Podemos utilizar o throughput dentro de períodos lógicos de tempo para efetuar operações de escalabilidade dinâmica, como veremos na seção de **escalabilidade**.
 
 
 
@@ -97,21 +97,19 @@ Representar matematicamente o throughput do sistema é muito valioso em termos d
 
 ### Tempo de Resposta
 
-O `Tempo de Resposta` refere-se ao tempo total necessário para completar uma tarefa ou transação específica. Em sistemas escaláveis, é importante que a latência não aumente significativamente à medida que a utilização da aplicação se eleva. O tempo de resposta é composto pela soma da latência e do tempo de processamento, e é medido através de um cliente e um servidor.
+O `Tempo de Resposta` é o **tempo total que leva desde o envio de uma solicitação até o recebimento da resposta**. Ele inclui tanto a latência (tempo de ida e volta da rede) quanto o tempo de processamento no servidor, sendo uma soma de ambos na maioria dos casos. Em um contexto de usuário final, é o tempo que leva desde que um usuário realiza uma ação (como clicar em um link ou pressionar uma tecla) até que ele veja o resultado dessa ação, e portanto é medido entre um client um servidor. Em sistemas escaláveis, é importante que o tempo de resposta não aumente significativamente à medida que a utilização da aplicação se eleva.
 
 A `Latência` pode ser definida como o **atraso de rede ou o tempo que uma solicitação leva para viajar do remetente ao receptor**. Em outras palavras, é o atraso entre o início de uma ação e o início da reação, podendo ser influenciado pela distância física entre os comunicantes, pela velocidade do meio de transmissão e por qualquer atraso introduzido por dispositivos intermediários, como roteadores.
 
 O `Tempo de Processamento` é o tempo que um sistema leva para **processar uma solicitação após recebê-la**. Esse termo é frequentemente usado para descrever o tempo necessário para que uma CPU ou servidor processe uma tarefa específica.
 
-O `Tempo de Resposta` é o **tempo total que leva desde o envio de uma solicitação até o recebimento da resposta**. Ele inclui tanto a latência (tempo de ida e volta da rede) quanto o tempo de processamento no servidor, sendo uma soma de ambos na maioria dos casos. Em um contexto de usuário final, é o tempo que leva desde que um usuário realiza uma ação (como clicar em um link ou pressionar uma tecla) até que ele veja o resultado dessa ação.
+O cálculo do tempo de resposta pode ser representado da seguinte forma, a partir do cliente, subtraindo o tempo de início da requisição do tempo final da resposta observada:
 
-Além disso, o cálculo do tempo de resposta pode ser representado da seguinte forma, a partir do cliente, subtraindo o tempo inicial da requisição do tempo final da resposta observada:
-
-\begin{equation} 
+\begin{equation}
 \text{Tempo de Resposta} = \text{Timestamp da Resposta} - \text{Timestamp da Requisição}
-\end{equation} 
+\end{equation}
 
-Todas as três variáveis apresentadas podem ser observadas e medidas independentemente de acordo com as necessidades do ambiente, inclusive sendo uma boa prática para executar troubleshooting mais granular em investigações de problemas, como identificar em que ponto exato da transação ocorreu a degradação em questão.
+Todas as três variáveis apresentadas podem ser observadas e medidas independentemente e em diversos pontos da operação, de acordo com as necessidades do ambiente, inclusive sendo uma boa prática para executar troubleshooting mais granular em investigações de problemas, como identificar em que ponto exato da transação ocorreu a degradação em questão.
 
 
 <br>
@@ -124,19 +122,19 @@ A taxa de erros corresponde à porcentagem de todas as requisições que resulta
 
 Para calcular a taxa de erros de um sistema, geralmente usamos uma fórmula simples que relaciona o número de eventos de erro com o número total de eventos ou tentativas. A taxa de erros é frequentemente expressa como uma porcentagem. Aqui está a fórmula básica:
 
-\begin{equation} 
+\begin{equation}
 \text{Taxa de Erro} = \left( \frac{\text{Número de Erros}}{\text{Número Total de Tentativas ou Eventos}} \right) \times 100
-\end{equation} 
+\end{equation}
 
 Suponha que você tenha um sistema que processou 1.000 transações, das quais 50 resultaram em erros. A taxa de erros seria calculada da seguinte forma:
 
-\begin{equation} 
+\begin{equation}
 \text{Taxa de Erro} = \left( \frac{50}{1000} \right) \times 100
-\end{equation} 
+\end{equation}
 
-\begin{equation} 
+\begin{equation}
 \text{Taxa de Erro} = 5.0\%
-\end{equation} 
+\end{equation}
 
 Essa métrica é particularmente útil para avaliar a confiabilidade e a qualidade de sistemas de software, especialmente em ambientes de produção onde a estabilidade é crítica. Acompanhar a taxa de erros ao longo do tempo pode ajudar a identificar tendências, avaliar o impacto de mudanças ou atualizações no sistema e determinar áreas que podem precisar de melhorias.
 
@@ -149,30 +147,32 @@ Essa métrica é particularmente útil para avaliar a confiabilidade e a qualida
 
 A capacidade, ou "capacity", no contexto da engenharia de software, refere-se à **quantidade máxima de trabalho que o sistema pode receber e processar de maneira eficaz em um determinado período de tempo**. É uma forma de medir e **encontrar o limite atual do sistema**, incluindo recursos como CPU, memória, armazenamento e largura de banda de rede, bem como a performance de algoritmos. Quando olhamos para a capacidade, monitorar os recursos e dependências pertinentes ao sistema é tão importante quanto monitorar o desempenho, principalmente quando trabalhamos em oportunidades de projetar sistemas pensados para curto, médio e longo prazo.
 
-Este conceito é fundamental na arquitetura e no design de sistemas, bem como no planejamento da infraestrutura geral dos componentes de software. A capacidade abrange vários aspectos do sistema, que vão desde a habilidade do sistema de **processar dados ou transações**, vinculado diretamente ao **poder de processamento computacional**, **velocidade desse processamento** e eficácia e eficiência, até a **capacidade de suportar uma quantidade de usuários ou processos simultaneamente**, **sem degradação do desempenho e com a capacidade de se adaptar a cargas de trabalho crescentes**, aumentando recursos conforme necessário para manter a experiência constante em meio a variações desses cenários.
+Este conceito é fundamental na arquitetura e no design de sistemas, bem como no planejamento da infraestrutura geral dos componentes de software. A capacidade abrange vários aspectos do sistema, que vão desde a habilidade do sistema de **processar dados ou transações**, o que está vinculado diretamente ao **poder de processamento computacional** e a **velocidade, eficácia e eficiência desse processamento**, até a **capacidade de suportar uma quantidade de usuários ou processos simultaneamente**, **sem degradação do desempenho e conseguindo se adaptar a cargas de trabalho crescentes**, aumentando recursos conforme necessário para manter a experiência constante dos usuários em meio a variações dos cenários de carga.
 
 Pensar e medir a capacidade de sistemas envolve não apenas o dimensionamento adequado dos recursos computacionais do sistema, mas também a implementação de estratégias para monitoramento, observabilidade, gerenciamento de desempenho, automações e escalabilidade.
 
 
 ## Gargalos de Capacidade
 
-Dentro do contexto de capacidade de software, "gargalos" referem-se a **pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual**. Esses gargalos podem afetar negativamente a capacidade geral do sistema de funcionar de maneira otimizada e podem ocorrer em várias áreas, incluindo hardware, software ou na arquitetura de rede. Isso pode incluir **CPU insuficiente, memória, espaço em disco, capacidade de rede**, entre várias outras coisas. Por exemplo, um servidor com CPU sobrecarregada não conseguirá processar requisições rapidamente. Erroneamente, profissionais de diversos níveis de senioridade podem associar gargalos sistêmicos à infraestrutura da aplicação, porém é muito mais comum cenários onde código mal otimizado ou algoritmos ineficientes, gerenciamento de concorrência, como deadlocks ou uso excessivo de bloqueios, podem limitar a capacidade do sistema e se tornar gargalos muito difíceis de lidar e superar no dia a dia de times de engenharia.
+Dentro do contexto de capacidade de software, "gargalos" referem-se a **pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual**. Esses gargalos podem afetar negativamente a capacidade geral do sistema de funcionar de maneira otimizada e podem ocorrer em várias áreas, incluindo hardware, software ou na arquitetura de rede. Isso pode incluir **CPU, memória, espaço em disco ou capacidade de rede insuficientes**, entre várias outras coisas. Por exemplo, um servidor com CPU sobrecarregada não conseguirá processar requisições rapidamente. Erroneamente, profissionais de diversos níveis de senioridade podem associar gargalos sistêmicos à infraestrutura da aplicação, porém é muito mais comum cenários onde código mal otimizado, algoritmos ineficientes ou gerenciamento de concorrência (como deadlocks ou uso excessivo de bloqueios) podem limitar a capacidade do sistema e se tornar gargalos muito difíceis de lidar e superar no dia a dia de times de engenharia.
 
-Um design de sistema que não distribui a carga de maneira eficiente pode criar gargalos invariavelmente. Por exemplo, um ponto central de processamento de alguma rotina em uma arquitetura que deveria ter a capacidade de quebrar essa carga em várias partes e tornar-se distribuída.
+Um design de sistema que não distribui a carga de maneira eficiente pode, invariavelmente, criar gargalos. Por exemplo, um ponto central de processamento de um rotina em que a arquitetura  deveria ter a capacidade de quebrar essa carga em várias partes e tornar-la distribuída.
 
-\begin{equation} 
+\begin{equation}
 \text{Gargalo} = \text{Demanda} > \text{Capacidade}
-\end{equation} 
+\end{equation}
 
 Identificar e resolver gargalos é crucial para otimizar a performance e a escalabilidade de sistemas de software. Isso geralmente envolve monitoramento detalhado, testes de desempenho e ajustes finos do sistema. Em ambientes de nuvem e sistemas distribuídos, a identificação de gargalos também pode incluir a análise da distribuição de carga e a escalabilidade dinâmica.
 
+Um ponto importante de se lembrar é que, ao resolver um ponto de gargalo a carga sobre os sistemas após esse ponto irão receber mais carga, o que pode gerar um novo gargalo. Portanto a análise e busca de gargalos na capacidade do sistema é um processo dinâmico e contínuo.
+
 ## Backpressure de Capacidade
 
-O conceito de `"backpressure"`, ou `"repressão"` em software e, especialmente, em arquiteturas baseadas em microserviços, também pode ter várias definições dependendo de onde é empregado. Em alguns contextos, o backpressure pode ser a capacidade ou um mecanismo intencional de um sistema para gerenciar sua entrada/saída, evitando gargalos de processamento. Aqui, vamos usar a definição da engenharia física, mais precisamente da gestão de fluidos, onde o termo se refere à resistência oposta ao movimento de um fluido.
+O conceito de `"backpressure"`, ou `"repressão"` em software e, especialmente, em arquiteturas baseadas em microserviços, também pode ter várias definições dependendo de onde é empregado. Em alguns contextos, o backpressure pode ser a capacidade ou um mecanismo intencional de um sistema para gerenciar sua entrada/saída, evitando gargalos de processamento. Aqui, vamos usar a definição da engenharia física, mais precisamente da gestão de fluidos, onde o termo se refere à resistência oposta ao movimento de um fluido.
 
 De acordo com o Wikipedia,
 
-> Backpressure, ou Repressão, é o termo usado para definir **uma resistência ao fluxo desejado de fluido através de tubos**. Obstruções ou curvas apertadas criam **contrapressão devido a perda de atrito e queda de pressão**.
+> Backpressure, ou Repressão, é o termo usado para definir **uma resistência ao fluxo desejado de fluido através de tubos**. Obstruções ou curvas apertadas criam **contrapressão devido a perda de carga e queda de pressão**.
 
 ![Backpressure - Pipes](/assets/images/system-design/Back_pressure.jpg)
 
