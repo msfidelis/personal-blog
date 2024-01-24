@@ -92,7 +92,6 @@ Desenhando um cenário hipotético onde um sistema recebeu `6.000` requisições
 Representar matematicamente o throughput do sistema é muito valioso em termos de performance, **pois nos ajuda a entender até que ponto nosso sistema consegue atender requisições antes de começar a afetar suas métricas de aceitação de tempo de resposta e taxa de erros**. Podemos utilizar o throughput dentro de períodos lógicos de tempo para efetuar operações de escalabilidade dinâmica, como veremos na seção de **escalabilidade**.
 
 
-
 <br>
 
 ### Tempo de Resposta
@@ -149,6 +148,7 @@ A capacidade, ou "capacity", no contexto da engenharia de software, refere-se à
 
 Este conceito é fundamental na arquitetura e no design de sistemas, bem como no planejamento da infraestrutura geral dos componentes de software. A capacidade abrange vários aspectos do sistema, que vão desde a habilidade do sistema de **processar dados ou transações**, o que está vinculado diretamente ao **poder de processamento computacional** e a **velocidade, eficácia e eficiência desse processamento**, até a **capacidade de suportar uma quantidade de usuários ou processos simultaneamente**, **sem degradação do desempenho e conseguindo se adaptar a cargas de trabalho crescentes**, aumentando recursos conforme necessário para manter a experiência constante dos usuários em meio a variações dos cenários de carga.
 
+
 Pensar e medir a capacidade de sistemas envolve não apenas o dimensionamento adequado dos recursos computacionais do sistema, mas também a implementação de estratégias para monitoramento, observabilidade, gerenciamento de desempenho, automações e escalabilidade.
 
 
@@ -195,7 +195,7 @@ Em um cenário mais crítico, entendendo que o `serviço C` consegue suportar at
 
 Analisar o custo por transação é muito interessante para avaliar a **eficiência e o custo-benefício da capacidade alocada para o sistema**. O cálculo do custo de transação em sistemas é uma métrica financeira que avalia o custo total associado à execução de uma operação ou transação. Essa métrica é particularmente relevante quando construímos sistemas em nuvens públicas, onde as considerações financeiras são altamente sensíveis. Podemos calcular o custo de transação com base nos dados de transações totais do cliente. Normalmente, essa métrica é coletada apenas das requisições provenientes do cliente final, não sendo multiplicada pelo número de subsistemas e microserviços transparentes às interações com o cliente.
 
-Essa métrica ajuda as organizações a entenderem melhor onde e como seus recursos estão sendo gastos e onde podem ser feitas economias ou melhorias. Ela pode ser representada pelo custo total da operação em questão dividido pelo número total de transações dentro do mesmo período de tempo.
+Essa métrica ajuda as organizações a entenderem melhor onde e como seus recursos estão sendo gastos e como podem ser feitas economias ou melhorias. Ela pode ser representada pelo custo total da operação em questão dividido pelo número total de transações dentro do mesmo período de tempo.
 
 \begin{equation} 
 \text{Custo por Transação} = \frac{\text{Custo Total Operacional}}{\text{Total de Transações}}
@@ -319,7 +319,7 @@ Nesse cenário, vamos presumir o seguinte:
 \text{Utilização de CPU} =  \{200\%\} 
 \end{equation}
 
-Agora, com o valor base de `Utilização de CPU` em `200%`, podemos aplicá-lo à fórmula base, usando uma utilização base de escala de 80% do uso da CPU e contabilizando as `Réplicas Atuais` como `6`.
+Agora, com o valor de `Utilização de CPU` em `200%`, podemos aplicá-lo à fórmula base, usando uma utilização de escala de 80% do uso da CPU e contabilizando as `Réplicas Atuais` como `6`.
 
 \begin{equation} 
 \text{Réplicas Desejadas} = \text{6} \times \left( \frac{\text{200}}{\text{80}} \right) 
@@ -407,7 +407,15 @@ Existem muitas possibilidades relacionadas à escalabilidade, e ao integrar essa
 
 * [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
 
+* [Luiz Aoqui, o revisor universal da comunidade](https://twitter.com/luiz_aoqui)
+
+* [Klecianny Melo](https://twitter.com/kecbm)
+
+* [Pedro Amaral](https://twitter.com/predotaku)
+
 > Imagens geradas pelo DALL-E e Bing
+
+<br>
 
 #### Referências
 
