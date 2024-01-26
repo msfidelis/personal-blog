@@ -138,6 +138,16 @@ Suponha que você tenha um sistema que processou 1.000 transações, das quais 5
 Essa métrica é particularmente útil para avaliar a confiabilidade e a qualidade de sistemas de software, especialmente em ambientes de produção onde a estabilidade é crítica. Acompanhar a taxa de erros ao longo do tempo pode ajudar a identificar tendências, avaliar o impacto de mudanças ou atualizações no sistema e determinar áreas que podem precisar de melhorias.
 
 
+### Utilizando Percentis
+
+Os percentis são uma ferramenta poderosa para análise de performance em sistemas, oferecendo uma visão mais completa do comportamento do sistema do que simplesmente se apoiar na média. Eles são particularmente úteis para entender a distribuição de um conjunto de dados, como tempos de resposta ou utilização de recursos, e podem revelar insights valiosos que a média pode esconder, como outliers e spikes de utilização que não são refletidos pela baixa utilização constante da mesma métrica. 
+
+Um percentil é um valor abaixo do qual uma certa percentagem dos dados cai. Por exemplo, o 90º percentil de tempo de resposta é o valor abaixo do qual 90% das respostas são mais rápidas. Usar percentis permite aos engenheiros identificar e analisar as variações extremas, como casos em que o sistema se comporta lentamente. Percentis altos (como 95º ou 99º) são cruciais para identificar comportamentos anormais e extremos do sistema que podem afetar negativamente a experiência do usuário.
+
+Imagine um cenário onde estamos medindo o tempo de resposta de um serviço web. Após coletar dados, observamos que o tempo médio de resposta é de 200ms. No entanto, ao analisar os percentis, descobrimos que o 95º percentil é de 800ms e o 99º percentil é de 1200ms. Isso indica que, embora a maioria das requisições seja rápida, existe um número significativo de casos onde a resposta é muito mais lenta do que a média sugere.
+
+Ao invés de considerar apenas o tempo médio de resposta, olhar para os percentis (como 50º, 95º, 99º) pode mostrar como o sistema realmente se comporta sob diferentes condições, da mesma forma, analisar percentis da utilização de CPU, memória, ou I/O de disco pode revelar picos que não são evidentes quando se observa apenas a média.
+
 <br>
 
 # Definindo Capacidade
@@ -436,6 +446,12 @@ Existem muitas possibilidades relacionadas à escalabilidade, e ao integrar essa
 [Lei de Amdahl](https://pt.wikipedia.org/wiki/Lei_de_Amdahl)
 
 [Escalabilidade](https://pt.wikipedia.org/wiki/Escalabilidade)
+
+[AppDynamics: Percentiles Made Easy](https://www.appdynamics.com/blog/product/percentiles-made-easy/)
+
+[Dynatrace: Why averages suck and percentiles are great](https://www.dynatrace.com/news/blog/why-averages-suck-and-percentiles-are-great/)
+
+[Response times and what to make of their percentile values](https://www.ombulabs.com/blog/performance/response-times-and-what-to-make-of-their-percentile-values.html)
 
 [Um mergulho profundo na lei de Amdahl e na lei de Gustafson](https://hackernoon.com/pt/um-mergulho-profundo-na-lei-amdahls-e-na-lei-gustafsons)
 
