@@ -195,11 +195,11 @@ Em um cenário mais crítico, entendendo que o `serviço C` consegue suportar at
 
 Analisar o custo por transação é muito interessante para avaliar a **eficiência e o custo-benefício da capacidade alocada para o sistema**. O cálculo do custo de transação em sistemas é uma métrica financeira que avalia o custo total associado à execução de uma operação ou transação. Essa métrica é particularmente relevante quando construímos sistemas em nuvens públicas, onde as considerações financeiras são altamente sensíveis. Podemos calcular o custo de transação com base nos dados de transações totais do cliente. Normalmente, essa métrica é coletada apenas das requisições provenientes do cliente final, não sendo multiplicada pelo número de subsistemas e microserviços transparentes às interações com o cliente.
 
-Essa métrica ajuda as organizações a entenderem melhor onde e como seus recursos estão sendo gastos e como podem ser feitas economias ou melhorias. Ela pode ser representada pelo custo total da operação em questão dividido pelo número total de transações dentro do mesmo período de tempo.
+Essa métrica ajuda organizações a entenderem melhor onde e como seus recursos estão sendo gastos e como podem ser feitas economias ou melhorias. Ela pode ser representada pelo custo total da operação em questão dividido pelo número total de transações dentro do mesmo período de tempo.
 
-\begin{equation} 
+\begin{equation}
 \text{Custo por Transação} = \frac{\text{Custo Total Operacional}}{\text{Total de Transações}}
-\end{equation} 
+\end{equation}
 
 Em sistemas com padrões de demanda variáveis, o custo por transação pode mudar ao longo do tempo. É importante considerar os picos de demanda e como eles afetam o custo médio. **Geralmente, um custo por transação mais baixo indica maior eficiência e uso eficaz dos recursos.**
 
@@ -208,11 +208,9 @@ Em sistemas com padrões de demanda variáveis, o custo por transação pode mud
 
 # Definindo Escalabilidade
 
-Escalabilidade é a **capacidade de um sistema, aplicação ou negócio de crescer e lidar com um aumento na carga de trabalho, sem comprometer a qualidade, desempenho e eficiência**. Isso pode incluir o aumento de usuários, transações, dados ou recursos. É um atributo crítico para sistemas que esperam um aumento no volume de usuários ou dados. É uma característica de design que indica quão bem um sistema pode se adaptar a cargas de trabalho maiores ou menores.
+Escalabilidade é a **capacidade de um sistema, aplicação ou negócio de crescer e lidar com um aumento na carga de trabalho, sem comprometer a qualidade, desempenho e eficiência**. Isso pode incluir o aumento de usuários, transações, dados ou recursos. É um atributo crítico para sistemas que esperam um aumento no volume de usuários ou dados e uma característica de design que indica quão bem um sistema pode se adaptar a cargas de trabalho maiores ou menores. Escalabilidade é especialmente importante em ambientes de nuvem, onde as demandas podem mudar rapidamente e os sistemas devem ser capazes de se adaptar a essas mudanças.
 
-De acordo com o livro *"Release It!" de Michael T. Nygard*, a escalabilidade pode ser definida de duas formas: A primeira forma descreve como o *Throughput* muda de acordo com variações de demanda, utilizando um gráfico de *requests por segundo* comparado com *tempo de resposta* de um sistema. A segunda forma se refere aos modos de escala que um sistema possui. Aqui, assim como no livro, vamos definir escalabilidade como a **capacidade de adicionar ou remover capacidade computacional a um sistema**. 
-
-A escalabilidade é um conceito importante no design de sistemas, pois é crucial para garantir que as aplicações e produtos possam lidar com um aumento na carga de trabalho sem sacrificar a qualidade ou o desempenho. Isso é especialmente importante em ambientes de nuvem, onde as demandas podem mudar rapidamente e os sistemas devem ser capazes de se adaptar a essas mudanças.
+De acordo com o livro *"Release It!" de Michael T. Nygard*, a escalabilidade pode ser definida de duas formas: A primeira forma descreve como o *Throughput* muda de acordo com variações de demanda, utilizando um gráfico de *requisições por segundo* comparado com *tempo de resposta* de um sistema. A segunda forma se refere aos modos de escala que um sistema possui. Aqui, assim como no livro, vamos definir escalabilidade como a **capacidade de adicionar ou remover capacidade computacional de um sistema**.
 
 <br>
 
@@ -220,7 +218,7 @@ A escalabilidade é um conceito importante no design de sistemas, pois é crucia
 
 A escalabilidade permite que os sistemas se adaptem rapidamente a mudanças no volume de tráfego ou demanda de recursos, garantindo um desempenho consistente mesmo sob carga variável. Em ambientes de negócios dinâmicos, a capacidade de escalar recursos conforme necessário é crucial para manter a continuidade e a eficiência operacional. Além disso, permite manter tempos de resposta rápidos e desempenho confiável, mesmo sob cargas leves, médias e pesadas, resultando em uma experiência de usuário mais satisfatória.
 
-Sistemas escaláveis podem ser mais econômicos, pois permitem um dimensionamento eficiente de recursos. Isso significa pagar apenas pelos recursos que são usados, reduzindo o desperdício e otimizando os custos operacionais. Além disso, facilita a implementação de novas funcionalidades e a expansão de negócios sem a necessidade de reestruturar completamente a infraestrutura existente já projetada.
+Sistemas escaláveis também podem ser mais econômicos, pois permitem dimensionar recursos de forma mais eficiente. Isso significa pagar apenas pelos recursos que são usados, reduzindo o desperdício e otimizando os custos operacionais. Também podem facilitar a implementação de novas funcionalidades e a expansão de negócios sem a necessidade de reestruturar completamente a infraestrutura existente já projetada.
 
 <br>
 
@@ -238,7 +236,7 @@ Para ilustrar essas ideias, consideremos um exemplo lúdico de uma empresa que g
 
 Uma das abordagens consideradas para resolver os problemas de superlotação dos ônibus foi substituir alguns veículos da frota por ônibus de 2 andares, o que dobraria a capacidade de cada veículo para transportar passageiros. Esse paralelo exemplifica como funciona a escalabilidade vertical.
 
-Podemos entender a escalabilidade vertical como o **processo de aumentar a capacidade de um componente, adicionando ou removendo mais recursos desse mesmo componente**. A escalabilidade vertical geralmente envolve **aumentar a capacidade de CPU, RAM, disco ou rede de um único recurso**, mas não se limita apenas a isso; também pode incluir otimizações em algoritmos para aumentar a capacidade de processamento de entrada/saída. Embora seja uma solução mais simples, a escalabilidade vertical frequentemente encontra limitações físicas e de custo.
+Podemos entender a escalabilidade vertical como o **processo de aumentar ou reduzir a capacidade de um componente, adicionando ou removendo mais recursos desse mesmo componente**. A escalabilidade vertical geralmente envolve **aumentar ou reduzir a capacidade de CPU, RAM, disco ou rede de um único recurso**, mas não se limita apenas a isso; também pode incluir otimizações em algoritmos para aumentar a capacidade de processamento de entrada/saída. Embora seja uma solução mais simples, a escalabilidade vertical frequentemente encontra limitações físicas e de custo.
 
 Em resumo, no design de sistemas que se baseiam na escalabilidade vertical, o foco está na **maximização do processamento e eficiência de um único servidor ou recurso**. Isso pode incluir a otimização de algoritmos e a escolha de tecnologias que maximizem o uso da CPU e da memória.
 
@@ -256,7 +254,7 @@ As operações de `Scale-up` e `Scale-down` são atividades que ocorrem no conte
 
 Outra proposta considerada para resolver o problema da superlotação de passageiros foi investir em mais unidades dos modelos de ônibus existentes em vez de substituir a frota por modelos que comportassem mais passageiros. Isso resultaria em mais veículos operando na rota, distribuindo os passageiros entre eles. Esse paralelo pode ser facilmente associado à forma como a escalabilidade horizontal funciona.
 
-A escalabilidade horizontal **refere-se à adição de mais nós, como servidores, contêineres ou réplicas, a um componente ou sistema existente**. Isso é conhecido como "scale out". Por exemplo, se você estiver executando uma aplicação web em um único nó e começar a receber muito tráfego, poderá adicionar mais réplicas ao sistema para compartilhar a carga de trabalho, normalmente usando um [Balanceador de Carga](/load-balancing/). Esse método é chamado de escalabilidade horizontal e pode ser implementado de forma eficaz com ferramentas de escalabilidade automática. Esse tipo de conceito também é conhecido como `elasticidade`. 
+A escalabilidade horizontal **refere-se à adição ou remoção de unidades computacionais, como servidores, contêineres ou réplicas, de um componente ou sistema existente**. Por exemplo, se você estiver executando uma aplicação web em um único nó e começar a receber muito tráfego, poderá adicionar mais réplicas ao sistema para compartilhar a carga de trabalho, normalmente usando um [Balanceador de Carga](/load-balancing/). A escalabilidade horizontal pode ser implementada de forma eficaz com ferramentas de escalabilidade automática. Esse tipo de conceito também é conhecido como `elasticidade`.
 
 Para implementar a escalabilidade horizontal de forma eficaz, os sistemas devem ser projetados com uma arquitetura distribuída que seja capaz de processar solicitações com paralelismo externo.
 
@@ -280,11 +278,11 @@ Vamos começar explorando vários cenários e métricas relevantes para monitora
 
 Para compreender como os processos de escalonamento funcionam, utilizaremos a seguinte fórmula base. O objetivo é encontrar a quantidade ideal de réplicas para atender aos requisitos do sistema observado:
 
-\begin{equation} 
-\text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Valor Atual da Variável}}{\text{Valor de Referência da Variável}} \right)
-\end{equation} 
+\begin{equation}
+\text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Valor Atual da Variável}}{\text{Valor Desejado da Variável}} \right)
+\end{equation}
 
-Inicialmente, essa fórmula pode parecer um tanto abstrata, mas exploraremos alguns exemplos para aplicá-la a diferentes cenários. Antes disso, é importante entender os termos usados na fórmula: "Réplicas Desejadas" representam a quantidade ideal de réplicas para o momento da aplicação, "Valor de Referência da Variável" é o limite máximo da métrica que estamos observando, e "Valor Atual da Variável" é o valor atual dessa métrica. Vamos aprofundar o entendimento por meio de exemplos.
+Inicialmente, essa fórmula pode parecer um tanto abstrata, mas exploraremos alguns exemplos para aplicá-la a diferentes cenários. Antes disso, é importante entender os termos usados na fórmula: "Réplicas Desejadas" representam a quantidade ideal de réplicas para o momento da aplicação, "Valor Desejado da Variável" é o valor que queremos que a métrica observada atinja, e "Valor Atual da Variável" é o valor atual dessa métrica. Vamos aprofundar o entendimento por meio de exemplos.
 
 <br>
 
@@ -294,14 +292,14 @@ Uma das maneiras mais simples de compreender o cálculo de capacidade é atravé
 
 A fórmula básica aplicada a esse cenário seria:
 
-\begin{equation} 
-\text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Utilização de CPU}}{\text{Utilização Base de CPU}} \right) 
+\begin{equation}
+\text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Utilização de CPU}}{\text{Utilização Desejada de CPU}} \right)
 \end{equation}
 
 Antes de aplicarmos a fórmula, precisamos calcular a `Utilização de CPU`. Para isso, usaremos uma fórmula intermediária, onde dividimos a **quantidade de recurso utilizado** pela **quantidade de recurso autorizado para uso** em relação a todos os recursos computacionais disponíveis. Vamos presumir que 1 core de CPU é composto por 1000m (milicores) para calcular a utilização. Esse exemplo é próximo das unidades utilizadas para capacidade de workloads em clusters de Kubernetes.
 
-\begin{equation} 
-\text{Utilização de Recurso} = \left( \frac{\text{Recurso Solicitado}}{\text{Recurso Disponível}} \right) \times 100\ 
+\begin{equation}
+\text{Utilização de Recurso} = \left( \frac{\text{Recurso Solicitado}}{\text{Recurso Disponível}} \right) \times 100\
 \end{equation}
 
 Nesse cenário, vamos presumir o seguinte:
@@ -309,24 +307,24 @@ Nesse cenário, vamos presumir o seguinte:
 - **Recurso de Cada Réplica**: Cada réplica pode utilizar 200m (200 milicores do sistema)
 - **Recurso Solicitado**: 1200m (1200 milicores do sistema, ou 1 core e 200 milicores)
 - **Recurso Disponível**: 600m (600 milicores do sistema)
-- **Utilização base de CPU**: 80%
+- **Utilização desejada de CPU**: 80%
 
-\begin{equation} 
-\text{Utilização de CPU} = \left( \frac{\text{1200m}}{\text{600m}} \right) \times 100\ 
+\begin{equation}
+\text{Utilização de CPU} = \left( \frac{\text{1200m}}{\text{600m}} \right) \times 100\
 \end{equation}
 
-\begin{equation} 
-\text{Utilização de CPU} =  \{200\%\} 
+\begin{equation}
+\text{Utilização de CPU} =  200\%
 \end{equation}
 
-Agora, com o valor de `Utilização de CPU` em `200%`, podemos aplicá-lo à fórmula base, usando uma utilização de escala de 80% do uso da CPU e contabilizando as `Réplicas Atuais` como `6`.
+Agora, com o valor de `Utilização de CPU` em `200%`, podemos aplicá-lo à fórmula base, usando uma utilização desejada de 80% do uso da CPU e contabilizando as `Réplicas Atuais` como `6`.
 
-\begin{equation} 
-\text{Réplicas Desejadas} = \text{6} \times \left( \frac{\text{200}}{\text{80}} \right) 
+\begin{equation}
+\text{Réplicas Desejadas} = \text{6} \times \left( \frac{\text{200}}{\text{80}} \right)
 \end{equation}
 
-\begin{equation} 
-\text{Réplicas Desejadas} = \text{15} 
+\begin{equation}
+\text{Réplicas Desejadas} = \text{15}
 \end{equation}
 
 Podemos concluir que, nesse cenário de avaliação, caso uma ação de reajuste na capacidade em escalabilidade horizontal fosse realizada, o ideal para contornar o gargalo devido à utilização de recursos de CPU seria aumentar o número de réplicas para 15 unidades. Essa lógica pode ser aplicada não apenas a CPU, mas também a qualquer outro tipo de recurso.
@@ -339,8 +337,8 @@ Uma das minhas abordagens favoritas para planejar capacidade e desenvolver estra
 
 A fórmula para calcular as réplicas desejadas é a seguinte:
 
-\begin{equation} 
-\text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Requisições por Réplica}}{\text{Base de Requisições}} \right) 
+\begin{equation}
+\text{Réplicas Desejadas} = \text{Réplicas Atuais} \times \left( \frac{\text{Requisições por Réplica}}{\text{Base de Requisições}} \right)
 \end{equation}
 
 Nesse cenário, vamos presumir o seguinte:
@@ -350,40 +348,40 @@ Nesse cenário, vamos presumir o seguinte:
 
 Para aplicar a fórmula, precisamos primeiro calcular o valor das `Requisições por Réplica`. Para isso, dividimos o **total de requisições recebidas no último minuto** pelo **período de tempo**, que é 60 segundos, e depois dividimos esse valor pelo número de réplicas atualmente em uso.
 
-\begin{equation} 
-\text{Transações por Segundo} = \frac{\text{Total de Requisições Atendidas}}{\text{Período de Tempo}} 
+\begin{equation}
+\text{Transações por Segundo} = \frac{\text{Total de Requisições Atendidas}}{\text{Período de Tempo}}
 \end{equation}
 
-\begin{equation} 
-\text{Transações por Segundo} = \frac{10.000}{60} 
+\begin{equation}
+\text{Transações por Segundo} = \frac{10.000}{60}
 \end{equation}
 
-\begin{equation} 
-\text{Transações por Segundo} = 166,66 
+\begin{equation}
+\text{Transações por Segundo} = 166,66
 \end{equation}
 
 No exemplo, estamos recebendo uma média de 166,66 requisições por segundo em todo o sistema. Agora, para determinar a quantidade média de requisições que cada réplica da aplicação está recebendo, dividimos essa quantidade de transações pelo número atual de réplicas:
 
-\begin{equation} 
-\text{Requisições por Réplica} = \frac{\text{Transações por Segundo}}{\text{Réplicas Atuais}} 
+\begin{equation}
+\text{Requisições por Réplica} = \frac{\text{Transações por Segundo}}{\text{Réplicas Atuais}}
 \end{equation}
 
-\begin{equation} 
-\text{Requisições por Réplica} = \frac{166,66}{6} 
+\begin{equation}
+\text{Requisições por Réplica} = \frac{166,66}{6}
 \end{equation}
 
-\begin{equation} 
-\text{Requisições por Réplica} = 27,78 
+\begin{equation}
+\text{Requisições por Réplica} = 27,78
 \end{equation}
 
 Agora temos todas as variáveis necessárias para aplicar a fórmula de capacidade e escalabilidade. Substituindo a variável `Requisições por Réplica` por `27,78` e a `Base de Requisições` por `15`, que representa a quantidade desejada de requisições por réplica sem maiores problemas, podemos calcular a quantidade ideal de réplicas:
 
-\begin{equation} 
-\text{Réplicas Desejadas} = 6 \times \left( \frac{27,78}{15} \right) 
+\begin{equation}
+\text{Réplicas Desejadas} = 6 \times \left( \frac{27,78}{15} \right)
 \end{equation}
 
-\begin{equation} 
-\text{Réplicas Desejadas} = 11 
+\begin{equation}
+\text{Réplicas Desejadas} = 11
 \end{equation}
 
 Com base nesse exemplo, podemos concluir que, em uma operação de reajuste de capacidade com foco na escalabilidade horizontal, o número ideal de réplicas a serem definidas para a aplicação seria 11 unidades.
@@ -448,4 +446,3 @@ Existem muitas possibilidades relacionadas à escalabilidade, e ao integrar essa
 [Livro: Engenharia de Confiabilidade do Google: Como o Google Administra Seus Sistemas de Produção](https://www.amazon.com.br/Engenharia-Confiabilidade-Google-Administra-Sistemas/dp/8575225170/ref=asc_df_8575225170/?tag=googleshopp00-20&linkCode=df0&hvadid=379787347388&hvpos=&hvnetw=g&hvrand=6082686845870695900&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9100425&hvtargid=pla-809202560056&psc=1&mcid=af7c2201dacb3b4dadd5fdd4007a440e)
 
 {% include latex.html %}
-
