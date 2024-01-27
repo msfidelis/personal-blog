@@ -8,8 +8,7 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Escalabilidade, Performance e Capacidade
 ---
 
-Esse é mais um artigo da série sobre System Design. Nele, vamos abordar três tópicos: **Capacidade**, **Performance** e **Escalabilidade** (*não necessariamente nessa ordem*), sempre com uma perspectiva conceitual de System Design. Ao escrever este capítulo, questionei-me se deveria dividí-lo em três textos separados. Contudo, fiquei tão satisfeito com o resultado que não consegui tomar essa decisão. À medida que criava tópicos, estudava e coletava referências, uma estranha sensação de querer que este capítulo nunca terminasse surgiu. Com base nisso, levantei muitos outros tópicos para explorar e abordar nos próximos artigos.
-
+Esse é mais um artigo da série sobre System Design. Nele, vamos abordar três tópicos: **Capacidade**, **Performance** e **Escalabilidade** (*não necessariamente nessa ordem*), sempre com uma perspectiva conceitual de System Design. Ao escrever este capítulo, me questionei se deveria dividí-lo em três textos separados. Contudo, fiquei tão satisfeito com o resultado que não consegui tomar essa decisão. À medida que criava tópicos, estudava e coletava referências, uma estranha sensação de querer que este capítulo nunca terminasse surgiu. Com base nisso, levantei muitos outros tópicos para explorar e abordar nos próximos artigos.
 
 <br>
 
@@ -137,16 +136,19 @@ Suponha que você tenha um sistema que processou 1.000 transações, das quais 5
 
 Essa métrica é particularmente útil para avaliar a confiabilidade e a qualidade de sistemas de software, especialmente em ambientes de produção onde a estabilidade é crítica. Acompanhar a taxa de erros ao longo do tempo pode ajudar a identificar tendências, avaliar o impacto de mudanças ou atualizações no sistema e determinar áreas que podem precisar de melhorias.
 
+<br>
 
-### Utilizando Percentis
+### Utilizando Percentis em Métricas de Performance
 
-Os percentis são uma ferramenta poderosa para análise de performance em sistemas, oferecendo uma visão mais completa do comportamento do sistema do que simplesmente se apoiar na média. Eles são particularmente úteis para entender a distribuição de um conjunto de dados, como tempos de resposta ou utilização de recursos, e podem revelar insights valiosos que a média pode esconder, como outliers e spikes de utilização que não são refletidos pela baixa utilização constante da mesma métrica. 
+Os percentis são medidas que **dividem uma amostra de dados ordenados em cem partes iguais**. São amplamente utilizados em estatísticas para entender a distribuição dos dados e representam ferramentas valiosas na análise de performance, oferecendo uma visão mais aprofundada do comportamento em cenários específicos. Em certos cenários, apoiar-se apenas na média pode ser insuficiente para analisar a performance de uma funcionalidade, sistema ou transação. Os percentis são particularmente úteis em conjuntos de dados como tempos de execução de operações em bancos de dados, tempos de resposta e utilização de recursos. Eles podem revelar insights valiosos que a média pode ocultar, como outliers e picos que normalmente não são refletidos por ela.
 
-Um percentil é um valor abaixo do qual uma certa percentagem dos dados cai. Por exemplo, o 90º percentil de tempo de resposta é o valor abaixo do qual 90% das respostas são mais rápidas. Usar percentis permite aos engenheiros identificar e analisar as variações extremas, como casos em que o sistema se comporta lentamente. Percentis altos (como 95º ou 99º) são cruciais para identificar comportamentos anormais e extremos do sistema que podem afetar negativamente a experiência do usuário.
+Um percentil é um valor abaixo do qual uma certa percentagem dos dados cai. Por exemplo, ao analisar tempos de resposta, o `90º percentil` ou `p90` é o **valor abaixo do qual 90% das respostas são mais rápidas**. Um p90 de 800ms indica que 90% das requisições são atendidas em até 800ms. Utilizar percentis permite aos engenheiros identificar e analisar variações extremas, como casos em que o sistema se comporta lentamente. Percentis altos (como 95º ou 99º) são extremamente úteis para identificar comportamentos anormais e extremos do sistema que podem estar afetando negativamente a experiência de uso.
 
-Imagine um cenário onde estamos medindo o tempo de resposta de um serviço web. Após coletar dados, observamos que o tempo médio de resposta é de 200ms. No entanto, ao analisar os percentis, descobrimos que o 95º percentil é de 800ms e o 99º percentil é de 1200ms. Isso indica que, embora a maioria das requisições seja rápida, existe um número significativo de casos onde a resposta é muito mais lenta do que a média sugere.
+![Percentis](/assets/images/system-design/Percentis.png)
 
-Ao invés de considerar apenas o tempo médio de resposta, olhar para os percentis (como 50º, 95º, 99º) pode mostrar como o sistema realmente se comporta sob diferentes condições, da mesma forma, analisar percentis da utilização de CPU, memória, ou I/O de disco pode revelar picos que não são evidentes quando se observa apenas a média.
+Além de considerar apenas o tempo médio de resposta, analisar os percentis (como 50º, 95º, 99º) em conjunto com a média pode fornecer uma compreensão mais precisa do comportamento real do sistema sob diferentes condições.
+
+Imagine um cenário onde estamos medindo o tempo de resposta de um sistema web em uma janela de tempo específica. Após coletar os dados, observamos que o tempo médio de resposta é de 200ms, um tempo considerado ótimo. No entanto, ao analisar os percentis, descobrimos que o 95º percentil é de 700ms e o 99º percentil é de 1000ms. Isso indica que, embora a maioria das requisições seja rápida, existe um número significativo de casos onde a resposta é muito mais lenta do que a média sugere. Avaliar o comportamento desses outliers pode ser de grande valor para o planejamento de capacidade, identificação de gargálos e ajustes de performance.
 
 <br>
 
@@ -221,6 +223,8 @@ Em sistemas com padrões de demanda variáveis, o custo por transação pode mud
 Escalabilidade é a **capacidade de um sistema, aplicação ou negócio de crescer e lidar com um aumento na carga de trabalho, sem comprometer a qualidade, desempenho e eficiência**. Isso pode incluir o aumento de usuários, transações, dados ou recursos. É um atributo crítico para sistemas que esperam um aumento no volume de usuários ou dados e uma característica de design que indica quão bem um sistema pode se adaptar a cargas de trabalho maiores ou menores. Escalabilidade é especialmente importante em ambientes de nuvem, onde as demandas podem mudar rapidamente e os sistemas devem ser capazes de se adaptar a essas mudanças.
 
 De acordo com o livro *"Release It!" de Michael T. Nygard*, a escalabilidade pode ser definida de duas formas: A primeira forma descreve como o *Throughput* muda de acordo com variações de demanda, utilizando um gráfico de *requisições por segundo* comparado com *tempo de resposta* de um sistema. A segunda forma se refere aos modos de escala que um sistema possui. Aqui, assim como no livro, vamos definir escalabilidade como a **capacidade de adicionar ou remover capacidade computacional de um sistema**.
+
+Uma forma lúdica de exemplificar a escalabilidade é considerar um sistema de ar-condicionado. Imagine que a temperatura desejada para o ambiente seja de 20°C. Se a temperatura do ambiente estiver aumentando devido a condições externas, o ar-condicionado aumentará sua potência para estabilizar a temperatura na marca definida. Por outro lado, se a temperatura estiver diminuindo, o sistema reduzirá sua potência para alcançar o mesmo objetivo.
 
 <br>
 
@@ -439,6 +443,8 @@ Existem muitas possibilidades relacionadas à escalabilidade, e ao integrar essa
 
 [Kubernetes Instance Calculator](https://learnk8s.io/kubernetes-instance-calculator)
 
+[CSE 567-13-01A Course Overview: The Art of Computer Systems Performance Analysis](https://www.youtube.com/watch?v=QsenPyqCuGQ&list=PLjGG94etKypJEKjNAa1n_1X0bWWNyZcof&index=2)
+
 [Backpressure explained — the resisted flow of data through software](https://medium.com/@jayphelps/backpressure-explained-the-flow-of-data-through-software-2350b3e77ce7)
 
 [Back-Pressure](https://en.wikipedia.org/wiki/Back_pressure)
@@ -457,8 +463,11 @@ Existem muitas possibilidades relacionadas à escalabilidade, e ao integrar essa
 
 [DevOps Monitoring Guide — How to manage the 4 Golden Signals](https://www.site24x7.com/learn/4-golden-signals.html)
 
+
 [The four Golden Signals of Monitoring](https://sysdig.com/blog/golden-signals-kubernetes/)
 
 [Livro: Engenharia de Confiabilidade do Google: Como o Google Administra Seus Sistemas de Produção](https://www.amazon.com.br/Engenharia-Confiabilidade-Google-Administra-Sistemas/dp/8575225170/ref=asc_df_8575225170/?tag=googleshopp00-20&linkCode=df0&hvadid=379787347388&hvpos=&hvnetw=g&hvrand=6082686845870695900&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9100425&hvtargid=pla-809202560056&psc=1&mcid=af7c2201dacb3b4dadd5fdd4007a440e)
+
+([Luiz Aoqui: Nomad Autoscaler](https://docs.google.com/presentation/d/164YFiKcWO13Zuw11TJmZfNX6eCJznLwhvMNo5hIHUrA/edit#slide=id.gdf732d1188_0_7)
 
 {% include latex.html %}
