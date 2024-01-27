@@ -180,7 +180,7 @@ Um ponto importante de se lembrar é que, ao resolver um ponto de gargalo a carg
 
 ## Backpressure de Capacidade
 
-O conceito de `"backpressure"`, ou `"repressão"` em software e, especialmente, em arquiteturas baseadas em microserviços, também pode ter várias definições dependendo de onde é empregado. Em alguns contextos, o backpressure pode ser a capacidade ou um mecanismo intencional de um sistema para gerenciar sua entrada/saída, evitando gargalos de processamento. Aqui, vamos usar a definição da engenharia física, mais precisamente da gestão de fluidos, onde o termo se refere à resistência oposta ao movimento de um fluido.
+O conceito de `"backpressure"`, ou `"repressão"` em software e, especialmente, em arquiteturas baseadas em microserviços, também pode ter várias definições dependendo de onde é empregado. Em alguns contextos, o backpressure pode ser a capacidade ou um mecanismo intencional de um sistema para gerenciar sua entrada/saída, evitando gargalos de processamento do sistema seguinte. Aqui, vamos usar a definição da engenharia física, mais precisamente da gestão de fluidos, onde o termo se refere à resistência oposta ao movimento de um fluido.
 
 De acordo com o Wikipedia,
 
