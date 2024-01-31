@@ -468,6 +468,6 @@ Existem muitas possibilidades relacionadas à escalabilidade, e ao integrar essa
 
 [Livro: Engenharia de Confiabilidade do Google: Como o Google Administra Seus Sistemas de Produção](https://www.amazon.com.br/Engenharia-Confiabilidade-Google-Administra-Sistemas/dp/8575225170/ref=asc_df_8575225170/?tag=googleshopp00-20&linkCode=df0&hvadid=379787347388&hvpos=&hvnetw=g&hvrand=6082686845870695900&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9100425&hvtargid=pla-809202560056&psc=1&mcid=af7c2201dacb3b4dadd5fdd4007a440e)
 
-([Luiz Aoqui: Nomad Autoscaler](https://docs.google.com/presentation/d/164YFiKcWO13Zuw11TJmZfNX6eCJznLwhvMNo5hIHUrA/edit#slide=id.gdf732d1188_0_7)
+[Luiz Aoqui: Nomad Autoscaler](https://docs.google.com/presentation/d/164YFiKcWO13Zuw11TJmZfNX6eCJznLwhvMNo5hIHUrA/edit#slide=id.gdf732d1188_0_7)
 
 {% include latex.html %}
