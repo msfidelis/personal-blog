@@ -415,6 +415,10 @@ Existem muitas possibilidades relacionadas à escalabilidade, e ao integrar essa
 
 <br>
 
+Esse capitulo foi especialmente muito longo, cansativo e difícil comparado aos demais. Se você leu até aqui, por favor, me deixe saber! 
+
+<br>
+
 #### Obrigado aos Revisores
 
 * [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
