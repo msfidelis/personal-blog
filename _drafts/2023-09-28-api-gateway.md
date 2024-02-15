@@ -48,3 +48,5 @@ Esta seção descreve os principais componentes e a estrutura arquitetônica de 
 
 ### Referências
 
+[What Is an API Gateway?](https://www.nginx.com/learn/api-gateway/)
+
