@@ -29,3 +29,7 @@ title: System Design - API Gateways
 ## Monitoramento e Análise de APIs
 
 # Tecnologias e Ferramentas de API Gateway
+
+
+### Referências
+
