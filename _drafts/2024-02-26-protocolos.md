@@ -178,6 +178,15 @@ Essa abordagem do HTTP/3 com o QUIC podem ser considados em vários tipos de apl
 
 ##### Status Codes
 
+| Código    | Classe | Descrição    |
+|-----------|--------|--------------|
+| 1xx       | Informativo           | Respostas provisórias que indicam que o servidor recebeu a solicitação e o processo está em andamento.                  | 
+| 2xx       | Sucesso               | Indica que a solicitação foi recebida, compreendida e aceita com sucesso. |
+| 3xx       | Redirecionamento      | Informa que ações adicionais precisam ser tomadas para completar a solicitação, geralmente envolvendo redirecionamento para outro URI. |
+| 4xx       | Erro do Cliente       | Significa que houve um erro na solicitação, impedindo o servidor de processá-la. Indica erros vindos da requisição do cliente, como parâmetros inválidos, requisições impossíveis de serem concluídas devido a regras de negócio da aplicação ou URIs inexistentes. |
+| 5xx       | Erro do Servidor      | Indica que o servidor falhou ao tentar processar uma solicitação válida. Indica erros vindos do processo interno, uma falha inesperada entre comunicações, sobrecarga de processamento, excedência do tempo limite da solicitação ou falha entre dependências de serviços. |
+
+
 * **1xx (Informativo)**: Respostas provisórias que indicam que o servidor recebeu a solicitação e o processo está em andamento.
 * **2xx (Sucesso)**: Indica que a solicitação foi recebida, compreendida e aceita com sucesso.
 * **3xx (Redirecionamento)**: Informa que ações adicionais precisam ser tomadas para completar a solicitação, geralmente envolvendo redirecionamento para outro URI.

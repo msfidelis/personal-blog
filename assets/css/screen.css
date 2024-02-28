@@ -100,6 +100,43 @@ section.recent-posts {
     margin-bottom: 0rem;
 }
 
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 4px;
+    transition: .7s
+}
+
+th {
+    color: #28224B;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 18px;
+    word-wrap: break-word;
+}
+
+td {
+    color: #666666;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.04px;
+    word-wrap: break-word;
+}
+
+tr {
+    border: 1px solid rgba(0, 0, 0, 0.12)
+}
+
+td,
+th {
+    border-top: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+
+}
+
+
 @media (min-width:576px) {
     .card-columns.listfeaturedtag {
         -webkit-column-count: 2;
