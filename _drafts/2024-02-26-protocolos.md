@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Protocolos de Comunicação
+title: System Design - Protocolos e Padrões de Comunicação
 ---
 
 
@@ -168,10 +168,98 @@ O QUIC reduz a latência de conexão através de um processo de handshake cripto
 
 Essa abordagem do HTTP/3 com o QUIC podem ser considados em vários tipos de aplicações diferentes, particularmente aquelas que requerem **transmissões de dados rápidas e confiáveis**, como **streaming de vídeo**, **jogos online** e **comunicações em tempo real**. Uma característica única do QUIC é sua capacidade de manter uma conexão ativa mesmo quando um usuário muda de rede (por exemplo, de Wi-Fi para dados móveis). Isso é possível porque o QUIC é **identificado por uma conexão ID em vez de por endereços IP e portas**, permitindo que a sessão continue sem interrupção. 
 
+#### Estruturas e Componentes de Um Requisição e Resposta HTTP
 
-### RPC
+##### Body
 
-### gRPC
+##### Headers 
+
+##### Cookies 
+
+##### Status Codes
+
+* **1xx (Informativo)**: Respostas provisórias que indicam que o servidor recebeu a solicitação e o processo está em andamento.
+* **2xx (Sucesso)**: Indica que a solicitação foi recebida, compreendida e aceita com sucesso.
+* **3xx (Redirecionamento)**: Informa que ações adicionais precisam ser tomadas para completar a solicitação, geralmente envolvendo redirecionamento para outro URI.
+* **4xx (Erro do Cliente)**: Significa que houve um erro na solicitação, impedindo o servidor de processá-la. Indica erros vindos da requisição do cliente, como parametros inválidos, requisições impossíveis de serem concluída devido a regras de negócio da aplicação ou URI's inexistentes. 
+* **5xx (Erro do Servidor)**: Indica que o servidor falhou ao tentar processar uma solicitação válida. Indica erros vindos do processo interno, uma falha inexperada entre comunicações, sobrecarga de processamento, excedencia do tempo limite da solicitação ou falha entre dependencias de serviços. 
+
+
+### REST (Representational State Transfer)
+
+O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônico para sistemas distribuídos** que presa pela simplicidade da comunicação entre componentes na internet ou em redes internas de microserviços. Definido por Roy Fielding em sua tese de doutorado em 2000, REST não é um protocolo ou padrão, mas um conjunto de princípios arquitetônicos usados para projetar sistemas distribuídos escaláveis, confiáveis e de fácil manutenção. Os serviços que seguem os princípios REST são conhecidos como RESTful.
+
+O REST é construído usando referências e recursos do protocolo HTTP, definindo papeis e responsabilidades de cliente-servidor e busca estabelecer uma interface de um cliente com os dados e ações de um sistema. 
+
+Ele utiliza métodos HTTP para definir ações, como **GET, POST, PUT, DELETE e PATCH**, para realizar operações CRUD **(Criar, Ler, Atualizar, Deletar)** em recursos identificados por URI's. Esses recursos são representações de entidades ou objetos do domínio da aplicação.
+
+#### Utilização de Métodos HTTP para Representar Ações
+
+Os métodos HTTP, também conhecidos como "verbos", definem ações que podem ser realizadas sobre os recursos. Eles permitem uma interação semântica com os recursos, onde cada método tem um propósito específico:
+
+* **GET**: Utilizado para **recuperar a representação de um recurso sem modificá-lo**. É seguro e **idempotente**, o que significa que várias **requisições idênticas devem ter o mesmo efeito que uma única requisição.**
+
+* **POST**: Empregado para **criar um novo recurso**. **Não é idempotente**, pois realizar várias requisições POST pode criar múltiplos recursos.
+    
+* **PUT:** Utilizado para **atualizar um recurso existente ou criar um novo se ele não existir**, executado no URI especificado. **É idempotente**, então **múltiplas requisições idênticas terão o mesmo efeito sobre a entidade**.
+    
+* **DELETE**: Empregado para **remover um recurso**. É **idempotente, pois deletar um recurso várias vezes tem o mesmo efeito que deletá-lo uma única vez**.
+    
+* **PATCH**: Utilizado para **aplicar atualizações parciais a um recurso**. Ao contrário do PUT, que substitui o recurso inteiro, o **PATCH modifica apenas as partes especificadas**. É idempotente, pois a execução sob o mesmo recurso tende a gerar sempre o mesmo efeito e gerar o mesmo resultado.
+
+#### Métodos HTTP nas URI's e Entidades
+
+As URIs são utilizadas para identificar os recursos de forma única. Em uma API RESTful, as URIs são projetadas para serem intuitivas e descritivas, facilitando o entendimento e a navegação pelos recursos disponíveis. A estrutura de uma URI em REST reflete a organização dos recursos e suas relações.
+
+As URIs quando olhadas no modelo REST, devem se referir a recursos e entidades,  e não às ações que serão realizadas diretamentesobre eles. Por exemplo, o path `/users` para acessar recursos do usuário combinado com o método `GET`, e não um basepath imperativo como `/getUsers`.
+
+A URI de determinadas entidades devem refletir a estrutura hierárquica dos recursos. Por exemplo, `/users/123/posts` pode representar os posts do usuário com ID 123.
+
+Devem se utilizar querystrings como parametros de consulta para filtrar recursos ou modificar a saída de uma chamada REST. Por exemplo, `/users?active=true` para filtrar apenas usuários ativos ou `/users/123/posts?tag=system-design` para filtrar os posts do usuário com a tag `system-design`. 
+
+Considerando uma API para um portal de notícias ou blog, aqui estão exemplos de como os métodos HTTP e as URIs podem ser utilizados para interagir com os recursos:
+
+* Listar todos os posts: **GET** `/posts`
+* Obter um post específico: **GET** `/posts/1`
+* Criar um novo post: **POST** `/posts`
+* Atualizar um post existente: **PUT** `/posts/1`
+* Deletar um post: **DELETE** `/posts/1`
+* Atualizar parte de um post: **PATCH** `/posts/1`
+
+#### Status Codes de Resposta e Padrões do REST
+
+Os códigos de status de resposta HTTP são recursos importantes para implementacões RESTful, pois são usados como convenção para indicar informações de estado das respostas de uma  solicitação. Ele abre o leque das classes dando funcionalidades e representatividade a elas perante uma solicitação.  
+
+Os status codes mais utilizados em implementações RESTFul são os seguintes: 
+
+* **200 OK**: A solicitação foi bem-sucedida. Usado para respostas GET, PUT ou POST que não resultam em criação.
+* **201 Created**: A solicitação resultou na criação de um novo recurso. Frequentemente usado em respostas a solicitações POST.
+* **202 Accepted**: Este código de status indica que a solicitação foi aceita para processamento, mas o processamento ainda não foi concluído. É utilizado em operações assíncronas, onde a solicitação foi iniciada com sucesso, mas sua conclusão ocorrerá em algum momento no futuro. 
+* **204 No Content**: A solicitação foi bem-sucedida, mas não há conteúdo para enviar na resposta. Comum em respostas DELETE.
+* **400 Bad Request**: A solicitação não pode ser processada devido a erro do cliente (sintaxe, formato).
+* **401 Unauthorized**: Indica que a autenticação é necessária ou falhou.
+* **403 Forbidden**: O servidor entendeu a solicitação, mas se recusa a autorizá-la.
+* **404 Not Found**: O recurso solicitado não foi encontrado.
+* **405 Method Not Allowed**: O método solicitado é conhecido pelo servidor, mas foi desativado e não pode ser usado.
+* **500 Internal Server Error**: Um erro genérico indicando uma falha do servidor.
+* **503 Service Unavailable:** O servidor não está pronto para lidar com a solicitação, geralmente devido a manutenção ou sobrecarga.
+* **504 Gateway Timeout:** Este código de status é utilizado quando um servidor que atua como gateway ou proxy não recebe uma resposta a tempo de um servidor upstream ao qual fez uma solicitação.
+
+#### Comunicação Stateless 
+
+No REST, cada requisição do cliente para o servidor deve conter todas as informações necessárias para entender e completar a requisição. O servidor não armazena nenhum estado da sessão do cliente. 
+
+#### Camadas 
+
+A arquitetura em camadas permite que intermediários (como proxies e gateways) facilitem ou melhorem a comunicação entre o cliente e o servidor, promovendo a segurança, o balanceamento de carga e a capacidade de cache. Combinando o conceito e viabilidade de camadas com o padrão stateless, o padrão se torna muito poderoso e escalável. 
+
+#### Cache 
+
+As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para evitar a reutilização de dados obsoletos ou inapropriados, melhorando a eficiência e a escalabilidade.
+
+### RPC (Remote Procedure Call)
+
+### gRPC (google Remote Procedure Call)
 
 ### Websockets
 
@@ -220,3 +308,9 @@ Essa abordagem do HTTP/3 com o QUIC podem ser considados em vários tipos de apl
 [O que é um certificado SSL/TLS?](https://aws.amazon.com/pt/what-is/ssl-certificate/)
 
 [Qual é a diferença entre SSL e TLS?](https://aws.amazon.com/pt/compare/the-difference-between-ssl-and-tls/)
+
+[Qual é a diferença entre gRPC e REST?](https://aws.amazon.com/pt/compare/the-difference-between-grpc-and-rest/)
+
+[HTTP Status](https://www.httpstatus.com.br/)
+
+[HTTP Cats](https://http.cat/)
