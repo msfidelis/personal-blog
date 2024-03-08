@@ -33,7 +33,6 @@ A camada de enlace fornece transferência de dados confiável entre dois compone
 
 Essa camada é responsável por controlar a operação da sub-rede, decidindo como os dados serão encaminhados com base no endereço lógico dos dispositivos e nas condições das redes que sejam acessíveis entre si, utilizando rotas, regras e encaminhamento inteligente. Essa camada usa roteamento para enviar pacotes através de uma ou várias redes. Nele podemos encontrar a implementação do IP (Internet Protocol) de fato, que garante o endereçamento e roteamento. O protocolo IP e á base da internet como conhecemos hoje fornecendo endereçamento a partir de endereços IPV4 e IPV6.  Essa camada exige a especificação de uma origem e um destino para completar sua função de endereçamento e encaminhamento.
 
-
 ### Layer 4: Transporte
 
 Trabalha na transferência de dados entre sistemas finais de fato, ou hosts, com a garantia de que os dados cheguem sem erros e em sequência. Essa camada gerencia o controle de fluxo, a correção de erros, e a entrega de segmentos dos pacotes. Aqui podemos encontrar implementações do protocolo TCP (Transmission Control Protocol) que fornece através de uma conexão, formas de entregar os pacotes sem erro, sem corrupção e na ordem correta que foram enviados. Ao lado podemos encontrar também o protocolo UDP (User Datagram Protocol) que fornece uma possibilidade de conexão muito rápida comparada ao TCP, porém menos confiável, sem garantia de entrega, ordem ou integridade dos dados.
@@ -177,13 +176,23 @@ Essa abordagem do HTTP/3 com o QUIC podem ser considados em vários tipos de apl
 
 #### Estruturas e Componentes de Um Requisição e Resposta HTTP
 
+Compreender conceitualmente a estrutura de uma requisição HTTP pode ser um conhecimento extremamente valioso na arquitetura de sistemas. Por mais que seja simples e presente na vida de grande parte de engenheiros e arquitetos, saber destrinchar suas partes e entender conceitualmente cada uma delas pode abrir o leque para possibilidades de troubleshooting, segurança e performance. Vamos detalhar cada um dos principais componentes, sendo eles o Body, Headers, Cookies e Status Codes. 
+
 ##### Body
+
+O Body, ou corpo de uma requisição ou resposta HTTP contém **os dados enviados ou recebidos entre o cliente e o servidor**. Em uma requisição HTTP, o body pode conter informações necessárias para que o servidor execute alguma função específica , como os detalhes de um formulário enviado por um usuário de uma página, um payload em JSON contendo informações de uma compra e até mesmo imagens, arquivos e mídias. Na resposta, o body geralmente contém o recurso solicitado pelo cliente, como um documento HTML, um objeto JSON, dados para um relatório, ou qualquer outro formato de dados definido pelos headers de `Content-Type`.
 
 ##### Headers 
 
+Os Headers ou Cabeçalhos HTTP são componentes-chave tanto na requisição quanto na resposta, fornecendo informações essenciais sobre a transação HTTP em si. Eles podem indicar o tipo de conteúdo do body utilizando o `Content-Type`, a autenticação necessária com o header `Authorization`, instruções de cache  usando os derivados do `Cache-Control`, entre outros metadados. Os headers desempenham um papel importante na configuração e no controle do comportamento da comunicação HTTP, permitindo uma interação mais rica e segura entre cliente e servidor devido ao acumulo de responsabilidades informativas. Nele por exemplo são declarados qual o formato de dados estão sendo enviados, que estão sendo devolvidos, encode, tamanho do payload e várias outras informações importante . 
+ 
 ##### Cookies 
 
+Cookies são dados que o servidor envia para o navegador do usuário, que o navegador armazena e envia de volta com subsequente requisições para o mesmo servidor. Eles são usados principalmente para **manter o estado da sessão entre as requisições**, como autenticação do usuário ou personalização. Os cookies são transmitidos através dos headers de requisição e resposta, permitindo que o servidor mantenha um registro do estado do cliente sem a necessidade de reautenticação a cada solicitação.
+
 ##### Status Codes
+
+Os Status Codes (Códigos de Status) HTTP são números de três dígitos enviados pelo servidor em resposta a uma requisição HTTP, indicando o resultado da solicitação. Eles são essenciais para o REST, pois informam ao cliente sobre o sucesso ou falha da operação solicitada. Alguns dos mais comuns incluem:
 
 | Código    | Classe | Descrição    |
 |-----------|--------|--------------|
@@ -247,19 +256,20 @@ Os códigos de status de resposta HTTP são recursos importantes para implementa
 
 Os status codes mais utilizados em implementações RESTFul são os seguintes: 
 
-* **200 OK**: A solicitação foi bem-sucedida. Usado para respostas GET, PUT ou POST que não resultam em criação.
-* **201 Created**: A solicitação resultou na criação de um novo recurso. Frequentemente usado em respostas a solicitações POST.
-* **202 Accepted**: Este código de status indica que a solicitação foi aceita para processamento, mas o processamento ainda não foi concluído. É utilizado em operações assíncronas, onde a solicitação foi iniciada com sucesso, mas sua conclusão ocorrerá em algum momento no futuro. 
-* **204 No Content**: A solicitação foi bem-sucedida, mas não há conteúdo para enviar na resposta. Comum em respostas DELETE.
-* **400 Bad Request**: A solicitação não pode ser processada devido a erro do cliente (sintaxe, formato).
-* **401 Unauthorized**: Indica que a autenticação é necessária ou falhou.
-* **403 Forbidden**: O servidor entendeu a solicitação, mas se recusa a autorizá-la.
-* **404 Not Found**: O recurso solicitado não foi encontrado.
-* **405 Method Not Allowed**: O método solicitado é conhecido pelo servidor, mas foi desativado e não pode ser usado.
-* **500 Internal Server Error**: Um erro genérico indicando uma falha do servidor.
-* **503 Service Unavailable:** O servidor não está pronto para lidar com a solicitação, geralmente devido a manutenção ou sobrecarga.
-* **504 Gateway Timeout:** Este código de status é utilizado quando um servidor que atua como gateway ou proxy não recebe uma resposta a tempo de um servidor upstream ao qual fez uma solicitação.
-
+| Código                    | Descrição                                                                                 |
+|---------------------------|-------------------------------------------------------------------------------------------|
+| 200 OK                    | Solicitação bem-sucedida para GET, PUT ou POST sem criação de recurso.                    |
+| 201 Created               | Nova criação de recurso resultante de uma solicitação POST.                               |
+| 202 Accepted              | Solicitação aceita para processamento; conclusão pendente.                                |
+| 204 No Content            | Solicitação bem-sucedida sem conteúdo para retornar. Comum após DELETE.                   |
+| 400 Bad Request           | Erro de cliente devido a sintaxe ou formato inválido.                                     |
+| 401 Unauthorized          | Falha ou necessidade de autenticação.                                                     |
+| 403 Forbidden             | Servidor recusa a solicitação, apesar de compreendê-la.                                   |
+| 404 Not Found             | Recurso solicitado não encontrado.                                                        |
+| 405 Method Not Allowed    | Método conhecido pelo servidor, mas desativado.                                           |
+| 500 Internal Server Error | Falha genérica do servidor.                                                               |
+| 503 Service Unavailable   | Servidor indisponível, geralmente por manutenção ou sobrecarga.                           |
+| 504 Gateway Timeout       | Tempo limite atingido por um servidor gateway ou proxy sem resposta do servidor upstream. |
 
 
 #### Comunicação Stateless 
