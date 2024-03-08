@@ -116,8 +116,11 @@ O processo começa com o "handshake" do TLS, onde cliente e servidor estabelecem
 
 O TLS tem várias versões, com melhorias contínuas em segurança e desempenho. As mais utilizadas atualmente são TLS 1.2 e TLS 1.3, sendo esta última a mais recente e considerada a mais segura e eficiente, oferecendo melhorias em relação às versões anteriores, como o processo de handshake mais rápido.
 
+<br>
 
 ## Protocolos de Aplicação
+
+<br>
 
 ### HTTP/1, HTTP/2 e HTTP/3
 
@@ -126,6 +129,8 @@ Para conseguirmos olhar o protocolo HTTP (Hypertext Transfer Protocol) com a per
 Os protocolos HTTP/2 e HTTP/3 são evoluções do protocolo HTTP. Eles foram desenvolvidos para **melhorar a eficiência da comunicação, reduzir a latência e otimizar o desempenho** em comparação com o HTTP/1.1 e o HTTP/1.0, que foi a versão dominante do protocolo nos sites e aplicações distribuídos pela internet e redes comporativas por muitos anos. 
 
 O HTTP trabalha um formato de **solicitação-resposta**, entre **cliente-servidor**, onde o cliente **envia uma solicitação para o servidor, e o servidor responde**, basicamente. Este modelo é simples e extensível, permite fácil integração com diversas arquiteturas de aplicação, incluindo [sistemas monolíticos e microserviços](/monolitos-microservicos/). No entanto, a natureza síncrona do HTTP pode **introduzir latência, tempo de resposta** e exigir otimizações para melhorar o desempenho dessas solicitações.
+
+<br>
 
 #### HTTP/1.x
 
@@ -139,6 +144,7 @@ Ainda em termos de performance, a possibilidade caching mais eficaz, e gerenciam
 
 Apesar dessas melhorias, o HTTP/1.1 ainda sofria de alguns problemas, como o "head-of-line blocking" (HOL blocking), onde a espera pela resposta da primeira requisição podia bloquear as respostas das seguintes, o que motivou a evolução do protocolo em mais alguns degraus. 
 
+<br>
 
 #### HTTP/2
 
@@ -153,6 +159,7 @@ A funcionalidade de **Server Push** permite que o servidor **envie recursos para
 
 ![HTTP/2](/assets/images/system-design/http2.png)
 
+<br>
 
 #### HTTP/3 (QUIC)
 
@@ -186,13 +193,7 @@ Essa abordagem do HTTP/3 com o QUIC podem ser considados em vários tipos de apl
 | 4xx       | Erro do Cliente       | Significa que houve um erro na solicitação, impedindo o servidor de processá-la. Indica erros vindos da requisição do cliente, como parâmetros inválidos, requisições impossíveis de serem concluídas devido a regras de negócio da aplicação ou URIs inexistentes. |
 | 5xx       | Erro do Servidor      | Indica que o servidor falhou ao tentar processar uma solicitação válida. Indica erros vindos do processo interno, uma falha inesperada entre comunicações, sobrecarga de processamento, excedência do tempo limite da solicitação ou falha entre dependências de serviços. |
 
-
-* **1xx (Informativo)**: Respostas provisórias que indicam que o servidor recebeu a solicitação e o processo está em andamento.
-* **2xx (Sucesso)**: Indica que a solicitação foi recebida, compreendida e aceita com sucesso.
-* **3xx (Redirecionamento)**: Informa que ações adicionais precisam ser tomadas para completar a solicitação, geralmente envolvendo redirecionamento para outro URI.
-* **4xx (Erro do Cliente)**: Significa que houve um erro na solicitação, impedindo o servidor de processá-la. Indica erros vindos da requisição do cliente, como parametros inválidos, requisições impossíveis de serem concluída devido a regras de negócio da aplicação ou URI's inexistentes. 
-* **5xx (Erro do Servidor)**: Indica que o servidor falhou ao tentar processar uma solicitação válida. Indica erros vindos do processo interno, uma falha inexperada entre comunicações, sobrecarga de processamento, excedencia do tempo limite da solicitação ou falha entre dependencias de serviços. 
-
+<br>
 
 ### REST (Representational State Transfer)
 
@@ -206,15 +207,15 @@ Ele utiliza métodos HTTP para definir ações, como **GET, POST, PUT, DELETE e 
 
 Os métodos HTTP, também conhecidos como "verbos", definem ações que podem ser realizadas sobre os recursos. Eles permitem uma interação semântica com os recursos, onde cada método tem um propósito específico:
 
-* **GET**: Utilizado para **recuperar a representação de um recurso sem modificá-lo**. É seguro e **idempotente**, o que significa que várias **requisições idênticas devem ter o mesmo efeito que uma única requisição.**
+| Método  | Descrição                                                                                                                                 | Idempotência |
+|---------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| GET     | Utilizado para **recuperar a representação de um recurso sem modificá-lo**. É seguro e **idempotente**, o que significa que várias **requisições idênticas devem ter o mesmo efeito que uma única requisição.** | Sim          |
+| POST    | Empregado para **criar um novo recurso**. **Não é idempotente**, pois realizar várias requisições POST pode criar múltiplos recursos.                                                              | Não          |
+| PUT     | Utilizado para **atualizar um recurso existente ou criar um novo se ele não existir**, no URI especificado. **É idempotente**, então **múltiplas requisições idênticas terão o mesmo efeito sobre a entidade**.   | Sim          |
+| DELETE  | Empregado para **remover um recurso**. É **idempotente, pois deletar um recurso várias vezes tem o mesmo efeito que deletá-lo uma única vez**.                                                      | Sim          |
+| PATCH   | Utilizado para **aplicar atualizações parciais a um recurso**. Ao contrário do PUT, que substitui o recurso inteiro, o **PATCH modifica apenas as partes especificadas**. É idempotente, pois a execução sob o mesmo recurso tende a gerar sempre o mesmo efeito e gerar o mesmo resultado. | Sim          |
 
-* **POST**: Empregado para **criar um novo recurso**. **Não é idempotente**, pois realizar várias requisições POST pode criar múltiplos recursos.
-    
-* **PUT:** Utilizado para **atualizar um recurso existente ou criar um novo se ele não existir**, executado no URI especificado. **É idempotente**, então **múltiplas requisições idênticas terão o mesmo efeito sobre a entidade**.
-    
-* **DELETE**: Empregado para **remover um recurso**. É **idempotente, pois deletar um recurso várias vezes tem o mesmo efeito que deletá-lo uma única vez**.
-    
-* **PATCH**: Utilizado para **aplicar atualizações parciais a um recurso**. Ao contrário do PUT, que substitui o recurso inteiro, o **PATCH modifica apenas as partes especificadas**. É idempotente, pois a execução sob o mesmo recurso tende a gerar sempre o mesmo efeito e gerar o mesmo resultado.
+<br>
 
 #### Métodos HTTP nas URI's e Entidades
 
@@ -228,12 +229,17 @@ Devem se utilizar querystrings como parametros de consulta para filtrar recursos
 
 Considerando uma API para um portal de notícias ou blog, aqui estão exemplos de como os métodos HTTP e as URIs podem ser utilizados para interagir com os recursos:
 
-* Listar todos os posts: **GET** `/posts`
-* Obter um post específico: **GET** `/posts/1`
-* Criar um novo post: **POST** `/posts`
-* Atualizar um post existente: **PUT** `/posts/1`
-* Deletar um post: **DELETE** `/posts/1`
-* Atualizar parte de um post: **PATCH** `/posts/1`
+| Ação                          | Método | Endpoint     |
+|-------------------------------|--------|--------------|
+| Listar todos os posts         | GET    | `/posts`     |
+| Obter um post específico      | GET    | `/posts/1`   |
+| Criar um novo post            | POST   | `/posts`     |
+| Atualizar um post existente   | PUT    | `/posts/1`   |
+| Deletar um post               | DELETE | `/posts/1`   |
+| Atualizar parte de um post    | PATCH  | `/posts/1`    |
+
+
+<br>
 
 #### Status Codes de Resposta e Padrões do REST
 
@@ -253,6 +259,8 @@ Os status codes mais utilizados em implementações RESTFul são os seguintes:
 * **500 Internal Server Error**: Um erro genérico indicando uma falha do servidor.
 * **503 Service Unavailable:** O servidor não está pronto para lidar com a solicitação, geralmente devido a manutenção ou sobrecarga.
 * **504 Gateway Timeout:** Este código de status é utilizado quando um servidor que atua como gateway ou proxy não recebe uma resposta a tempo de um servidor upstream ao qual fez uma solicitação.
+
+
 
 #### Comunicação Stateless 
 
