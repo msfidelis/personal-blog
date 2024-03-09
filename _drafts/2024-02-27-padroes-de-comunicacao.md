@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Padrões de Comunicação
+title: System Design - Padrões de Comunicação Sincronos, REST, gRPC, Websockets
 ---
 
 
@@ -100,13 +100,6 @@ As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para
 
 <br>
 
-## Protocolos de Mensageria
-
-### MQTT (Message Queuing Telemetry Transport)
-
-### AMQP (Advanced Message Queuing Protocol)
-
-### Comunicação Over-TCP
 
 
 <br>

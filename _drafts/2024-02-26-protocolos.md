@@ -8,12 +8,15 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Protocolos de Comunicação, TCP, UDP e OSI
 ---
 
+Neste capitulo vamos abordar de forma simples os conceitos que permeiam **os principais tópicos de comunicação de rede na ótica de System Design**. A importância de entender protocolos de comunicação pode ser um *game change* muito grande para escovar tópicos de [performance](/performance-capacidade-escalabilidade/) e [resiliência](). Compreender como os protocolos base, como TCP/IP e UDP, e outros protocolos que são construídos em cima deles são implementados pode nos ajudar a tomar as melhores decisões arquiteturais, projetar estratégias, aumentar níveis de performance e tempo de resposta se entendermos as melhores características de cada um deles e empregá-las nos lugares corretos. 
+
+Olhando para meus pares e de profissionais de engenharia que já trabalhei no lugar dos anos, o entendimento da camada de networking sempre foi um grande gap na compreenção de uma topologia de sistemas. Esse artigo foi baseado em discussões e sessões de design que tive o prazer de participar ao decorrer desses anos, compilando de forma simples os tópicos práticos e teóricos mais importantes para que a absorção e entendimento seja simples e fácilmente empregada no dia a dia das pessoas que vierem a investir um tempo aqui. Espero que seja de grande valor. 
 
 <br>
 
 # Modelo OSI
 
-O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. Representando uma abstração com base acadêmica, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços.
+O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. Representando uma abstração com base acadêmica, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços. É importante compreender como funciona esse modelo teórico antes de entrarmos de fato em implementações de protocolos, para conseguirmos mentalmente classificar onde cada um deles opera entre as camadas propostas por ele. 
 
 ![OSI Model](/assets/images/system-design/osi.png)
 
@@ -21,19 +24,19 @@ O Modelo OSI é dividido em sete camadas, cada uma responsável por funções es
 
 ### Camada 1: Física
 
-Responsável pela transmissão e recepção de dados brutos não tratados sobre um meio físico. Define especificações elétricas, mecânicas, procedurais e funcionais para ativar, manter e desativar conexões físicas. Inclui **cabos de rede**, **cabos de cobre**, **fibra óptica** e **aplicações Wi-Fi**, englobando todos os meios físicos de entrada e saída para a rede.
+A primeira camada é r**esponsável pela transmissão e recepção de dados brutos não tratados sobre um meio físico**. Define especificações elétricas, mecânicas, procedurais e funcionais para ativar, manter e desativar conexões físicas. Inclui **cabos de rede**, **cabos de cobre**, **fibra óptica** e **aplicações Wi-Fi**, englobando todos os meios físicos de entrada e saída para a rede. **Basicamente resumida em dispositivos paupáveis**. 
 
 ### Camada 2: Enlace
 
-Fornece transferência de dados confiável entre dois componentes de rede adjacentes, detectando e corrigindo erros do nível físico. Inclui implementações de Ethernet para transmissão de dados em LANs, PPP (Point-to-Point Protocol) para conexões diretas entre dois nós e MAC Address, que identifica dispositivos unicamente.
+A segunda camada de Enlace fornece uma transferência de dados confiável entre dois componentes de rede adjacentes, detectando e corrigindo erros do nível físico. Inclui implementações de **Ethernet** para transmissão de dados em **LANs**, **PPP (Point-to-Point Protocol)** para conexões diretas entre dois nós e seus **MAC Address**, que identifica dispositivos unicamente.
 
 ### Camada 3: Rede
 
-Controla a operação da sub-rede, decidindo o encaminhamento de dados com base nos endereços lógicos e nas condições das redes. Utiliza roteamento para enviar pacotes através de múltiplas redes, com protocolos como IP, que é a base da internet, fornecendo endereçamento através de IPV4 e IPV6.
+A terceira camada, conhecida como **Rede**, **controla a operação da sub-rede, decidindo o encaminhamento de dados com base nos endereços lógicos e nas condições das redes**. Utiliza roteamento para enviar pacotes através de múltiplas redes, com protocolos como IP, fornecendo endereçamento através de **IPV4 e IPV6**.
 
 ### Camada 4: Transporte
 
-Gerencia a transferência de dados entre sistemas finais, assegurando a entrega sem erros e em sequência. Controla fluxo, corrige erros e entrega segmentos de pacotes. Destacam-se os protocolos TCP, que entrega pacotes de forma confiável, e UDP, que oferece conexões rápidas, porém menos confiáveis.
+Gerencia a transferência de dados entre sistemas finais, assegurando a entrega sem erros e em sequência. **Controla fluxo, corrige erros e entrega segmentos de pacotes.** Destacam-se os protocolos TCP, que entrega pacotes de forma confiável, e UDP, que oferece conexões rápidas, porém menos confiáveis.
 
 ### Camada 5: Sessão
 
@@ -41,16 +44,18 @@ Responsável por iniciar, gerenciar e finalizar conexões entre aplicações, fr
 
 ### Camada 6: Apresentação
 
-Traduz dados do formato da rede para o formato aceito pelas aplicações, realizando criptografia, compressão e conversão de dados. Funciona como uma "Camada de Tradução", implementando protocolos de segurança como SSL/TLS e suportando formatos de dados como JPEG, GIF, PNG.
+Traduz dados do formato da rede para o formato aceito pelas aplicações, realizando criptografia, compressão e conversão de dados. **Funciona como uma "Camada de Tradução"**, implementando protocolos de segurança como **SSL/TLS** e suportando formatos de dados como **JPEG, GIF, PNG**.
 
 ### Camada 7: Aplicação
 
-Fornece serviços de rede para aplicações do usuário, incluindo transferência de arquivos e conexões de software. É a camada mais próxima do usuário, atuando como interface entre o software de aplicação e as funções de rede. Implementa protocolos como HTTP, HTTPS, Websockets, gRPC, além de suportar sessões de SSH e transferências FTP.
+Fornece serviços de rede para aplicações do usuário, **incluindo transferência de arquivos e conexões de software**. É a c**amada mais próxima do usuário,** atuando como interface entre o software de aplicação e as funções de rede. Implementa protocolos como **HTTP, HTTPS, Websockets, gRPC, além de suportar sessões de SSH e transferências FTP**.
 
 
 <br>
 
 # Os Protocolos de Comunicação
+
+Entrando agora de fato nos protocolos de comunicação, vamos entender algumas das implementações mais importantes e mais comunis dentro do dia a dia da engenharia de software e usuários de aplicações de rede, resumidamente qualquer pessoa do planeta Terra que possua conexões com a internet. Temos várias implementações diferentes com diversas vantagens e desvantagens quando olhamos uma mapa de protocolos existentes, inclusive alguns protocolos são construídos outros protocolos mais estabelecidos como base, como é caso do UDP e do TCP/IP. Inicialmente vamos olhar como funcionam essas duas implementações tratando os mesmos como **protocolos base** para depois detalhar protocolos mais complexos que se utilizam dos mesmos para cumprir seus papéis. 
 
 ## Protocolos Base
 
@@ -200,6 +205,14 @@ Os Status Codes (Códigos de Status) HTTP são números de três dígitos enviad
 | 5xx       | Erro do Servidor      | Indica que o servidor falhou ao tentar processar uma solicitação válida. Indica erros vindos do processo interno, uma falha inesperada entre comunicações, sobrecarga de processamento, excedência do tempo limite da solicitação ou falha entre dependências de serviços. |
 
 <br>
+
+## Protocolos de Mensageria
+
+### MQTT (Message Queuing Telemetry Transport)
+
+### AMQP (Advanced Message Queuing Protocol)
+
+### Comunicação Over-TCP
 
 
 
