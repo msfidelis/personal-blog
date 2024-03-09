@@ -5,72 +5,69 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Protocolos e Padrões de Comunicação
+title: System Design - Protocolos de Comunicação, TCP, UDP e OSI
 ---
 
 
 <br>
 
-# Modelo OSI 
+# Modelo OSI
 
-
-O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar e catalogar as funções de um sistema de telecomunicações, componentes de rede e protocolos. O modelo é em dia zero, é uma abstração e tem uma fundamentação acadêmica, dando pilares para construção e entendimento de redes de alta disponibilidade, especificações de componentes de rede e criação e throubleshooting de protocolos de comunicação e conexões entre serviços. 
+O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. Representando uma abstração com base acadêmica, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços.
 
 ![OSI Model](/assets/images/system-design/osi.png)
 
+O Modelo OSI é dividido em sete camadas, cada uma responsável por funções específicas:
 
-O Modelo OSI é dividido em sete camadas, cada uma com funções específicas:
+### Camada 1: Física
 
-### Layer 1: Física
+Responsável pela transmissão e recepção de dados brutos não tratados sobre um meio físico. Define especificações elétricas, mecânicas, procedurais e funcionais para ativar, manter e desativar conexões físicas. Inclui **cabos de rede**, **cabos de cobre**, **fibra óptica** e **aplicações Wi-Fi**, englobando todos os meios físicos de entrada e saída para a rede.
 
-A primeira camada descrita no modelo OSI é pesponsável pela transmissão e recepção de dados brutos não tratados sobre um meio físico. Ela define as especificações elétricas, mecânicas, procedurais e funcionais para ativar, manter e desativar conexões físicas. Nessa camada podem ser classificados **cabos de rede**, **cabos de cobre**, **fibra óptica** e **aplicações Wi-Fi**, basicamente todos os cabeamentos, equipamentos e roteadores que são meios de entrada e saída físicos para a rede. 
+### Camada 2: Enlace
 
-### Layer 2: Enlace 
+Fornece transferência de dados confiável entre dois componentes de rede adjacentes, detectando e corrigindo erros do nível físico. Inclui implementações de Ethernet para transmissão de dados em LANs, PPP (Point-to-Point Protocol) para conexões diretas entre dois nós e MAC Address, que identifica dispositivos unicamente.
 
-A camada de enlace fornece transferência de dados confiável entre dois componentes adjacentes. Trata-se da detecção e possivelmente da correção de erros que podem ocorrer no nível físico. Nessa camada estão implementações de Ethernet para a transmissão de dados dentro de uma mesma rede local (LAN), PPP (Point-to-Point Protocol) usado para estabelecer uma conexão direta entre dois nós de rede e o MAC (Media Access Control), ou MAC Address, que permite controle de acesso e identificação dos membros de uma rede, identificando dispositivos de forma única através de seus endereços físicos.
+### Camada 3: Rede
 
-### Layer 3: Rede
+Controla a operação da sub-rede, decidindo o encaminhamento de dados com base nos endereços lógicos e nas condições das redes. Utiliza roteamento para enviar pacotes através de múltiplas redes, com protocolos como IP, que é a base da internet, fornecendo endereçamento através de IPV4 e IPV6.
 
-Essa camada é responsável por controlar a operação da sub-rede, decidindo como os dados serão encaminhados com base no endereço lógico dos dispositivos e nas condições das redes que sejam acessíveis entre si, utilizando rotas, regras e encaminhamento inteligente. Essa camada usa roteamento para enviar pacotes através de uma ou várias redes. Nele podemos encontrar a implementação do IP (Internet Protocol) de fato, que garante o endereçamento e roteamento. O protocolo IP e á base da internet como conhecemos hoje fornecendo endereçamento a partir de endereços IPV4 e IPV6.  Essa camada exige a especificação de uma origem e um destino para completar sua função de endereçamento e encaminhamento.
+### Camada 4: Transporte
 
-### Layer 4: Transporte
+Gerencia a transferência de dados entre sistemas finais, assegurando a entrega sem erros e em sequência. Controla fluxo, corrige erros e entrega segmentos de pacotes. Destacam-se os protocolos TCP, que entrega pacotes de forma confiável, e UDP, que oferece conexões rápidas, porém menos confiáveis.
 
-Trabalha na transferência de dados entre sistemas finais de fato, ou hosts, com a garantia de que os dados cheguem sem erros e em sequência. Essa camada gerencia o controle de fluxo, a correção de erros, e a entrega de segmentos dos pacotes. Aqui podemos encontrar implementações do protocolo TCP (Transmission Control Protocol) que fornece através de uma conexão, formas de entregar os pacotes sem erro, sem corrupção e na ordem correta que foram enviados. Ao lado podemos encontrar também o protocolo UDP (User Datagram Protocol) que fornece uma possibilidade de conexão muito rápida comparada ao TCP, porém menos confiável, sem garantia de entrega, ordem ou integridade dos dados.
+### Camada 5: Sessão
 
-### Layer 5: Sessão 
+Responsável por iniciar, gerenciar e finalizar conexões entre aplicações, frequentemente usada em serviços com conexões autenticadas de longa duração.
 
-Essa sessão é responsável por iniciar e finalizar as conexões entre os hosts. Nela são estabelecidas funções que iniciam, gerenciam e terminam conexões entre aplicações. Usado frequentemente em serviços que tenham conexões autenticadas de longa duração. 
+### Camada 6: Apresentação
 
-### Layer 6: Apresentação 
+Traduz dados do formato da rede para o formato aceito pelas aplicações, realizando criptografia, compressão e conversão de dados. Funciona como uma "Camada de Tradução", implementando protocolos de segurança como SSL/TLS e suportando formatos de dados como JPEG, GIF, PNG.
 
-A camada de apresentação traduz os dados do formato da rede para o formato que a aplicação aceita e e compreende. Essa camada é responsável pela criptografia, compressão e conversão de dados. Ela poderia ser renomeada fácilmente para "Camada de Tradução".  Aqui temos a implementação criptografica do SSL/TLS (Secure Sockets Layer / Transport Layer Security, que são protocolos de segurança que criptografam dados em uma sessão ou conexão, protocolos de e-mail e formatos de imagens como JPEG, GIF, PNG .
+### Camada 7: Aplicação
 
-### Layer 7: Aplicação 
+Fornece serviços de rede para aplicações do usuário, incluindo transferência de arquivos e conexões de software. É a camada mais próxima do usuário, atuando como interface entre o software de aplicação e as funções de rede. Implementa protocolos como HTTP, HTTPS, Websockets, gRPC, além de suportar sessões de SSH e transferências FTP.
 
-Essa camada é onde fornecemos serviços de rede para aplicações do usuário, transferência de arquivos e conexões mais proximas do desenvolvimento de software. É a camada mais próxima do usuário final, servindo como a interface entre o software de aplicação e as funções de rede. Aqui podemos interpretar também como a camada de final de comunicação entre usuário e aplicação. Aqui temos finalmente as implementações de HTTP e HTTPS (Hypertext Transfer Protocol / HTTP Secure) que hoje é o protocolo padrão de transferencia de dados e documentos na internet, onde são construidas e executadas chamadas REST, transferencia de assets, arquivos e paginas da Web, implementações de Websockets e gRPC. Também podemos classificar a implementação de sessões de SSH (Secure Shell), transferencias FTP (File Transfer Protocol) entre outras. 
 
 <br>
 
 # Os Protocolos de Comunicação
 
+## Protocolos Base
 
-<br>
-
-## Protocolos base
-
-Para entendermos no detalhe protocolos e tecnologias de comunicação mais modernas, precisamos revisitar os protocolos de rede mais baixo nível sob quais os mesmos são construídos. Antes de entendermos como protocolos como HTTP/2, HTTP/3, gRPC, AMPQ funcionam, é necessário entender os mecanismos de conexão que possibilitaram os mesmos serem construídos, sendo os eles o TCP/IP e UDP em sua maior importância.
+Para compreender detalhadamente os protocolos e tecnologias de comunicação modernas, é crucial revisitar os protocolos de rede de baixo nível que servem como sua base. Antes de explorar protocolos como HTTP/2, HTTP/3, gRPC e AMPQ, precisamos entender os mecanismos de conexão fundamentais, principalmente o TCP/IP e o UDP, que são essenciais para o desenvolvimento dessas tecnologias avançadas.
 
 ### UDP (User Datagram Protocol)
 
-O UDP, ou User Datagram Protocol, é um protocolo extremamente simples da camada de transporte (layer 4) que permite a transmissão de dados sem necessidade de uma conexão e de forma não confiável entre hosts na rede. Comparado aos outros protocolos de rede o UDP, apesar de não ser confiável em nenhuma parte de seu processo, é extremamente performático em termos de velocidade, pois não se propõe a ter a responsábilidade de abrir, manter, gerenciar e encerrar uma conexão. Nos protocolos que fazem uso de UDP para trafegar dados simplesmente enviam seus pacotes para o destinatário sem verificar se eles foram recebidos e checados em sua integridade. 
+O UDP, ou User Datagram Protocol, é um protocolo da camada de transporte (camada 4) notavelmente simples, que possibilita a transmissão de dados entre hosts na rede de maneira não confiável e sem a necessidade de estabelecer uma conexão prévia. Diferentemente de outros protocolos de rede, o UDP sacrifica a confiabilidade em favor da performance, eliminando o processo de estabelecimento, manutenção, gerenciamento e encerramento de conexões. Isso permite que os dados sejam enviados ao destinatário sem garantias de recebimento ou integridade.
 
 ![UDP](/assets/images/system-design/udp.png)
 
-O UDP se baseia em Datagramas para envio de pacotes, que são pacotes de dados totalmente independentes que não precisem ser entregues em ordens ou priotidades específicas e que não são dependentes de confirmação. 
+Utilizando Datagramas para o envio de pacotes, o UDP permite a transmissão de dados independentes que não requerem entrega em uma ordem ou prioridade específica, nem dependem de confirmação de recebimento. Essa característica torna o UDP adequado para aplicações que demandam comunicação em tempo real, mas que podem tolerar certa perda ou corrupção de dados.
 
-Implementações de arquiteturas e protocolos que tendem a enviar e receber dados próximos de uma complexidade realtime e podem suportar corrupção e perda de dados, tendem a serem construídos sobre o protocolo UDP. 
+Protocolos e arquiteturas que exigem envio e recebimento de dados com complexidade próxima ao tempo real, e que podem suportar perdas e corrupções, geralmente são construídos sobre o UDP.
 
-Um paralelo com um entregador de cartas, o protocolo UDP pode ser análogo a entregadores que simplesmente deixam sua correspondência debaixo do seu portão, calçada ou janela e seguem seu trabalho para as próximas residências, sem confirmar se você realmente terá aquilo ela mãos em algum momento. 
+Analogamente, o funcionamento do UDP pode ser comparado a entregadores que deixam correspondências debaixo do portão, na calçada ou na janela das casas, prosseguindo para as próximas entregas sem confirmar se o destinatário recebeu a mensagem.
+
 
 ### TCP/IP (Transmission Control Protocol/Internet Protocol)
 
@@ -204,112 +201,7 @@ Os Status Codes (Códigos de Status) HTTP são números de três dígitos enviad
 
 <br>
 
-### REST (Representational State Transfer)
 
-O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônico para sistemas distribuídos** que presa pela simplicidade da comunicação entre componentes na internet ou em redes internas de microserviços. Definido por Roy Fielding em sua tese de doutorado em 2000, REST não é um protocolo ou padrão, mas um conjunto de princípios arquitetônicos usados para projetar sistemas distribuídos escaláveis, confiáveis e de fácil manutenção. Os serviços que seguem os princípios REST são conhecidos como RESTful.
-
-O REST é construído usando referências e recursos do protocolo HTTP, definindo papeis e responsabilidades de cliente-servidor e busca estabelecer uma interface de um cliente com os dados e ações de um sistema. 
-
-Ele utiliza métodos HTTP para definir ações, como **GET, POST, PUT, DELETE e PATCH**, para realizar operações CRUD **(Criar, Ler, Atualizar, Deletar)** em recursos identificados por URI's. Esses recursos são representações de entidades ou objetos do domínio da aplicação.
-
-#### Utilização de Métodos HTTP para Representar Ações
-
-Os métodos HTTP, também conhecidos como "verbos", definem ações que podem ser realizadas sobre os recursos. Eles permitem uma interação semântica com os recursos, onde cada método tem um propósito específico:
-
-| Método  | Descrição                                                                                                                                 | Idempotência |
-|---------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| GET     | Utilizado para **recuperar a representação de um recurso sem modificá-lo**. É seguro e **idempotente**, o que significa que várias **requisições idênticas devem ter o mesmo efeito que uma única requisição.** | Sim          |
-| POST    | Empregado para **criar um novo recurso**. **Não é idempotente**, pois realizar várias requisições POST pode criar múltiplos recursos.                                                              | Não          |
-| PUT     | Utilizado para **atualizar um recurso existente ou criar um novo se ele não existir**, no URI especificado. **É idempotente**, então **múltiplas requisições idênticas terão o mesmo efeito sobre a entidade**.   | Sim          |
-| DELETE  | Empregado para **remover um recurso**. É **idempotente, pois deletar um recurso várias vezes tem o mesmo efeito que deletá-lo uma única vez**.                                                      | Sim          |
-| PATCH   | Utilizado para **aplicar atualizações parciais a um recurso**. Ao contrário do PUT, que substitui o recurso inteiro, o **PATCH modifica apenas as partes especificadas**. É idempotente, pois a execução sob o mesmo recurso tende a gerar sempre o mesmo efeito e gerar o mesmo resultado. | Sim          |
-
-<br>
-
-#### Métodos HTTP nas URI's e Entidades
-
-As URIs são utilizadas para identificar os recursos de forma única. Em uma API RESTful, as URIs são projetadas para serem intuitivas e descritivas, facilitando o entendimento e a navegação pelos recursos disponíveis. A estrutura de uma URI em REST reflete a organização dos recursos e suas relações.
-
-As URIs quando olhadas no modelo REST, devem se referir a recursos e entidades,  e não às ações que serão realizadas diretamentesobre eles. Por exemplo, o path `/users` para acessar recursos do usuário combinado com o método `GET`, e não um basepath imperativo como `/getUsers`.
-
-A URI de determinadas entidades devem refletir a estrutura hierárquica dos recursos. Por exemplo, `/users/123/posts` pode representar os posts do usuário com ID 123.
-
-Devem se utilizar querystrings como parametros de consulta para filtrar recursos ou modificar a saída de uma chamada REST. Por exemplo, `/users?active=true` para filtrar apenas usuários ativos ou `/users/123/posts?tag=system-design` para filtrar os posts do usuário com a tag `system-design`. 
-
-Considerando uma API para um portal de notícias ou blog, aqui estão exemplos de como os métodos HTTP e as URIs podem ser utilizados para interagir com os recursos:
-
-| Ação                          | Método | Endpoint     |
-|-------------------------------|--------|--------------|
-| Listar todos os posts         | GET    | `/posts`     |
-| Obter um post específico      | GET    | `/posts/1`   |
-| Criar um novo post            | POST   | `/posts`     |
-| Atualizar um post existente   | PUT    | `/posts/1`   |
-| Deletar um post               | DELETE | `/posts/1`   |
-| Atualizar parte de um post    | PATCH  | `/posts/1`    |
-
-
-<br>
-
-#### Status Codes de Resposta e Padrões do REST
-
-Os códigos de status de resposta HTTP são recursos importantes para implementacões RESTful, pois são usados como convenção para indicar informações de estado das respostas de uma  solicitação. Ele abre o leque das classes dando funcionalidades e representatividade a elas perante uma solicitação.  
-
-Os status codes mais utilizados em implementações RESTFul são os seguintes: 
-
-| Código                    | Descrição                                                                                 |
-|---------------------------|-------------------------------------------------------------------------------------------|
-| 200 OK                    | Solicitação bem-sucedida para GET, PUT ou POST sem criação de recurso.                    |
-| 201 Created               | Nova criação de recurso resultante de uma solicitação POST.                               |
-| 202 Accepted              | Solicitação aceita para processamento; conclusão pendente.                                |
-| 204 No Content            | Solicitação bem-sucedida sem conteúdo para retornar. Comum após DELETE.                   |
-| 400 Bad Request           | Erro de cliente devido a sintaxe ou formato inválido.                                     |
-| 401 Unauthorized          | Falha ou necessidade de autenticação.                                                     |
-| 403 Forbidden             | Servidor recusa a solicitação, apesar de compreendê-la.                                   |
-| 404 Not Found             | Recurso solicitado não encontrado.                                                        |
-| 405 Method Not Allowed    | Método conhecido pelo servidor, mas desativado.                                           |
-| 500 Internal Server Error | Falha genérica do servidor.                                                               |
-| 503 Service Unavailable   | Servidor indisponível, geralmente por manutenção ou sobrecarga.                           |
-| 504 Gateway Timeout       | Tempo limite atingido por um servidor gateway ou proxy sem resposta do servidor upstream. |
-
-
-#### Comunicação Stateless 
-
-No REST, cada requisição do cliente para o servidor deve conter todas as informações necessárias para entender e completar a requisição. O servidor não armazena nenhum estado da sessão do cliente. 
-
-#### Camadas 
-
-A arquitetura em camadas permite que intermediários (como proxies e gateways) facilitem ou melhorem a comunicação entre o cliente e o servidor, promovendo a segurança, o balanceamento de carga e a capacidade de cache. Combinando o conceito e viabilidade de camadas com o padrão stateless, o padrão se torna muito poderoso e escalável. 
-
-#### Cache 
-
-As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para evitar a reutilização de dados obsoletos ou inapropriados, melhorando a eficiência e a escalabilidade.
-
-### RPC (Remote Procedure Call)
-
-### gRPC (google Remote Procedure Call)
-
-### Websockets
-
-
-<br>
-
-## Protocolos de Mensageria
-
-### MQTT (Message Queuing Telemetry Transport)
-
-### AMQP (Advanced Message Queuing Protocol)
-
-### Comunicação Over-TCP
-
-
-<br>
-
-# Protocolos em Arquiteturas em Operações Sincronas e Assincronas
-
-
-<br>
-
-# Considerações de Segurança
 
 
 ### Referências
@@ -335,8 +227,6 @@ As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para
 [O que é um certificado SSL/TLS?](https://aws.amazon.com/pt/what-is/ssl-certificate/)
 
 [Qual é a diferença entre SSL e TLS?](https://aws.amazon.com/pt/compare/the-difference-between-ssl-and-tls/)
-
-[Qual é a diferença entre gRPC e REST?](https://aws.amazon.com/pt/compare/the-difference-between-grpc-and-rest/)
 
 [HTTP Status](https://www.httpstatus.com.br/)
 
