@@ -242,7 +242,11 @@ A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diverso
 
 ## Protocolos de Mensageria
 
+Os protocolos de mensageria desempenham papéis na facilitação da comunicação entre sistemas distribuídos, permitindo a troca eficiente de mensagens de forma assíncrona. Dois dos protocolos mais importantes nesta categoria são o **MQTT** (*Message Queuing Telemetry Transport*) e o **AMQP** (*Advanced Message Queuing Protocol*). Esses protocolos são projetados para otimizar o tráfego de dados, garantir a entrega de mensagens e suportar padrões de comunicação flexíveis, confiáveis e performáticos. Normalmente as comunicações que se utilizam do HTTP tem uma responsabilidade sincrona de solicitação e resposta, utilizado onde é necessário receber do servidor uma resposta imediata para a transação solicitada. Porém em termos de performance, os protocolos que possibilitam comunicações assincronas podem nos ajudar a extender as capacidades de processamento em background de tarefas custosas, paralelizar e distribuir tarefas entre diversos microserviços com diferentes possibilidades necessárias para completar a solicitação, continuar o trabalho de uma solicitação inicialmente sincrona em background entre diversas outras possibilidades. Aqui falaremos inicialmente de como funciona o protocolo. Breve falaremos mais detalhadamente da aplicação e implementação de tarefas assincronas em engenharia de fato. 
+
 ### MQTT (Message Queuing Telemetry Transport)
+
+O **MQTT** é um protocolo de mensageria leve e eficiente, projetado para situações em que uma pegada de código pequena é necessária e a largura de banda da rede é limitada. Amplamente utilizado em aplicações de Internet das Coisas (IoT), o MQTT facilita a comunicação entre dispositivos com recursos limitados e servidores, usando um modelo publicar/assinar. Isso permite que dispositivos publiquem mensagens em tópicos, que são então distribuídos aos clientes inscritos, garantindo que as mensagens sejam entregues mesmo em condições de rede instáveis. Suas principais características incluem simplicidade, eficiência e baixo consumo de energia, tornando-o ideal para cenários de comunicação em tempo real em ambientes com conectividade restrita.
 
 ### AMQP (Advanced Message Queuing Protocol)
 
