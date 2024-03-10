@@ -8,9 +8,10 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Protocolos de Comunicação, TCP, UDP e OSI
 ---
 
-Neste capitulo vamos abordar de forma simples os conceitos que permeiam **os principais tópicos de comunicação de rede na ótica de System Design**. A importância de entender protocolos de comunicação pode ser um *game change* muito grande para escovar tópicos de [performance](/performance-capacidade-escalabilidade/) e [resiliência](). Compreender como os protocolos base, como TCP/IP e UDP, e outros protocolos que são construídos em cima deles são implementados pode nos ajudar a tomar as melhores decisões arquiteturais, projetar estratégias, aumentar níveis de performance e tempo de resposta se entendermos as melhores características de cada um deles e empregá-las nos lugares corretos. 
+Neste capítulo, abordaremos de forma simplificada os conceitos essenciais dos principais tópicos de comunicação de rede sob a perspectiva de System Design. Compreender os protocolos de comunicação é de extremo valor, e pode representar um divisor de águas para aprimorar tópicos de [performance](/performance-capacidade-escalabilidade/) e [resiliência](). Entender os fundamentos de protocolos como TCP/IP e UDP, assim como outros que são desenvolvidos a partir deles, nos capacita a tomar decisões arquiteturais informadas, projetar estratégias eficazes, melhorar níveis de performance e tempo de resposta ao aplicar suas características mais vantajosas de maneira adequada.
 
-Olhando para meus pares e de profissionais de engenharia que já trabalhei no lugar dos anos, o entendimento da camada de networking sempre foi um grande gap na compreenção de uma topologia de sistemas. Esse artigo foi baseado em discussões e sessões de design que tive o prazer de participar ao decorrer desses anos, compilando de forma simples os tópicos práticos e teóricos mais importantes para que a absorção e entendimento seja simples e fácilmente empregada no dia a dia das pessoas que vierem a investir um tempo aqui. Espero que seja de grande valor. 
+Observando meus colegas e os profissionais de engenharia com quem tive a oportunidade de trabalhar ao longo dos anos, percebi que o entendimento da camada de rede frequentemente representa uma lacuna significativa no entendimento de uma topologia de sistemas. Este artigo é baseado em discussões e sessões de design nas quais tive o prazer de participar ao longo desses anos, compilando de maneira acessível os tópicos práticos e teóricos mais relevantes. O objetivo é que a informação aqui apresentada seja facilmente compreendida e aplicada no cotidiano daqueles que dedicarem tempo a esta leitura. Espero que encontrem grande valor neste conteúdo.
+
 
 <br>
 
@@ -59,7 +60,7 @@ Entrando agora de fato nos protocolos de comunicação, vamos entender algumas d
 
 ## Protocolos Base
 
-Para compreender detalhadamente os protocolos e tecnologias de comunicação modernas, é crucial revisitar os protocolos de rede de baixo nível que servem como sua base. Antes de explorar protocolos como HTTP/2, HTTP/3, gRPC e AMPQ, precisamos entender os mecanismos de conexão fundamentais, principalmente o TCP/IP e o UDP, que são essenciais para o desenvolvimento dessas tecnologias avançadas.
+Para compreender detalhadamente os protocolos e tecnologias de comunicação modernas, é importante primeiro revisitar os protocolos de rede de baixo nível que servem como sua base. Antes de explorar protocolos como HTTP/2, HTTP/3, gRPC e AMPQ, precisamos entender os mecanismos de conexão fundamentais, principalmente o TCP/IP e o UDP, que são essenciais para o desenvolvimento dessas tecnologias avançadas.
 
 ### UDP (User Datagram Protocol)
 
@@ -76,86 +77,147 @@ Analogamente, o funcionamento do UDP pode ser comparado a entregadores que deixa
 
 ### TCP/IP (Transmission Control Protocol/Internet Protocol)
 
-O protocolo **TCP/IP**, ou **Transmission Control Protocol/Internet Protocol**, ao contrário do UDP, é um conjunto de protocolos orientados a conexões. Ele se encarrega desde o primeiro momento a abrir, manter, checar a saúde e encerrar a conexão, com o objetivo de garantir que tudo que foi enviado chegou de forma integra e confiável ao seu destino exatamente na ordem que faça sentido. Ele também atua na camada de transporte (layer 4), e antes de enviar qualquer pacote entre os hosts, ele estabelece uma conexão e utiliza mecanismos de controle de erro e fluxo, para garantir que tudo que foi enviado chegue na ordem correta e sem corrupção. 
-
+Diferentemente do UDP, o **TCP/IP** (*Transmission Control Protocol/Internet Protocol*) é um conjunto de protocolos orientados à conexão. Ele é responsável por abrir, manter, verificar a saúde e encerrar a conexão, assegurando que os dados enviados cheguem ao destino de forma íntegra, confiável e na ordem correta. Atuando na camada de transporte (camada 4), o TCP/IP estabelece uma conexão antes de qualquer transmissão de dados entre os hosts, utilizando mecanismos de controle de erro e de fluxo para garantir a correta ordem e a integridade dos dados enviados.
 
 ![TCP](/assets/images/system-design/tcp.png)
 
-O modelo TCP utiliza de termos como **ACK, SYN, SYN-ACK** e **FIN** para exemplificar os comportamentos de como funciona a gestão das suas conexões. Existem algumas outras Flag como **URG**, **PSH** e **RST**, porém vamos nos atentar a um fluxo simplificado para nivelarmos como uma conexão TCP funciona. 
+O modelo TCP/IP emprega termos como **ACK, SYN, SYN-ACK** e **FIN** para descrever o gerenciamento de suas conexões. Existem outras flags, como **URG**, **PSH** e **RST**, mas focaremos em um fluxo simplificado para entender como uma conexão TCP funciona.
 
-Todas as ações que ocorrem dentro do ciclo de vida de uma conexão TCP são confirmadas através de **ACKS (Acknowledgment)**.
+Todas as ações dentro do ciclo de vida de uma conexão TCP são confirmadas por **ACKs (Acknowledgments)**.
 
-Para inicio da conexão TCP, é necessário uma **série de confirmações entre cliente e servidor para garantir sequencialidade e confiabilidade**. Esse processo é conhecido somo **"three-way handshake"**, exemplificado pela sequencia de três ações **SYN, SYN-ACK e ACK**. Por isso, three-way handshake. 
+O início de uma conexão TCP exige uma série de confirmações entre o cliente e o servidor para assegurar sequencialidade e confiabilidade. Esse processo é conhecido como **"three-way handshake"**, ilustrado pela sequência de três ações: **SYN**, **SYN-ACK** e **ACK**, daí o termo "three-way handshake".
 
-No inicio, o cliente começa o processo enviando um segmento TCP com a flag **SYN (synchronize)** marcada ao servidor, **indicando a intenção de estabelecer uma conexão**. Esse processo inicial inclui um número de sequencia conhecido como **ISN** (Initial Sequence Number), que é usado para sincronização e controle de fluxo.
 
-Após esse primeiro contato, servidor responde ao cliente com um segmento TCP contendo as flags **SYN e ACK (acknowledgment)**. O **ACK confirma o recebimento do SYN do cliente**, enquanto o SYN do servidor sinaliza sua própria solicitação de sincronização, repetindo o processo mas no sentido inverso. Este segmento inclui tanto o número de sequência do servidor quanto o número de reconhecimento, que é o número de sequência inicial (ISN) do cliente **incrementado de um**.
+No início, o cliente inicia o processo enviando um segmento TCP com a flag **SYN (synchronize)** marcada para o servidor, **indicando a intenção de estabelecer uma conexão**. Este processo inicial envolve um número de sequência conhecido como **ISN** (Initial Sequence Number), utilizado para sincronização e controle de fluxo.
 
-Após receber o SYN do servidor, finalimente cliente envia um segmento de ACK de volta ao servidor, confirmando o recebimento do SYN-ACK do servidor. Este ACK também inclui o número de sequência inicial do cliente (agora incrementado) e o número de sequência inicial do servidor incrementado de um. Com este passo, a conexão é estabelecida, e os dados podem começar a ser transmitidos de fato.
+Após este primeiro contato, o servidor responde ao cliente com um segmento TCP contendo as flags **SYN e ACK (acknowledgment)**. O **ACK confirma o recebimento do SYN do cliente**, enquanto o SYN do servidor indica sua própria solicitação de sincronização, efetivamente repetindo o processo, mas na direção inversa. Este segmento inclui tanto o número de sequência do servidor quanto o número de reconhecimento, que é o ISN do cliente **incrementado de um**.
 
-Uma vez que a conexão é estabelecida, os dados podem ser enviados entre o cliente e o servidor em segmentos TCP. Cada segmento enviado é numerado sequencialmente, o que permite ao receptor reordenar segmentos recebidos fora de ordem e detectar qualquer dado perdido. O receptor envia um ACK para cada segmento recebido, indicando o próximo número de sequência que espera receber. Este mecanismo garante a entrega confiável e a integridade dos dados.
+Após receber o SYN do servidor, o cliente envia um segmento de ACK de volta ao servidor, confirmando o recebimento do SYN-ACK do servidor. Este ACK também contém o número de sequência inicial do cliente (agora incrementado) e o número de sequência inicial do servidor incrementado de um. Com este passo, a conexão é formalmente estabelecida, permitindo que os dados comecem a ser transmitidos.
 
-Para encerrar uma conexão TCP, **tanto o cliente quanto o servidor devem fechar a sessão de sua respectiva direção**, usando um processo de **"four-way handshake"**, onde o cliente inicia o encerramento enviando um segmento com a flag **FIN** marcada, indicando que não tem mais dados para enviar, recebe um ACK do servidor com outra flag de FIN em sequência, indicando que o servidor também pode finalizar a conexão. O cliente finalmente envia o ultimo ACK e a conexão é terminada. 
+Com a conexão estabelecida, os dados são enviados entre cliente e servidor em segmentos TCP. Cada segmento é numerado sequencialmente, possibilitando que o receptor reordene segmentos que cheguem fora de ordem e detecte quaisquer dados perdidos. O receptor envia um ACK para cada segmento recebido, indicando o próximo número de sequência que espera receber, garantindo assim a entrega confiável e a integridade dos dados.
 
-Comparado ao UDP, o TCP/IP é mais lento, porém mais confiável. A maioria dos protocolos de comunicação utilizados entre serviços produtivos e componentes de software são construídos em cima do TCP para garantir sua confiabilidade de conexão. 
+Para encerrar uma conexão TCP, **ambas as partes devem fechar a sessão de sua respectiva direção** através de um processo conhecido como **"four-way handshake"**. O cliente inicia o encerramento enviando um segmento com a flag **FIN** marcada, sinalizando que não tem mais dados a enviar. Após receber um ACK do servidor e um segmento com a flag **FIN**, indicando que o servidor também concluiu a transmissão de dados, o cliente envia o último ACK, finalizando a conexão.
 
-Usando o mesmo exemplo de entregadores de cartas, imagine que o protocolo TCP é aquele tipo de entregador que toca sua campainha e apenas entrega sua correspondencia em mãos mediante a assinatura, foto e confirmação. 
+Comparado ao UDP, o TCP/IP oferece maior confiabilidade, embora com uma velocidade reduzida. A maioria dos protocolos de comunicação entre serviços e componentes de software é construída sobre o TCP, justamente pela sua confiabilidade.
 
-### TCP/IP ou UDP para construção de protocolos
+Analogamente, se o protocolo UDP pode ser comparado a um entregador que deixa correspondências sem confirmação de recebimento, o TCP seria como um entregador que exige sua assinatura, foto e confirmação pessoal para entregar a correspondência em mãos.
 
-Em resumo, a escolha entre UDP e TCP/IP depende das necessidades específicas da aplicação em termos de confiabilidade, ordem, integridade dos dados e eficiência. Enquanto o UDP é escolhido para aplicações que requerem entrega rápida e podem tolerar perdas, o TCP é usado em aplicações que necessitam de entrega confiável de dados. Essas variáveis são de extrema importância para construídos implementações que façam uso de conexões de rede. 
 
-<br>
+### Escolhendo Entre TCP/IP e UDP para Construção de Protocolos
+
+A decisão entre usar UDP ou TCP/IP para desenvolver protocolos depende das exigências específicas da aplicação quanto à confiabilidade, ordem, integridade dos dados e eficiência. O UDP é preferido para aplicações que demandam uma entrega rápida de dados e podem tolerar perdas de pacotes, enquanto o TCP/IP é escolhido para aplicações que requerem uma entrega de dados confiável e ordenada. Essas características são de extrema importância ao implementar soluções que dependem de conexões de rede eficientes e confiáveis para cumprir seus objetivos.
 
 ### TLS (Transport Layer Security)
 
-TLS (Transport Layer Security) é um protocolo importante para a segurança na internet e redes comporativas, projetado para fornecer comunicação segura entre comunicações clientes-servidor. Ele é o sucessor do Secure Sockets Layer (SSL) e tem como principal objetivo garantir privacidade e integridade dos dados durante a transferência de informações entre sistemas de forma criptografada, utilizando criptografia para garantir que os dados transmitidos de um ponto a outro da rede não seja legível para terceiros.
+O TLS (Transport Layer Security) é um protocolo essencial para a segurança na internet e em redes corporativas, projetado para prover comunicação segura entre cliente e servidor. Sucessor do SSL (Secure Sockets Layer), seu objetivo principal é assegurar a privacidade e a integridade dos dados durante a transferência de informações entre sistemas, através de criptografia, garantindo que os dados enviados de um ponto a outro na rede permaneçam inacessíveis a interceptadores.
 
-O TLS funciona com base em um handshake e uma troca de chaves publicas e privadas durante o handshake, estabelecendo uma chave que será usada para criptografar os dados da sessão, e uma vez estabelecidade os dados podem trafegar de forma segura entre o cliente e o servidor. 
+O funcionamento do TLS se dá por meio de um "handshake", onde cliente e servidor estabelecem parâmetros da sessão, como a versão do protocolo e os métodos de criptografia a serem utilizados, por meio de uma troca de chaves públicas e privadas. Essa troca resulta na criação de uma chave de sessão única, utilizada para criptografar os dados transmitidos, assegurando assim a segurança da comunicação.
 
-O processo começa com o "handshake" do TLS, onde cliente e servidor estabelecem os parâmetros da sessão especificando quais versões do protocolo e quais métodos de criptografia serão usados. Ao final da comunicação, a sessão pode ser encerrada de forma segura, com a opção de re-negociar parâmetros para futuras sessões de comunicação.
+O "handshake" inicial do TLS define os parâmetros de comunicação segura, permitindo que os dados trafeguem protegidos entre cliente e servidor. Ao término da sessão, a comunicação pode ser finalizada de forma segura, com a possibilidade de renegociar os parâmetros para futuras sessões.
 
-O TLS tem várias versões, com melhorias contínuas em segurança e desempenho. As mais utilizadas atualmente são TLS 1.2 e TLS 1.3, sendo esta última a mais recente e considerada a mais segura e eficiente, oferecendo melhorias em relação às versões anteriores, como o processo de handshake mais rápido.
+Existem várias versões do TLS, com aprimoramentos contínuos em segurança e desempenho. As versões mais adotadas atualmente são TLS 1.2 e TLS 1.3, sendo a última a mais recente e segura, oferecendo vantagens como um processo de "handshake" mais ágil e eficiente em comparação com as versões anteriores.
+
 
 <br>
 
 ## Protocolos de Aplicação
 
+
+Os Protocolos de Aplicação constituem uma parte fundamental da arquitetura da Internet, permitindo a comunicação ficaz entre diferentes sistemas e aplicações que tem padrões específicos que precisam ser respeitados. Eles definem um conjunto de regras e padrões que governam a troca de dados entre servidores e clientes num gama muito grande de contextos. Estes protocolos operam na camada mais alta do modelo OSI, a Camada de Aplicação, onde o foco se desloca da transferência de dados pura para a maneira como os dados são solicitados e apresentados ao usuário de acordo com a tecnologia utilizada
+
+Se devido a alguma necessidade específica de tecnologia você precisa implementar seu próprio protocolo de comunicação criando suas próprias regras, validações e comportamentos utilizando como base os protocolos basicos como TCP e UDP, esse seu protocolo pode ser considerado para a camada de aplicação. Se você está utilizando um protocolo específico para troca de mensagens asincronas, esse protocolo de comunicação entre o cliente e o servidor de mensagens, por ser algo construído em cima de uma comunicação TCP/IP, está na camada de aplicação. Vamos entender algumas das principais tecnologias e protocolos que funcionam nessa camada que tende a ser as mais presentes no dia a dia de engenharia e construções de soluções de praticamente todos os tipos de arquitetura. 
+
+
 <br>
 
 ### HTTP/1, HTTP/2 e HTTP/3
 
-Para conseguirmos olhar o protocolo HTTP (Hypertext Transfer Protocol) com a perspectiva de system design, é necessário entender como esse protocolo influencia a arquitetura, o desempenho, a escalabilidade e a segurança das aplicações modernas. Esse protocolo atua na **Layer 7 do Modelo OSI**, sendo tratado como **Camada de Aplicação**. Ele funciona majoritariamente utilizando **conexões TCP** para rastrear e tratar suas solicitações e funciona como a espinha dorsal da internet e da comunicação entre sistemas modernos. 
+Ao examinar o protocolo **HTTP** (*Hypertext Transfer Protocol)* sob a perspectiva de System Design, é importante entender seu impacto na arquitetura, desempenho, escalabilidade e segurança de aplicações modernas. Operando na **Camada 7 do Modelo OSI**, ou **Camada de Aplicação**, o HTTP é predominantemente baseado em **conexões TCP** para gerenciar solicitações, constituindo a espinha dorsal da internet e da comunicação entre sistemas modernos.
 
-Os protocolos HTTP/2 e HTTP/3 são evoluções do protocolo HTTP. Eles foram desenvolvidos para **melhorar a eficiência da comunicação, reduzir a latência e otimizar o desempenho** em comparação com o HTTP/1.1 e o HTTP/1.0, que foi a versão dominante do protocolo nos sites e aplicações distribuídos pela internet e redes comporativas por muitos anos. 
+O HTTP/2 e HTTP/3 representam evoluções do protocolo HTTP, criadas para **melhorar a eficiência da comunicação, reduzir latências e otimizar o desempenho** em relação às versões anteriores, HTTP/1.1 e HTTP/1.0. Essas versões iniciais dominaram a internet e as redes corporativas por muitos anos.
 
-O HTTP trabalha um formato de **solicitação-resposta**, entre **cliente-servidor**, onde o cliente **envia uma solicitação para o servidor, e o servidor responde**, basicamente. Este modelo é simples e extensível, permite fácil integração com diversas arquiteturas de aplicação, incluindo [sistemas monolíticos e microserviços](/monolitos-microservicos/). No entanto, a natureza síncrona do HTTP pode **introduzir latência, tempo de resposta** e exigir otimizações para melhorar o desempenho dessas solicitações.
+O HTTP opera em um modelo de **solicitação e resposta** entre **cliente e servidor**, onde o cliente faz uma solicitação e o servidor responde. Este paradigma é simples, extensível e compatível com várias arquiteturas de aplicação, incluindo [sistemas monolíticos e microserviços](/monolitos-microservicos/). Contudo, a natureza síncrona do HTTP pode introduzir latência e tempo de resposta, exigindo otimizações para aprimorar o desempenho das solicitações.
+
+
+<br>
+
+#### Estruturas de Requisições e Respostas HTTP
+
+Entender a estrutura de uma requisição HTTP é fundamental na arquitetura de sistemas. Embora simples e comum na rotina de engenheiros e arquitetos, compreender detalhadamente suas partes pode facilitar troubleshooting, melhorar a segurança e otimizar a performance. Vamos explorar os principais componentes: Body, Headers, Cookies e Status Codes.
+
+##### Body
+
+O Body, ou corpo, de uma requisição ou resposta HTTP contém os dados transmitidos entre cliente e servidor. Em requisições, o body pode incluir informações para que o servidor execute funções específicas, como detalhes de um formulário, payloads em JSON ou arquivos de mídia. Na resposta, geralmente contém o recurso solicitado pelo cliente, seja um documento HTML, um objeto JSON, ou outros formatos de dados, definidos pelos headers de `Content-Type`.
+
+##### Headers
+
+Os Headers, ou cabeçalhos, são elementos presentes tanto em requisições quanto em respostas, fornecendo informações e metadados sobre a transação HTTP em que estão isneridos. Podem especificar o tipo de conteúdo no body (`Content-Type`), a autenticação necessária (`Authorization`), instruções de cache (`Cache-Control`), entre outros metadados. Os headers são fundamentais para configurar e controlar a comunicação HTTP, enriquecendo a interação entre cliente e servidor com informações detalhadas sobre a transação.
+
+A possibilidade da criação dos headers que vão trafegar entre cliente servidor fica a conta do direcionamento de engenharia, e não precisam necessariamente serem descritos em ordem ou possuem uma obrigatoriedade e padrão formal. Porém por convenção, alguns deles são extremamente comuns e estão presentes na maioria das aplicações. Alguns deles sendo: 
+
+| Header                | Descrição                                                                                       |
+|-----------------------|-------------------------------------------------------------------------------------------------|
+| `Accept`              | Especifica os tipos de mídia que o cliente pode processar.                                      |
+| `Authorization`       | Contém as credenciais para autenticar o cliente no servidor.                                    |
+| `Content-Type`        | Indica o tipo de mídia do corpo da requisição ou resposta.                                      |
+| `Cache-Control`       | Diretivas para mecanismos de cache tanto nas requisições quanto nas respostas.                  |
+| `Cookie`              | Envia armazenados cookies do navegador para o servidor.                                        |
+| `Set-Cookie`          | Direciona o navegador para armazenar o cookie e enviá-lo em requisições subsequentes ao domínio.|
+| `Host`                | Especifica o domínio do servidor (e possivelmente a porta) a qual a requisição está sendo enviada.|
+| `User-Agent`          | Contém uma string característica que permite ao servidor identificar o tipo de cliente (navegador ou bot, por exemplo).|
+| `Content-Length`      | O tamanho do corpo da requisição ou resposta em bytes.                                          |
+| `Location`            | Indica o URL para o qual uma navegação deve ser redirecionada.                                  |
+| `Referer`             | Indica o endereço da página web anterior de onde o pedido originou.                             |
+| `Accept-Encoding`     | Indica quais codificações de conteúdo (como gzip) o cliente entende.                            |
+| `Content-Encoding`    | A codificação usada no corpo da requisição ou resposta.                                         |
+| `Transfer-Encoding`   | O tipo de codificação de transferência que o corpo da mensagem deve usar.                       |
+| `Access-Control-Allow-Origin` | Especifica os domínios que podem acessar os recursos em uma resposta de origem cruzada.     |
+
+
+##### Cookies
+
+Cookies são dados enviados pelo servidor para o navegador do usuário, armazenados e reenviados pelo navegador em futuras requisições ao mesmo servidor. Principalmente usados para manter o estado da sessão (como autenticação do usuário ou personalização), os cookies facilitam a manutenção do registro de estado do cliente sem necessidade de reautenticação a cada nova solicitação.
+
+##### Status Codes
+
+Os Status Codes, ou códigos de status, são números de três dígitos enviados pelo servidor em resposta a uma requisição, indicando o resultado. São fundamentais para REST, informando o cliente sobre o sucesso ou falha da operação. Veja alguns comuns:
+
+| Código | Classe            | Descrição |
+|--------|-------------------|-----------|
+| 1xx    | Informativo       | Respostas provisórias, indicam que o servidor recebeu a solicitação, e o processo está em andamento. |
+| 2xx    | Sucesso           | Indicam que a solicitação foi bem-sucedida. |
+| 3xx    | Redirecionamento  | Ações adicionais são necessárias para completar a solicitação, geralmente envolvendo redirecionamento. |
+| 4xx    | Erro do Cliente   | Erros de solicitação, indicam problemas como parâmetros inválidos ou requisições não processáveis. |
+| 5xx    | Erro do Servidor  | Falhas no processamento pelo servidor, indicam problemas internos ou sobrecarga. |
+
 
 <br>
 
 #### HTTP/1.x
 
-O HTTP 1.1 foi lançado em 1997, visando trazer algumas melhorias a nível de otimização ao HTTP 1.0 para se adaptar a nova forma de se usar a internet e aplicações web. Antes do HTTP/1.1, **cada requisição necessitava de uma nova conexão TCP**, o que era ineficiente. **O HTTP/1.1 introduziu conexões persistentes, permitindo que várias requisições e respostas fossem trocadas em uma única conexão.**
+O HTTP/1.1, lançado em 1997, trouxe melhorias significativas em relação ao HTTP 1.0 (que não vou abordar aqui em detalhes devido a descontinuidade) para se adaptar às novas formas de uso da internet e das aplicações web. Uma mudança fundamental foi a introdução de **conexões persistentes**, eliminando a necessidade de estabelecer uma nova conexão TCP para cada requisição, o que aumentou a eficiência da comunicação de forma drastica no lado do servidor e do cliente, evitando a abertura de sockets de forma desenfreada.
 
 ![HTTP/1.1](/assets/images/system-design/http1.1.png)
 
-Nessa versão foi introduzido o conceito de **Pipelining**, que permitia que várias requisições fossem enviadas em sequência, sem esperar pela resposta da primeira, para melhorar a utilização da conexão. 
+Esta versão também implementou o conceito de **Pipelining**, permitindo o envio de várias requisições em sequência sem aguardar pela resposta da anterior. Esse recurso visava aprimorar a utilização da conexão.
 
-Ainda em termos de performance, a possibilidade caching mais eficaz, e gerenciamento de estado com cookies, reduziram significantenebte o número de requisições repetidas ao servidor.
+Do ponto de vista da performance, melhorias no caching e no gerenciamento de estado com cookies contribuíram para a redução significativa do número de requisições repetidas ao servidor.
 
-Apesar dessas melhorias, o HTTP/1.1 ainda sofria de alguns problemas, como o "head-of-line blocking" (HOL blocking), onde a espera pela resposta da primeira requisição podia bloquear as respostas das seguintes, o que motivou a evolução do protocolo em mais alguns degraus. 
+Contudo, o HTTP/1.1 enfrentava problemas como o **"head-of-line blocking"** (I), onde a espera por uma resposta impedia o processamento de requisições subsequentes. Esse e outros desafios levaram à evolução do protocolo em direção a melhorias subsequentes.
+
 
 <br>
 
 #### HTTP/2
 
-Lançado em 2015, o HTTP/2 foi projetado para lidar com as limitações do HTTP/1.1 e melhorar o modo como os dados solicitados são formatados, priorizados e transporados, introduzindo algumas otimizações importantes que permitiram a** implementação de vários outros protocolos e formas de comunicação mais inteligente para enriquecer as possibilidades de System Design**. 
+Lançado em 2015, o HTTP/2 foi desenvolvido para superar as limitações do HTTP/1.1, aprimorando a formatação, priorização e transporte de dados. Essas otimizações abriram caminho para a implementação de protocolos adicionais e métodos de comunicação mais avançados, enriquecendo as estratégias de System Design.
 
-O conceito de multiplexação foi um dos mais importantes para a adoção e popularização do protocolo, permitindo que requests e responses sejam enviadas simultaneamente pela mesma conexão TCP, eliminando o problema do HOL blocking ainda presente na versão 1.1. 
+Uma inovação chave do HTTP/2 é a **multiplexação**, que permite o envio simultâneo de requests e responses pela mesma conexão TCP. Isso elimina o problema de "head-of-line blocking" (HOL blocking) encontrado no HTTP/1.1, onde o processamento de requisições sequenciais poderia ser bloqueado pela espera de uma resposta.
 
-Uma das features que podem ser consideradas no desenvolvimento de aplicações web junto ao HTTP/2 é a **possibilidade de priorização de requisições**, onde é possivel **indicar a prioridade das requisições**, para que os servidores que estão atendendo as requisições otimizem a entrega de recursos ao cliente em ordem de importância para o mesmo. 
+Outra funcionalidade relevante no desenvolvimento de aplicações web é a **priorização de requisições**. No HTTP/2, é possível definir a prioridade das requisições, permitindo que servidores otimizem a entrega de recursos aos clientes de acordo com a importância designada.
 
-A funcionalidade de **Server Push** permite que o servidor **envie recursos para o navegador antes que eles sejam solicitados explicitamente pelo cliente**, 
+Além disso, a característica de **Server Push** do HTTP/2 possibilita que servidores enviem recursos ao navegador antes mesmo de serem explicitamente solicitados pelo cliente, melhorando a eficiência da carga de páginas e a experiência do usuário.
+
 
 
 ![HTTP/2](/assets/images/system-design/http2.png)
@@ -164,45 +226,17 @@ A funcionalidade de **Server Push** permite que o servidor **envie recursos para
 
 #### HTTP/3 (QUIC)
 
-O HTTP/3 é a versão mais recente do protocolo, introduzindo mudanças interessantes e disruptivas na implementação do protocolo, principalmente camada de transporte (layer 4) ao **substituir o TCP pelo QUIC (Quick UDP Internet Connections), que por sua vez é baseado no protocolo UDP ao invés do TCP.**
+O HTTP/3 representa a iteração mais avançada do protocolo até o presente momento da escrita desse capítulo, trazendo inovações significativas, especialmente na camada de transporte (camada 4), ao **substituir o TCP pelo QUIC (Quick UDP Internet Connections)**. Baseando-se no UDP ao invés do TCP, essa mudança marca um avanço disruptivo na implementação do protocolo.
 
-Originalmente desenvolvido por Google e formalizado como parte do HTTP/3 pela Internet Engineering Task Force (IETF), o QUIC é um protocolo de transporte baseado em UDP que oferece várias vantagens em relação ao TCP, especialmente em termos de latência, segurança e eficiência de transmissão.
+Desenvolvido originalmente pelo Google e adotado pelo HTTP/3 através da Internet Engineering Task Force (IETF), o QUIC oferece várias melhorias sobre o TCP, destacando-se em latência, segurança e eficiência na transmissão de dados.
 
-Essa mudança pode parecer assustadora, mas a implementação do QUIC conseguiu atingir objetivos de redução de latência entre conexão, mesmo **implementando handshakes criptografados e recuperação de erros**, assim como nas conexões TCP convencionais, mas sem sacrificar muita performance na comunicação. 
+Apesar das preocupações iniciais, o QUIC alcança objetivos de redução de latência mantendo handshakes criptografados e mecanismos de recuperação de erros, comparáveis aos do TCP, porém com uma performance de comunicação aprimorada.
 
 ![HTTP/3](/assets/images/system-design/http3.png)
 
-O QUIC reduz a latência de conexão através de um processo de handshake criptografado mais eficiente, diferentemente do TCP, que requer uma série de trocas (o three-way handshake) antes de estabelecer uma conexão segura, o QUIC combina o **handshake do protocolo de controle de transmissão com o do TLS, reduzindo o número de viagens necessárias para estabelecer uma conexão**. A Multiplexação introduzida na HTTP/2 também foi melhorada, fazendo com que ela realmente conseguisse ser completada sem bloqueio, podendo trafegar os dados e arquivos dentro de uma conexão UDP ao invés de uma TCP. 
+O QUIC diminui a latência de conexão por meio de um handshake criptografado mais eficiente. Enquanto o TCP necessita de um processo de troca prolongado para estabelecer uma conexão segura, o QUIC otimiza este processo combinando o handshake do controle de transmissão com o TLS, diminuindo as etapas necessárias para iniciar a conexão. A multiplexação, introduzida no HTTP/2, é aprimorada no HTTP/3, permitindo uma execução mais eficaz sem bloqueios, facilitando o tráfego de dados e arquivos por uma conexão UDP, em detrimento da TCP.
 
-Essa abordagem do HTTP/3 com o QUIC podem ser considados em vários tipos de aplicações diferentes, particularmente aquelas que requerem **transmissões de dados rápidas e confiáveis**, como **streaming de vídeo**, **jogos online** e **comunicações em tempo real**. Uma característica única do QUIC é sua capacidade de manter uma conexão ativa mesmo quando um usuário muda de rede (por exemplo, de Wi-Fi para dados móveis). Isso é possível porque o QUIC é **identificado por uma conexão ID em vez de por endereços IP e portas**, permitindo que a sessão continue sem interrupção. 
-
-#### Estruturas e Componentes de Um Requisição e Resposta HTTP
-
-Compreender conceitualmente a estrutura de uma requisição HTTP pode ser um conhecimento extremamente valioso na arquitetura de sistemas. Por mais que seja simples e presente na vida de grande parte de engenheiros e arquitetos, saber destrinchar suas partes e entender conceitualmente cada uma delas pode abrir o leque para possibilidades de troubleshooting, segurança e performance. Vamos detalhar cada um dos principais componentes, sendo eles o Body, Headers, Cookies e Status Codes. 
-
-##### Body
-
-O Body, ou corpo de uma requisição ou resposta HTTP contém **os dados enviados ou recebidos entre o cliente e o servidor**. Em uma requisição HTTP, o body pode conter informações necessárias para que o servidor execute alguma função específica , como os detalhes de um formulário enviado por um usuário de uma página, um payload em JSON contendo informações de uma compra e até mesmo imagens, arquivos e mídias. Na resposta, o body geralmente contém o recurso solicitado pelo cliente, como um documento HTML, um objeto JSON, dados para um relatório, ou qualquer outro formato de dados definido pelos headers de `Content-Type`.
-
-##### Headers 
-
-Os Headers ou Cabeçalhos HTTP são componentes-chave tanto na requisição quanto na resposta, fornecendo informações essenciais sobre a transação HTTP em si. Eles podem indicar o tipo de conteúdo do body utilizando o `Content-Type`, a autenticação necessária com o header `Authorization`, instruções de cache  usando os derivados do `Cache-Control`, entre outros metadados. Os headers desempenham um papel importante na configuração e no controle do comportamento da comunicação HTTP, permitindo uma interação mais rica e segura entre cliente e servidor devido ao acumulo de responsabilidades informativas. Nele por exemplo são declarados qual o formato de dados estão sendo enviados, que estão sendo devolvidos, encode, tamanho do payload e várias outras informações importante . 
- 
-##### Cookies 
-
-Cookies são dados que o servidor envia para o navegador do usuário, que o navegador armazena e envia de volta com subsequente requisições para o mesmo servidor. Eles são usados principalmente para **manter o estado da sessão entre as requisições**, como autenticação do usuário ou personalização. Os cookies são transmitidos através dos headers de requisição e resposta, permitindo que o servidor mantenha um registro do estado do cliente sem a necessidade de reautenticação a cada solicitação.
-
-##### Status Codes
-
-Os Status Codes (Códigos de Status) HTTP são números de três dígitos enviados pelo servidor em resposta a uma requisição HTTP, indicando o resultado da solicitação. Eles são essenciais para o REST, pois informam ao cliente sobre o sucesso ou falha da operação solicitada. Alguns dos mais comuns incluem:
-
-| Código    | Classe | Descrição    |
-|-----------|--------|--------------|
-| 1xx       | Informativo           | Respostas provisórias que indicam que o servidor recebeu a solicitação e o processo está em andamento.                  | 
-| 2xx       | Sucesso               | Indica que a solicitação foi recebida, compreendida e aceita com sucesso. |
-| 3xx       | Redirecionamento      | Informa que ações adicionais precisam ser tomadas para completar a solicitação, geralmente envolvendo redirecionamento para outro URI. |
-| 4xx       | Erro do Cliente       | Significa que houve um erro na solicitação, impedindo o servidor de processá-la. Indica erros vindos da requisição do cliente, como parâmetros inválidos, requisições impossíveis de serem concluídas devido a regras de negócio da aplicação ou URIs inexistentes. |
-| 5xx       | Erro do Servidor      | Indica que o servidor falhou ao tentar processar uma solicitação válida. Indica erros vindos do processo interno, uma falha inesperada entre comunicações, sobrecarga de processamento, excedência do tempo limite da solicitação ou falha entre dependências de serviços. |
+A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diversos tipos de aplicativos, especialmente aqueles que demandam transmissões de dados rápidas e seguras, como streaming de vídeo, jogos online e comunicações em tempo real. Uma característica notável do QUIC é sua habilidade de manter conexões ativas mesmo com a mudança de redes (por exemplo, de Wi-Fi para dados móveis), devido à identificação por conexão ID, ao invés de endereços IP e portas, facilitando a continuidade das sessões sem interrupções.
 
 <br>
 
