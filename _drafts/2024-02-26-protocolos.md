@@ -136,8 +136,9 @@ Ao examinar o protocolo **HTTP** (*Hypertext Transfer Protocol)* sob a perspecti
 
 O HTTP/2 e HTTP/3 representam evoluções do protocolo HTTP, criadas para **melhorar a eficiência da comunicação, reduzir latências e otimizar o desempenho** em relação às versões anteriores, HTTP/1.1 e HTTP/1.0. Essas versões iniciais dominaram a internet e as redes corporativas por muitos anos.
 
-O HTTP opera em um modelo de **solicitação e resposta** entre **cliente e servidor**, onde o cliente faz uma solicitação e o servidor responde. Este paradigma é simples, extensível e compatível com várias arquiteturas de aplicação, incluindo [sistemas monolíticos e microserviços](/monolitos-microservicos/). Contudo, a natureza síncrona do HTTP pode introduzir latência e tempo de resposta, exigindo otimizações para aprimorar o desempenho das solicitações.
+O HTTP opera em um modelo de **solicitação e resposta** entre **cliente e servidor**, onde o cliente faz uma solicitação e o servidor responde. Este paradigma é simples, extensível e compatível com várias arquiteturas de aplicação, incluindo [sistemas monolíticos e microserviços](/monolitos-microservicos/). Contudo, a natureza síncrona do HTTP pode introduzir latência e tempo de resposta em troca da simplicidade de implementação, exigindo otimizações para aprimorar o desempenho das solicitações em ambientes de larga escala. 
 
+A escolha de utilizar o protocolo HTTP para comunicação em decisões de engenharia permeiam arquiteturas que **precisam de uma resposta sincrona de suas dependências**, onde sistemas dependentes **necessitam que um dado ou ação sejam executadas e entregues no momento que são solicitados**, sem a possibilidade de ser executado por um comando ou solicitação assincrona. Extenderemos essa explicação no capítulo que tratam padrões de comunicação, onde abordaremos temas como o REST. 
 
 <br>
 
@@ -173,6 +174,7 @@ A possibilidade da criação dos headers que vão trafegar entre cliente servido
 | `Transfer-Encoding`   | O tipo de codificação de transferência que o corpo da mensagem deve usar.                       |
 | `Access-Control-Allow-Origin` | Especifica os domínios que podem acessar os recursos em uma resposta de origem cruzada.     |
 
+<br>
 
 ##### Cookies
 
@@ -244,9 +246,37 @@ A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diverso
 
 Os protocolos de mensageria desempenham papéis na facilitação da comunicação entre sistemas distribuídos, permitindo a troca eficiente de mensagens de forma assíncrona. Dois dos protocolos mais importantes nesta categoria são o **MQTT** (*Message Queuing Telemetry Transport*) e o **AMQP** (*Advanced Message Queuing Protocol*). Esses protocolos são projetados para otimizar o tráfego de dados, garantir a entrega de mensagens e suportar padrões de comunicação flexíveis, confiáveis e performáticos. Normalmente as comunicações que se utilizam do HTTP tem uma responsabilidade sincrona de solicitação e resposta, utilizado onde é necessário receber do servidor uma resposta imediata para a transação solicitada. Porém em termos de performance, os protocolos que possibilitam comunicações assincronas podem nos ajudar a extender as capacidades de processamento em background de tarefas custosas, paralelizar e distribuir tarefas entre diversos microserviços com diferentes possibilidades necessárias para completar a solicitação, continuar o trabalho de uma solicitação inicialmente sincrona em background entre diversas outras possibilidades. Aqui falaremos inicialmente de como funciona o protocolo. Breve falaremos mais detalhadamente da aplicação e implementação de tarefas assincronas em engenharia de fato. 
 
+<br>
+
 ### MQTT (Message Queuing Telemetry Transport)
 
-O **MQTT** é um protocolo de mensageria leve e eficiente, projetado para situações em que uma pegada de código pequena é necessária e a largura de banda da rede é limitada. Amplamente utilizado em aplicações de Internet das Coisas (IoT), o MQTT facilita a comunicação entre dispositivos com recursos limitados e servidores, usando um modelo publicar/assinar. Isso permite que dispositivos publiquem mensagens em tópicos, que são então distribuídos aos clientes inscritos, garantindo que as mensagens sejam entregues mesmo em condições de rede instáveis. Suas principais características incluem simplicidade, eficiência e baixo consumo de energia, tornando-o ideal para cenários de comunicação em tempo real em ambientes com conectividade restrita.
+O **MQTT** (*Message Queuing Telemetry Transport*) é um protocolo de mensageria leve e eficiente, projetado para situações em que as aplicações possuem recursos computacionais limitados e a largura de banda da rede é limitada ou instável. Esse protocolo é **amplamente utilizado em aplicações de Internet das Coisas** (IoT) e **Edge Computing**, e facilita a **comunicação entre dispositivos com recursos limitados e servidores**, usando um modelo **publicar/assinar**, ou **publisher/subscriber**, ou **pub/sub**. Isso permite que dispositivos **publiquem mensagens em tópicos, que são então distribuídos aos clientes inscritos, garantindo que as mensagens sejam entregues mesmo em condições de rede instáveis**. Suas principais características incluem simplicidade, eficiência e baixo consumo de energia, tornando-o ideal para cenários de comunicação em tempo real em ambientes com conectividade restrita.
+
+![MQTT - Arquitetura](/assets/images/system-design/arquitetura-simples.png)
+> Arquitetur MQTT Resumida
+
+No quesito de topologia, a arquitetura de uma implementação MQTT precisam de alguns agentes e responsabilidades. Como a **finalidade do protocolo é o envio de mensagens assincronas vindas de diferentes tipos de dispositivos** que serão processadas por outros tipos de aplicacão no lado do servidor, o responsável por receber e orquestrar essas mensagens para seus destinatários são clusters de servidores MQTT. **Esse conjunto de servidores são conhecidos como brokers**, que trabalham como centralizadores dessas mensagens enviadas por vários dispoitivos. Esses agentes **responsáveis por enviar as mensagens são conhecidos como Publishers**. Os brokers após receberem as mensagens, ele as armazenam em **tópicos** identificados durante a publicação. Após o armazenamento, o cluster disponibiliza as mensagens para serem consumidas por outras aplicações que vão fazer um uso para essas informações publicadas. **Essas aplicações que consomem os dados são identificadas como Subscribers.**
+
+![MQTT - Workflow](/assets/images/system-design/protocolos-mqtt.png)
+
+#### MQTT Default Subscription 
+
+A subscrição normal no MQTT segue o modelo de publicação/assinatura tradicional, onde cada assinante que se inscreve em um tópico recebe uma cópia da mensagem publicada nesse tópico. Isso significa que se três dispositivos estão inscritos no tópico `"sensor/temperatura"`, e uma mensagem é publicada neste tópico, cada um dos três dispositivos receberá uma cópia independente da mensagem.
+
+![MTT - Normal](/assets/images/system-design/mqtt-normal.png)
+> Modelo de Subscription Padrão do MQTT
+
+Existem várias formas de projetar arquiteturas MQTT, e este modelo padrão é extremamente útil quando é necessário que todos os assinantes recebam todas as mensagens, garantindo que a informação distribuída seja amplamente acessível para vários tipos de aplicações que precisem tomar vários tipos de ações diferentes. Caso você precise por exemplo receber a medição do `sensor/temperatura`, armazená-la em um database, enviá-la para um processo de analytics e com base no valor recebido tomar alguma ação em outro sistema, você pode criar 3 tipos de aplicações interessadas nessa mensagem e recebê-las ao mesmo tempo. 
+
+
+#### MQTT Shared Subscription 
+
+A **Shared Subscription**, introduzida em versões mais recentes do padrão MQTT, é uma importante adição que **permite um modelo de distribuição de mensagens mais proximo do balanceamento de carga**. Em uma subscrição compartilhada, mensagens publicadas em um tópico são distribuídas de maneira balanceada entre os assinantes do grupo de subscrição compartilhada, em vez de cada assinante receber uma cópia da mensagem. 
+
+
+![MTT - Shared](/assets/images/system-design/mqtt-shared.png)
+
+Esse modo de subscription é particularmente úteis em cenários de **processamento de mensagens em larga escala**, onde o balanceamento de carga entre múltiplos consumidores é necessária para otimizar o processamento devido ao alto volume de entrada. Elas permitem uma a**rquitetura mais escalável e eficiente**.
 
 ### AMQP (Advanced Message Queuing Protocol)
 
@@ -282,3 +312,13 @@ O **MQTT** é um protocolo de mensageria leve e eficiente, projetado para situa�
 [HTTP Status](https://www.httpstatus.com.br/)
 
 [HTTP Cats](https://http.cat/)
+
+[MQTT](https://mqtt.org/)
+
+[O que é MQTT?](https://aws.amazon.com/pt/what-is/mqtt/)
+
+[Conhecendo o MQTT](https://www.mercatoautomacao.com.br/blogs/novidades/conhecendo-o-mqtt)
+
+[Arquitetura do agente MQTT independente no Google Cloud](https://cloud.google.com/architecture/connected-devices/mqtt-broker-architecture?hl=pt-br)
+
+[Eclipse Paho MQTT Go client](https://pkg.go.dev/github.com/eclipse/paho.mqtt.golang#section-readme)
