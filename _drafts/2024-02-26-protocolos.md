@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Protocolos de Comunicação, TCP, UDP e OSI
+title: System Design - Protocolos de Comunicação
 ---
 
 Neste capítulo, abordaremos de forma simplificada os conceitos essenciais dos principais tópicos de comunicação de rede sob a perspectiva de System Design. Compreender os protocolos de comunicação é de extremo valor, e pode representar um divisor de águas para aprimorar tópicos de [performance](/performance-capacidade-escalabilidade/) e [resiliência](). Entender os fundamentos de protocolos como TCP/IP e UDP, assim como outros que são desenvolvidos a partir deles, nos capacita a tomar decisões arquiteturais informadas, projetar estratégias eficazes, melhorar níveis de performance e tempo de resposta ao aplicar suas características mais vantajosas de maneira adequada.
@@ -62,6 +62,8 @@ Entrando agora de fato nos protocolos de comunicação, vamos entender algumas d
 
 Para compreender detalhadamente os protocolos e tecnologias de comunicação modernas, é importante primeiro revisitar os protocolos de rede de baixo nível que servem como sua base. Antes de explorar protocolos como HTTP/2, HTTP/3, gRPC e AMPQ, precisamos entender os mecanismos de conexão fundamentais, principalmente o TCP/IP e o UDP, que são essenciais para o desenvolvimento dessas tecnologias avançadas.
 
+<br>
+
 ### UDP (User Datagram Protocol)
 
 O UDP, ou User Datagram Protocol, é um protocolo da camada de transporte (camada 4) notavelmente simples, que possibilita a transmissão de dados entre hosts na rede de maneira não confiável e sem a necessidade de estabelecer uma conexão prévia. Diferentemente de outros protocolos de rede, o UDP sacrifica a confiabilidade em favor da performance, eliminando o processo de estabelecimento, manutenção, gerenciamento e encerramento de conexões. Isso permite que os dados sejam enviados ao destinatário sem garantias de recebimento ou integridade.
@@ -74,6 +76,7 @@ Protocolos e arquiteturas que exigem envio e recebimento de dados com complexida
 
 Analogamente, o funcionamento do UDP pode ser comparado a entregadores que deixam correspondências debaixo do portão, na calçada ou na janela das casas, prosseguindo para as próximas entregas sem confirmar se o destinatário recebeu a mensagem.
 
+<br>
 
 ### TCP/IP (Transmission Control Protocol/Internet Protocol)
 
@@ -107,6 +110,8 @@ Analogamente, se o protocolo UDP pode ser comparado a um entregador que deixa co
 
 A decisão entre usar UDP ou TCP/IP para desenvolver protocolos depende das exigências específicas da aplicação quanto à confiabilidade, ordem, integridade dos dados e eficiência. O UDP é preferido para aplicações que demandam uma entrega rápida de dados e podem tolerar perdas de pacotes, enquanto o TCP/IP é escolhido para aplicações que requerem uma entrega de dados confiável e ordenada. Essas características são de extrema importância ao implementar soluções que dependem de conexões de rede eficientes e confiáveis para cumprir seus objetivos.
 
+<br>
+
 ### TLS (Transport Layer Security)
 
 O TLS (Transport Layer Security) é um protocolo essencial para a segurança na internet e em redes corporativas, projetado para prover comunicação segura entre cliente e servidor. Sucessor do SSL (Secure Sockets Layer), seu objetivo principal é assegurar a privacidade e a integridade dos dados durante a transferência de informações entre sistemas, através de criptografia, garantindo que os dados enviados de um ponto a outro na rede permaneçam inacessíveis a interceptadores.
@@ -117,11 +122,9 @@ O "handshake" inicial do TLS define os parâmetros de comunicação segura, perm
 
 Existem várias versões do TLS, com aprimoramentos contínuos em segurança e desempenho. As versões mais adotadas atualmente são TLS 1.2 e TLS 1.3, sendo a última a mais recente e segura, oferecendo vantagens como um processo de "handshake" mais ágil e eficiente em comparação com as versões anteriores.
 
-
 <br>
 
 ## Protocolos de Aplicação
-
 
 Os Protocolos de Aplicação constituem uma parte fundamental da arquitetura da Internet, permitindo a comunicação ficaz entre diferentes sistemas e aplicações que tem padrões específicos que precisam ser respeitados. Eles definem um conjunto de regras e padrões que governam a troca de dados entre servidores e clientes num gama muito grande de contextos. Estes protocolos operam na camada mais alta do modelo OSI, a Camada de Aplicação, onde o foco se desloca da transferência de dados pura para a maneira como os dados são solicitados e apresentados ao usuário de acordo com a tecnologia utilizada
 
@@ -287,8 +290,13 @@ Enquanto a **subscrição normal garante que todas as mensagens sejam distribuí
 
 <br>
 
-
 ### AMQP (Advanced Message Queuing Protocol)
+
+O **AMQP** (*Advanced Message Queuing Protocol*) é um protocolo de mensageria aberto que ao contrário do MQTT, que se concentra na simplicidade e eficiência, o fornece um **conjunto mais rico de funcionalidades, incluindo confirmação de mensagens, roteamento flexível e transações seguras**. Ele é projetado para **integrar sistemas corporativos e aplicações complexas**, proporcionando uma solução interoperável para mensageria assíncrona. O AMQP **suporta tanto o modelo de publicação/assinatura quanto o de enfileiramento de mensagens**, oferecendo uma maior flexibilidade na implementação de padrões de comunicação. Esse padrão é implementado pelo **RabbitMQ**, uma solução muito conhecida para troca de mensagens de forma assincrona. 
+
+![Workflow AMQP](/assets/images/system-design/amqp.png)
+
+
 
 ### Comunicação Over-TCP
 
@@ -332,3 +340,11 @@ Enquanto a **subscrição normal garante que todas as mensagens sejam distribuí
 [Arquitetura do agente MQTT independente no Google Cloud](https://cloud.google.com/architecture/connected-devices/mqtt-broker-architecture?hl=pt-br)
 
 [Eclipse Paho MQTT Go client](https://pkg.go.dev/github.com/eclipse/paho.mqtt.golang#section-readme)
+
+[AMQP](https://www.amqp.org/)
+
+[Advanced Message Queuing Protocol](https://pt.wikipedia.org/wiki/Advanced_Message_Queuing_Protocol)
+
+[AMQP — Propriedades de Mensagem](https://medium.com/xp-inc/amqp-propriedades-de-mensagem-f56a14e92409)
+
+[FAQ: What is AMQP and why is it used in RabbitMQ?](https://www.cloudamqp.com/blog/what-is-amqp-and-why-is-it-used-in-rabbitmq.html)
