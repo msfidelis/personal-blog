@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Padrões de Comunicação Sincronos, REST, gRPC, Websockets
+title: System Design - Padrões de Comunicação Sincronos
 ---
 
 
@@ -89,6 +89,13 @@ A arquitetura em camadas permite que intermediários (como proxies e gateways) f
 
 As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para evitar a reutilização de dados obsoletos ou inapropriados, melhorando a eficiência e a escalabilidade.
 
+
+
+
+<br>
+
+
+
 ### RPC (Remote Procedure Call)
 
 ### gRPC (google Remote Procedure Call)
@@ -96,20 +103,6 @@ As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para
 ### Websockets
 
 ### GraphQL
-
-
-<br>
-
-
-
-<br>
-
-# Protocolos em Arquiteturas em Operações Sincronas e Assincronas
-
-
-<br>
-
-# Considerações de Segurança
 
 
 ### Referências
@@ -120,3 +113,5 @@ As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para
 [HTTP Cats](https://http.cat/)
 
 [Qual é a diferença entre gRPC e REST?](https://aws.amazon.com/pt/compare/the-difference-between-grpc-and-rest/)
+
+[REST vs. GraphQL vs. gRPC vs. WebSocket](https://www.resolutesoftware.com/blog/rest-vs-graphql-vs-grpc-vs-websocket/)

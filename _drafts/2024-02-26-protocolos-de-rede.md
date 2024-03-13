@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Protocolos de Comunicação
+title: System Design - Protocolos de Comunicação de Rede
 ---
 
 Neste capítulo, abordaremos de forma simplificada os conceitos essenciais dos principais tópicos de comunicação de rede sob a perspectiva de System Design. Compreender os protocolos de comunicação é de extremo valor, e pode representar um divisor de águas para aprimorar tópicos de [performance](/performance-capacidade-escalabilidade/) e [resiliência](). Entender os fundamentos de protocolos como TCP/IP e UDP, assim como outros que são desenvolvidos a partir deles, nos capacita a tomar decisões arquiteturais informadas, projetar estratégias eficazes, melhorar níveis de performance e tempo de resposta ao aplicar suas características mais vantajosas de maneira adequada.
@@ -51,7 +51,6 @@ Traduz dados do formato da rede para o formato aceito pelas aplicações, realiz
 
 Fornece serviços de rede para aplicações do usuário, **incluindo transferência de arquivos e conexões de software**. É a c**amada mais próxima do usuário,** atuando como interface entre o software de aplicação e as funções de rede. Implementa protocolos como **HTTP, HTTPS, Websockets, gRPC, além de suportar sessões de SSH e transferências FTP**.
 
-
 <br>
 
 # Os Protocolos de Comunicação
@@ -61,6 +60,20 @@ Entrando agora de fato nos protocolos de comunicação, vamos entender algumas d
 ## Protocolos Base
 
 Para compreender detalhadamente os protocolos e tecnologias de comunicação modernas, é importante primeiro revisitar os protocolos de rede de baixo nível que servem como sua base. Antes de explorar protocolos como HTTP/2, HTTP/3, gRPC e AMPQ, precisamos entender os mecanismos de conexão fundamentais, principalmente o TCP/IP e o UDP, que são essenciais para o desenvolvimento dessas tecnologias avançadas.
+
+<br>
+
+### Protocolo IP, IPv4, IPv6
+
+O Protocolo de Internet (IP) é o coração da comunicação de dados na Internet, permitindo que dispositivos diferentes se conectem e compartilhem informações em uma rede interna ou externa. Este protocolo define endereços IP únicos para cada dispositivo na rede, garantindo que os dados enviados de um ponto a outro cheguem corretamente ao seu destino. Existem duas versões principais deste protocolo em uso hoje: IPv4 e IPv6.
+
+#### IPv4
+
+IPv4, ou **Internet Protocol version 4**, é a versão mais antiga e ainda a mais utilizada do protocolo IP. **Ela utiliza um formato de endereço de 32 bits**, o que resulta em cerca de **4,3 bilhões de endereços IP possíveis**, ou exatamente `4.294.967.296` endereços possíveis. Embora este número possa parecer grande, o crescimento  da Internet e o aumento no número de dispositivos conectados esgotaram os endereços IPv4 disponíveis, levando à necessidade de uma solução mais robusta. O IPv4 suporta várias técnicas para mitigar a escassez de endereços, incluindo **NAT (Network Address Translation)** e a alocação de IPs privados para redes locais.
+
+#### IPv6
+
+IPv6, ou **Internet Protocol version 6**, foi desenvolvido para resolver o problema da escassez de endereços do IPv4. Com um **formato de endereço de 128 bits**, o IPv6 possui um espaço de endereçamento praticamente ilimitado, oferecendo **trilhões de trilhões de endereços IP**, chegando ao número de `340.282.366.920.938.463.463.374.607.431.768.211.456` de endereços. Esta expansão não apenas resolve o problema de escassez de endereços, mas também simplifica o processamento de pacotes em roteadores e oferece melhor segurança integrada, com suporte nativo para criptografia e comunicações seguras através do **IPsec (Internet Protocol Security)**.
 
 <br>
 
@@ -112,7 +125,7 @@ A decisão entre usar UDP ou TCP/IP para desenvolver protocolos depende das exig
 
 <br>
 
-### TLS (Transport Layer Security)
+### SSL/TLS (Transport Layer Security)
 
 O TLS (Transport Layer Security) é um protocolo essencial para a segurança na internet e em redes corporativas, projetado para prover comunicação segura entre cliente e servidor. Sucessor do SSL (Secure Sockets Layer), seu objetivo principal é assegurar a privacidade e a integridade dos dados durante a transferência de informações entre sistemas, através de criptografia, garantindo que os dados enviados de um ponto a outro na rede permaneçam inacessíveis a interceptadores.
 
@@ -123,6 +136,68 @@ O "handshake" inicial do TLS define os parâmetros de comunicação segura, perm
 Existem várias versões do TLS, com aprimoramentos contínuos em segurança e desempenho. As versões mais adotadas atualmente são TLS 1.2 e TLS 1.3, sendo a última a mais recente e segura, oferecendo vantagens como um processo de "handshake" mais ágil e eficiente em comparação com as versões anteriores.
 
 <br>
+
+## Demais Protocolos
+
+### DNS 
+
+O Sistema de Nomes de Domínio, ou Domain Name Service (DNS) é uma premissa fundamental da internet, atuando como uma "lista telefônica" da internet e da sua rede interna. Sem o DNS, teríamos que memorizar os endereços IP complexos para acessar sites, o que seria impraticável tanto em IPV4 quanto impossível para IPV6. Em vez disso, o DNS nos permite digitar nomes de domínio amigáveis, como `fidelissauro.dev`, e automaticamente encontrar o endereço IP correto para se conectar ao site ou host desejado.
+
+#### Funcionamento Lógico do DNS
+
+O processo do DNS começa quando você digita um **URL no seu navegador**. O navegador consulta um servidor DNS para encontrar o endereço IP correspondente ao nome do domínio. Este processo envolve várias etapas:
+
+**Consulta ao DNS Local**: Primeiro, o navegador verifica se o endereço IP está armazenado em cache localmente. Se não estiver, a consulta é enviada ao DNS Resolver, geralmente fornecido pelo seu provedor de internet.
+
+**Resolver para Servidores Raiz**: O Resolver consulta um dos servidores raiz do DNS para descobrir quem gerencia o TLD (top-level domain, como .com, .net, .org) do domínio solicitado.
+
+**Consulta aos Servidores de Nomes de Domínio (TLD Servers)**: O servidor TLD aponta para o servidor de nomes autoritativo do domínio, que conhece o endereço IP correspondente.
+
+#### Resolução do DNS na Prática 
+
+*"O que acontece quando você digita google.com no seu navegador?"* - Essa pergunta ganhou até um aspecto cômico nas entrevistas de system design nos ultimos anos. Mas a ideia é propor um case prático para finalmente respondê-la de uma forma completa, aproveitando o que já entendemos sobre o DNS. O que aconteceria se digitassemos `https://demo.fidelissauro.dev` no navegador? 
+
+![DNS](/assets/images/system-design/dns-resolucao.png)
+
+**1. Consulta ao Servidor Raiz**: Tudo começa com os servidores raiz do DNS. **Existem 13 conjuntos de servidores raiz DNS**, identificados de `a.root-servers.net` até `m.root-servers.net`, **que são a base da hierarquia do DNS**, e representam o ponto final no final de cada endereço DNS que são abstraídos ao máximo, mas que na verdade existem. Sim, no caso o `google.com` na verdade é o `google.com.`. 
+
+Quando um resolver DNS (geralmente operado por seu provedor de internet) precisa resolver `demo.fidelissauro.dev`, ele começa perguntando a um desses servidores raiz (.) onde encontrar informações sobre o TLD (top-level domain), que neste caso é `.dev.`. 
+
+<blockquote>
+- <i>"Olá root server (.), por um acaso você conhece quem é o .dev.?</i>  <br>
+- <i>Claro, os servidores DNS desse cara são os seguintes: xx.xx.xx.xx"</i>  <br>
+- <i>Ok, muito obrigado!*</i>
+</blockquote>
+
+**2. Consulta ao Servidor Top-Level Domain para .dev:** O servidor raiz **responde com o endereço dos servidores DNS responsáveis pelo TLD .dev**. O resolver então faz uma consulta a um desses servidores para encontrar quem controla o domínio `fidelissauro.dev`.
+
+<blockquote>
+- <i>"Olá senhor TLD do .dev., por um acaso você conhece quem é o fidelissauro.dev?</i>  <br>
+- <i>"Conheço sim, gente fina! Você pode encontrá-lo no servidor de DNS xx.xxx.xx.xxx"</i>  <br>
+- <i>"Muito agradecido!*</i>
+</blockquote>
+
+**3. Consulta ao Servidor de Nomes Autoritativo para fidelissauro.dev:** Os servidores de Top-Level Domain respondem com o endereço dos servidores de nomes (DNS servers) Autoritativos para `fidelissauro.dev`. Estes servidores de **DNS autoritativos são responsáveis por conhecer todos os detalhes sobre o domínio**, incluindo os **endereços IP de quaisquer subdomínios**. O resolver então pergunta a eles onde encontrar **demo.fidelissauro.dev**.
+
+<blockquote>
+- <i>"Olá senhor fidelissauro.dev., o demo.fidelissauro.dev está? Gostaria de falar com ele</i>  <br>
+- <i>Você pode encontrá-lo no endereço 123.123.123.123, mande um abraço!</i>  <br>
+- <i>Certo, vou me conectar com ele!</i>
+</blockquote>
+
+**4. Conexão de Fato:**  Após o servidor autoritativo finalmente responder onde o host `demo.fidelissauro.dev` está, o cliente pode de fato se conectar com o serviço de fato. **Este processo é otimizado por meio de cache em vários níveis**. **Resolvers de DNS, navegadores e até mesmo os próprios servidores de nomes armazenam respostas de consultas anteriores para reduzir a latência e o tráfego na rede**. Ao acessar um domínio frequentemente, é provável que as informações de DNS já estejam armazenadas em cache, acelerando significativamente o processo de resolução, poupando todo esse processo. 
+
+### DHCP
+
+### NTP
+
+### SSH 
+
+### Telnet
+
+### SMTP/POP3/IMAP
+
+### ARP
 
 ## Protocolos de Aplicação
 
@@ -223,8 +298,6 @@ Outra funcionalidade relevante no desenvolvimento de aplicações web é a **pri
 
 Além disso, a característica de **Server Push** do HTTP/2 possibilita que servidores enviem recursos ao navegador antes mesmo de serem explicitamente solicitados pelo cliente, melhorando a eficiência da carga de páginas e a experiência do usuário.
 
-
-
 ![HTTP/2](/assets/images/system-design/http2.png)
 
 <br>
@@ -245,57 +318,7 @@ A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diverso
 
 <br>
 
-## Protocolos de Mensageria
-
-Os protocolos de mensageria desempenham papéis na facilitação da comunicação entre sistemas distribuídos, permitindo a troca eficiente de mensagens de forma assíncrona. Dois dos protocolos mais importantes nesta categoria são o **MQTT** (*Message Queuing Telemetry Transport*) e o **AMQP** (*Advanced Message Queuing Protocol*). Esses protocolos são projetados para otimizar o tráfego de dados, garantir a entrega de mensagens e suportar padrões de comunicação flexíveis, confiáveis e performáticos. Normalmente as comunicações que se utilizam do HTTP tem uma responsabilidade sincrona de solicitação e resposta, utilizado onde é necessário receber do servidor uma resposta imediata para a transação solicitada. Porém em termos de performance, os protocolos que possibilitam comunicações assincronas podem nos ajudar a extender as capacidades de processamento em background de tarefas custosas, paralelizar e distribuir tarefas entre diversos microserviços com diferentes possibilidades necessárias para completar a solicitação, continuar o trabalho de uma solicitação inicialmente sincrona em background entre diversas outras possibilidades. Aqui falaremos inicialmente de como funciona o protocolo. Breve falaremos mais detalhadamente da aplicação e implementação de tarefas assincronas em engenharia de fato. 
-
-<br>
-
-### MQTT (Message Queuing Telemetry Transport)
-
-O **MQTT** (*Message Queuing Telemetry Transport*) é um protocolo de mensageria leve e eficiente, projetado para situações em que as aplicações possuem recursos computacionais limitados e a largura de banda da rede é limitada ou instável. Esse protocolo é **amplamente utilizado em aplicações de Internet das Coisas** (IoT) e **Edge Computing**, e facilita a **comunicação entre dispositivos com recursos limitados e servidores**, usando um modelo **publicar/assinar**, ou **publisher/subscriber**, ou **pub/sub**. Isso permite que dispositivos **publiquem mensagens em tópicos, que são então distribuídos aos clientes inscritos, garantindo que as mensagens sejam entregues mesmo em condições de rede instáveis**. Suas principais características incluem simplicidade, eficiência e baixo consumo de energia, tornando-o ideal para cenários de comunicação em tempo real em ambientes com conectividade restrita.
-
-![MQTT - Arquitetura](/assets/images/system-design/arquitetura-simples.png)
-> Arquitetur MQTT Resumida
-
-No quesito de topologia, a arquitetura de uma implementação MQTT precisam de alguns agentes e responsabilidades. Como a **finalidade do protocolo é o envio de mensagens assincronas vindas de diferentes tipos de dispositivos** que serão processadas por outros tipos de aplicacão no lado do servidor, o responsável por receber e orquestrar essas mensagens para seus destinatários são clusters de servidores MQTT. **Esse conjunto de servidores são conhecidos como brokers**, que trabalham como centralizadores dessas mensagens enviadas por vários dispoitivos. Esses agentes **responsáveis por enviar as mensagens são conhecidos como Publishers**. Os brokers após receberem as mensagens, ele as armazenam em **tópicos** identificados durante a publicação. Após o armazenamento, o cluster disponibiliza as mensagens para serem consumidas por outras aplicações que vão fazer um uso para essas informações publicadas. **Essas aplicações que consomem os dados são identificadas como Subscribers.**
-
-![MQTT - Workflow](/assets/images/system-design/protocolos-mqtt.png)
-
-O **MQTT opera sobre o protocolo TCP/IP**, estabelecendo uma c**onexão de socket persistente entre o cliente e o broker**. Isso proporciona uma comunicação bidirecional confiável, onde os pacotes de dados são garantidos a chegar na ordem e sem duplicidades.
-
-Dentro desta conexão persistente, os clientes podem publicar mensagens em tópicos específicos usando a mensagem de `PUBLISH`, e assinar tópicos para receber mensagens usando a mensagem de `SUBSCRIBE`. Dentro dessa conexão todas as mensagens são trocadas de forma performática e confiável.  
-
-#### MQTT Default Subscription 
-
-A subscrição normal no MQTT segue o modelo de publicação/assinatura tradicional, onde cada assinante que se inscreve em um tópico recebe uma cópia da mensagem publicada nesse tópico. Isso significa que se três dispositivos estão inscritos no tópico `"sensor/temperatura"`, e uma mensagem é publicada neste tópico, cada um dos três dispositivos receberá uma cópia independente da mensagem.
-
-![MTT - Normal](/assets/images/system-design/mqtt-normal.png)
-> Modelo de subscription padrão do MQTT
-
-Existem várias formas de projetar arquiteturas MQTT, e este modelo padrão é extremamente útil quando é necessário que todos os assinantes recebam todas as mensagens, garantindo que a informação distribuída seja amplamente acessível para vários tipos de aplicações que precisem tomar vários tipos de ações diferentes. Caso você precise por exemplo receber a medição do `sensor/temperatura`, armazená-la em um database, enviá-la para um processo de analytics e com base no valor recebido tomar alguma ação em outro sistema, você pode criar 3 tipos de aplicações interessadas nessa mensagem e recebê-las ao mesmo tempo. 
-
-
-#### MQTT Shared Subscription 
-
-A **Shared Subscription**, introduzida em versões mais recentes do padrão MQTT, é uma importante adição que **permite um modelo de distribuição de mensagens mais proximo do balanceamento de carga**. Em uma subscrição compartilhada, mensagens publicadas em um tópico são distribuídas de maneira balanceada entre os assinantes do grupo de subscrição compartilhada, em vez de cada assinante receber uma cópia da mensagem. 
-
-
-![MTT - Shared](/assets/images/system-design/mqtt-shared.png)
-> Modelo de shared subscription do MQTT
-
-Esse modo de subscription é particularmente úteis em cenários de **processamento de mensagens em larga escala**, onde o balanceamento de carga entre múltiplos consumidores é necessária para otimizar o processamento devido ao alto volume de entrada. Elas permitem uma a**rquitetura mais escalável e eficiente**.
-
-Enquanto a **subscrição normal garante que todas as mensagens sejam distribuídas a todos os assinantes**, a **subscrição compartilhada oferece uma abordagem mais eficiente e escalável para o balanceamento de carga entre os assinantes**. Ambos os tipos de subscrição têm seu lugar no ecossistema MQTT e abrem o leque para projetar arquiteturas. Um ponto interessante é que podemos combinar as duas possibilidades, criando várias shared subscriptions que recebem a mesma mensagem, e que distribuem a carga para os membros de cada pool de subscribers.
-
-<br>
-
-### AMQP (Advanced Message Queuing Protocol)
-
-O **AMQP** (*Advanced Message Queuing Protocol*) é um protocolo de mensageria aberto que ao contrário do MQTT, que se concentra na simplicidade e eficiência, o fornece um **conjunto mais rico de funcionalidades, incluindo confirmação de mensagens, roteamento flexível e transações seguras**. Ele é projetado para **integrar sistemas corporativos e aplicações complexas**, proporcionando uma solução interoperável para mensageria assíncrona. O AMQP **suporta tanto o modelo de publicação/assinatura quanto o de enfileiramento de mensagens**, oferecendo uma maior flexibilidade na implementação de padrões de comunicação. Esse padrão é implementado pelo **RabbitMQ**, uma solução muito conhecida para troca de mensagens de forma assincrona. 
-
-![Workflow AMQP](/assets/images/system-design/amqp.png)
-
+### HTTPS (HTTP + TLS)
 
 
 ### Comunicação Over-TCP
@@ -310,6 +333,12 @@ O **AMQP** (*Advanced Message Queuing Protocol*) é um protocolo de mensageria a
 [Livro: Redes de Computadores - Andrew Tanenbaum](https://www.amazon.com.br/Redes-Computadores-Andrew-Tanenbaum/dp/8582605609)
 
 [Introdução a Redes de Computadores](https://dev.to/bl4cktux89/introducao-a-redes-de-computadores-4nm4)
+
+[IPV6 - Endereçamento](https://ipv6.br/post/enderecamento/)
+
+[DNS - Root Servers](https://www.iana.org/domains/root/servers)
+
+[root-servers.org](https://root-servers.org/)
 
 [What is Transmission Control Protocol (TCP)?](https://www.javatpoint.com/tcp)
 
@@ -331,20 +360,3 @@ O **AMQP** (*Advanced Message Queuing Protocol*) é um protocolo de mensageria a
 
 [HTTP Cats](https://http.cat/)
 
-[MQTT](https://mqtt.org/)
-
-[O que é MQTT?](https://aws.amazon.com/pt/what-is/mqtt/)
-
-[Conhecendo o MQTT](https://www.mercatoautomacao.com.br/blogs/novidades/conhecendo-o-mqtt)
-
-[Arquitetura do agente MQTT independente no Google Cloud](https://cloud.google.com/architecture/connected-devices/mqtt-broker-architecture?hl=pt-br)
-
-[Eclipse Paho MQTT Go client](https://pkg.go.dev/github.com/eclipse/paho.mqtt.golang#section-readme)
-
-[AMQP](https://www.amqp.org/)
-
-[Advanced Message Queuing Protocol](https://pt.wikipedia.org/wiki/Advanced_Message_Queuing_Protocol)
-
-[AMQP — Propriedades de Mensagem](https://medium.com/xp-inc/amqp-propriedades-de-mensagem-f56a14e92409)
-
-[FAQ: What is AMQP and why is it used in RabbitMQ?](https://www.cloudamqp.com/blog/what-is-amqp-and-why-is-it-used-in-rabbitmq.html)
