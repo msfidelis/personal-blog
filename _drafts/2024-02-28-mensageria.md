@@ -35,6 +35,8 @@ O **MQTT** (*Message Queuing Telemetry Transport*) é um protocolo de mensageria
 
 No quesito de topologia, a arquitetura de uma implementação MQTT precisam de alguns agentes e responsabilidades. Como a **finalidade do protocolo é o envio de mensagens assincronas vindas de diferentes tipos de dispositivos** que serão processadas por outros tipos de aplicacão no lado do servidor, o responsável por receber e orquestrar essas mensagens para seus destinatários são clusters de servidores MQTT. **Esse conjunto de servidores são conhecidos como brokers**, que trabalham como centralizadores dessas mensagens enviadas por vários dispoitivos. Esses agentes **responsáveis por enviar as mensagens são conhecidos como Publishers**. Os brokers após receberem as mensagens, ele as armazenam em **tópicos** identificados durante a publicação. Após o armazenamento, o cluster disponibiliza as mensagens para serem consumidas por outras aplicações que vão fazer um uso para essas informações publicadas. **Essas aplicações que consomem os dados são identificadas como Subscribers.**
 
+#### Quebrar em componentes
+
 ![MQTT - Workflow](/assets/images/system-design/protocolos-mqtt.png)
 
 O **MQTT opera sobre o protocolo TCP/IP**, estabelecendo uma c**onexão de socket persistente entre o cliente e o broker**. Isso proporciona uma comunicação bidirecional confiável, onde os pacotes de dados são garantidos a chegar na ordem e sem duplicidades.
@@ -79,8 +81,19 @@ Uma vez acordada a versão do protocolo, estabelece-se uma **sessão AMQP**. Den
 
 O produtor publica mensagens enviando-as ao broker através de um canal específico na sessão AMQP. Cada mensagem é rotulada com uma chave de roteamento ou enviada para uma exchange específica, que determina como a mensagem deve ser encaminhada às filas. O broker utiliza as informações e metadados contidas na mensagem, como a exchange e a chave de roteamento, para determinar a fila destino das mensagens. As mensagens são então encaminhadas para as filas apropriadas, aguardando pelo consumo.
 
+#### Brokers 
 
-### Comunicação Over-TCP
+#### Exchanges 
+
+#### Route / Bindings
+
+#### Queues
+
+#### Producers 
+
+#### Consumers 
+
+
 
 
 

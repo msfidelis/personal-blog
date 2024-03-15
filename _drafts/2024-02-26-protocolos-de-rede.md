@@ -141,7 +141,7 @@ Existem várias versões do TLS, com aprimoramentos contínuos em segurança e d
 
 ### DNS 
 
-O Sistema de Nomes de Domínio, ou Domain Name Service (DNS) é uma premissa fundamental da internet, atuando como uma "lista telefônica" da internet e da sua rede interna. Sem o DNS, teríamos que memorizar os endereços IP complexos para acessar sites, o que seria impraticável tanto em IPV4 quanto impossível para IPV6. Em vez disso, o DNS nos permite digitar nomes de domínio amigáveis, como `fidelissauro.dev`, e automaticamente encontrar o endereço IP correto para se conectar ao site ou host desejado.
+O **Sistema de Nomes de Domínio**, ou **Domain Name Service (DNS)** é uma premissa fundamental da internet, atuando como uma "lista telefônica" da internet e da sua rede interna. Sem o DNS, teríamos que memorizar os endereços IP complexos para acessar sites, o que seria impraticável tanto em IPV4 quanto impossível para IPV6. Em vez disso, o DNS nos permite digitar nomes de domínio amigáveis, como `fidelissauro.dev`, e automaticamente encontrar o endereço IP correto para se conectar ao site ou host desejado.
 
 #### Funcionamento Lógico do DNS
 
@@ -189,13 +189,59 @@ Quando um resolver DNS (geralmente operado por seu provedor de internet) precisa
 
 ### DHCP
 
+O **Protocolo de Configuração Dinâmica de Host** (*Dynamic Host Configuration Protocol*) é um protocolo de rede que permite a servidores com essa responsabilidade **designar automaticamente um endereço IP e outras informações a dispositivos que se conectam na rede.** O **DHCP é usado para a gestão de endereços IP em redes grandes e pequenas**, facilitando a conectividade e **reduzindo conflitos de endereços**. É utilizado principalmente em projetos de networking que possibilitam a entrada e saída de hosts com certa frequencia, sem a necessidade de alocar IP's fixos e evitar conflitos de 2 dispositivos tentarem utilizar o mesmo IP.
+
+Quando um dispositivo - cliente DHCP - se conecta a uma rede, ele solicita informações de configuração de rede a um servidor DHCP. O processo segue quatro etapas básicas, conhecidas como **DORA** (*Discovery, Offer, Request, Acknowledgment*).
+
+**1. Discovery**: O cliente envia um pacote **DHCPDISCOVER** para a rede, procurando por servidores DHCP disponíveis.
+
+**2. Offer**: Servidores DHCP na rede respondem ao cliente com um pacote **DHCPOFFER**, **oferecendo um endereço IP disponível e outras configurações de rede**.
+
+**3. Request**: O cliente responde a uma das ofertas com um pacote **DHCPREQUEST**, indicando sua intenção de aceitar os parâmetros oferecidos por um servidor específico.
+
+**4. Acknowledgment**: O servidor confirma a alocação do endereço IP ao cliente com um pacote **DHCPACK**, completando o processo de configuração.
+
+O DHCP elimina a necessidade de configurar manualmente os parâmetros de rede em cada dispositivo, gerencia dinamicamente o pool de endereços IP, reutilizando endereços de dispositivos que não estão mais na rede. É um protocolo "default" que já é abstraído em players de núvem pública, mas tendem a ser considerado quando precisamos projetar soluções a nível de networking além do software. 
+
 ### NTP
+
+O Network Time Protocol (NTP) é um protocolo de rede utilizado para sincronizar relógios de computadores através de redes de dados com variáveis latências. Ele opera dentro da camada de aplicação do conjunto de protocolos da Internet, utilizando o protocolo de transporte UDP na porta 123. Ele é construído sobre uma arquitetura cliente-servidor, onde múltiplos clientes (computadores que precisam de sincronização de tempo) fazem requisições a um ou mais servidores NTP. Estes servidores estão conectados a fontes de tempo de alta precisão, como relógios atômicos, GPS ou rádio relógios.
+
+A precisão do tempo é crítica para muitas aplicações em redes de computadores. Transações financeiras, comunicações seguras, sistemas de banco de dados distribuídos e redes de telecomunicações são apenas alguns exemplos onde a sincronização de relógios entre diferentes sistemas é vital. O NTP permite que essas aplicações funcionem de forma coesa, garantindo que todos os sistemas estejam "no mesmo tempo", evitando problemas de ordem de operações, registros de log inconsistentes e falhas de segurança.
 
 ### SSH 
 
+O **SSH**, (*Secure Shell*), é um protocolo de rede criptográfico **utilizado para comunicação e operações de rede seguras**. O SSH **permite o acesso controlado e criptografado a dispositivos remotos, sendo o método padrão para administração remota de sistemas Linux/Unix** junto a uma ampla gama de diversos dispositivos de rede. Além do acesso remoto, o SSH pode **criar túneis seguros para encapsular outros protocolos de rede**, permitindo a segurança de transferências de arquivos (via SCP ou SFTP), encaminhamento de portas, entre outros.
+
+O SSH é o protocolo mais utilizado por adminstradores de sistema para configuração e manutenção de servidores, e existem ferramentas de gestão de configuração que utilizam do SSH para conectar, configurar e gerenciar o estado dos hosts em escala. 
+
+O **SSH opera na camada de aplicação, utilizando o protocolo TCP, geralmente na porta 22**. Ele emprega uma combinação de criptografia assimétrica para o estabelecimento de conexão e troca de chaves, e criptografia simétrica para a sessão de comunicação propriamente dita, garantindo confidencialidade, integridade dos dados e autenticação.
+
+**1. Estabelecimento de Conexão**: O cliente SSH inicia uma conexão com o servidor. Eles negociam a versão do protocolo, um algoritmo de criptografia compartilhado e trocam chaves públicas.
+
+**2. Autenticação**: O usuário no cliente SSH é autenticado pelo servidor. Isso pode ser feito através de senha, chaves de criptografia públicas/privadas, ou métodos de autenticação mais avançados como Kerberos.
+
+**3. Sessão Segura**: Uma vez autenticados, cliente e servidor estabelecem um canal criptografado. Comandos e dados podem então ser trocados com segurança, com a criptografia protegendo contra a interceptação e alteração dos dados.
+
 ### Telnet
 
+Telnet é um protocolo de rede utilizado para proporcionar uma **comunicação baseada em texto interativa bidirecional** e permite aos usuários acessar e gerenciar remotamente dispositivos ou servidores através da Internet ou redes locais. Apesar de ter sido amplamente **substituído por protocolos mais seguros, como SSH**, Telnet ainda é usado em certos contextos, especialmente em ambientes de teste, educação, e em sistemas legados, ou pra testes de conexões de rede. 
+
+Telnet **opera na camada de aplicação e utiliza o protocolo TCP** para estabelecer uma conexão entre o cliente e o servidor. O protocolo é projetado para funcionar de forma independente da plataforma, o que significa que não existem limitação de versões, sistemas operacionais e afins. 
+
+O uso do Telnet **não é recomendado para execução de manutenções e configurações de fato**m mas é uma ótima ferramenta de troubleshooting de rede e testes de conectividades em portas específicas. 
+
+A principal limitação do Telnet é sua **falta de segurança**. O protocolo **não possui nenhum mecanismo de criptografia**, o que significa que todas as informações, incluindo nomes de usuário, senhas e outros dados sensíveis, são transmitidas em texto claro. Isso torna o Telnet extremamente vulnerável a interceptações e ataques de *"man-in-the-middle"*, onde um atacante pode facilmente capturar e ler os dados transmitidos.
+
 ### SMTP/POP3/IMAP
+
+O **SMTP** (*Simple Mail Transfer Protocol*), **POP3** (*Post Office Protocol version 3*) e **IMAP** (*Internet Message Access Protocol*) são os três principais protocolos de comunicação usados para enviar, receber e gerenciar e-mails na Internet. Cada um desempenha um papel diferente e importante no ecossistema de e-mails no geral.
+
+#### SMTP - Simple Mail Transfer Protocol
+
+O SMTP é usado para enviar mensagens de um servidor de e-mail para outro. Ele também pode ser usado para enviar e-mails de um cliente de e-mail para um servidor de e-mail. Simplificando, o SMTP cuida do "envio" de e-mails. Quando você envia um e-mail, seu cliente de e-mail usa o SMTP para transferi-lo ao servidor. Se o destinatário estiver em um domínio diferente, o servidor SMTP encaminhará o e-mail para o servidor SMTP do destinatário. O protoclo geralmente opera nas portas 25 (padrão) e 587 (para conexões seguras, recomendado).
+
+#### 
 
 ### ARP
 
@@ -344,6 +390,12 @@ A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diverso
 
 [Explicação do handshake de três vias via TCP/IP](https://learn.microsoft.com/pt-br/troubleshoot/windows-server/networking/three-way-handshake-via-tcpip)
 
+[DHCP - How DORA Works?](https://www.geeksforgeeks.org/how-dora-works/)
+
+[O que é SMTP, IMAP e POP, qual a diferença](https://king.host/blog/glossario/o-que-e-smtp-imap-e-pop-3-e-qual-a-diferenca/)
+
+[POP3, IMAP, SMTP](https://brasilcloud.com.br/duvidas/qual-diferenca-entre-pop3-imap-smtp/)
+
 [Push do servidor HTTP/2](https://imasters.com.br/devsecops/push-do-servidor-http2)
 
 [Examining HTTP/3 usage one year on](https://blog.cloudflare.com/http3-usage-one-year-on)
@@ -359,4 +411,6 @@ A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diverso
 [HTTP Status](https://www.httpstatus.com.br/)
 
 [HTTP Cats](https://http.cat/)
+
+
 
