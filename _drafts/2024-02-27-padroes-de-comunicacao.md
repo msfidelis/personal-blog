@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/protocolos.png
+image: assets/images/system-design/sincrono.png
 author: matheus
 featured: false
 published: true
