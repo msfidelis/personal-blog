@@ -5,13 +5,12 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Protocolos de Comunicação de Rede
+title: System Design - Protocolos e Comunicação de Rede
 ---
 
 Neste capítulo, abordaremos de forma simplificada os conceitos essenciais dos principais tópicos de comunicação de rede sob a perspectiva de System Design. Compreender os protocolos de comunicação é de extremo valor, e pode representar um divisor de águas para aprimorar tópicos de [performance](/performance-capacidade-escalabilidade/) e [resiliência](). Entender os fundamentos de protocolos como TCP/IP e UDP, assim como outros que são desenvolvidos a partir deles, nos capacita a tomar decisões arquiteturais informadas, projetar estratégias eficazes, melhorar níveis de performance e tempo de resposta ao aplicar suas características mais vantajosas de maneira adequada.
 
 Observando meus colegas e os profissionais de engenharia com quem tive a oportunidade de trabalhar ao longo dos anos, percebi que o entendimento da camada de rede frequentemente representa uma lacuna significativa no entendimento de uma topologia de sistemas. Este artigo é baseado em discussões e sessões de design nas quais tive o prazer de participar ao longo desses anos, compilando de maneira acessível os tópicos práticos e teóricos mais relevantes. O objetivo é que a informação aqui apresentada seja facilmente compreendida e aplicada no cotidiano daqueles que dedicarem tempo a esta leitura. Espero que encontrem grande valor neste conteúdo.
-
 
 <br>
 
@@ -93,11 +92,11 @@ Analogamente, o funcionamento do UDP pode ser comparado a entregadores que deixa
 
 ### TCP/IP (Transmission Control Protocol/Internet Protocol)
 
-Diferentemente do UDP, o **TCP/IP** (*Transmission Control Protocol/Internet Protocol*) é um conjunto de protocolos orientados à conexão. Ele é responsável por abrir, manter, verificar a saúde e encerrar a conexão, assegurando que os dados enviados cheguem ao destino de forma íntegra, confiável e na ordem correta. Atuando na camada de transporte (camada 4), o TCP/IP estabelece uma conexão antes de qualquer transmissão de dados entre os hosts, utilizando mecanismos de controle de erro e de fluxo para garantir a correta ordem e a integridade dos dados enviados.
-
-![TCP](/assets/images/system-design/tcp.png)
+Diferentemente do UDP, o **TCP/IP** (*Transmission Control Protocol/Internet Protocol*) é um conjunto de protocolos orientados à conexão. Ele é responsável por abrir, manter, verificar a saúde e encerrar a conexão, assegurando que os dados enviados cheguem ao destino de forma íntegra, confiável e na ordem correta. Atuando na **Camada de Transporte (camada 4)**, o TCP/IP estabelece uma conexão antes de qualquer transmissão de dados entre os hosts, utilizando mecanismos de controle de erro e de fluxo para garantir a correta ordem e a integridade dos dados enviados.
 
 O modelo TCP/IP emprega termos como **ACK, SYN, SYN-ACK** e **FIN** para descrever o gerenciamento de suas conexões. Existem outras flags, como **URG**, **PSH** e **RST**, mas focaremos em um fluxo simplificado para entender como uma conexão TCP funciona.
+
+![TCP](/assets/images/system-design/tcp.png)
 
 Todas as ações dentro do ciclo de vida de uma conexão TCP são confirmadas por **ACKs (Acknowledgments)**.
 
@@ -118,8 +117,9 @@ Comparado ao UDP, o TCP/IP oferece maior confiabilidade, embora com uma velocida
 
 Analogamente, se o protocolo UDP pode ser comparado a um entregador que deixa correspondências sem confirmação de recebimento, o TCP seria como um entregador que exige sua assinatura, foto e confirmação pessoal para entregar a correspondência em mãos.
 
+<br>
 
-### Escolhendo Entre TCP/IP e UDP para Construção de Protocolos
+### Escolhendo Entre TCP/IP e UDP para Construção e Uso de Protocolos
 
 A decisão entre usar UDP ou TCP/IP para desenvolver protocolos depende das exigências específicas da aplicação quanto à confiabilidade, ordem, integridade dos dados e eficiência. O UDP é preferido para aplicações que demandam uma entrega rápida de dados e podem tolerar perdas de pacotes, enquanto o TCP/IP é escolhido para aplicações que requerem uma entrega de dados confiável e ordenada. Essas características são de extrema importância ao implementar soluções que dependem de conexões de rede eficientes e confiáveis para cumprir seus objetivos.
 
@@ -127,19 +127,25 @@ A decisão entre usar UDP ou TCP/IP para desenvolver protocolos depende das exig
 
 ### SSL/TLS (Transport Layer Security)
 
-O TLS (Transport Layer Security) é um protocolo essencial para a segurança na internet e em redes corporativas, projetado para prover comunicação segura entre cliente e servidor. Sucessor do SSL (Secure Sockets Layer), seu objetivo principal é assegurar a privacidade e a integridade dos dados durante a transferência de informações entre sistemas, através de criptografia, garantindo que os dados enviados de um ponto a outro na rede permaneçam inacessíveis a interceptadores.
+O **TLS** (*Transport Layer Security*) é um protocolo crítico para a segurança na internet e em redes corporativas, projetado para prover comunicação segura entre cliente e servidor. Sucessor do **SSL** (*Secure Sockets Layer*), seu objetivo principal é assegurar a privacidade e a integridade dos dados durante a transferência de informações entre sistemas, através de criptografia, garantindo que os dados enviados de um ponto a outro na rede permaneçam inacessíveis a interceptadores.
 
-O funcionamento do TLS se dá por meio de um "handshake", onde cliente e servidor estabelecem parâmetros da sessão, como a versão do protocolo e os métodos de criptografia a serem utilizados, por meio de uma troca de chaves públicas e privadas. Essa troca resulta na criação de uma chave de sessão única, utilizada para criptografar os dados transmitidos, assegurando assim a segurança da comunicação.
+O funcionamento do TLS se dá por meio de um "*handshake*", onde cliente e servidor estabelecem parâmetros da sessão, como a versão do protocolo e os métodos de criptografia a serem utilizados, por meio de uma troca de chaves públicas e privadas. Essa troca resulta na **criação de uma chave de sessão única, utilizada para criptografar os dados transmitidos, assegurando assim a segurança da comunicação**.
 
-O "handshake" inicial do TLS define os parâmetros de comunicação segura, permitindo que os dados trafeguem protegidos entre cliente e servidor. Ao término da sessão, a comunicação pode ser finalizada de forma segura, com a possibilidade de renegociar os parâmetros para futuras sessões.
+O "*handshake*" inicial do TLS define os parâmetros de comunicação segura, permitindo que os dados trafeguem protegidos de um ponto a outro da rede. Ao término da sessão, a comunicação pode ser finalizada de forma segura, com a possibilidade de renegociar os parâmetros para futuras sessões.
 
 Existem várias versões do TLS, com aprimoramentos contínuos em segurança e desempenho. As versões mais adotadas atualmente são TLS 1.2 e TLS 1.3, sendo a última a mais recente e segura, oferecendo vantagens como um processo de "handshake" mais ágil e eficiente em comparação com as versões anteriores.
 
 <br>
 
-## Demais Protocolos
+## Demais Protocolos e Aplicações de Rede
 
-### DNS 
+Os **Protocolos de Aplicação** são uma parte importante da arquitetura de redes internas e externas, permitindo a comunicação entre diferentes sistemas e aplicações que tem padrões específicos que precisam ser respeitados. Eles **definem um conjunto de regras e padrões que governam a troca de dados entre servidores e clientes** num gama muito grande de contextos. Estes protocolos **operam na camada mais alta do modelo OSI**, a **Camada de Aplicação**, onde o foco se desloca da transferência de dados pura para a maneira como os dados são solicitados e apresentados ao usuário de acordo com a tecnologia utilizada
+
+Se devido a alguma necessidade específica de tecnologia você precisa implementar seu **próprio protocolo de comunicação criando suas próprias regras, validações e comportamentos utilizando como base os protocolos basicos como TCP e UDP**, esse seu protocolo pode ser considerado para a camada de aplicação. Se você está utilizando um protocolo específico para troca de mensagens asincronas, esse protocolo de comunicação entre o cliente e o servidor de mensagens, por ser algo construído em cima de uma comunicação TCP/IP, está na camada de aplicação. Vamos entender algumas das principais tecnologias e protocolos que funcionam nessa camada que tende a ser as mais presentes no dia a dia de engenharia e construções de soluções de praticamente todos os tipos de arquitetura. A tendência é que vários deles além desse capítulo sejam abordados de forma mais detalhada, como veremos nos capítulos de mensageria e comunicações sincronas. Nesta sessão o objetivo é detalhar outros protocolos comuns presentes na grande maioria das implementações arquiteturais de redes. 
+
+<br>
+
+### DNS - Domain Name Service
 
 O **Sistema de Nomes de Domínio**, ou **Domain Name Service (DNS)** é uma premissa fundamental da internet, atuando como uma "lista telefônica" da internet e da sua rede interna. Sem o DNS, teríamos que memorizar os endereços IP complexos para acessar sites, o que seria impraticável tanto em IPV4 quanto impossível para IPV6. Em vez disso, o DNS nos permite digitar nomes de domínio amigáveis, como `fidelissauro.dev`, e automaticamente encontrar o endereço IP correto para se conectar ao site ou host desejado.
 
@@ -187,7 +193,9 @@ Quando um resolver DNS (geralmente operado por seu provedor de internet) precisa
 
 **4. Conexão de Fato:**  Após o servidor autoritativo finalmente responder onde o host `demo.fidelissauro.dev` está, o cliente pode de fato se conectar com o serviço de fato. **Este processo é otimizado por meio de cache em vários níveis**. **Resolvers de DNS, navegadores e até mesmo os próprios servidores de nomes armazenam respostas de consultas anteriores para reduzir a latência e o tráfego na rede**. Ao acessar um domínio frequentemente, é provável que as informações de DNS já estejam armazenadas em cache, acelerando significativamente o processo de resolução, poupando todo esse processo. 
 
-### DHCP
+<br>
+
+### DHCP - Dynamic Host Configuration Protocol
 
 O **Protocolo de Configuração Dinâmica de Host** (*Dynamic Host Configuration Protocol*) é um protocolo de rede que permite a servidores com essa responsabilidade **designar automaticamente um endereço IP e outras informações a dispositivos que se conectam na rede.** O **DHCP é usado para a gestão de endereços IP em redes grandes e pequenas**, facilitando a conectividade e **reduzindo conflitos de endereços**. É utilizado principalmente em projetos de networking que possibilitam a entrada e saída de hosts com certa frequencia, sem a necessidade de alocar IP's fixos e evitar conflitos de 2 dispositivos tentarem utilizar o mesmo IP.
 
@@ -203,13 +211,17 @@ Quando um dispositivo - cliente DHCP - se conecta a uma rede, ele solicita infor
 
 O DHCP elimina a necessidade de configurar manualmente os parâmetros de rede em cada dispositivo, gerencia dinamicamente o pool de endereços IP, reutilizando endereços de dispositivos que não estão mais na rede. É um protocolo "default" que já é abstraído em players de núvem pública, mas tendem a ser considerado quando precisamos projetar soluções a nível de networking além do software. 
 
-### NTP
+<br>
+
+### NTP - Network Time Protocol
 
 O Network Time Protocol (NTP) é um protocolo de rede utilizado para sincronizar relógios de computadores através de redes de dados com variáveis latências. Ele opera dentro da camada de aplicação do conjunto de protocolos da Internet, utilizando o protocolo de transporte UDP na porta 123. Ele é construído sobre uma arquitetura cliente-servidor, onde múltiplos clientes (computadores que precisam de sincronização de tempo) fazem requisições a um ou mais servidores NTP. Estes servidores estão conectados a fontes de tempo de alta precisão, como relógios atômicos, GPS ou rádio relógios.
 
 A precisão do tempo é crítica para muitas aplicações em redes de computadores. Transações financeiras, comunicações seguras, sistemas de banco de dados distribuídos e redes de telecomunicações são apenas alguns exemplos onde a sincronização de relógios entre diferentes sistemas é vital. O NTP permite que essas aplicações funcionem de forma coesa, garantindo que todos os sistemas estejam "no mesmo tempo", evitando problemas de ordem de operações, registros de log inconsistentes e falhas de segurança.
 
-### SSH 
+<br>
+
+### SSH - Secure Shell 
 
 O **SSH**, (*Secure Shell*), é um protocolo de rede criptográfico **utilizado para comunicação e operações de rede seguras**. O SSH **permite o acesso controlado e criptografado a dispositivos remotos, sendo o método padrão para administração remota de sistemas Linux/Unix** junto a uma ampla gama de diversos dispositivos de rede. Além do acesso remoto, o SSH pode **criar túneis seguros para encapsular outros protocolos de rede**, permitindo a segurança de transferências de arquivos (via SCP ou SFTP), encaminhamento de portas, entre outros.
 
@@ -223,6 +235,8 @@ O **SSH opera na camada de aplicação, utilizando o protocolo TCP, geralmente n
 
 **3. Sessão Segura**: Uma vez autenticados, cliente e servidor estabelecem um canal criptografado. Comandos e dados podem então ser trocados com segurança, com a criptografia protegendo contra a interceptação e alteração dos dados.
 
+<br>
+
 ### Telnet
 
 Telnet é um protocolo de rede utilizado para proporcionar uma **comunicação baseada em texto interativa bidirecional** e permite aos usuários acessar e gerenciar remotamente dispositivos ou servidores através da Internet ou redes locais. Apesar de ter sido amplamente **substituído por protocolos mais seguros, como SSH**, Telnet ainda é usado em certos contextos, especialmente em ambientes de teste, educação, e em sistemas legados, ou pra testes de conexões de rede. 
@@ -231,30 +245,11 @@ Telnet **opera na camada de aplicação e utiliza o protocolo TCP** para estabel
 
 O uso do Telnet **não é recomendado para execução de manutenções e configurações de fato**m mas é uma ótima ferramenta de troubleshooting de rede e testes de conectividades em portas específicas. 
 
-A principal limitação do Telnet é sua **falta de segurança**. O protocolo **não possui nenhum mecanismo de criptografia**, o que significa que todas as informações, incluindo nomes de usuário, senhas e outros dados sensíveis, são transmitidas em texto claro. Isso torna o Telnet extremamente vulnerável a interceptações e ataques de *"man-in-the-middle"*, onde um atacante pode facilmente capturar e ler os dados transmitidos.
-
-### SMTP/POP3/IMAP
-
-O **SMTP** (*Simple Mail Transfer Protocol*), **POP3** (*Post Office Protocol version 3*) e **IMAP** (*Internet Message Access Protocol*) são os três principais protocolos de comunicação usados para enviar, receber e gerenciar e-mails na Internet. Cada um desempenha um papel diferente e importante no ecossistema de e-mails no geral.
-
-#### SMTP - Simple Mail Transfer Protocol
-
-O SMTP é usado para enviar mensagens de um servidor de e-mail para outro. Ele também pode ser usado para enviar e-mails de um cliente de e-mail para um servidor de e-mail. Simplificando, o SMTP cuida do "envio" de e-mails. Quando você envia um e-mail, seu cliente de e-mail usa o SMTP para transferi-lo ao servidor. Se o destinatário estiver em um domínio diferente, o servidor SMTP encaminhará o e-mail para o servidor SMTP do destinatário. O protoclo geralmente opera nas portas 25 (padrão) e 587 (para conexões seguras, recomendado).
-
-#### 
-
-### ARP
-
-## Protocolos de Aplicação
-
-Os Protocolos de Aplicação constituem uma parte fundamental da arquitetura da Internet, permitindo a comunicação ficaz entre diferentes sistemas e aplicações que tem padrões específicos que precisam ser respeitados. Eles definem um conjunto de regras e padrões que governam a troca de dados entre servidores e clientes num gama muito grande de contextos. Estes protocolos operam na camada mais alta do modelo OSI, a Camada de Aplicação, onde o foco se desloca da transferência de dados pura para a maneira como os dados são solicitados e apresentados ao usuário de acordo com a tecnologia utilizada
-
-Se devido a alguma necessidade específica de tecnologia você precisa implementar seu próprio protocolo de comunicação criando suas próprias regras, validações e comportamentos utilizando como base os protocolos basicos como TCP e UDP, esse seu protocolo pode ser considerado para a camada de aplicação. Se você está utilizando um protocolo específico para troca de mensagens asincronas, esse protocolo de comunicação entre o cliente e o servidor de mensagens, por ser algo construído em cima de uma comunicação TCP/IP, está na camada de aplicação. Vamos entender algumas das principais tecnologias e protocolos que funcionam nessa camada que tende a ser as mais presentes no dia a dia de engenharia e construções de soluções de praticamente todos os tipos de arquitetura. 
-
+A principal limitação do Telnet é sua **falta de segurança**. O protocolo **não possui nenhum mecanismo de criptografia**, o que significa que todas as informações, incluindo nomes de usuário, senhas e outros dados sensíveis, são transmitidas em texto claro. Isso torna o Telnet extremamente vulnerável a interceptações e ataques de *"man-in-the-middle"*, onde um atacante pode facilmente capturar e ler os dados transmitidos. 
 
 <br>
 
-### HTTP/1, HTTP/2 e HTTP/3
+### Protocolos HTTP/1, HTTP/2 e HTTP/3
 
 Ao examinar o protocolo **HTTP** (*Hypertext Transfer Protocol)* sob a perspectiva de System Design, é importante entender seu impacto na arquitetura, desempenho, escalabilidade e segurança de aplicações modernas. Operando na **Camada 7 do Modelo OSI**, ou **Camada de Aplicação**, o HTTP é predominantemente baseado em **conexões TCP** para gerenciar solicitações, constituindo a espinha dorsal da internet e da comunicação entre sistemas modernos.
 
@@ -362,14 +357,12 @@ O QUIC diminui a latência de conexão por meio de um handshake criptografado ma
 
 A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diversos tipos de aplicativos, especialmente aqueles que demandam transmissões de dados rápidas e seguras, como streaming de vídeo, jogos online e comunicações em tempo real. Uma característica notável do QUIC é sua habilidade de manter conexões ativas mesmo com a mudança de redes (por exemplo, de Wi-Fi para dados móveis), devido à identificação por conexão ID, ao invés de endereços IP e portas, facilitando a continuidade das sessões sem interrupções.
 
-<br>
+#### Revisores
 
-### HTTPS (HTTP + TLS)
-
-
-### Comunicação Over-TCP
+* [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
 
 
+> Imagens geradas pelo DALL-E
 
 
 ### Referências
