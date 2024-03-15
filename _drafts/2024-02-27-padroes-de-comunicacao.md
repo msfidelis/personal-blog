@@ -8,12 +8,18 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Padrões de Comunicação Sincronos
 ---
 
+Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolos e Comunicação de Redes](). A ideia é seguir com os conceitos direcionados anteriormente para aplicá-los em diferentes tipos de padrões de comunicação direcionados na contrução de software em arquiteturas modernas e distribuídas. Nesse capítulo iremos falar sobre alguns padrões que podemos utilizar para **construção de chamadas sincronas entre serviços**, aproveitando os conhecimentos ofertados quando abordamos sobre o Protocolo HTTP, TCP/IP e UDP para detalhar conceitualmente com a visão de System Design outras tecnologias como o **Padrão REST, gRPC, Websockets e GraphQL**. 
 
-# REST (Representational State Transfer)
+# Definindo comunicações sincronas
 
-O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônico para sistemas distribuídos** que presa pela simplicidade da comunicação entre componentes na internet ou em redes internas de microserviços. Definido por Roy Fielding em sua tese de doutorado em 2000, REST não é um protocolo ou padrão, mas um conjunto de princípios arquitetônicos usados para projetar sistemas distribuídos escaláveis, confiáveis e de fácil manutenção. Os serviços que seguem os princípios REST são conhecidos como RESTful.
+# API's REST (Representational State Transfer)
 
-O REST é construído usando referências e recursos do protocolo HTTP, definindo papeis e responsabilidades de cliente-servidor e busca estabelecer uma interface de um cliente com os dados e ações de um sistema. 
+O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônico para sistemas distribuídos** que presa pela simplicidade da comunicação entre componentes na internet ou em redes internas de microserviços. Definido por **Roy Fielding** em sua tese de doutorado em 2000, REST não é um protocolo ou padrão, mas um conjunto de princípios arquitetônicos usados para projetar sistemas distribuídos escaláveis, confiáveis e de fácil manutenção. Os serviços que seguem os princípios REST são conhecidos como RESTful em API's. 
+
+#### Definindo API's
+
+
+O REST é construído usando referências e recursos do **protocolo HTTP**, definindo papeis e responsabilidades de cliente-servidor e busca **estabelecer uma interface de um cliente com os dados e ações de um sistema** de forma intuitiva. 
 
 Ele utiliza métodos HTTP para definir ações, como **GET, POST, PUT, DELETE e PATCH**, para realizar operações CRUD **(Criar, Ler, Atualizar, Deletar)** em recursos identificados por URI's. Esses recursos são representações de entidades ou objetos do domínio da aplicação.
 
@@ -90,11 +96,7 @@ A arquitetura em camadas permite que intermediários (como proxies e gateways) f
 As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para evitar a reutilização de dados obsoletos ou inapropriados, melhorando a eficiência e a escalabilidade.
 
 
-
-
 <br>
-
-
 
 ### RPC (Remote Procedure Call)
 
