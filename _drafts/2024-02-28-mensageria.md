@@ -1,11 +1,11 @@
 ---
 layout: post
-image: assets/images/system-design/protocolos.png
+image: assets/images/system-design/async.png
 author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Mensageria e Eventos
+title: System Design - Padrões de Mensageria e Eventos
 ---
 
 # Mensagens e Eventos

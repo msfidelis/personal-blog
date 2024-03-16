@@ -8,7 +8,7 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Protocolos e Comunicação de Rede
 ---
 
-Neste capítulo, abordaremos de forma simplificada os conceitos essenciais dos principais tópicos de comunicação de rede sob a perspectiva de System Design. Compreender os protocolos de comunicação é de extremo valor, e pode representar um divisor de águas para aprimorar tópicos de [performance](/performance-capacidade-escalabilidade/) e [resiliência](). Entender os fundamentos de protocolos como TCP/IP e UDP, assim como outros que são desenvolvidos a partir deles, nos capacita a tomar decisões arquiteturais informadas, projetar estratégias eficazes, melhorar níveis de performance e tempo de resposta ao aplicar suas características mais vantajosas de maneira adequada.
+Neste capítulo, abordaremos de forma simplificada os conceitos essenciais dos principais tópicos de comunicação de rede sob a perspectiva de System Design. Compreender os protocolos de comunicação é de extremo valor, e pode representar um divisor de águas para aprimorar tópicos de [performance](/performance-capacidade-escalabilidade/) e [resiliência](). Entender os fundamentos de protocolos como TCP e UDP, assim como outros que são desenvolvidos a partir deles, nos **capacita a tomar decisões arquiteturais, projetar estratégias eficazes, melhorar níveis de performance e tempo de resposta ao aplicar suas características mais vantajosas de maneira adequada**.
 
 Observando meus colegas e os profissionais de engenharia com quem tive a oportunidade de trabalhar ao longo dos anos, percebi que o entendimento da camada de rede frequentemente representa uma lacuna significativa no entendimento de uma topologia de sistemas. Este artigo é baseado em discussões e sessões de design nas quais tive o prazer de participar ao longo desses anos, compilando de maneira acessível os tópicos práticos e teóricos mais relevantes. O objetivo é que a informação aqui apresentada seja facilmente compreendida e aplicada no cotidiano daqueles que dedicarem tempo a esta leitura. Espero que encontrem grande valor neste conteúdo.
 
@@ -16,7 +16,7 @@ Observando meus colegas e os profissionais de engenharia com quem tive a oportun
 
 # Modelo OSI
 
-O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. Representando uma abstração com base acadêmica, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços. É importante compreender como funciona esse modelo teórico antes de entrarmos de fato em implementações de protocolos, para conseguirmos mentalmente classificar onde cada um deles opera entre as camadas propostas por ele. 
+O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. **Representando uma abstração com base acadêmica**, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços. É importante compreender como funciona esse modelo teórico antes de entrarmos de fato em implementações de protocolos, para conseguirmos mentalmente classificar onde cada um deles opera entre as camadas propostas por ele. 
 
 ![OSI Model](/assets/images/system-design/osi.png)
 
@@ -54,11 +54,11 @@ Fornece serviços de rede para aplicações do usuário, **incluindo transferên
 
 # Os Protocolos de Comunicação
 
-Entrando agora de fato nos protocolos de comunicação, vamos entender algumas das implementações mais importantes e mais comuns dentro do dia a dia da engenharia de software e usuários de aplicações de rede, resumidamente qualquer pessoa do planeta Terra que possua conexões com a internet. Temos várias implementações diferentes com diversas vantagens e desvantagens quando olhamos um mapa de protocolos existentes, ainda levando em consideração alguns protocolos são construídos utilizando outros protolos mais estabelecidos como base, como é caso do UDP e do TCP/IP. Inicialmente vamos olhar como funcionam essas duas implementações tratando os mesmos como **protocolos base** para depois detalhar protocolos mais complexos que se utilizam dos mesmos para cumprir seus papéis. 
+Entrando agora de fato nos protocolos de comunicação, vamos entender algumas das implementações mais importantes e mais comuns dentro do dia a dia da engenharia de software e usuários de aplicações de rede, resumidamente qualquer pessoa do planeta Terra que possua conexões com a internet. Temos várias implementações diferentes com diversas vantagens e desvantagens quando olhamos um mapa de protocolos existentes, ainda levando em consideração alguns protocolos são construídos utilizando outros protolos mais estabelecidos como base, como é caso do UDP e do TCP. Inicialmente vamos olhar como funcionam essas duas implementações tratando os mesmos como **protocolos base** para depois detalhar protocolos mais complexos que se utilizam dos mesmos para cumprir seus papéis. 
 
 ## Protocolos Base
 
-Para compreender detalhadamente os protocolos e tecnologias de comunicação modernas, é importante primeiro revisitar os protocolos de rede de baixo nível que servem como sua base. Antes de explorar protocolos como HTTP/2, HTTP/3, gRPC e AMPQ, precisamos entender os mecanismos de conexão fundamentais, principalmente o TCP/IP e o UDP, que são essenciais para o desenvolvimento dessas tecnologias avançadas.
+Para compreender detalhadamente os protocolos e tecnologias de comunicação modernas, é importante primeiro revisitar os protocolos de rede de baixo nível que servem como sua base. Antes de explorar protocolos como **HTTP/2, HTTP/3, gRPC e AMQP**, precisamos entender os mecanismos de conexão fundamentais, principalmente o TCP e o UDP, que são essenciais para o desenvolvimento dessas tecnologias avançadas.
 
 <br>
 
@@ -82,7 +82,7 @@ Com essa configuração, um dispositivo pode se comunicar tanto com redes IPv4 q
 
 <br>
 
-### UDP (User Datagram Protocol)
+### UDP - User Datagram Protocol 
 
 O UDP, ou User Datagram Protocol, é um protocolo da camada de transporte (camada 4) notavelmente simples, que possibilita a transmissão de dados entre hosts na rede de maneira não confiável e sem a necessidade de estabelecer uma conexão prévia. Diferentemente de outros protocolos de rede, o UDP sacrifica a confiabilidade em favor da performance, eliminando o processo de estabelecimento, manutenção, gerenciamento e encerramento de conexões. Isso permite que os dados sejam enviados ao destinatário sem garantias de recebimento ou integridade.
 
@@ -96,11 +96,11 @@ Analogamente, o funcionamento do UDP pode ser comparado a entregadores que deixa
 
 <br>
 
-### TCP/IP (Transmission Control Protocol/Internet Protocol)
+### TCP - Transmission Control Protocol
 
-Diferentemente do UDP, o **TCP/IP** (*Transmission Control Protocol/Internet Protocol*) é um conjunto de protocolos orientados à conexão. Ele é responsável por abrir, manter, verificar a saúde e encerrar a conexão, assegurando que os dados enviados cheguem ao destino de forma íntegra, confiável e na ordem correta. Atuando na **Camada de Transporte (camada 4)**, o TCP/IP estabelece uma conexão antes de qualquer transmissão de dados entre os hosts, utilizando mecanismos de controle de erro e de fluxo para garantir a correta ordem e a integridade dos dados enviados.
+Diferentemente do UDP, o **TCP** (*Transmission Control Protocol/Internet Protocol*) é um conjunto de protocolos orientados à conexão. Ele é responsável por abrir, manter, verificar a saúde e encerrar a conexão, assegurando que os dados enviados cheguem ao destino de forma íntegra, confiável e na ordem correta. Atuando na **Camada de Transporte (camada 4)**, o TCP estabelece uma conexão antes de qualquer transmissão de dados entre os hosts, utilizando mecanismos de controle de erro e de fluxo para garantir a correta ordem e a integridade dos dados enviados.
 
-O modelo TCP/IP emprega termos como **ACK, SYN, SYN-ACK** e **FIN** para descrever o gerenciamento de suas conexões. Existem outras flags, como **URG**, **PSH** e **RST**, mas focaremos em um fluxo simplificado para entender como uma conexão TCP funciona.
+O modelo TCP emprega termos como **ACK, SYN, SYN-ACK** e **FIN** para descrever o gerenciamento de suas conexões. Existem outras flags, como **URG**, **PSH** e **RST**, mas focaremos em um fluxo simplificado para entender como uma conexão TCP funciona.
 
 ![TCP](/assets/images/system-design/tcp.png)
 
@@ -119,19 +119,19 @@ Com a conexão estabelecida, os dados são enviados entre cliente e servidor em 
 
 Para encerrar uma conexão TCP, **ambas as partes devem fechar a sessão de sua respectiva direção** através de um processo conhecido como **"four-way handshake"**. O cliente inicia o encerramento enviando um segmento com a flag **FIN** marcada, sinalizando que não tem mais dados a enviar. Após receber um ACK do servidor e um segmento com a flag **FIN**, indicando que o servidor também concluiu a transmissão de dados, o cliente envia o último ACK, finalizando a conexão.
 
-Comparado ao UDP, o TCP/IP oferece maior confiabilidade, embora com uma velocidade reduzida. A maioria dos protocolos de comunicação entre serviços e componentes de software é construída sobre o TCP, justamente pela sua confiabilidade.
+Comparado ao UDP, o TCP oferece maior confiabilidade, embora com uma velocidade reduzida. A maioria dos protocolos de comunicação entre serviços e componentes de software é construída sobre o TCP, justamente pela sua confiabilidade.
 
 Analogamente, se o protocolo UDP pode ser comparado a um entregador que deixa correspondências sem confirmação de recebimento, o TCP seria como um entregador que exige sua assinatura, foto e confirmação pessoal para entregar a correspondência em mãos.
 
 <br>
 
-### Escolhendo Entre TCP/IP e UDP para Construção e Uso de Protocolos
+### Escolhendo Entre TCP e UDP para Construção e Uso de Protocolos
 
-A decisão entre usar UDP ou TCP/IP para desenvolver protocolos depende das exigências específicas da aplicação quanto à confiabilidade, ordem, integridade dos dados e eficiência. O UDP é preferido para aplicações que demandam uma entrega rápida de dados e podem tolerar perdas de pacotes, enquanto o TCP/IP é escolhido para aplicações que requerem uma entrega de dados confiável e ordenada. Essas características são de extrema importância ao implementar soluções que dependem de conexões de rede eficientes e confiáveis para cumprir seus objetivos.
+A decisão entre usar UDP ou TCP para desenvolver protocolos depende das exigências específicas da aplicação quanto à confiabilidade, ordem, integridade dos dados e eficiência. O UDP é preferido para aplicações que demandam uma entrega rápida de dados e podem tolerar perdas de pacotes, enquanto o TCP é escolhido para aplicações que requerem uma entrega de dados confiável e ordenada. Essas características são de extrema importância ao implementar soluções que dependem de conexões de rede eficientes e confiáveis para cumprir seus objetivos.
 
 <br>
 
-### SSL/TLS (Transport Layer Security)
+### SSL/TLS - Transport Layer Security
 
 O **TLS** (*Transport Layer Security*) é um protocolo crítico para a segurança na internet e em redes corporativas, projetado para prover comunicação segura entre cliente e servidor. Sucessor do **SSL** (*Secure Sockets Layer*), seu objetivo principal é assegurar a privacidade e a integridade dos dados durante a transferência de informações entre sistemas, através de criptografia, garantindo que os dados enviados de um ponto a outro na rede permaneçam inacessíveis a interceptadores.
 
@@ -147,7 +147,7 @@ Existem várias versões do TLS, com aprimoramentos contínuos em segurança e d
 
 Os **Protocolos de Aplicação** são uma parte importante da arquitetura de redes internas e externas, permitindo a comunicação entre diferentes sistemas e aplicações que tem padrões específicos que precisam ser respeitados. Eles **definem um conjunto de regras e padrões que governam a troca de dados entre servidores e clientes** num gama muito grande de contextos. Estes protocolos **operam na camada mais alta do modelo OSI**, a **Camada de Aplicação**, onde o foco se desloca da transferência de dados pura para a maneira como os dados são solicitados e apresentados ao usuário de acordo com a tecnologia utilizada
 
-Se devido a alguma necessidade específica de tecnologia você precisa implementar seu **próprio protocolo de comunicação criando suas próprias regras, validações e comportamentos utilizando como base os protocolos basicos como TCP e UDP**, esse seu protocolo pode ser considerado para a camada de aplicação. Se você está utilizando um protocolo específico para troca de mensagens asincronas, esse protocolo de comunicação entre o cliente e o servidor de mensagens, por ser algo construído em cima de uma comunicação TCP/IP, está na camada de aplicação. Vamos entender algumas das principais tecnologias e protocolos que funcionam nessa camada que tende a ser as mais presentes no dia a dia de engenharia e construções de soluções de praticamente todos os tipos de arquitetura. A tendência é que vários deles além desse capítulo sejam abordados de forma mais detalhada, como veremos nos capítulos de mensageria e comunicações sincronas. Nesta sessão o objetivo é detalhar outros protocolos comuns presentes na grande maioria das implementações arquiteturais de redes. 
+Se devido a alguma necessidade específica de tecnologia você precisa implementar seu **próprio protocolo de comunicação criando suas próprias regras, validações e comportamentos utilizando como base os protocolos basicos como TCP e UDP**, esse seu protocolo pode ser considerado para a camada de aplicação. Se você está utilizando um protocolo específico para troca de mensagens asincronas, esse protocolo de comunicação entre o cliente e o servidor de mensagens, por ser algo construído em cima de uma comunicação TCP, está na camada de aplicação. Vamos entender algumas das principais tecnologias e protocolos que funcionam nessa camada que tende a ser as mais presentes no dia a dia de engenharia e construções de soluções de praticamente todos os tipos de arquitetura. A tendência é que vários deles além desse capítulo sejam abordados de forma mais detalhada, como veremos nos capítulos de mensageria e comunicações sincronas. Nesta sessão o objetivo é detalhar outros protocolos comuns presentes na grande maioria das implementações arquiteturais de redes. 
 
 <br>
 
