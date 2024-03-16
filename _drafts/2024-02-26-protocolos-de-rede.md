@@ -16,7 +16,7 @@ Observando meus colegas e os profissionais de engenharia com quem tive a oportun
 
 # Modelo OSI
 
-O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. **Representando uma abstração com base acadêmica**, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços. É importante compreender como funciona esse modelo teórico antes de entrarmos de fato em implementações de protocolos, para conseguirmos mentalmente classificar onde cada um deles opera entre as camadas propostas por ele. 
+O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. **Representando uma abstração com base acadêmica**, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços. É importante compreender como funciona esse modelo teórico antes de entrarmos de fato em implementações de protocolos, para conseguirmos mentalmente classificar onde cada um deles opera entre as camadas propostas por ele.  Normalmente as camadas mais altas do modelo são implementadas com base em software. 
 
 ![OSI Model](/assets/images/system-design/osi.png)
 
@@ -25,6 +25,7 @@ O Modelo OSI é dividido em sete camadas, cada uma responsável por funções es
 ### Camada 1: Física
 
 A primeira camada é **responsável pela transmissão e recepção de dados brutos não tratados sobre um meio físico**. Define especificações elétricas, mecânicas, procedurais e funcionais para ativar, manter e desativar conexões físicas. Inclui **cabos de rede**, **cabos de cobre**, **fibra óptica** e **aplicações Wi-Fi**, englobando todos os meios físicos de entrada e saída para a rede. **Basicamente resumida em dispositivos paupáveis**.
+
 
 ### Camada 2: Enlace
 
@@ -44,7 +45,7 @@ Responsável por iniciar, gerenciar e finalizar conexões entre aplicações, fr
 
 ### Camada 6: Apresentação
 
-Traduz dados do formato da rede para o formato aceito pelas aplicações, realizando criptografia, compressão e conversão de dados. **Funciona como uma "Camada de Tradução"**, implementando protocolos de segurança como **SSL/TLS** e suportando formatos de dados como **JPEG, GIF, PNG**.
+Traduz dados do formato da rede para o formato aceito pelas aplicações, realizando criptografia, compressão e conversão de dados. **Funciona como uma "Camada de Tradução"**, implementando protocolos de segurança como **SSL/TLS** e suportando formatos de dados como **JPEG, GIF e PNG**.
 
 ### Camada 7: Aplicação
 
@@ -90,9 +91,7 @@ O UDP, ou User Datagram Protocol, é um protocolo da camada de transporte (camad
 
 O protocolo UDP segmenta os dados a serem enviados em pacotes menores chamados Datagrams. Utilizando Datagramas, o UDP permite a transmissão de dados independentes que não requerem entrega em uma ordem ou prioridade específica, nem dependem de confirmação de recebimento. Essa característica torna o UDP adequado para aplicações que demandam comunicação em tempo real, mas que podem tolerar certa perda ou corrupção de dados.
 
-Protocolos e arquiteturas que exigem envio e recebimento de dados com complexidade próxima ao tempo real, e que podem suportar perdas e corrupções, geralmente são construídos sobre o UDP.
-
-Analogamente, o funcionamento do UDP pode ser comparado a entregadores que deixam correspondências debaixo do portão, na calçada ou na janela das casas, prosseguindo para as próximas entregas sem confirmar se o destinatário recebeu a mensagem.
+Protocolos e arquiteturas que exigem envio e recebimento de dados com complexidade próxima ao tempo real, e que podem suportar perdas e corrupções, geralmente são construídos sobre o UDP. Analogamente, o funcionamento do UDP pode ser comparado a entregadores que deixam correspondências debaixo do portão, na calçada ou na janela das casas, prosseguindo para as próximas entregas sem confirmar se o destinatário recebeu a mensagem.
 
 <br>
 
@@ -107,7 +106,6 @@ O modelo TCP emprega termos como **ACK, SYN, SYN-ACK** e **FIN** para descrever 
 Todas as ações dentro do ciclo de vida de uma conexão TCP são confirmadas por **ACKs (Acknowledgments)**.
 
 O início de uma conexão TCP exige uma série de confirmações entre o cliente e o servidor para assegurar sequencialidade e confiabilidade. Esse processo é conhecido como **"three-way handshake"**, ilustrado pela sequência de três ações: **SYN**, **SYN-ACK** e **ACK**, daí o termo "three-way handshake".
-
 
 No início, o cliente inicia o processo enviando um segmento TCP com a flag **SYN (synchronize)** marcada para o servidor, **indicando a intenção de estabelecer uma conexão**. Este processo inicial envolve um número de sequência conhecido como **ISN** (Initial Sequence Number), utilizado para sincronização e controle de fluxo.
 
@@ -195,13 +193,13 @@ Quando um resolver DNS (geralmente operado por seu provedor de internet) precisa
 - <i>Certo, vou me conectar com ele!</i>
 </blockquote>
 
-**4. Conexão de Fato:**  Após o servidor autoritativo finalmente responder onde o host `demo.fidelissauro.dev` está, o cliente pode de fato se conectar com o serviço de fato. **Este processo é otimizado por meio de [cache](/caching/) em vários níveis**. **Resolvers de DNS, navegadores e até mesmo os próprios servidores de nomes armazenam respostas de consultas anteriores para reduzir a latência e o tráfego na rede**. Ao acessar um domínio frequentemente, é provável que as informações de DNS já estejam armazenadas em cache, acelerando significativamente o processo de resolução, poupando todo esse processo.
+**4. Conexão de Fato:**  Após o servidor autoritativo finalmente responder onde o host `demo.fidelissauro.dev` está, o cliente pode se conectar com o serviço de fato. **Este processo é otimizado por meio de cache em vários níveis**. **Resolvers de DNS, navegadores e até mesmo os próprios servidores de nomes armazenam respostas de consultas anteriores para reduzir a latência e o tráfego na rede**. Ao acessar um domínio frequentemente, é provável que as informações de DNS já estejam armazenadas em cache, acelerando significativamente o processo de resolução, poupando todo esse processo. 
 
 <br>
 
 ### DHCP - Dynamic Host Configuration Protocol
 
-O **Protocolo de Configuração Dinâmica de Host** (*Dynamic Host Configuration Protocol*) é um protocolo de rede que permite a servidores com essa responsabilidade **designar automaticamente um endereço IP e outras informações a dispositivos que se conectam na rede.** O **DHCP é usado para a gestão de endereços IP em redes grandes e pequenas**, facilitando a conectividade e **reduzindo conflitos de endereços**. É utilizado principalmente em projetos de networking que possibilitam a entrada e saída de hosts com certa frequencia, sem a necessidade de alocar IP's fixos e evitar conflitos de 2 dispositivos tentarem utilizar o mesmo IP.
+O **Protocolo de Configuração Dinâmica de Host** (*Dynamic Host Configuration Protocol*) é um protocolo de rede que permite a servidores com essa responsabilidade **designar automaticamente um endereço IP e outras informações a dispositivos que se conectam na rede.** O **DHCP é usado para a gestão de endereços IP em redes grandes e pequenas**, facilitando a conectividade e **reduzindo conflitos de endereços**. É utilizado principalmente em projetos de networking que possibilitam a entrada e saída de hosts com certa frequência, sem a necessidade de alocar IP's fixos e evitar conflitos de 2 dispositivos tentarem utilizar o mesmo IP.
 
 Quando um dispositivo - cliente DHCP - se conecta a uma rede, ele solicita informações de configuração de rede a um servidor DHCP. O processo segue quatro etapas básicas, conhecidas como **DORA** (*Discovery, Offer, Request, Acknowledgment*).
 
@@ -219,7 +217,7 @@ O DHCP elimina a necessidade de configurar manualmente os parâmetros de rede em
 
 ### NTP - Network Time Protocol
 
-O Network Time Protocol (NTP) é um protocolo de rede utilizado para sincronizar relógios de computadores através de redes de dados com variáveis latências. Ele opera dentro da camada de aplicação do conjunto de protocolos da Internet, utilizando o protocolo de transporte UDP na porta 123. Ele é construído sobre uma arquitetura cliente-servidor, onde múltiplos clientes (computadores que precisam de sincronização de tempo) fazem requisições a um ou mais servidores NTP. Estes servidores estão conectados a fontes de tempo de alta precisão, como relógios atômicos, GPS ou rádio relógios.
+O Network Time Protocol (NTP) é um protocolo de rede utilizado para sincronizar relógios de computadores através de redes de dados com latências variáveis. Ele opera dentro da camada de aplicação do conjunto de protocolos da Internet, utilizando o protocolo de transporte UDP na porta 123. Ele é construído sobre uma arquitetura cliente-servidor, onde múltiplos clientes (computadores que precisam de sincronização de tempo) fazem requisições a um ou mais servidores NTP. Estes servidores estão conectados a fontes de tempo de alta precisão, como relógios atômicos, GPS ou rádio relógios.
 
 A precisão do tempo é crítica para muitas aplicações em redes de computadores. Transações financeiras, comunicações seguras, sistemas de banco de dados distribuídos e redes de telecomunicações são apenas alguns exemplos onde a sincronização de relógios entre diferentes sistemas é vital. O NTP permite que essas aplicações funcionem de forma coesa, garantindo que todos os sistemas estejam "no mesmo tempo", evitando problemas de ordem de operações, registros de log inconsistentes e falhas de segurança.
 
@@ -247,7 +245,9 @@ Telnet é um protocolo de rede utilizado para proporcionar uma **comunicação b
 
 Telnet **opera na camada de aplicação e utiliza o protocolo TCP** para estabelecer uma conexão entre o cliente e o servidor. O protocolo é projetado para funcionar de forma independente da plataforma, o que significa que não existem limitação de versões, sistemas operacionais e afins. 
 
-O uso do Telnet **não é recomendado para execução de manutenções e configurações de fato** mas é uma ótima ferramenta de troubleshooting de rede e testes de conectividades em portas específicas.
+
+O uso do Telnet **não é recomendado para execução de manutenções e configurações de fato**, mas é uma ótima ferramenta de troubleshooting de rede e testes de conectividades em portas específicas. 
+
 
 A principal limitação do Telnet é sua **falta de segurança**. O protocolo **não possui nenhum mecanismo de criptografia**, o que significa que todas as informações, incluindo nomes de usuário, senhas e outros dados sensíveis, são transmitidas em texto claro. Isso torna o Telnet extremamente vulnerável a interceptações e ataques de *"man-in-the-middle"*, onde um atacante pode facilmente capturar e ler os dados transmitidos. 
 
@@ -285,13 +285,13 @@ A possibilidade da criação dos headers que vão trafegar entre cliente servido
 | `Authorization`       | Contém as credenciais para autenticar o cliente no servidor.                                    |
 | `Content-Type`        | Indica o tipo de mídia do corpo da requisição ou resposta.                                      |
 | `Cache-Control`       | Diretivas para mecanismos de cache tanto nas requisições quanto nas respostas.                  |
-| `Cookie`              | Envia armazenados cookies do navegador para o servidor.                                        |
+| `Cookie`              | Envia os cookies armazenados no navegador para o servidor.                                        |
 | `Set-Cookie`          | Direciona o navegador para armazenar o cookie e enviá-lo em requisições subsequentes ao domínio.|
 | `Host`                | Especifica o domínio do servidor (e possivelmente a porta) a qual a requisição está sendo enviada.|
 | `User-Agent`          | Contém uma string característica que permite ao servidor identificar o tipo de cliente (navegador ou bot, por exemplo).|
 | `Content-Length`      | O tamanho do corpo da requisição ou resposta em bytes.                                          |
 | `Location`            | Indica o URL para o qual uma navegação deve ser redirecionada.                                  |
-| `Referer`             | Indica o endereço da página web anterior de onde o pedido originou.                             |
+| `Referer`             | Indica o endereço da página web anterior (origem da solicitação).                             |
 | `Accept-Encoding`     | Indica quais codificações de conteúdo (como gzip) o cliente entende.                            |
 | `Content-Encoding`    | A codificação usada no corpo da requisição ou resposta.                                         |
 | `Transfer-Encoding`   | O tipo de codificação de transferência que o corpo da mensagem deve usar.                       |
@@ -309,11 +309,11 @@ Os Status Codes, ou códigos de status, são números de três dígitos enviados
 
 | Código | Classe            | Descrição |
 |--------|-------------------|-----------|
-| 1xx    | Informativo       | Respostas provisórias, indicam que o servidor recebeu a solicitação, e o processo está em andamento. |
-| 2xx    | Sucesso           | Indicam que a solicitação foi bem-sucedida. |
-| 3xx    | Redirecionamento  | Ações adicionais são necessárias para completar a solicitação, geralmente envolvendo redirecionamento. |
-| 4xx    | Erro do Cliente   | Erros de solicitação, indicam problemas como parâmetros inválidos ou requisições não processáveis. |
-| 5xx    | Erro do Servidor  | Falhas no processamento pelo servidor, indicam problemas internos ou sobrecarga. |
+| `1xx`  | Informativo       | Respostas provisórias, indicam que o servidor recebeu a solicitação, e o processo está em andamento. |
+| `2xx`  | Sucesso           | Indicam que a solicitação foi bem-sucedida. |
+| `3xx`  | Redirecionamento  | Ações adicionais são necessárias para completar a solicitação, geralmente envolvendo redirecionamento. |
+| `4xx`  | Erro do Cliente   | Erros de solicitação, indicam problemas como parâmetros inválidos ou requisições não processáveis. |
+| `5xx`  | Erro do Servidor  | Falhas no processamento pelo servidor, indicam problemas internos ou sobrecarga. |
 
 
 <br>
@@ -366,6 +366,14 @@ A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diverso
 * [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
 
 * [Ricardo Katz](https://twitter.com/rpkatz)
+
+* [Paulo Ponciano](https://twitter.com/poncianopaulof)
+
+* [Luiz Aoqui, o revisor universal da comunidade](https://twitter.com/luiz_aoqui)
+
+* [Klecianny Melo](https://twitter.com/Kecbm)
+
+* [Vinicius Silva](https://twitter.com/bl4cktux89)
 
 
 > Imagens geradas pelo DALL-E
