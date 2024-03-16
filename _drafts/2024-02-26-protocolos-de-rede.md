@@ -10,7 +10,7 @@ title: System Design - Protocolos e Comunicação de Rede
 
 Neste capítulo, abordaremos de forma simplificada os conceitos essenciais dos principais tópicos de comunicação de rede sob a perspectiva de System Design. Compreender os protocolos de comunicação é de extremo valor, e pode representar um divisor de águas para aprimorar tópicos de [performance](/performance-capacidade-escalabilidade/) e [resiliência](). Entender os fundamentos de protocolos como TCP e UDP, assim como outros que são desenvolvidos a partir deles, nos **capacita a tomar decisões arquiteturais, projetar estratégias eficazes, melhorar níveis de performance e tempo de resposta ao aplicar suas características mais vantajosas de maneira adequada**.
 
-Observando meus colegas e os profissionais de engenharia com quem tive a oportunidade de trabalhar ao longo dos anos, percebi que o entendimento da camada de rede frequentemente representa uma lacuna significativa no entendimento de uma topologia de sistemas. Este artigo é baseado em discussões e sessões de design nas quais tive o prazer de participar ao longo desses anos, compilando de maneira acessível os tópicos práticos e teóricos mais relevantes. O objetivo é que a informação aqui apresentada seja facilmente compreendida e aplicada no cotidiano daqueles que dedicarem tempo a esta leitura. Espero que encontrem grande valor neste conteúdo.
+Observando meus colegas e os profissionais de engenharia com quem tive a oportunidade de trabalhar ao longo dos anos, percebi que o entendimento da camada de rede frequentemente representa uma lacuna significativa no entendimento da topologia de sistemas. Este artigo é baseado em discussões e sessões de design nas quais tive o prazer de participar ao longo desses anos, compilando de maneira acessível os tópicos práticos e teóricos mais relevantes. O objetivo é que a informação aqui apresentada seja facilmente compreendida e aplicada no cotidiano daqueles que dedicarem tempo a esta leitura. Espero que encontrem grande valor neste conteúdo.
 
 <br>
 
@@ -24,19 +24,19 @@ O Modelo OSI é dividido em sete camadas, cada uma responsável por funções es
 
 ### Camada 1: Física
 
-A primeira camada é r**esponsável pela transmissão e recepção de dados brutos não tratados sobre um meio físico**. Define especificações elétricas, mecânicas, procedurais e funcionais para ativar, manter e desativar conexões físicas. Inclui **cabos de rede**, **cabos de cobre**, **fibra óptica** e **aplicações Wi-Fi**, englobando todos os meios físicos de entrada e saída para a rede. **Basicamente resumida em dispositivos paupáveis**. 
+A primeira camada é **responsável pela transmissão e recepção de dados brutos não tratados sobre um meio físico**. Define especificações elétricas, mecânicas, procedurais e funcionais para ativar, manter e desativar conexões físicas. Inclui **cabos de rede**, **cabos de cobre**, **fibra óptica** e **aplicações Wi-Fi**, englobando todos os meios físicos de entrada e saída para a rede. **Basicamente resumida em dispositivos paupáveis**.
 
 ### Camada 2: Enlace
 
-A segunda camada de Enlace fornece uma transferência de dados confiável entre dois componentes de rede adjacentes, detectando e corrigindo erros do nível físico. Inclui implementações de **Ethernet** para transmissão de dados em **LANs**, **PPP (Point-to-Point Protocol)** para conexões diretas entre dois nós e seus **MAC Address**, que identifica dispositivos unicamente junto ao protoclo **ARP** com uma abordagem de broadcast permitindo que dispositivos em uma rede descubram o endereço MAC associado a um endereço IP, essencial para o encaminhamento de pacotes na camada de enlace de dados.
+A segunda camada fornece transferência de dados confiável entre dois componentes de rede adjacentes, detectando e corrigindo erros do nível físico. Inclui implementações de **Ethernet** para transmissão de dados em **LANs**, **PPP (Point-to-Point Protocol)** para conexões diretas entre dois nós e seus **endereços físicos (MAC Address)**, que identifica dispositivos unicamente.
 
 ### Camada 3: Rede
 
-A terceira camada, conhecida como **Rede**, **controla a operação da sub-rede, decidindo o encaminhamento de dados com base nos endereços lógicos e nas condições das redes**. Utiliza roteamento para enviar pacotes através de múltiplas redes, com protocolos como IP, fornecendo endereçamento através de **IPV4 e IPV6**.
+A terceira camada **controla a operação da sub-rede, decidindo o encaminhamento de dados com base nos endereços lógicos e nas condições das redes**. Utiliza roteamento para enviar pacotes através de múltiplas redes, com protocolos como IP, fornecendo endereçamento lógico através de **IPV4 e IPV6**. O protocolo **ARP** usa uma abordagem de broadcast permitindo que dispositivos em uma rede descubram o endereço MAC (físico) associado a um endereço IP (lógico), o que é essencial para o encaminhamento de pacotes da camada de rede para a camada de enlace de dados.
 
 ### Camada 4: Transporte
 
-Gerencia a transferência de dados entre sistemas finais, assegurando a entrega sem erros e em sequência. **Controla fluxo, corrige erros e entrega segmentos de pacotes.** Destacam-se os protocolos TCP, que entrega pacotes de forma confiável, e UDP, que oferece conexões rápidas, porém menos confiáveis.
+Gerencia a transferência de dados entre sistemas finais, **segmentando dados em pacotes e controlando o fluxo de tráfego**. Destacam-se os protocolos TCP, que entrega pacotes de forma confiável e ordenada, e UDP, que oferece conexões rápidas, porém menos confiáveis.
 
 ### Camada 5: Sessão
 
@@ -48,13 +48,13 @@ Traduz dados do formato da rede para o formato aceito pelas aplicações, realiz
 
 ### Camada 7: Aplicação
 
-Fornece serviços de rede para aplicações do usuário, **incluindo transferência de arquivos e conexões de software**. É a c**amada mais próxima do usuário,** atuando como interface entre o software de aplicação e as funções de rede. Implementa protocolos como **HTTP, HTTPS, Websockets, gRPC, além de suportar sessões de SSH e transferências FTP**.
+Fornece serviços de rede para aplicações do usuário, **incluindo transferência de arquivos e conexões de software**. É a **camada mais próxima do usuário,** atuando como interface entre o software de aplicação e as funções de rede. Implementa protocolos como **HTTP, HTTPS, Websockets, gRPC, além de suportar sessões de SSH e transferências FTP**.
 
 <br>
 
 # Os Protocolos de Comunicação
 
-Entrando agora de fato nos protocolos de comunicação, vamos entender algumas das implementações mais importantes e mais comuns dentro do dia a dia da engenharia de software e usuários de aplicações de rede, resumidamente qualquer pessoa do planeta Terra que possua conexões com a internet. Temos várias implementações diferentes com diversas vantagens e desvantagens quando olhamos um mapa de protocolos existentes, ainda levando em consideração alguns protocolos são construídos utilizando outros protolos mais estabelecidos como base, como é caso do UDP e do TCP. Inicialmente vamos olhar como funcionam essas duas implementações tratando os mesmos como **protocolos base** para depois detalhar protocolos mais complexos que se utilizam dos mesmos para cumprir seus papéis. 
+Entrando agora de fato nos protocolos de comunicação, vamos entender algumas das implementações mais importantes e mais comuns dentro do dia a dia da engenharia de software e usuários de aplicações de rede, resumidamente qualquer pessoa do planeta Terra que possua conexões com a internet. Temos várias implementações diferentes com diversas vantagens e desvantagens quando olhamos um mapa de protocolos existentes, ainda levando em consideração que alguns protocolos são construídos utilizando outros protolos mais estabelecidos como base, como é caso do UDP e do TCP. Inicialmente vamos olhar como funcionam essas duas implementações tratando os mesmos como **protocolos base** para depois detalhar protocolos mais complexos que se utilizam dos mesmos para cumprir seus papéis.
 
 ## Protocolos Base
 
@@ -62,13 +62,13 @@ Para compreender detalhadamente os protocolos e tecnologias de comunicação mod
 
 <br>
 
-### Protocolo IP, IPv4, IPv6
+### Protocolo IP, IPv4 e IPv6
 
-O Protocolo de Internet (IP) é o coração da comunicação de dados na Internet, permitindo que dispositivos diferentes se conectem e compartilhem informações em uma rede interna ou externa. Este protocolo define endereços IP únicos para cada dispositivo na rede, garantindo que os dados enviados de um ponto a outro cheguem corretamente ao seu destino. Existem duas versões principais deste protocolo em uso hoje: IPv4 e IPv6.
+O Protocolo de Internet (IP) opera na camada de rede do modelo OSI (camada 3) e é o coração da comunicação de dados na Internet, permitindo que dispositivos diferentes se conectem e compartilhem informações em uma rede interna ou externa. Este protocolo define endereços IP únicos para cada dispositivo na rede, garantindo que os dados enviados de um ponto cheguem corretamente ao seu destino. Existem duas versões principais deste protocolo em uso: IPv4 e IPv6.
 
 #### IPv4
 
-IPv4, ou **Internet Protocol version 4**, é a versão mais antiga e ainda a mais utilizada do protocolo IP. **Ela utiliza um formato de endereço de 32 bits**, o que resulta em cerca de **4,3 bilhões de endereços IP possíveis**, ou exatamente `4.294.967.296` endereços possíveis. Embora este número possa parecer grande, o crescimento  da Internet e o aumento no número de dispositivos conectados esgotaram os endereços IPv4 disponíveis, levando à necessidade de uma solução mais robusta. O IPv4 suporta várias técnicas para mitigar a escassez de endereços, incluindo **NAT (Network Address Translation)** e a alocação de IPs privados para redes locais.
+IPv4, ou **Internet Protocol version 4**, é a versão mais antiga e ainda a mais utilizada do protocolo IP. **Ela utiliza um formato de endereço de 32 bits**, o que resulta em cerca de **4,3 bilhões de endereços IP possíveis**, ou exatamente `4.294.967.296` endereços possíveis. Embora este número possa parecer grande, no início da Internet [grandes blocos de endereços IP foram distribúidos para empresas, universidades e agencias governamentais](https://www.caida.org/archive/id-consumption/census-map/images/2013-hilbert-plot.png). Com o crescimento da Internet, o aumento no número de dispositivos conectados esgotaram os endereços IPv4 disponíveis, levando à necessidade de uma solução mais robusta. O IPv4 suporta várias técnicas para mitigar a escassez de endereços, incluindo **NAT (Network Address Translation)** e a alocação de IPs privados para redes locais.
 
 #### IPv6
 
@@ -84,11 +84,11 @@ Com essa configuração, um dispositivo pode se comunicar tanto com redes IPv4 q
 
 ### UDP - User Datagram Protocol 
 
-O UDP, ou User Datagram Protocol, é um protocolo da camada de transporte (camada 4) notavelmente simples, que possibilita a transmissão de dados entre hosts na rede de maneira não confiável e sem a necessidade de estabelecer uma conexão prévia. Diferentemente de outros protocolos de rede, o UDP sacrifica a confiabilidade em favor da performance, eliminando o processo de estabelecimento, manutenção, gerenciamento e encerramento de conexões. Isso permite que os dados sejam enviados ao destinatário sem garantias de recebimento ou integridade.
+O UDP, ou User Datagram Protocol, é um protocolo da camada de transporte (camada 4) notavelmente simples, que possibilita a transmissão de dados entre hosts na rede de maneira não confiável e sem a necessidade de estabelecer uma conexão prévia. Diferentemente de outros protocolos de rede, o UDP sacrifica a confiabilidade em favor da performance, eliminando o processo de estabelecimento, manutenção, gerenciamento e encerramento de conexões. Isso permite que os dados sejam enviados ao destinatário sem o custo desse processamento extra, mas sem garantias de recebimento ou integridade.
 
 ![UDP](/assets/images/system-design/udp.png)
 
-Utilizando Datagramas para o envio de pacotes, o UDP permite a transmissão de dados independentes que não requerem entrega em uma ordem ou prioridade específica, nem dependem de confirmação de recebimento. Essa característica torna o UDP adequado para aplicações que demandam comunicação em tempo real, mas que podem tolerar certa perda ou corrupção de dados.
+O protocolo UDP segmenta os dados a serem enviados em pacotes menores chamados Datagrams. Utilizando Datagramas, o UDP permite a transmissão de dados independentes que não requerem entrega em uma ordem ou prioridade específica, nem dependem de confirmação de recebimento. Essa característica torna o UDP adequado para aplicações que demandam comunicação em tempo real, mas que podem tolerar certa perda ou corrupção de dados.
 
 Protocolos e arquiteturas que exigem envio e recebimento de dados com complexidade próxima ao tempo real, e que podem suportar perdas e corrupções, geralmente são construídos sobre o UDP.
 
@@ -98,7 +98,7 @@ Analogamente, o funcionamento do UDP pode ser comparado a entregadores que deixa
 
 ### TCP - Transmission Control Protocol
 
-Diferentemente do UDP, o **TCP** (*Transmission Control Protocol/Internet Protocol*) é um conjunto de protocolos orientados à conexão. Ele é responsável por abrir, manter, verificar a saúde e encerrar a conexão, assegurando que os dados enviados cheguem ao destino de forma íntegra, confiável e na ordem correta. Atuando na **Camada de Transporte (camada 4)**, o TCP estabelece uma conexão antes de qualquer transmissão de dados entre os hosts, utilizando mecanismos de controle de erro e de fluxo para garantir a correta ordem e a integridade dos dados enviados.
+Diferentemente do UDP, o **TCP** (*Transmission Control Protocol/Internet Protocol*) é um protocolo orientados à conexão. Ele é responsável por abrir, manter, verificar a saúde e encerrar a conexão, assegurando que os dados enviados cheguem ao destino de forma íntegra, confiável e na ordem correta. Atuando na **Camada de Transporte (camada 4)**, o TCP estabelece uma conexão antes de qualquer transmissão de dados entre os hosts, utilizando mecanismos de controle de erro e de fluxo para garantir a correta ordem e a integridade dos dados enviados.
 
 O modelo TCP emprega termos como **ACK, SYN, SYN-ACK** e **FIN** para descrever o gerenciamento de suas conexões. Existem outras flags, como **URG**, **PSH** e **RST**, mas focaremos em um fluxo simplificado para entender como uma conexão TCP funciona.
 
@@ -115,11 +115,11 @@ Após este primeiro contato, o servidor responde ao cliente com um segmento TCP 
 
 Após receber o SYN do servidor, o cliente envia um segmento de ACK de volta ao servidor, confirmando o recebimento do SYN-ACK do servidor. Este ACK também contém o número de sequência inicial do cliente (agora incrementado) e o número de sequência inicial do servidor incrementado de um. Com este passo, a conexão é formalmente estabelecida, permitindo que os dados comecem a ser transmitidos.
 
-Com a conexão estabelecida, os dados são enviados entre cliente e servidor em segmentos TCP. Cada segmento é numerado sequencialmente, possibilitando que o receptor reordene segmentos que cheguem fora de ordem e detecte quaisquer dados perdidos. O receptor envia um ACK para cada segmento recebido, indicando o próximo número de sequência que espera receber, garantindo assim a entrega confiável e a integridade dos dados.
+Com a conexão estabelecida, os dados são enviados entre cliente e servidor em segmentos TCP. Cada segmento é numerado sequencialmente, possibilitando que o receptor reordene segmentos que cheguem fora de ordem e detecte quaisquer dados perdidos. O receptor envia um ACK para cada segmento recebido, indicando o próximo número de sequência que espera receber. Segmentos que não são confirmados com um ACK são enviados novamente, garantindo assim a entrega confiável e a integridade dos dados.
 
 Para encerrar uma conexão TCP, **ambas as partes devem fechar a sessão de sua respectiva direção** através de um processo conhecido como **"four-way handshake"**. O cliente inicia o encerramento enviando um segmento com a flag **FIN** marcada, sinalizando que não tem mais dados a enviar. Após receber um ACK do servidor e um segmento com a flag **FIN**, indicando que o servidor também concluiu a transmissão de dados, o cliente envia o último ACK, finalizando a conexão.
 
-Comparado ao UDP, o TCP oferece maior confiabilidade, embora com uma velocidade reduzida. A maioria dos protocolos de comunicação entre serviços e componentes de software é construída sobre o TCP, justamente pela sua confiabilidade.
+Comparado ao UDP, o TCP oferece maior confiabilidade, embora com mais burocracia, o que pode resultar em uma velocidade reduzida. A maioria dos protocolos de comunicação entre serviços e componentes de software é construída sobre o TCP, justamente pela sua confiabilidade.
 
 Analogamente, se o protocolo UDP pode ser comparado a um entregador que deixa correspondências sem confirmação de recebimento, o TCP seria como um entregador que exige sua assinatura, foto e confirmação pessoal para entregar a correspondência em mãos.
 
@@ -127,7 +127,7 @@ Analogamente, se o protocolo UDP pode ser comparado a um entregador que deixa co
 
 ### Escolhendo Entre TCP e UDP para Construção e Uso de Protocolos
 
-A decisão entre usar UDP ou TCP para desenvolver protocolos depende das exigências específicas da aplicação quanto à confiabilidade, ordem, integridade dos dados e eficiência. O UDP é preferido para aplicações que demandam uma entrega rápida de dados e podem tolerar perdas de pacotes, enquanto o TCP é escolhido para aplicações que requerem uma entrega de dados confiável e ordenada. Essas características são de extrema importância ao implementar soluções que dependem de conexões de rede eficientes e confiáveis para cumprir seus objetivos.
+A decisão entre usar UDP ou TCP para desenvolver protocolos depende das exigências específicas da aplicação quanto à confiabilidade, ordem, integridade dos dados e eficiência. O UDP é preferido para aplicações que demandam entrega rápida de dados e podem tolerar perdas de pacotes, enquanto o TCP é escolhido para aplicações que requerem entrega de dados confiável e ordenada. Essas características são de extrema importância ao implementar soluções que dependem de conexões de rede eficientes e confiáveis para cumprir seus objetivos.
 
 <br>
 
@@ -135,9 +135,7 @@ A decisão entre usar UDP ou TCP para desenvolver protocolos depende das exigên
 
 O **TLS** (*Transport Layer Security*) é um protocolo crítico para a segurança na internet e em redes corporativas, projetado para prover comunicação segura entre cliente e servidor. Sucessor do **SSL** (*Secure Sockets Layer*), seu objetivo principal é assegurar a privacidade e a integridade dos dados durante a transferência de informações entre sistemas, através de criptografia, garantindo que os dados enviados de um ponto a outro na rede permaneçam inacessíveis a interceptadores.
 
-O funcionamento do TLS se dá por meio de um "*handshake*", onde cliente e servidor estabelecem parâmetros da sessão, como a versão do protocolo e os métodos de criptografia a serem utilizados, por meio de uma troca de chaves públicas e privadas. Essa troca resulta na **criação de uma chave de sessão única, utilizada para criptografar os dados transmitidos, assegurando assim a segurança da comunicação**.
-
-O "*handshake*" inicial do TLS define os parâmetros de comunicação segura, permitindo que os dados trafeguem protegidos de um ponto a outro da rede. Ao término da sessão, a comunicação pode ser finalizada de forma segura, com a possibilidade de renegociar os parâmetros para futuras sessões.
+O funcionamento do TLS se dá por meio de um "*handshake*", onde cliente e servidor estabelecem parâmetros da sessão, como a versão do protocolo e os métodos de criptografia a serem utilizados, por meio de uma troca de chaves públicas e privadas. Essa troca resulta na **criação de uma chave de sessão única, utilizada para criptografar os dados transmitidos, assegurando assim a segurança da comunicação**. Ao término da sessão, a comunicação pode ser finalizada de forma segura, com a possibilidade de renegociar os parâmetros para futuras sessões.
 
 Existem várias versões do TLS, com aprimoramentos contínuos em segurança e desempenho. As versões mais adotadas atualmente são TLS 1.2 e TLS 1.3, sendo a última a mais recente e segura, oferecendo vantagens como um processo de "handshake" mais ágil e eficiente em comparação com as versões anteriores.
 
@@ -145,7 +143,7 @@ Existem várias versões do TLS, com aprimoramentos contínuos em segurança e d
 
 ## Demais Protocolos e Aplicações de Rede
 
-Os **Protocolos de Aplicação** são uma parte importante da arquitetura de redes internas e externas, permitindo a comunicação entre diferentes sistemas e aplicações que tem padrões específicos que precisam ser respeitados. Eles **definem um conjunto de regras e padrões que governam a troca de dados entre servidores e clientes** num gama muito grande de contextos. Estes protocolos **operam na camada mais alta do modelo OSI**, a **Camada de Aplicação**, onde o foco se desloca da transferência de dados pura para a maneira como os dados são solicitados e apresentados ao usuário de acordo com a tecnologia utilizada
+Os **Protocolos de Aplicação** são uma parte importante da arquitetura de redes internas e externas, permitindo a comunicação entre diferentes sistemas e aplicações que tem padrões específicos que precisam ser respeitados. Eles **definem um conjunto de regras e padrões que governam a troca de dados entre servidores e clientes** num gama muito grande de contextos. Estes protocolos **operam na camada mais alta do modelo OSI**, a **Camada de Aplicação**, onde o foco se desloca da transferência de dados pura para a maneira como os dados são solicitados e apresentados ao usuário de acordo com a tecnologia utilizada.
 
 Se devido a alguma necessidade específica de tecnologia você precisa implementar seu **próprio protocolo de comunicação criando suas próprias regras, validações e comportamentos utilizando como base os protocolos basicos como TCP e UDP**, esse seu protocolo pode ser considerado para a camada de aplicação. Se você está utilizando um protocolo específico para troca de mensagens asincronas, esse protocolo de comunicação entre o cliente e o servidor de mensagens, por ser algo construído em cima de uma comunicação TCP, está na camada de aplicação. Vamos entender algumas das principais tecnologias e protocolos que funcionam nessa camada que tende a ser as mais presentes no dia a dia de engenharia e construções de soluções de praticamente todos os tipos de arquitetura. A tendência é que vários deles além desse capítulo sejam abordados de forma mais detalhada, como veremos nos capítulos de mensageria e comunicações sincronas. Nesta sessão o objetivo é detalhar outros protocolos comuns presentes na grande maioria das implementações arquiteturais de redes. 
 
@@ -171,9 +169,9 @@ O processo do DNS começa quando você digita um **URL no seu navegador**. O nav
 
 ![DNS](/assets/images/system-design/dns-resolucao.png)
 
-**1. Consulta ao Servidor Raiz**: Tudo começa com os servidores raiz do DNS. **Existem 13 conjuntos de servidores raiz DNS**, identificados de `a.root-servers.net` até `m.root-servers.net`, **que são a base da hierarquia do DNS**, e representam o ponto final no final de cada endereço DNS que são abstraídos ao máximo, mas que na verdade existem. Sim, no caso o `google.com` na verdade é o `google.com.`. 
+**1. Consulta ao Servidor Raiz**: Tudo começa com os servidores raiz do DNS. **Existem 13 conjuntos de servidores raiz DNS**, identificados de `a.root-servers.net` até `m.root-servers.net`, **que são a base da hierarquia do DNS**, e representam o ponto final de cada endereço DNS que são abstraídos ao máximo, mas que na verdade existem. Sim, no caso o `google.com` na verdade é o `google.com.`.
 
-Quando um resolver DNS (geralmente operado por seu provedor de internet) precisa resolver `demo.fidelissauro.dev`, ele começa perguntando a um desses servidores raiz (.) onde encontrar informações sobre o TLD (top-level domain), que neste caso é `.dev.`. 
+Quando um resolver DNS (geralmente operado por seu provedor de internet) precisa resolver `demo.fidelissauro.dev`, ele começa perguntando a um desses servidores raiz (`.`) onde encontrar informações sobre o TLD (top-level domain), que neste caso é `.dev.`.
 
 <blockquote>
 - <i>"Olá root server (.), por um acaso você conhece quem é o .dev.?</i>  <br>
@@ -197,7 +195,7 @@ Quando um resolver DNS (geralmente operado por seu provedor de internet) precisa
 - <i>Certo, vou me conectar com ele!</i>
 </blockquote>
 
-**4. Conexão de Fato:**  Após o servidor autoritativo finalmente responder onde o host `demo.fidelissauro.dev` está, o cliente pode de fato se conectar com o serviço de fato. **Este processo é otimizado por meio de cache em vários níveis**. **Resolvers de DNS, navegadores e até mesmo os próprios servidores de nomes armazenam respostas de consultas anteriores para reduzir a latência e o tráfego na rede**. Ao acessar um domínio frequentemente, é provável que as informações de DNS já estejam armazenadas em cache, acelerando significativamente o processo de resolução, poupando todo esse processo. 
+**4. Conexão de Fato:**  Após o servidor autoritativo finalmente responder onde o host `demo.fidelissauro.dev` está, o cliente pode de fato se conectar com o serviço de fato. **Este processo é otimizado por meio de [cache](/caching/) em vários níveis**. **Resolvers de DNS, navegadores e até mesmo os próprios servidores de nomes armazenam respostas de consultas anteriores para reduzir a latência e o tráfego na rede**. Ao acessar um domínio frequentemente, é provável que as informações de DNS já estejam armazenadas em cache, acelerando significativamente o processo de resolução, poupando todo esse processo.
 
 <br>
 
@@ -215,7 +213,7 @@ Quando um dispositivo - cliente DHCP - se conecta a uma rede, ele solicita infor
 
 **4. Acknowledgment**: O servidor confirma a alocação do endereço IP ao cliente com um pacote **DHCPACK**, completando o processo de configuração.
 
-O DHCP elimina a necessidade de configurar manualmente os parâmetros de rede em cada dispositivo, gerencia dinamicamente o pool de endereços IP, reutilizando endereços de dispositivos que não estão mais na rede. É um protocolo "default" que já é abstraído em players de núvem pública, mas tendem a ser considerado quando precisamos projetar soluções a nível de networking além do software. 
+O DHCP elimina a necessidade de configurar manualmente os parâmetros de rede em cada dispositivo, gerencia dinamicamente o pool de endereços IP, reutilizando endereços de dispositivos que não estão mais na rede. É um protocolo "default" que já é abstraído em players de núvem pública, mas tendem a ser considerado quando precisamos projetar soluções a nível de networking além do software. Na sua casa, o seu roteador wi-fi provavelmete está atuando como um servidor DHCP. Sem ele você precisaria configurar manualmente o IP de cada disposítivo que se conecta na rede.
 
 <br>
 
@@ -249,7 +247,7 @@ Telnet é um protocolo de rede utilizado para proporcionar uma **comunicação b
 
 Telnet **opera na camada de aplicação e utiliza o protocolo TCP** para estabelecer uma conexão entre o cliente e o servidor. O protocolo é projetado para funcionar de forma independente da plataforma, o que significa que não existem limitação de versões, sistemas operacionais e afins. 
 
-O uso do Telnet **não é recomendado para execução de manutenções e configurações de fato**m mas é uma ótima ferramenta de troubleshooting de rede e testes de conectividades em portas específicas. 
+O uso do Telnet **não é recomendado para execução de manutenções e configurações de fato** mas é uma ótima ferramenta de troubleshooting de rede e testes de conectividades em portas específicas.
 
 A principal limitação do Telnet é sua **falta de segurança**. O protocolo **não possui nenhum mecanismo de criptografia**, o que significa que todas as informações, incluindo nomes de usuário, senhas e outros dados sensíveis, são transmitidas em texto claro. Isso torna o Telnet extremamente vulnerável a interceptações e ataques de *"man-in-the-middle"*, onde um atacante pode facilmente capturar e ler os dados transmitidos. 
 
@@ -277,7 +275,7 @@ O Body, ou corpo, de uma requisição ou resposta HTTP contém os dados transmit
 
 ##### Headers
 
-Os Headers, ou cabeçalhos, são elementos presentes tanto em requisições quanto em respostas, fornecendo informações e metadados sobre a transação HTTP em que estão isneridos. Podem especificar o tipo de conteúdo no body (`Content-Type`), a autenticação necessária (`Authorization`), instruções de cache (`Cache-Control`), entre outros metadados. Os headers são fundamentais para configurar e controlar a comunicação HTTP, enriquecendo a interação entre cliente e servidor com informações detalhadas sobre a transação.
+Os Headers, ou cabeçalhos, são elementos presentes tanto em requisições quanto em respostas, fornecendo informações e metadados sobre a transação HTTP em que estão inseridos. Podem especificar o tipo de conteúdo no body (`Content-Type`), a autenticação necessária (`Authorization`), instruções de cache (`Cache-Control`), entre outros metadados. Os headers são fundamentais para configurar e controlar a comunicação HTTP, enriquecendo a interação entre cliente e servidor com informações detalhadas sobre a transação.
 
 A possibilidade da criação dos headers que vão trafegar entre cliente servidor fica a conta do direcionamento de engenharia, e não precisam necessariamente serem descritos em ordem ou possuem uma obrigatoriedade e padrão formal. Porém por convenção, alguns deles são extremamente comuns e estão presentes na maioria das aplicações. Alguns deles sendo: 
 
