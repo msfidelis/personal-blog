@@ -8,16 +8,23 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Padrões de Comunicação Sincronos
 ---
 
-Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolos e Comunicação de Redes](). A ideia é seguir com os conceitos direcionados anteriormente para aplicá-los em diferentes tipos de padrões de comunicação direcionados na contrução de software em arquiteturas modernas e distribuídas. Nesse capítulo iremos falar sobre alguns padrões que podemos utilizar para **construção de chamadas sincronas entre serviços**, aproveitando os conhecimentos ofertados quando abordamos sobre o Protocolo HTTP, TCP/IP e UDP para detalhar conceitualmente com a visão de System Design outras tecnologias como o **Padrão REST, gRPC, Websockets e GraphQL**. 
+Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolos e Comunicação de Redes](). A ideia é seguir com os conceitos direcionados anteriormente para aplicá-los em diferentes tipos de padrões de comunicação direcionados na contrução de software em arquiteturas modernas e distribuídas. Nesse capítulo iremos falar sobre alguns padrões que podemos utilizar para **construção de chamadas sincronas entre serviços**, aproveitando os conhecimentos ofertados quando abordamos sobre o Protocolo HTTP, TCP/IP e UDP para detalhar conceitualmente com a visão de System Design outras tecnologias e padrões como o **Padrão REST, gRPC, Websockets e GraphQL**. 
 
-# Definindo comunicações sincronas
+# Definindo Comunicações Sincronas
 
-# API's REST (Representational State Transfer)
+Uma comunicação síncrona, de forma bem direta e simples, é um padrão de comunicação utilizados em sistemas distribuídos, ou não, onde o **cliente espera por uma resposta do servidor antes de prosseguir a execução de outras tarefas**. Por exemplo, em um ambiente de microserviços de um domínio de logística, um sistema que estima o preço de um frete precisa recuperar em um outro sistema responsável pelo cadastral de seus clientes as informações de endereço antes de prosseguir com o calculo de fato. 
 
-O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônico para sistemas distribuídos** que presa pela simplicidade da comunicação entre componentes na internet ou em redes internas de microserviços. Definido por **Roy Fielding** em sua tese de doutorado em 2000, REST não é um protocolo ou padrão, mas um conjunto de princípios arquitetônicos usados para projetar sistemas distribuídos escaláveis, confiáveis e de fácil manutenção. Os serviços que seguem os princípios REST são conhecidos como RESTful em API's. 
+Este modelo de comunicação é caracterizado por sua natureza **"bloqueante"**, significando que o **processo que inicia a chamada fica "bloqueado" até que a operação e a comunicação com o servidor seja concluída**, significando uma "espera ativa" entre os dois componentes. Em outras palavras, a comunicação síncrona envolve uma interação **direta e imediata entre as partes**, facilitando um "diálogo" que precise ser concluído fim-a-fim em tempo de execução de uma tarefa.
 
-#### Definindo API's
+Esse padrão é muito bem recebido onde a **consistência dos dados é de extrema importância**, pois as operações podem ser facilmente feitas em uma **sequência específica**, além de ser muito mais simples e intuitiva em quesitos de entendimento e implementação. 
 
+Em quesito de desvantagens, a implementação de uma comunicação sincrona pode **limitar a escalabilidade do sistema**, uma vez que o bloqueio durante a espera por respostas pode **reduzir a capacidade de processamento paralelo**, além de afetar performance em cadeia, onde o mau funcionamento constante ou temporário de uma dependência específica entre uma série de chamadas pode acabar aumentando o tempo de resposta e processamento. O ponto mais crítico é que a indisponibilidade de um serviço que é dependente de um processo bloqueante pode i**nvariávelmente degradar a disponibilidade geral de uma cadeia de processos**. 
+
+Nesse sentido, por mais simples que sejam a construção e manutenção de chaamdas sincronas, é necessário o cuidado com questões de retentativas, timeouts e outras estratégias de resiliência cosntruída de forma pragmática entre cliente-servidor. 
+
+# REST (Representational State Transfer)
+
+O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônico para sistemas distribuídos** que presa pela simplicidade da comunicação entre componentes na internet ou em redes internas de microserviços. Definido por **Roy Fielding** em sua tese de doutorado em 2000, REST não é um protocolo ou padrão, mas um conjunto de princípios arquitetônicos usados para projetar sistemas distribuídos escaláveis, confiáveis e de fácil manutenção. **Os serviços que seguem os princípios REST são conhecidos como RESTful em API's.**
 
 O REST é construído usando referências e recursos do **protocolo HTTP**, definindo papeis e responsabilidades de cliente-servidor e busca **estabelecer uma interface de um cliente com os dados e ações de um sistema** de forma intuitiva. 
 
@@ -82,6 +89,7 @@ Os status codes mais utilizados em implementações RESTFul são os seguintes:
 | 503 Service Unavailable   | Servidor indisponível, geralmente por manutenção ou sobrecarga.                           |
 | 504 Gateway Timeout       | Tempo limite atingido por um servidor gateway ou proxy sem resposta do servidor upstream. |
 
+<br>
 
 #### Comunicação Stateless 
 

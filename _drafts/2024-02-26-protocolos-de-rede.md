@@ -28,7 +28,7 @@ A primeira camada é r**esponsável pela transmissão e recepção de dados brut
 
 ### Camada 2: Enlace
 
-A segunda camada de Enlace fornece uma transferência de dados confiável entre dois componentes de rede adjacentes, detectando e corrigindo erros do nível físico. Inclui implementações de **Ethernet** para transmissão de dados em **LANs**, **PPP (Point-to-Point Protocol)** para conexões diretas entre dois nós e seus **MAC Address**, que identifica dispositivos unicamente.
+A segunda camada de Enlace fornece uma transferência de dados confiável entre dois componentes de rede adjacentes, detectando e corrigindo erros do nível físico. Inclui implementações de **Ethernet** para transmissão de dados em **LANs**, **PPP (Point-to-Point Protocol)** para conexões diretas entre dois nós e seus **MAC Address**, que identifica dispositivos unicamente junto ao protoclo **ARP** com uma abordagem de broadcast permitindo que dispositivos em uma rede descubram o endereço MAC associado a um endereço IP, essencial para o encaminhamento de pacotes na camada de enlace de dados.
 
 ### Camada 3: Rede
 
@@ -54,7 +54,7 @@ Fornece serviços de rede para aplicações do usuário, **incluindo transferên
 
 # Os Protocolos de Comunicação
 
-Entrando agora de fato nos protocolos de comunicação, vamos entender algumas das implementações mais importantes e mais comunis dentro do dia a dia da engenharia de software e usuários de aplicações de rede, resumidamente qualquer pessoa do planeta Terra que possua conexões com a internet. Temos várias implementações diferentes com diversas vantagens e desvantagens quando olhamos uma mapa de protocolos existentes, inclusive alguns protocolos são construídos outros protocolos mais estabelecidos como base, como é caso do UDP e do TCP/IP. Inicialmente vamos olhar como funcionam essas duas implementações tratando os mesmos como **protocolos base** para depois detalhar protocolos mais complexos que se utilizam dos mesmos para cumprir seus papéis. 
+Entrando agora de fato nos protocolos de comunicação, vamos entender algumas das implementações mais importantes e mais comuns dentro do dia a dia da engenharia de software e usuários de aplicações de rede, resumidamente qualquer pessoa do planeta Terra que possua conexões com a internet. Temos várias implementações diferentes com diversas vantagens e desvantagens quando olhamos um mapa de protocolos existentes, ainda levando em consideração alguns protocolos são construídos utilizando outros protolos mais estabelecidos como base, como é caso do UDP e do TCP/IP. Inicialmente vamos olhar como funcionam essas duas implementações tratando os mesmos como **protocolos base** para depois detalhar protocolos mais complexos que se utilizam dos mesmos para cumprir seus papéis. 
 
 ## Protocolos Base
 
@@ -73,6 +73,12 @@ IPv4, ou **Internet Protocol version 4**, é a versão mais antiga e ainda a mai
 #### IPv6
 
 IPv6, ou **Internet Protocol version 6**, foi desenvolvido para resolver o problema da escassez de endereços do IPv4. Com um **formato de endereço de 128 bits**, o IPv6 possui um espaço de endereçamento praticamente ilimitado, oferecendo **trilhões de trilhões de endereços IP**, chegando ao número de `340.282.366.920.938.463.463.374.607.431.768.211.456` de endereços. Esta expansão não apenas resolve o problema de escassez de endereços, mas também simplifica o processamento de pacotes em roteadores e oferece melhor segurança integrada, com suporte nativo para criptografia e comunicações seguras através do **IPsec (Internet Protocol Security)**.
+
+#### Dual Stack 
+
+A comunicação entre redes que utilizam IPv4 e IPv6, dois esquemas de endereçamento IP distintos, **obrigatóriamente requer um mecanismo de transição ou interoperação**, pois os dois protocolos são incompatíveis em termos de endereçamento direto. Para esse tipo de cenário, onde os dois protocolos precisam coexistir, a estratégia de Dual Stack pode ser utilizada. 
+
+Com essa configuração, um dispositivo pode se comunicar tanto com redes IPv4 quanto com redes IPv6, escolhendo o protocolo apropriado com base no destino da comunicação. Essa é considerada uma das soluções mais simples e eficazes para a transição, mas requer que o hardware e o software suportem ambos os protocolos.
 
 <br>
 
@@ -360,6 +366,8 @@ A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diverso
 #### Revisores
 
 * [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
+
+* [Ricardo Katz](https://twitter.com/rpkatz)
 
 
 > Imagens geradas pelo DALL-E
