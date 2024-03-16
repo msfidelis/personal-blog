@@ -16,7 +16,7 @@ Observando meus colegas e os profissionais de engenharia com quem tive a oportun
 
 # Modelo OSI
 
-O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. **Representando uma abstração com base acadêmica**, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços. É importante compreender como funciona esse modelo teórico antes de entrarmos de fato em implementações de protocolos, para conseguirmos mentalmente classificar onde cada um deles opera entre as camadas propostas por ele. 
+O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. **Representando uma abstração com base acadêmica**, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços. É importante compreender como funciona esse modelo teórico antes de entrarmos de fato em implementações de protocolos, para conseguirmos mentalmente classificar onde cada um deles opera entre as camadas propostas por ele.  Normalmente as camadas mais altas do modelo são implementadas com base em software. 
 
 ![OSI Model](/assets/images/system-design/osi.png)
 
@@ -246,7 +246,8 @@ Telnet é um protocolo de rede utilizado para proporcionar uma **comunicação b
 
 Telnet **opera na camada de aplicação e utiliza o protocolo TCP** para estabelecer uma conexão entre o cliente e o servidor. O protocolo é projetado para funcionar de forma independente da plataforma, o que significa que não existem limitação de versões, sistemas operacionais e afins. 
 
-O uso do Telnet **não é recomendado para execução de manutenções e configurações de fato** mas é uma ótima ferramenta de troubleshooting de rede e testes de conectividades em portas específicas. 
+O uso do Telnet **não é recomendado para execução de manutenções e configurações de fato**, mas é uma ótima ferramenta de troubleshooting de rede e testes de conectividades em portas específicas. 
+
 
 A principal limitação do Telnet é sua **falta de segurança**. O protocolo **não possui nenhum mecanismo de criptografia**, o que significa que todas as informações, incluindo nomes de usuário, senhas e outros dados sensíveis, são transmitidas em texto claro. Isso torna o Telnet extremamente vulnerável a interceptações e ataques de *"man-in-the-middle"*, onde um atacante pode facilmente capturar e ler os dados transmitidos. 
 
@@ -274,7 +275,7 @@ O Body, ou corpo, de uma requisição ou resposta HTTP contém os dados transmit
 
 ##### Headers
 
-Os Headers, ou cabeçalhos, são elementos presentes tanto em requisições quanto em respostas, fornecendo informações e metadados sobre a transação HTTP em que estão isneridos. Podem especificar o tipo de conteúdo no body (`Content-Type`), a autenticação necessária (`Authorization`), instruções de cache (`Cache-Control`), entre outros metadados. Os headers são fundamentais para configurar e controlar a comunicação HTTP, enriquecendo a interação entre cliente e servidor com informações detalhadas sobre a transação.
+Os Headers, ou cabeçalhos, são elementos presentes tanto em requisições quanto em respostas, fornecendo informações e metadados sobre a transação HTTP em que estão inseridos. Podem especificar o tipo de conteúdo no body (`Content-Type`), a autenticação necessária (`Authorization`), instruções de cache (`Cache-Control`), entre outros metadados. Os headers são fundamentais para configurar e controlar a comunicação HTTP, enriquecendo a interação entre cliente e servidor com informações detalhadas sobre a transação.
 
 A possibilidade da criação dos headers que vão trafegar entre cliente servidor fica a conta do direcionamento de engenharia, e não precisam necessariamente serem descritos em ordem ou possuem uma obrigatoriedade e padrão formal. Porém por convenção, alguns deles são extremamente comuns e estão presentes na maioria das aplicações. Alguns deles sendo: 
 
@@ -366,7 +367,13 @@ A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diverso
 
 * [Ricardo Katz](https://twitter.com/rpkatz)
 
-* [Klecianny Melo](https://twitter.com/kecbm)
+* [Paulo Ponciano](https://twitter.com/poncianopaulof)
+
+* [Luiz Aoqui, o revisor universal da comunidade](https://twitter.com/luiz_aoqui)
+
+* [Klecianny Melo](https://twitter.com/Kecbm)
+
+* [Vinicius Silva](https://twitter.com/bl4cktux89)
 
 
 > Imagens geradas pelo DALL-E
