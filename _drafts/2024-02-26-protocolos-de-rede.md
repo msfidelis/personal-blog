@@ -57,6 +57,11 @@ Fornece serviços de rede para aplicações do usuário, **incluindo transferên
 
 Entrando agora de fato nos protocolos de comunicação, vamos entender algumas das implementações mais importantes e mais comuns dentro do dia a dia da engenharia de software e usuários de aplicações de rede, resumidamente qualquer pessoa do planeta Terra que possua conexões com a internet. Temos várias implementações diferentes com diversas vantagens e desvantagens quando olhamos um mapa de protocolos existentes, ainda levando em consideração que alguns protocolos são construídos utilizando outros protolos mais estabelecidos como base, como é caso do UDP e do TCP. Inicialmente vamos olhar como funcionam essas duas implementações tratando os mesmos como **protocolos base** para depois detalhar protocolos mais complexos que se utilizam dos mesmos para cumprir seus papéis.
 
+## Definindo um Protocolo
+
+A comunicação entre dispositivos é o objetivo principal do funcionamento de uma rede, interna ou externa. Na construção dessa comunicação, está um conjunto de regras e padrões conhecidos como **protocolos**. Um protocolo é, conceitualmente, **um acordo que define o formato e a sequência das mensagens trocadas entre dois ou mais sistemas**. Essas regras determinam **como os dados são enviados, recebidos, e interpretados**, garantindo que as informações sejam compartilhadas de maneira compreensível entre dispositivos distintos e aplicações de software.
+
+
 ## Protocolos Base
 
 Para compreender detalhadamente os protocolos e tecnologias de comunicação modernas, é importante primeiro revisitar os protocolos de rede de baixo nível que servem como sua base. Antes de explorar protocolos como **HTTP/2, HTTP/3, gRPC e AMQP**, precisamos entender os mecanismos de conexão fundamentais, principalmente o TCP e o UDP, que são essenciais para o desenvolvimento dessas tecnologias avançadas.
