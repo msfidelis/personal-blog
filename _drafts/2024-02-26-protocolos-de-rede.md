@@ -16,7 +16,7 @@ Observando meus colegas e os profissionais de engenharia com quem tive a oportun
 
 # Modelo OSI
 
-O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. **Representando uma abstração com base acadêmica**, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços. É importante compreender como funciona esse modelo teórico antes de entrarmos de fato em implementações de protocolos, para conseguirmos mentalmente classificar onde cada um deles opera entre as camadas propostas por ele. 
+O **Modelo OSI** (*Open Systems Interconnection*) é um modelo conceitual desenvolvido pela **International Organization for Standardization** (*ISO*) na década de 1980, com o objetivo de padronizar as funções de sistemas de telecomunicações, componentes de rede e protocolos. **Representando uma abstração com base acadêmica**, o modelo serve como fundamento para o entendimento de redes de alta disponibilidade, especificação de componentes de rede e criação, além de troubleshooting de protocolos de comunicação e conexões entre serviços. É importante compreender como funciona esse modelo teórico antes de entrarmos de fato em implementações de protocolos, para conseguirmos mentalmente classificar onde cada um deles opera entre as camadas propostas por ele.  Normalmente as camadas mais altas do modelo são implementadas com base em software. 
 
 ![OSI Model](/assets/images/system-design/osi.png)
 
@@ -197,13 +197,13 @@ Quando um resolver DNS (geralmente operado por seu provedor de internet) precisa
 - <i>Certo, vou me conectar com ele!</i>
 </blockquote>
 
-**4. Conexão de Fato:**  Após o servidor autoritativo finalmente responder onde o host `demo.fidelissauro.dev` está, o cliente pode de fato se conectar com o serviço de fato. **Este processo é otimizado por meio de cache em vários níveis**. **Resolvers de DNS, navegadores e até mesmo os próprios servidores de nomes armazenam respostas de consultas anteriores para reduzir a latência e o tráfego na rede**. Ao acessar um domínio frequentemente, é provável que as informações de DNS já estejam armazenadas em cache, acelerando significativamente o processo de resolução, poupando todo esse processo. 
+**4. Conexão de Fato:**  Após o servidor autoritativo finalmente responder onde o host `demo.fidelissauro.dev` está, o cliente pode de fato se conectar ao serviço. **Este processo é otimizado por meio de cache em vários níveis**. **Resolvers de DNS, navegadores e até mesmo os próprios servidores de nomes armazenam respostas de consultas anteriores para reduzir a latência e o tráfego na rede**. Ao acessar um domínio frequentemente, é provável que as informações de DNS já estejam armazenadas em cache, acelerando significativamente o processo de resolução, poupando todo esse processo. 
 
 <br>
 
 ### DHCP - Dynamic Host Configuration Protocol
 
-O **Protocolo de Configuração Dinâmica de Host** (*Dynamic Host Configuration Protocol*) é um protocolo de rede que permite a servidores com essa responsabilidade **designar automaticamente um endereço IP e outras informações a dispositivos que se conectam na rede.** O **DHCP é usado para a gestão de endereços IP em redes grandes e pequenas**, facilitando a conectividade e **reduzindo conflitos de endereços**. É utilizado principalmente em projetos de networking que possibilitam a entrada e saída de hosts com certa frequencia, sem a necessidade de alocar IP's fixos e evitar conflitos de 2 dispositivos tentarem utilizar o mesmo IP.
+O **Protocolo de Configuração Dinâmica de Host** (*Dynamic Host Configuration Protocol*) é um protocolo de rede que permite a servidores com essa responsabilidade **designar automaticamente um endereço IP e outras informações a dispositivos que se conectam na rede.** O **DHCP é usado para a gestão de endereços IP em redes grandes e pequenas**, facilitando a conectividade e **reduzindo conflitos de endereços**. É utilizado principalmente em projetos de rede que possibilitam a entrada e saída de hosts com certa frequencia, sem a necessidade de alocar IP's fixos e evitar conflitos entre 2 ou mais dispositivos que tentarem se utilizar do mesmo endereço IP.
 
 Quando um dispositivo - cliente DHCP - se conecta a uma rede, ele solicita informações de configuração de rede a um servidor DHCP. O processo segue quatro etapas básicas, conhecidas como **DORA** (*Discovery, Offer, Request, Acknowledgment*).
 
@@ -249,7 +249,7 @@ Telnet é um protocolo de rede utilizado para proporcionar uma **comunicação b
 
 Telnet **opera na camada de aplicação e utiliza o protocolo TCP** para estabelecer uma conexão entre o cliente e o servidor. O protocolo é projetado para funcionar de forma independente da plataforma, o que significa que não existem limitação de versões, sistemas operacionais e afins. 
 
-O uso do Telnet **não é recomendado para execução de manutenções e configurações de fato**m mas é uma ótima ferramenta de troubleshooting de rede e testes de conectividades em portas específicas. 
+O uso do Telnet **não é recomendado para execução de manutenções e configurações de fato**, mas é uma ótima ferramenta de troubleshooting de rede e testes de conectividades em portas específicas. 
 
 A principal limitação do Telnet é sua **falta de segurança**. O protocolo **não possui nenhum mecanismo de criptografia**, o que significa que todas as informações, incluindo nomes de usuário, senhas e outros dados sensíveis, são transmitidas em texto claro. Isso torna o Telnet extremamente vulnerável a interceptações e ataques de *"man-in-the-middle"*, onde um atacante pode facilmente capturar e ler os dados transmitidos. 
 
@@ -277,7 +277,7 @@ O Body, ou corpo, de uma requisição ou resposta HTTP contém os dados transmit
 
 ##### Headers
 
-Os Headers, ou cabeçalhos, são elementos presentes tanto em requisições quanto em respostas, fornecendo informações e metadados sobre a transação HTTP em que estão isneridos. Podem especificar o tipo de conteúdo no body (`Content-Type`), a autenticação necessária (`Authorization`), instruções de cache (`Cache-Control`), entre outros metadados. Os headers são fundamentais para configurar e controlar a comunicação HTTP, enriquecendo a interação entre cliente e servidor com informações detalhadas sobre a transação.
+Os Headers, ou cabeçalhos, são elementos presentes tanto em requisições quanto em respostas, fornecendo informações e metadados sobre a transação HTTP em que estão inseridos. Podem especificar o tipo de conteúdo no body (`Content-Type`), a autenticação necessária (`Authorization`), instruções de cache (`Cache-Control`), entre outros metadados. Os headers são fundamentais para configurar e controlar a comunicação HTTP, enriquecendo a interação entre cliente e servidor com informações detalhadas sobre a transação.
 
 A possibilidade da criação dos headers que vão trafegar entre cliente servidor fica a conta do direcionamento de engenharia, e não precisam necessariamente serem descritos em ordem ou possuem uma obrigatoriedade e padrão formal. Porém por convenção, alguns deles são extremamente comuns e estão presentes na maioria das aplicações. Alguns deles sendo: 
 
@@ -369,6 +369,13 @@ A implementação do HTTP/3 com o QUIC é particularmente vantajosa para diverso
 
 * [Ricardo Katz](https://twitter.com/rpkatz)
 
+* [Paulo Ponciano](https://twitter.com/poncianopaulof)
+
+* [Luiz Aoqui, o revisor universal da comunidade](https://twitter.com/luiz_aoqui)
+
+* [Klecianny](https://twitter.com/Kecbm)
+
+* [Vinicius Silva](https://twitter.com/bl4cktux89)
 
 > Imagens geradas pelo DALL-E
 
