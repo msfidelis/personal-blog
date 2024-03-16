@@ -47,7 +47,7 @@ Uma vantagem chave, como mencionado anteriormente, é a facilidade em manter a c
 
 A arquitetura monolítica é ideal em situações onde a complexidade de código e lógica de negócio é facilmente gerenciável e a escalabilidade não é uma preocupação imediata. Isso é particularmente encontrado em aplicações de pequeno ou médio porte, ou em equipes pequenas, onde a comunicação e gestão de múltiplos serviços diversificados seriam desafios muito custosos de energia, tempo e dinheiro.
 
-Em situações onde as pessoas responsáveis por rodar o serviço não necessariamente conhecem os detalhes da arquitetura do software, monolitos apresentam uma solução mais simples de colocar esses sitemas em produção por serem compostos por apenas uma unidade. Por exemplo, ferramentas como [Istio](https://ieeexplore.ieee.org/document/9520758) mudaram de microserviços para um monolito por ser mais simples rodar e geranciar uma aplicação única ao invés de multiplos componentes.
+Em situações onde as pessoas responsáveis por rodar o serviço não necessariamente conhecem os detalhes da arquitetura do software, monolitos apresentam uma solução mais simples de colocar esses sistemas em produção por serem compostos por apenas uma unidade. Por exemplo, ferramentas como [Istio](https://ieeexplore.ieee.org/document/9520758) mudaram de microserviços para um monolito por ser mais simples rodar e geranciar uma aplicação única ao invés de multiplos componentes.
 
 No que diz respeito aos ciclos de vida dos produtos, essa abordagem também oferece vantagens na construção e evolução de MVPs (Produtos Mínimos Viáveis), novos produtos e prototipações. Isso se deve à simplicidade de iniciar e evoluir projetos de tecnologia em comparação com outras alternativas.
 
