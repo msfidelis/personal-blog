@@ -1,0 +1,15 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Cliente
+    participant Resolver as DNS Resolver
+    participant Raiz as Raiz
+    participant TLD as Top Level Domain
+    participant Autoritativo
+    Cliente->>+Resolver: Solicita IP para demo.fidelissauro.dev
+    Resolver->>+Raiz: Onde está .dev?
+    Raiz-->>-Resolver: Servidores TLD para .dev
+    Resolver->>+TLD: Onde está fidelissauro.dev?
+    TLD-->>-Resolver: Servidor de nomes para fidelissauro.dev
+    Resolver->>+Autoritativo: Onde está demo.fidelissauro.dev?
+    Autoritativo-->>-Resolver: Endereço IP de demo.fidelissauro.dev
+    Resolver-->>-Cliente: Endereço IP de demo.fidelissauro.dev

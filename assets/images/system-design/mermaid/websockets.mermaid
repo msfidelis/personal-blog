@@ -1,0 +1,21 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Cliente
+    participant Servidor
+
+    Note over Cliente,Servidor: Estabelecimento da Conexão WebSocket
+    Cliente->>+Servidor: Requisição HTTP com Upgrade para WebSocket
+    Servidor-->>-Cliente: Resposta HTTP confirmando Upgrade
+
+    Note over Cliente,Servidor: Conexão WebSocket Estabelecida
+
+    loop Comunicação Bidirecional
+        Note over Cliente,Servidor: A conexão permanece aberta para comunicação contínua
+        Cliente->>Servidor: Envia mensagem (cliente para servidor)
+        Servidor->>Cliente: Envia mensagem (servidor para cliente)
+    end
+
+    Note over Cliente,Servidor: Encerramento da Conexão
+    Cliente->>+Servidor: Solicitação de fechamento
+    Servidor-->>-Cliente: Confirmação de fechamento e fecha a conexão
+

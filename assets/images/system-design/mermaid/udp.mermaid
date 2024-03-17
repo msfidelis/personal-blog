@@ -1,0 +1,20 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant S as Origem
+    participant R as Destino
+
+    Note over S,R: Início da Transmissão UDP
+
+    S->>R: Datagrama 1
+    Note right of R: Recebe Datagrama 1
+
+    S->>R: Datagrama 2
+    Note right of R: Recebe Datagrama 2
+
+    S->>R: Datagrama 3
+    Note right of R: Datagrama 3 perdido
+
+    S->>R: Datagrama 4
+    Note right of R: Recebe Datagrama 4
+
+    Note over S,R: Sem confirmação de recebimento

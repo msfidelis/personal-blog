@@ -1,0 +1,13 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Publicador as Dispositivo (Publisher)
+    participant Broker as Broker MQTT
+    participant Assinante as Consumidor (Subscriber)
+    
+    Note over Publicador,Assinante: Conexão estabelecida com o Broker
+    Publicador->>+Broker: Conecta ao Broker
+    Assinante->>+Broker: Conecta ao Broker
+    Assinante->>+Broker: Assina o tópico "sensor/temperatura"
+    Broker->>-Assinante: Confirmação de assinatura
+    Publicador->>+Broker: Publica "22°C" no tópico "sensor/temperatura"
+    Broker->>-Assinante: Encaminha "22°C" para Assinantes do tópico

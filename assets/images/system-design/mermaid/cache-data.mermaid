@@ -1,0 +1,10 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Aplicação as Aplicação
+    participant Cache as Cache
+    participant BancoDeDados as Banco de Dados
+    
+    Aplicação->>+Cache: Escreve dados
+    Cache-->>-Aplicação: Confirmação de escrita
+    Aplicação->>+BancoDeDados: Escreve Dados
+    BancoDeDados-->>-Aplicação: Confirmação de escrita

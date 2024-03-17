@@ -1,0 +1,16 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Cliente as Navegador Web
+    participant Servidor as Servidor Web
+
+    Cliente->>Servidor: GET /pagina.html HTTP/1.1
+    Servidor->>Cliente: HTTP/1.1 200 OK
+    Servidor->>Cliente: Conteúdo de /pagina.html
+    Note over Cliente: Confirma o recebimento
+
+    Cliente->>Servidor: GET /main.css HTTP/1.1
+
+    Servidor->>Cliente: HTTP/1.1 200 OK
+    Servidor->>Cliente: Conteúdo de /main.css
+    Note over Cliente: Confirma o recebimento
+

@@ -1,0 +1,28 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant C as Origem
+    participant S as Destino
+
+    Note over C,S: Início do Handshake TCP
+
+    C->>S: SYN (Sincronizar número de sequência)
+    S->>C: SYN-ACK (Sincronizar-Acknowledgement)
+    C->>S: ACK (Acknowledge)
+
+    Note over C,S: Conexão estabelecida
+
+    C->>S: Dados (Pacote 1)
+    S->>C: ACK (Pacote 1)
+
+    S->>C: Dados (Pacote 2)
+    C->>S: ACK (Pacote 2)
+
+    Note over C,S: Transferência de dados
+
+    C->>S: FIN (Finalizar conexão)
+    S->>C: ACK (Finalizar)
+
+    S->>C: FIN (Finalizar conexão)
+    C->>S: ACK (Finalizar)
+
+    Note over C,S: Conexão terminada

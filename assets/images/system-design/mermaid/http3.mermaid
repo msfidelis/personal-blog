@@ -1,0 +1,20 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Cliente as Navegador Web
+    participant Servidor as Servidor Web
+
+    Note over Cliente,Servidor: Início da Conexão QUIC (HTTP/3)
+    Cliente->>+Servidor: Inicia QUIC (Handshake + GET /pagina.html HTTP/3)
+    Note over Servidor: Processa a solicitação via QUIC
+    Servidor->>-Cliente: HTTP/3 200 OK (pagina.html)
+    
+    Note over Cliente,Servidor: Requisições Multiplexadas sobre QUIC
+    Cliente->>+Servidor: GET /estilo.css HTTP/3
+    Cliente->>+Servidor: GET /script.js HTTP/3
+    Note over Servidor: Envio concorrente sem bloqueio
+    Servidor->>-Cliente: HTTP/3 200 OK (estilo.css)
+    Servidor->>-Cliente: HTTP/3 200 OK (script.js)
+
+    Note over Cliente,Servidor: Transmissões Independentes de Perda
+    Note over Cliente,Servidor: Encerrando conexão QUIC (HTTP/3)
+
