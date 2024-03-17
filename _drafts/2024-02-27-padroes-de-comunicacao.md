@@ -22,6 +22,8 @@ Em quesito de desvantagens, a implementação de uma comunicação sincrona pode
 
 Nesse sentido, por mais simples que sejam a construção e manutenção de chaamdas sincronas, é necessário o cuidado com questões de retentativas, timeouts e outras estratégias de resiliência cosntruída de forma pragmática entre cliente-servidor. 
 
+<br>
+
 # REST (Representational State Transfer)
 
 O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônico para sistemas distribuídos** que presa pela simplicidade da comunicação entre componentes na internet ou em redes internas de microserviços. Definido por **Roy Fielding** em sua tese de doutorado em 2000, REST não é um protocolo ou padrão, mas um conjunto de princípios arquitetônicos usados para projetar sistemas distribuídos escaláveis, confiáveis e de fácil manutenção. **Os serviços que seguem os princípios REST são conhecidos como RESTful em API's.**
@@ -108,11 +110,56 @@ As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para
 
 ### RPC (Remote Procedure Call)
 
-### gRPC (google Remote Procedure Call)
+### gRPC (Google Remote Procedure Call)
+
+O gRPC é um framework de chamada de procedimento remoto (RPC) de código aberto desenvolvido pelo Google. Ele permite que os desenvolvedores conectem serviços de maneira performática e escalável, possibilitando a comunicação entre serviços construídos de maneira distribuída. Seu design baseia-se no uso de **HTTP/2 como protocolo de transporte**, **Protocol Buffers (ProtoBuf)** como linguagem de interface de descrição de serviço (IDL), e oferece recursos como autenticação, balanceamento de carga e validações.  Essa arquitetura é ideal para construir arquiteturas de microserviços, onde serviços leves e eficientes são fundamentais para o desempenho e a escalabilidade.
+
+Com o HTTP/2, é possível fazer múltiplas chamadas RPC em paralelo sobre uma única conexão TCP, o que é uma grande melhoria em termos de eficiência de rede e latência.
+
+O gRPC suporta **streaming bidirecional**, permitindo que tanto o cliente quanto o servidor enviem uma sequência de mensagens para o outro usando uma única conexão. Isso é particularmente útil para casos de uso como chat em tempo real, monitoramento em tempo real e outros cenários que exigem comunicação contínua e persistente. 
+
+Implementar e gerenciar um sistema baseado em gRPC pode ser mais complexo do que usar alternativas mais simples como REST, especialmente em projetos menores ou com requisitos menos rigorosos de desempenho. A característica de se utilizar contratos por ProtoBuf para manter um contrato consistencia, encontra-se a necessidade de distribuir e versionar esse contrato entre o cliente e o servidor. Uma vez que esse contrato precise ser mudado para adicionar, modificar ou remover alguma variável do mesmo, pode existir a problemática de garantir a atualização de todos os clientes desse serviço. 
+
+#### ProtoBufs 
+
+O Protocol Buffers, ou ProtoBuf, é a linguagem de descrição de interface preferida pelo gRPC, é usada para definir os serviços e a **estrutura de dados que serão compartilhados entre cliente e servidor por meio de um contrato forte**. ProtoBuf é um sistema de serialização binária que não só é mais eficiente em termos de espaço do que formatos como JSON, mas também fornece uma maneira clara de especificar a interface do serviço de maneira agnóstica a linguagens e frameworks
+
+
+#### Exemplo de Contrato
+
+
+#### Exemplo de Server gRPC
+
+
+#### Exemplo de Client  gRPC
+
+
+<br>
 
 ### Websockets
 
+Uma comunicação baseada em Websockets são uma alternativa para solucionar **problemas de comunicação em tempo real entre clientes e servidores em tecnologias de desenvolvimento web**. Diferentemente do modelo tradicional de requisição e resposta HTTP, que é unidirecional e cria uma nova conexão TCP para cada requisição/resposta, o protocolo WebSocket estabelece uma **conexão full-duplex sobre um único socket TCP**. Isso permite uma **comunicação bidirecional contínua entre o cliente e o servidor**, ideal para aplicações web que necessitem de interações em tempo real de atualizações frequentes e instantâneas, como chats online, dashboards dinamicos, graficos de dados financeiros, sistemas de notificações e jogos online. 
+
+![Web Socket](/assets/images/system-design/websocket.png)
+
+A conexão WebSocket inicia-se como uma requisição HTTP padrão, mas solicita um "upgrade" para WebSockets através do cabeçalho `Upgrade`. Se o **servidor suporta WebSockets, ele responde com uma confirmação do "upgrade" e a conexão HTTP é então elevada a uma conexão WebSocket**. Uma vez estabelecida, a **conexão WebSocket permanece aberta, permitindo que tanto o cliente quanto o servidor enviem dados a qualquer momento até que a conexão seja fechada por uma das partes**. Ao manter uma conexão aberta, WebSockets eliminam a necessidade de estabelecer novas conexões HTTP para cada interação, reduzindo significativamente a latência.
+
+Embora a maioria dos navegadores modernos suporte WebSockets, pode haver problemas de compatibilidade com navegadores mais antigos ou em ambientes de rede restritivos que não permitem conexões WebSocket. Além de que gerenciar uma conexão WebSocket persistente e garantir a retransmissão de mensagens perdidas pode ser mais complexo do que usar requisições HTTP simples.
+
+
+#### Implementacão de um server de WebSockets
+
+
+
+<br>
+
 ### GraphQL
+
+GraphQL é uma linguagem de consulta para APIs e um runtime para execução dessas consultas pelo lado do servidor. Desenvolvido pelo Facebook em 2012 e lançado publicamente em 2015, GraphQL oferece uma abordagem flexível para o desenvolvimento de APIs em comparação com a abordagem tradicional REST. Ele permite que os clientes definam a estrutura dos dados requeridos, e exatamente esses dados, nada mais, nada menos, são retornados pelo servidor. Isso não só torna as consultas mais eficientes, mas também resolve o problema de sobrecarga e subutilização de dados frequentemente encontrado em APIs REST.
+
+O grande motivador da tecnologia é reduzir o over-fetching e under-fetching, pois permite que os clientes solicitem exatamente os dados de que precisam sem a necessidade de lidar com gigantescos payloads. 
+
+#### Como Funciona
 
 
 ### Referências
