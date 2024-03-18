@@ -1,0 +1,19 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Cliente
+    participant Servidor
+
+    Note over Cliente,Servidor: Estabelecimento da Conexão gRPC
+    Cliente->>+Servidor: Conexão HTTP/2 estabelecida
+
+    Note over Cliente,Servidor: Chamada de Procedimento Remoto (RPC)
+    Cliente->>Servidor: Solicita execução de procedimento (inclui parâmetros)
+    Servidor->>Cliente: Executa procedimento e retorna resultados
+
+    Note over Cliente,Servidor: Comunicação Bidirecional (Streaming)
+    Cliente->>Servidor: Inicia stream de dados (opcional)
+    Servidor->>Cliente: Responde com stream de dados (opcional)
+
+    Note over Cliente,Servidor: Encerramento da Conexão
+    Cliente->>Servidor: Encerra a conexão
+    Servidor->>Cliente: Confirma o encerramento da conexão

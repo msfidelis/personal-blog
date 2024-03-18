@@ -24,7 +24,7 @@ Nesse sentido, por mais simples que sejam a construção e manutenção de chaam
 
 <br>
 
-# REST (Representational State Transfer)
+# REST - Representational State Transfer 
 
 O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônico para sistemas distribuídos** que presa pela simplicidade da comunicação entre componentes na internet ou em redes internas de microserviços. Definido por **Roy Fielding** em sua tese de doutorado em 2000, REST não é um protocolo ou padrão, mas um conjunto de princípios arquitetônicos usados para projetar sistemas distribuídos escaláveis, confiáveis e de fácil manutenção. **Os serviços que seguem os princípios REST são conhecidos como RESTful em API's.**
 
@@ -108,35 +108,264 @@ As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para
 
 <br>
 
-### RPC (Remote Procedure Call)
+# RPC - Remote Procedure Call 
 
-### gRPC (Google Remote Procedure Call)
+O **RPC** (*Remote Procedure Call*) é um protocolo utilizado para executar **chamadas de procedimento ou métodos em um sistema computacional diferente daquele em que o código está sendo executado**. Este protocolo permite que um programa em um dispositivo (cliente) envie uma solicitação de execução de procedimento para um software em outro dispositivo (servidor), que executa o procedimento e retorna o resultado. O RPC abstrai a complexidade da comunicação em rede, permitindo aos desenvolvedores se concentrarem na lógica de negócios, em vez dos detalhes de como os dados são transmitidos e recebidos. 
 
-O gRPC é um framework de chamada de procedimento remoto (RPC) de código aberto desenvolvido pelo Google. Ele permite que os desenvolvedores conectem serviços de maneira performática e escalável, possibilitando a comunicação entre serviços construídos de maneira distribuída. Seu design baseia-se no uso de **HTTP/2 como protocolo de transporte**, **Protocol Buffers (ProtoBuf)** como linguagem de interface de descrição de serviço (IDL), e oferece recursos como autenticação, balanceamento de carga e validações.  Essa arquitetura é ideal para construir arquiteturas de microserviços, onde serviços leves e eficientes são fundamentais para o desempenho e a escalabilidade.
+### Exemplo de um Servidor RPC
 
-Com o HTTP/2, é possível fazer múltiplas chamadas RPC em paralelo sobre uma única conexão TCP, o que é uma grande melhoria em termos de eficiência de rede e latência.
+Ao contrário do gRPC que veremos a seguir, chamadas RPC convencionais não precisam necessariamente de um contrato forte, o que pode ser bom no caso de flexibilidade e velocidade de implementação quanto ruim para manter um padrão e consistência dos dados. Nesse exemplo vamos implementar uma chamada para um sistema que calcula a quantidade de ingestão diária de proteína recomendada baseada no peso informado. 
 
-O gRPC suporta **streaming bidirecional**, permitindo que tanto o cliente quanto o servidor enviem uma sequência de mensagens para o outro usando uma única conexão. Isso é particularmente útil para casos de uso como chat em tempo real, monitoramento em tempo real e outros cenários que exigem comunicação contínua e persistente. 
+A implementação se baseia apenas em criar um método e registrá-lo em um rpc server alocado em uma porta do host, no caso do exemplo, a porta `1234`. 
 
-Implementar e gerenciar um sistema baseado em gRPC pode ser mais complexo do que usar alternativas mais simples como REST, especialmente em projetos menores ou com requisitos menos rigorosos de desempenho. A característica de se utilizar contratos por ProtoBuf para manter um contrato consistencia, encontra-se a necessidade de distribuir e versionar esse contrato entre o cliente e o servidor. Uma vez que esse contrato precise ser mudado para adicionar, modificar ou remover alguma variável do mesmo, pode existir a problemática de garantir a atualização de todos os clientes desse serviço. 
+```go
+package main
 
-#### ProtoBufs 
+import (
+	"fmt"
+	"net"
+	"net/rpc"
+)
+
+type Args struct {
+	Peso float64
+}
+
+// Calculo de Recomendação de Consumo de Proteínas
+// Baseado no peso informado
+type Proteinas float64
+
+func (p *Proteinas) Recomendacao(args Args, reply *float64) error {
+	// Calcula o o consumo de proteina recomendado e devolve para o objeto de respotsa
+	*reply = args.Peso * 2
+	return nil
+}
+
+func main() {
+
+	// Registrando o serviço RPC na porta 1234
+	proteina := new(Proteinas)
+	rpc.Register(proteina)
+
+	ln, err := net.Listen("tcp", ":1234")
+	if err != nil {
+		fmt.Println("Falha ao ouvir na porta:", err)
+		return
+	}
+	for {
+		conn, err := ln.Accept()
+		if err != nil {
+			fmt.Println("Falha ao aceitar a conexão.:", err)
+			continue
+		}
+		// Servindo a rotina RPC
+		go rpc.ServeConn(conn)
+	}
+
+}
+```
+
+### Exemplo de um Client RPC
+
+A implementação de um cliente tende a ser bem mais simples. Basta criar uma conexão com a porta onde o servidor e o método RPC foi alocado, informando uma lista de argumentos do formato esperado do lado do servidor. Como ele não exige um contrato forte, os prós e contras tendem a ser os mesmos informados anteriormente, velocidade e flexibilidade em troca de consistência. 
+
+```go
+package main
+
+import (
+	"fmt"
+	"net/rpc"
+)
+
+type Args struct {
+	Peso float64
+}
+
+func main() {
+	client, err := rpc.Dial("tcp", "0.0.0.0:1234")
+	if err != nil {
+		fmt.Println("Falha ao conectar:", err)
+		return
+	}
+	var reply float64
+	args := Args{Peso: 85.00}
+
+	fmt.Println("Iniciando a chamada RPC para o serviço Proteinas.Recomendacao")
+	err = client.Call("Proteinas.Recomendacao", args, &reply)
+	if err != nil {
+		fmt.Println("Erro na chamada:", err)
+		return
+	}
+
+	fmt.Printf("O consumo de proteínas adequado para o peso de %v kg é de %vg por dia\n", args.Peso, reply)
+}
+```
+
+```
+Iniciando a chamada RPC para o serviço Proteinas.Recomendacao
+O consumo de proteínas adequado para o peso de 85 kg é de 170g por dia
+```
+
+# gRPC - Google Remote Procedure Call
+
+O gRPC é um framework de chamada de procedimento remoto (RPC) de código aberto desenvolvido pelo Google. Ele permite que os desenvolvedores conectem serviços de maneira performática e escalável, possibilitando a comunicação entre serviços construídos de maneira distribuída. Seu design baseia-se no uso de **HTTP/2 como protocolo de transporte**, **Protocol Buffers (ProtoBuf)** como linguagem de interface de descrição de serviço (IDL), e além do conceito das chamadas RPC que já abordamos, ele oferece recursos como autenticação, balanceamento de carga e validações.  Essa arquitetura é ideal para construir arquiteturas de microserviços, onde serviços leves e performáticos são críticos para o desempenho e a escalabilidade. 
+
+![gRPC](/assets/images/system-design/grpc.png)
+
+Com o HTTP/2, **é possível fazer múltiplas chamadas RPC em paralelo sobre uma única conexão TCP**, o que é uma grande melhoria em termos de eficiência de rede e latência.
+
+O gRPC suporta **streaming bidirecional**, permitindo que **tanto o cliente quanto o servidor enviem uma sequência de mensagens para o outro usando uma única conexão**. Isso é particularmente útil para casos de uso como chat em tempo real, monitoramento em tempo real e outros cenários que exigem comunicação contínua e persistente. 
+
+Implementar e **gerenciar um sistema baseado em gRPC pode ser mais complexo do que usar alternativas mais simples como REST**, especialmente em projetos menores ou com requisitos menos rigorosos de desempenho. A característica de se utilizar contratos por ProtoBuf para manter um contrato consistencia, encontra-se a necessidade de distribuir e versionar esse contrato entre o cliente e o servidor. Uma vez que esse contrato precise ser mudado para adicionar, modificar ou remover alguma variável do mesmo, pode existir a problemática de garantir a atualização de todos os clientes desse serviço. 
+
+## ProtoBufs 
 
 O Protocol Buffers, ou ProtoBuf, é a linguagem de descrição de interface preferida pelo gRPC, é usada para definir os serviços e a **estrutura de dados que serão compartilhados entre cliente e servidor por meio de um contrato forte**. ProtoBuf é um sistema de serialização binária que não só é mais eficiente em termos de espaço do que formatos como JSON, mas também fornece uma maneira clara de especificar a interface do serviço de maneira agnóstica a linguagens e frameworks
 
+### Exemplo de Protobuf
 
-#### Exemplo de Contrato
+Nesse contrato de exemplo escrevemos a assinatura / contrato de comunicação gRPC que deverá acontecer via client-server utilizando a sintaxe `proto3`. Descrevemos o service chamado `IMCService` que implementa um método chamado `Calcular`, que recebe um objeto de mensagem no padrão descrito no `IMCRequest` e retorna uma mensagem no padrão descrito no `IMCResponse`. A linguagem superficialmente é descritiva e bem simples. 
+
+```proto
+syntax = "proto3";
+
+package imc;
+
+option go_package = "service/imc";
+
+// O serviço IMCService oferece a operação de calcular o quadrado de um número.
+service IMCService {
+  // IMC calcula o quadrado de um número.
+  rpc Calcular (IMCRequest) returns (IMCResponse) {}
+}
+
+// IMCRequest contém o a altura e peso para o qual queremos calcular o IMC.
+message IMCRequest {
+  double weight = 1;
+  double height = 2;
+}
+
+// IMCResponse contém o resultado do cálculo do IMC informado.
+message IMCResponse {
+  double result = 1;
+}
+```
+
+Após descrever o contrato, precisamos gerar os pacotes `.go` que implementam esse contrato. Para gerar esses pacotes normalmente usamos o pacote `protoc`. Quando estamos gerando esses arquivos em golang, dois pacotes devem ser gerados no padrão `imc_grpc.pb.go` e `imc.pb.go`. Esses pacotes precisam ser implementados tanto no client quanto no server. 
+
+```bash
+protoc --go_out=. --go-grpc_out=. imc.proto
+```
 
 
-#### Exemplo de Server gRPC
+### Exemplo de Server gRPC
 
+Tendo os contratos criados pelo protobuf importados, podemos iniciar a implementação de um gRPC Server de forma simplificada. Precisamos respeitar os contratos definidos, implementando um método chamado `Calcular` que recebe e responde os objetos com a assinatura definida. Após implementar as funções necessárias com as lógicas do serviço, só precisamos alocar uma porta, no caso, `50051` e registrar esse serviço no servidor gRPC. 
 
-#### Exemplo de Client  gRPC
+```go
+package main
 
+import (
+	"context"
+	"fmt"
+	imc "main/service/imc"
+	"math"
+	"net"
+
+	"google.golang.org/grpc"
+)
+
+// Cria um servico baseado no protobuf informado
+type service struct {
+	imc.IMCServiceServer
+}
+
+// Método utilizado para calcular o IMC com a altura e peso informados
+func (s *service) Calcular(ctx context.Context, in *imc.IMCRequest) (*imc.IMCResponse, error) {
+	fmt.Println("Iniciando Calculo")
+	result := (in.Weight / (in.Height * in.Height)) * 1
+	result = math.Round(result*100) / 100
+	return &imc.IMCResponse{Result: float64(result)}, nil
+}
+
+func main() {
+	// Alocando a porta 50051 para o servidor
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		fmt.Println("Falha ao servir na porta 50051:", err)
+		return
+	}
+
+	// Instancia um servidor gRPC
+	s := grpc.NewServer()
+
+	// Registra o serviço de calculo no servidor gRPC
+	fmt.Println("Registrando o serviço de Calculo de IMC no server gRPC")
+	imc.RegisterIMCServiceServer(s, &service{})
+
+	// Instancia o servidor na porta alocada
+	if err := s.Serve(lis); err != nil {
+		fmt.Println("Falha criar o servidor gRPC:", err)
+		return
+	}
+}
+```
+
+### Exemplo de Client gRPC
+
+Para implementar o client de um server gRPC, precisamos utilizar o mesmo coontrato, criar uma conexão persistente com o endereço/porta do servidor e chamar a o método definido na assinatura `Calcular`, informando os dados no formato acordado, e recebendo a resposta em seguida. 
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+	"time"
+
+	imc "main/service/imc"
+
+	"google.golang.org/grpc"
+)
+
+func main() {
+	conn, err := grpc.Dial("0.0.0.0:50051", grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("Falha ao conectar ao servidor gRPC: %v", err)
+	}
+	defer conn.Close()
+	client := imc.NewIMCServiceClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	// Executa uma chamada gRPC para o servidor calcular o IMC
+	peso := 90.5
+	altura := 1.77
+	r, err := client.Calcular(ctx, &imc.IMCRequest{
+		Weight: peso,
+		Height: altura,
+	})
+	if err != nil {
+		log.Fatalf("Falha ao executar a chamada: %v", err)
+	}
+	fmt.Sprintf("O IMC de uma pessoa com %v de peso e %v de altura é de: %v\n", peso, altura, r.GetResult())
+}
+```
+
+```
+Registrando o serviço de Calculo de IMC no server gRPC
+Iniciando Calculo...
+```
+
+```
+❯ go run main.go
+2024/03/17 20:18:55 O IMC de uma pessoa com 90.5 de peso e 1.77 de altura é de: 28.89
+```
 
 <br>
 
-### Websockets
+# Websockets
 
 Uma comunicação baseada em Websockets são uma alternativa para solucionar **problemas de comunicação em tempo real entre clientes e servidores em tecnologias de desenvolvimento web**. Diferentemente do modelo tradicional de requisição e resposta HTTP, que é unidirecional e cria uma nova conexão TCP para cada requisição/resposta, o protocolo WebSocket estabelece uma **conexão full-duplex sobre um único socket TCP**. Isso permite uma **comunicação bidirecional contínua entre o cliente e o servidor**, ideal para aplicações web que necessitem de interações em tempo real de atualizações frequentes e instantâneas, como chats online, dashboards dinamicos, graficos de dados financeiros, sistemas de notificações e jogos online. 
 
@@ -144,23 +373,35 @@ Uma comunicação baseada em Websockets são uma alternativa para solucionar **p
 
 A conexão WebSocket inicia-se como uma requisição HTTP padrão, mas solicita um "upgrade" para WebSockets através do cabeçalho `Upgrade`. Se o **servidor suporta WebSockets, ele responde com uma confirmação do "upgrade" e a conexão HTTP é então elevada a uma conexão WebSocket**. Uma vez estabelecida, a **conexão WebSocket permanece aberta, permitindo que tanto o cliente quanto o servidor enviem dados a qualquer momento até que a conexão seja fechada por uma das partes**. Ao manter uma conexão aberta, WebSockets eliminam a necessidade de estabelecer novas conexões HTTP para cada interação, reduzindo significativamente a latência.
 
+Qualquer uma das partes (cliente ou servidor) pode iniciar o fechamento da conexão WebSocket. A parte que deseja fechar a conexão envia uma solicitação de fechamento, e após a outra parte responder, a conexão é fechada.
+
 Embora a maioria dos navegadores modernos suporte WebSockets, pode haver problemas de compatibilidade com navegadores mais antigos ou em ambientes de rede restritivos que não permitem conexões WebSocket. Além de que gerenciar uma conexão WebSocket persistente e garantir a retransmissão de mensagens perdidas pode ser mais complexo do que usar requisições HTTP simples.
 
 
-#### Implementacão de um server de WebSockets
+### Implementacão de um server de WebSockets
 
 
 
 <br>
 
-### GraphQL
+# GraphQL
 
-GraphQL é uma linguagem de consulta para APIs e um runtime para execução dessas consultas pelo lado do servidor. Desenvolvido pelo Facebook em 2012 e lançado publicamente em 2015, GraphQL oferece uma abordagem flexível para o desenvolvimento de APIs em comparação com a abordagem tradicional REST. Ele permite que os clientes definam a estrutura dos dados requeridos, e exatamente esses dados, nada mais, nada menos, são retornados pelo servidor. Isso não só torna as consultas mais eficientes, mas também resolve o problema de sobrecarga e subutilização de dados frequentemente encontrado em APIs REST.
+O GraphQL é uma **linguagem de consulta para APIs e um runtime para execução dessas consultas pelo lado do servidor**. Desenvolvido pelo Facebook em 2012 e lançado publicamente em 2015, GraphQL **oferece uma abordagem flexível para o desenvolvimento de APIs em comparação com a abordagem tradicional REST**. Ele permite que os clientes **definam a estrutura dos dados requeridos, e exatamente esses dados**, nada mais, nada menos, são retornados pelo servidor. Isso não só torna as consultas mais eficientes, mas também resolve o problema de sobrecarga e subutilização de dados frequentemente encontrado em APIs REST.
 
-O grande motivador da tecnologia é reduzir o over-fetching e under-fetching, pois permite que os clientes solicitem exatamente os dados de que precisam sem a necessidade de lidar com gigantescos payloads. 
+O grande motivador da tecnologia é reduzir o **over-fetching e under-fetching, pois permite que os clientes solicitem exatamente os dados de que precisam sem a necessidade de lidar com gigantescos payloads**. 
 
-#### Como Funciona
 
+<br>
+
+## Convergência de Arquiteturas gRPC & REST & GraphQL 
+
+Expor diretamente endpoints gRPC para clientes em escala pode ser uma tarefa trabalhosa, principalmente em arquiteturas corporativas de grande granularidade. Nesse sentido, se olharmos nossa arquitetura com uma ótica de [domínios de software](), podemos fazer uso de uma convergência de mais de um protocolo de comunicação dentro de uma malha de serviços. 
+
+Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma tarefa complicada, e os contrato REST são mais simples de ser interpretados, podemos pensar em acordos onde o domínio de software pode ser exposto dentro de um contrato REST e a comunicação interna entre os microserviços desse domínio possam falar um protocolo mais leve em comunicação como o gRPC. Essa tarefa pode ser extendida para instâncias de GraphQL da mesma forma. 
+
+![gRPC Misc](/assets/images/system-design/grpc-misc.png)
+
+<br>
 
 ### Referências
 
@@ -171,4 +412,26 @@ O grande motivador da tecnologia é reduzir o over-fetching e under-fetching, po
 
 [Qual é a diferença entre gRPC e REST?](https://aws.amazon.com/pt/compare/the-difference-between-grpc-and-rest/)
 
+[ntegration challenges in microservices architecture with gRPC & REST ](https://www.cncf.io/blog/2022/02/11/integration-challenges-in-microservices-architecture-with-grpc-rest/)
+
 [REST vs. GraphQL vs. gRPC vs. WebSocket](https://www.resolutesoftware.com/blog/rest-vs-graphql-vs-grpc-vs-websocket/)
+
+[gRPC vs REST](https://www.gslab.com/blogs/grpc-vs-rest-a-complete-guide/)
+
+[gRPC](https://grpc.io/)
+
+[gRPC Golang](https://github.com/grpc/grpc-go)
+
+[Protobuf](https://protobuf.dev/)
+
+[Protocol Buffers - Google's data interchange format](https://github.com/protocolbuffers/protobuf)
+
+[RPC Implementation in Go ](https://dev.to/karankumarshreds/go-rpc-implementation-4731)
+
+[Echo Microframework](https://echo.labstack.com/docs/)
+
+[Gorilla - Websockets](https://github.com/gorilla/websocket/blob/main/examples/chat/client.go)
+
+[Nutrition Overengineering](https://github.com/msfidelis/nutrition-overengineering)
+
+[System Design Examples - gRPC](https://github.com/msfidelis/system-design-examples/tree/main/sync_protocols/grpc)
