@@ -61,7 +61,6 @@ Entrando agora de fato nos protocolos de comunicação, vamos entender algumas d
 
 A comunicação entre dispositivos é o objetivo principal do funcionamento de uma rede, interna ou externa. Na construção dessa comunicação, está um conjunto de regras e padrões conhecidos como **protocolos**. Um protocolo é, conceitualmente, **um acordo que define o formato e a sequência das mensagens trocadas entre dois ou mais sistemas**. Essas regras determinam **como os dados são enviados, recebidos, e interpretados**, garantindo que as informações sejam compartilhadas de maneira compreensível entre dispositivos distintos e aplicações de software.
 
-
 ## Protocolos Base
 
 Para compreender detalhadamente os protocolos e tecnologias de comunicação modernas, é importante primeiro revisitar os protocolos de rede de baixo nível que servem como sua base. Antes de explorar protocolos como **HTTP/2, HTTP/3, gRPC e AMQP**, precisamos entender os mecanismos de conexão fundamentais, principalmente o TCP e o UDP, que são essenciais para o desenvolvimento dessas tecnologias avançadas.
@@ -70,7 +69,7 @@ Para compreender detalhadamente os protocolos e tecnologias de comunicação mod
 
 ### Protocolo IP, IPv4 e IPv6
 
-O Protocolo de Internet (IP) opera na camada de rede do modelo OSI (camada 3) e é o coração da comunicação de dados na Internet, permitindo que dispositivos diferentes se conectem e compartilhem informações em uma rede interna ou externa. Este protocolo define endereços IP únicos para cada dispositivo na rede, garantindo que os dados enviados de um ponto cheguem corretamente ao seu destino. Existem duas versões principais deste protocolo em uso: IPv4 e IPv6.
+O **Protocolo de Internet** (*IP*) opera na camada de rede do modelo OSI (camada 3) e é o coração da comunicação de dados na Internet, permitindo que dispositivos diferentes se conectem e compartilhem informações em uma rede interna ou externa. Este protocolo define endereços IP únicos para cada dispositivo na rede, garantindo que os dados enviados de um ponto cheguem corretamente ao seu destino. Existem duas versões principais deste protocolo em uso: IPv4 e IPv6.
 
 #### IPv4
 
