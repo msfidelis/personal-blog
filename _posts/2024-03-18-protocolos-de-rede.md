@@ -24,7 +24,7 @@ O Modelo OSI é dividido em sete camadas, cada uma responsável por funções es
 
 ### Camada 1: Física
 
-A primeira camada é **responsável pela transmissão e recepção de dados brutos não tratados sobre um meio físico**. Define especificações elétricas, mecânicas, procedurais e funcionais para ativar, manter e desativar conexões físicas. Inclui **cabos de rede**, **cabos de cobre**, **fibra óptica** e **aplicações Wi-Fi**, englobando todos os meios físicos de entrada e saída para a rede. **Basicamente resumida em dispositivos paupáveis**.
+A primeira camada é **responsável pela transmissão e recepção de dados brutos não tratados sobre um meio físico**. Define especificações elétricas, mecânicas, procedurais e funcionais para ativar, manter e desativar conexões físicas. Inclui **cabos de rede**, **cabos de cobre**, **fibra óptica** e **aplicações Wi-Fi**, englobando todos os meios físicos de entrada e saída para a rede. **Basicamente resumida em dispositivos palpáveis**.
 
 
 ### Camada 2: Enlace
@@ -55,7 +55,7 @@ Fornece serviços de rede para aplicações do usuário, **incluindo transferên
 
 # Os Protocolos de Comunicação
 
-Entrando agora de fato nos protocolos de comunicação, vamos entender algumas das implementações mais importantes e mais comuns dentro do dia a dia da engenharia de software e usuários de aplicações de rede, resumidamente qualquer pessoa do planeta Terra que possua conexões com a internet. Temos várias implementações diferentes com diversas vantagens e desvantagens quando olhamos um mapa de protocolos existentes, ainda levando em consideração que alguns protocolos são construídos utilizando outros protolos mais estabelecidos como base, como é caso do UDP e do TCP. Inicialmente vamos olhar como funcionam essas duas implementações tratando os mesmos como **protocolos base** para depois detalhar protocolos mais complexos que se utilizam dos mesmos para cumprir seus papéis.
+Entrando agora de fato nos protocolos de comunicação, vamos entender algumas das implementações mais importantes e mais comuns dentro do dia a dia da engenharia de software e usuários de aplicações de rede, resumidamente qualquer pessoa do planeta Terra que possua conexões com a internet. Temos várias implementações diferentes com diversas vantagens e desvantagens quando olhamos um mapa de protocolos existentes, ainda levando em consideração que alguns protocolos são construídos utilizando outros protocolos mais estabelecidos como base, como é caso do UDP e do TCP. Inicialmente vamos olhar como funcionam essas duas implementações tratando os mesmos como **protocolos base** para depois detalhar protocolos mais complexos que se utilizam dos mesmos para cumprir seus papéis.
 
 ## Definindo um Protocolo
 
