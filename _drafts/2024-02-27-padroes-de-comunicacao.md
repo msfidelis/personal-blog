@@ -32,7 +32,26 @@ O REST é construído usando referências e recursos do **protocolo HTTP**, defi
 
 Ele utiliza métodos HTTP para definir ações, como **GET, POST, PUT, DELETE e PATCH**, para realizar operações CRUD **(Criar, Ler, Atualizar, Deletar)** em recursos identificados por URI's. Esses recursos são representações de entidades ou objetos do domínio da aplicação.
 
-#### Utilização de Métodos HTTP para Representar Ações
+### Componentes de uma requisição REST 
+
+Uma requisição REST é composta por vários componentes que trabalham juntos para transmitir a intenção da solicitação do cliente para o servidor. Cada componente tem um papel específico no fornecimento de informações necessárias para que o servidor processe a requisição de maneira eficaz.
+
+### URI's e URL's 
+
+Dentro do contexto REST, os conceitos de URI, URL e URN têm papéis específicos quando se trata de identificar e interagir com recursos expostos por API's. Em REST, um "recurso" é uma abstração de qualquer informação ou dado que pode ser nomeado, como documentos, imagens, serviços, coleções de outros recursos, e assim por diante. 
+
+#### URI - Uniform Resource Identifier 
+
+Um URI é uma string de caracteres que identifica um recurso específico. Um recurso pode ser qualquer coisa que seja identificável na web, como um documento, uma imagem, um serviço de transmissão de vídeo, ou uma coleção de outros recursos. URIs servem como um mecanismo de identificação universal na web, permitindo que recursos sejam localizados e referenciados de forma única. Dentro do REST, cada recurso é identificado de forma única por um URI. Isso permite que clientes e servidores se refiram a um recurso específico sem ambiguidade. Por exemplo, um URI pode ser usado para identificar um determinado livro em um sistema de biblioteca digital, um usuário em uma rede social, ou uma transação em um sistema financeiro e etc. 
+
+#### URL - Uniform Resource Locator
+
+No REST, as URLs são o meio mais comum de expressar URIs. Elas especificam **não apenas a identidade de um recurso, mas também como acessá-lo**. Por exemplo, a URL https://api.fidelissauro.dev/livro/1234 não apenas identifica um recurso de livro específico (1234) no domínio api.fidelissauro.dev, mas também indica como o recurso pode ser acessado usando o protocolo HTTPS. Uma vez que conseguimos identificar esses recursos de forma universal e padronizada, as URL's que representam esses recursos podem ser usadas em conjunto com os métodos HTTP (GET, POST, PUT, DELETE, etc.) para realizar operações sobre os dados que fazemos gestão via API.
+
+### Recursos e Paths 
+
+
+### de Métodos HTTP para Representar Ações
 
 Os métodos HTTP, também conhecidos como "verbos", definem ações que podem ser realizadas sobre os recursos. Eles permitem uma interação semântica com os recursos, onde cada método tem um propósito específico:
 
@@ -46,7 +65,7 @@ Os métodos HTTP, também conhecidos como "verbos", definem ações que podem se
 
 <br>
 
-#### Métodos HTTP nas URI's e Entidades
+### Métodos HTTP nas URI's e Recursos
 
 As URIs são utilizadas para identificar os recursos de forma única. Em uma API RESTful, as URIs são projetadas para serem intuitivas e descritivas, facilitando o entendimento e a navegação pelos recursos disponíveis. A estrutura de uma URI em REST reflete a organização dos recursos e suas relações.
 
@@ -72,7 +91,7 @@ Considerando uma API para um portal de notícias ou blog, aqui estão exemplos d
 
 #### Status Codes de Resposta e Padrões do REST
 
-Os códigos de status de resposta HTTP são recursos importantes para implementacões RESTful, pois são usados como convenção para indicar informações de estado das respostas de uma  solicitação. Ele abre o leque das classes dando funcionalidades e representatividade a elas perante uma solicitação.  
+Os códigos de status de resposta são recursos nativos do protocolo HTTP que são utilizados para implementações RESTful, pois são usados como convenção para indicar informações de estado das respostas de uma  solicitação. Ele abre o leque das classes dando funcionalidades e representatividade a elas perante uma solicitação.  
 
 Os status codes mais utilizados em implementações RESTFul são os seguintes: 
 
@@ -93,17 +112,46 @@ Os status codes mais utilizados em implementações RESTFul são os seguintes:
 
 <br>
 
+### Headers 
+
+### Params e Query Strings 
+
+### Body e Formatos
+
+### Principios do REST 
+
+Os principios arquiteturais do REST estabelecem uma série de regras e bases de design para que times de engenharia projetem API's de comunicação distribuida da melhor forma possível, prezando tanto pela experiência de consumo do cliente quanto do ciclo de vida e evolução saudável do projeto a médio e longo prazo. Nesta sessão vamos explorar alguns dos principios que podem ser esperados de implementações RESTFul. 
+
+#### Interface Uniforme 
+
+A interface uniforme é o princípio central do REST e diz respeito à consistência na forma como as interfaces são expostas aos clientes. Esse principio preza para que cada recurso deve ser identificável de forma única através de URIs e suas respostas sejam representadas por dados padronizados, como JSON ou XML, e enviados ao cliente respeitando esses formatos. Também é importante ressaltar que as requisições e respostas devem conter toda a informação necessária para serem compreendidas, incluindo metadados e hiperlinks de uma forma quase auto-descritiva. De forma resumida, esse princípio garante uma padronização formal na forma como os clientes interagem com o servidor e vice versa. 
+
+Garantindo uma interface uniforme, arbitrariamente garantimos a interoperabilidade, ou seja, compatibilidade entre diferentes sistemas e tecnologias, pois independente do ferramental escolhido para construção do cliente e do servidor, a comunicação possa ser respeitada e padronizada entre ambos, sem o conhecimento das necessidades de implementação. Quando trabalhamos em interfaces, é importante também projetá-las para promover cada vez mais um desacoplamento entre sistemas. 
+
 #### Comunicação Stateless 
 
-No REST, cada requisição do cliente para o servidor deve conter todas as informações necessárias para entender e completar a requisição. O servidor não armazena nenhum estado da sessão do cliente. 
+No REST, cada requisição do cliente para o servidor **deve conter todas as informações necessárias para entender e completar a requisição**. O servidor **não armazena nenhum estado da sessão do cliente**. A comunicação stateless (*sem estado*) é um dos princípios fundamentais que define como os clientes e servidores interagem entre si. Esse princípio assegura que cada requisição de um cliente para um servidor deve conter todas as informações necessárias para o servidor compreender e responder à requisição. Em outras palavras, o **servidor não armazena nenhum estado sobre o cliente entre as requisições. Cada uma delas é tratada como se fosse a primeira, sem qualquer conhecimento prévio ou memória das interações anteriores.**
+
+A natureza stateless também aumenta os níveis de confiabilidade do sistema. Se um **servidor falhar após processar uma requisição, o cliente pode simplesmente tentar novamente, possivelmente usando outro node de pool de servidores de uma arquitetura distribuída**. Como nenhuma informação de estado é mantida entre as requisições, não há perda de continuidade.. Esse é um dos principios que garante a [escalabilidade horizontal](/performance-capacidade-escalabilidade/) de aplicações REST em ambientes sensíveis em demanda de forma transparente. 
+
+Os desafios de uma arquitetura stateless giram principalmente em torno dos tópicos de autenticação. Usar tokens, como JWT (JSON Web Tokens) pode se tornar uma estratégia recomendada, pois os mesmos podem conter informações comuns do cliente que efetua a solicitação junto com meios de validar a integridade e validade dos mesmos sem a nacessidade de manter histórico entre as requisições. 
 
 #### Camadas 
 
-A arquitetura em camadas permite que intermediários (como proxies e gateways) facilitem ou melhorem a comunicação entre o cliente e o servidor, promovendo a segurança, o balanceamento de carga e a capacidade de cache. Combinando o conceito e viabilidade de camadas com o padrão stateless, o padrão se torna muito poderoso e escalável. 
+A **arquitetura em camadas permite que intermediários (como proxies e gateways) facilitem ou melhorem a comunicação entre o cliente e o servidor** de forma transparente, promovendo a **segurança, o balanceamento de carga e a capacidade de cache**. Combinando o conceito e viabilidade de camadas com o padrão stateless, o padrão se torna muito poderoso e escalável. 
+
+O princípio de camadas, ou *"Layered System"*, é uma das **restrições arquiteturais mais importantes do REST, pois influencia o design de sistemas distribuídos sensíveis a escala constante**, especialmente APIs RESTful. Este princípio estabelece que a arquitetura de uma aplicação deve ser **organizada em camadas hierárquicas, cada uma com uma função específica**. A comunicação ocorre sequencialmente de uma camada para outra, mas cada camada **não precisa conhecer os detalhes das camadas internas ou externas a ela**, apenas interagir com as camadas imediatamente adjacentes.
+
+Entre essas camadas podem existir camadas de API gateways, camadas de autenticação e autorização, camadas de cacheamento das requisições e respostas, [camadas de balanceadores de carga, camadas de proxy reversos](), camada de roteamento, lógicas de negócios, acesso a dados e etc. 
 
 #### Cache 
 
-As respostas do servidor devem ser explícitas quanto à sua cacheabilidade para evitar a reutilização de dados obsoletos ou inapropriados, melhorando a eficiência e a escalabilidade.
+As respostas do servidor **devem ser explícitas quanto à sua cacheabilidade para evitar a reutilização de dados obsoletos ou inapropriados, melhorando a eficiência e a escalabilidade**. O [cache é uma técnica amplamente utilizada no desenvolvimento de software](), especialmente em aplicações web e APIs, incluindo aquelas que seguem o estilo arquitetônico REST (Representational State Transfer). O objetivo **do cache é melhorar a eficiência e a performance da aplicação, armazenando cópias de recursos ou resultados de operações que são caros para gerar ou buscar**, permitindo que esses dados sejam reutilizados em requisições futuras.
+
+No contexto de APIs REST, o cache pode ser implementado tanto no lado do cliente quanto no servidor, além de pontos intermediários na rede, como proxies e gateways de API. Isso ajuda a reduzir a latência, diminuir a carga no servidor e melhorar a experiência geral do usuário ao acessar a aplicação
+
+A dinamica do cache em transações HTTP e API's RESTful depende de um gerenciamento cuidadoso para garantir que os dados armazenados sejam precisos, úteis e atualizados. Cabeçalhos HTTP, como `Cache-Control`, `Last-Modified`, e `ETag`, são utilizados para controlar o comportamento do cache, incluindo a validade, revalidação e a expiração do cache desses recursos.
+
 
 
 <br>
@@ -435,3 +483,7 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 [Nutrition Overengineering](https://github.com/msfidelis/nutrition-overengineering)
 
 [System Design Examples - gRPC](https://github.com/msfidelis/system-design-examples/tree/main/sync_protocols/grpc)
+
+[URI, URN e URL](https://igluonline.com/qual-diferenca-entre-url-uri-e-urn/)
+
+[REST Architectural Constraints](https://restfulapi.net/rest-architectural-constraints/)
