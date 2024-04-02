@@ -8,7 +8,9 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Padrões de Comunicação Sincronos
 ---
 
-Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolos e Comunicação de Redes](). A ideia é seguir com os conceitos direcionados anteriormente para aplicá-los em diferentes tipos de padrões de comunicação direcionados na contrução de software em arquiteturas modernas e distribuídas. Nesse capítulo iremos falar sobre alguns padrões que podemos utilizar para **construção de chamadas sincronas entre serviços**, aproveitando os conhecimentos ofertados quando abordamos sobre o Protocolo HTTP, TCP/IP e UDP para detalhar conceitualmente com a visão de System Design outras tecnologias e padrões como o **Padrão REST, gRPC, Websockets e GraphQL**. 
+Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolos e Comunicação de Redes](). A ideia é seguir com os conceitos direcionados anteriormente para aplicá-los em diferentes tipos de padrões de comunicação empregados na contrução de software em arquiteturas modernas e distribuídas. Nesse capítulo iremos falar sobre alguns padrões que podemos utilizar para **construção de chamadas sincronas entre serviços**, aproveitando os conhecimentos ofertados quando abordamos sobre o Protocolo HTTP, TCP/IP e UDP para detalhar conceitualmente com a visão de System Design outras tecnologias e padrões como o **Padrão REST, gRPC, Websockets e GraphQL**. 
+
+<br>
 
 # Definindo Comunicações Sincronas
 
@@ -18,7 +20,7 @@ Este modelo de comunicação é caracterizado por sua natureza **"bloqueante"**,
 
 Esse padrão é muito bem recebido onde a **consistência dos dados é de extrema importância**, pois as operações podem ser facilmente feitas em uma **sequência específica**, além de ser muito mais simples e intuitiva em quesitos de entendimento e implementação. 
 
-Em quesito de desvantagens, a implementação de uma comunicação sincrona pode **limitar a escalabilidade do sistema**, uma vez que o bloqueio durante a espera por respostas pode **reduzir a capacidade de processamento paralelo**, além de afetar performance em cadeia, onde o mau funcionamento constante ou temporário de uma dependência específica entre uma série de chamadas pode acabar aumentando o tempo de resposta e processamento. O ponto mais crítico é que a indisponibilidade de um serviço que é dependente de um processo bloqueante pode i**nvariávelmente degradar a disponibilidade geral de uma cadeia de processos**. 
+Em quesito de desvantagens, a implementação de uma comunicação sincrona pode **limitar a escalabilidade do sistema**, uma vez que o bloqueio durante a espera por respostas pode **reduzir a capacidade de processamento paralelo**, além de afetar performance em cadeia, onde o mau funcionamento constante ou temporário de uma dependência específica entre uma série de chamadas pode acabar aumentando o tempo de resposta e processamento. O ponto mais crítico é que a indisponibilidade de um serviço que é dependente de um processo bloqueante pode **invariávelmente degradar a disponibilidade geral de uma cadeia de processos**. 
 
 Nesse sentido, por mais simples que sejam a construção e manutenção de chaamdas sincronas, é necessário o cuidado com questões de retentativas, timeouts e outras estratégias de resiliência cosntruída de forma pragmática entre cliente-servidor. 
 
@@ -30,30 +32,35 @@ O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônic
 
 O REST é construído usando referências e recursos do **protocolo HTTP**, definindo papeis e responsabilidades de cliente-servidor e busca **estabelecer uma interface de um cliente com os dados e ações de um sistema** de forma intuitiva. 
 
-Ele utiliza métodos HTTP para definir ações, como **GET, POST, PUT, DELETE e PATCH**, para realizar operações CRUD **(Criar, Ler, Atualizar, Deletar)** em recursos identificados por URI's. Esses recursos são representações de entidades ou objetos do domínio da aplicação.
+Ele utiliza métodos HTTP para definir ações, como **GET, POST, PUT, DELETE e PATCH**, para realizar operações CRUD **(Criar, Ler, Atualizar, Deletar)** em recursos identificados por URI's. Esses recursos são representações de entidades ou objetos do domínio da aplicação. Nesse tópico vamos abordar alguns dos principais componentes do estilo arquitetural REST, e detalhar as partes mais importantes conceitualmente. 
 
 ### Componentes de uma requisição REST 
 
-Uma requisição REST é composta por vários componentes que trabalham juntos para transmitir a intenção da solicitação do cliente para o servidor. Cada componente tem um papel específico no fornecimento de informações necessárias para que o servidor processe a requisição de maneira eficaz.
+Uma requisição REST é composta por vários componentes que trabalham juntos para transmitir a intenção da solicitação do cliente para o servidor. Cada componente tem um papel específico no fornecimento de informações para que o servidor processe a requisição de maneira eficaz através de recursos expostos de maneira intuitiva. Vamos abordar alguns dos componentes presentes numa requisição HTTP e seu eventual uso dentro do REST:
 
 ### URI's e URL's 
 
-Dentro do contexto REST, os conceitos de URI, URL e URN têm papéis específicos quando se trata de identificar e interagir com recursos expostos por API's. Em REST, um "recurso" é uma abstração de qualquer informação ou dado que pode ser nomeado, como documentos, imagens, serviços, coleções de outros recursos, e assim por diante. 
+Dentro do contexto REST, os conceitos de *URI*, *URL* e *URN* têm papéis específicos quando se tratam de **identificar e interagir com recursos expostos por API's**. Em REST, um "recurso" é uma **abstração de qualquer informação ou dado que pode ser nomeado e identiticado, como documentos, imagens, serviços, coleções de outros recursos**, e assim por diante. 
 
 #### URI - Uniform Resource Identifier 
 
-Um URI é uma string de caracteres que identifica um recurso específico. Um recurso pode ser qualquer coisa que seja identificável na web, como um documento, uma imagem, um serviço de transmissão de vídeo, ou uma coleção de outros recursos. URIs servem como um mecanismo de identificação universal na web, permitindo que recursos sejam localizados e referenciados de forma única. Dentro do REST, cada recurso é identificado de forma única por um URI. Isso permite que clientes e servidores se refiram a um recurso específico sem ambiguidade. Por exemplo, um URI pode ser usado para identificar um determinado livro em um sistema de biblioteca digital, um usuário em uma rede social, ou uma transação em um sistema financeiro e etc. 
+Um URI, ou *Uniform Resource Identifier*, é uma **string de caracteres que identifica um recurso específico**. **Um recurso pode ser qualquer coisa que seja identificável** através de um endereco, como um documento, uma imagem, um serviço de transmissão de vídeo, ou uma coleção de outros recursos como listas de vendas, produtos, dados de usuário e etc. URIs s**ervem como um mecanismo de identificação universal**, permitindo que **recursos sejam localizados e referenciados de forma única**. Dentro do REST, **cada recurso é identificado de forma única por um URI**. Isso permite que clientes e servidores se refiram a um recurso específico sem ambiguidade. Por exemplo, um URI pode ser usado para identificar um determinado livro em um sistema de biblioteca, um usuário em uma rede social, ou uma transação em um sistema financeiro e etc. 
 
 #### URL - Uniform Resource Locator
 
-No REST, as URLs são o meio mais comum de expressar URIs. Elas especificam **não apenas a identidade de um recurso, mas também como acessá-lo**. Por exemplo, a URL https://api.fidelissauro.dev/livro/1234 não apenas identifica um recurso de livro específico (1234) no domínio api.fidelissauro.dev, mas também indica como o recurso pode ser acessado usando o protocolo HTTPS. Uma vez que conseguimos identificar esses recursos de forma universal e padronizada, as URL's que representam esses recursos podem ser usadas em conjunto com os métodos HTTP (GET, POST, PUT, DELETE, etc.) para realizar operações sobre os dados que fazemos gestão via API.
+No REST, as **URLs são o meio mais comum de expressar URIs**. Elas especificam **não apenas a identidade de um recurso, mas também como acessá-lo**. Por exemplo, a URL *https://api.fidelissauro.dev/livro/1234* não apenas identifica um recurso de livro específico (1234) no domínio api.fidelissauro.dev, mas também indica como o recurso pode ser acessado usando o protocolo HTTPS. Uma vez que conseguimos identificar esses recursos de forma universal e padronizada, as URL's que representam esses recursos podem ser usadas em conjunto com os métodos HTTP (GET, POST, PUT, DELETE, etc.) para realizar operações sobre os dados que fazemos gestão via API.
 
 ### Recursos e Paths 
 
+Na arquitetura REST, os recursos são componentes fundamentais que representam qualquer tipo de objeto, dado ou serviço que pode ser acessado pela rede em que o mesmo está disponível. Resumindo os tópicos anteriores, um recurso é identificado por URIs, que são usados para localizar esses recursos na internet. 
 
-### de Métodos HTTP para Representar Ações
+Os Paths, por outro lado, fazem parte da URI, e **especificam o endereço exato onde um recurso pode ser encontrado**. Eles ajudam a **organizar e a endereçar os recursos de forma hierárquica e lógica**, facilitando o acesso e a manipulação destes. A estrutura de paths em uma API REST é projetada para ser intuitiva, refletindo a natureza e a relação entre os recursos. Por exemplo, em uma API que gerencia um sistema de blog, você pode ter um path `/posts` para acessar todos os artigos e `/posts/{id}` para acessar um artigo específico, e seguir com identificadores específicos para subrecursos como `/posts/{id}/comments` para comentários de um artigo específico.
 
-Os métodos HTTP, também conhecidos como "verbos", definem ações que podem ser realizadas sobre os recursos. Eles permitem uma interação semântica com os recursos, onde cada método tem um propósito específico:
+Os recursos são planejados para serem acessados utilizando os métodos HTTP padrão (GET, POST, PUT, DELETE, etc.), em cada recurso que possui seu próprio identificador único como veremos a seguir.
+
+### Utilização de Métodos HTTP para Representar Ações nos Paths
+
+Os métodos HTTP, também conhecidos como "verbos", d**efinem ações que podem ser realizadas sobre os recursos representados nos paths**. Eles permitem uma interação semântica com os recursos, onde cada método tem um propósito específico.. As operações disponíveis para um recurso são definidas, por exemplo, usar o método GET para obter a representação de um recurso, POST para criar um novo recurso, PUT para atualizar um recurso existente, e DELETE para remover um recurso.
 
 | Método  | Descrição                                                                                                                                 | Idempotência |
 |---------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------|
@@ -84,8 +91,7 @@ Considerando uma API para um portal de notícias ou blog, aqui estão exemplos d
 | Criar um novo post            | POST   | `/posts`     |
 | Atualizar um post existente   | PUT    | `/posts/1`   |
 | Deletar um post               | DELETE | `/posts/1`   |
-| Atualizar parte de um post    | PATCH  | `/posts/1`    |
-
+| Atualizar parte de um post    | PATCH  | `/posts/1`   |
 
 <br>
 
@@ -114,11 +120,36 @@ Os status codes mais utilizados em implementações RESTFul são os seguintes:
 
 ### Headers 
 
-### Params e Query Strings 
+Os Headers, ou cabeçalhos, são componentes do protocolo HTTP e que também são utilizados de forma informativa na arquitetura REST, e são usados tanto nas requisições quanto nas respostas para fornecer informações essenciais sobre a transação que foi realizada. Eles desempenham várias funções, como especificar o formato da mídia dos dados sendo transferidos, autenticar usuários, controlar o cache e etc. Em uma API REST, os headers permitem a comunicação de metadados entre cliente e servidor, facilitando a negociação de conteúdo e a implementação de segurança e outras funcionalidades importantes.
+
+Exemplificamos alguns dos headers mais comuns quando abordamos o protocolo HTTP, a seguir alguns headers que são comuns quando estamos trocando dados entre cliente-servidor utilizando o padrão REST e suas principais funcionalidades: 
+
+| Header            | Descrição                                                                                          |
+|-------------------|----------------------------------------------------------------------------------------------------|
+| `Content-Type`    | Especifica o tipo de mídia do corpo da requisição/resposta (ex: `application/json`).               |
+| `Accept`          | Informa ao servidor os tipos de mídia aceitáveis como resposta.                                    |
+| `Authorization`   | Contém as credenciais para autenticar o usuário que faz a requisição.                             |
+| `Cache-Control`   | Direciona o comportamento do cache no cliente e no servidor (ex: `no-cache`).                     |
+| `ETag`            | Um identificador único para uma versão específica de um recurso, usado para otimizar o cache.     |
+| `Location`        | Indica a URL de um recurso recém-criado ou a URL para onde o cliente deve redirecionar.           |
+| `Content-Length`  | Indica o tamanho, em bytes, do corpo da mensagem de requisição ou resposta.                       |
+| `Date`            | O tempo em que a mensagem foi enviada, para sincronização entre cliente e servidor.               |
+
+<br>
+
+### Query Strings 
+
+Na arquitetura REST, query strings são mecanismos usados para passar informações adicionais ao servidor durante uma requisição HTTP. Eles permitem a **filtragem, a paginação, a ordenação e a personalização de dados**, entre outras funcionalidades, tornando as APIs RESTful mais flexíveis, principalmente em recursos que fazem exposição e listagem de dados com o método GET. Elas podem ser usadas para uma variedade de propósitos, como filtragem de dados, ordenação e paginação.
+
+As Query strings são utilizadas para fornecer informações adicionais que afetam a operação do servidor, **mas que não fazem parte do path da URL**. Elas são adicionadas ao final da URL com um `?` e seguidas de pares chave-valor, com cada par separado por `&`. Por exemplo, `/posts?author=fidelissauro&sort=date` pode ser usada para solicitar artigos escritos por "fidelissauro", ordenados pela data. As query strings são extremamente úteis para construção de API's.
 
 ### Body e Formatos
 
-### Principios do REST 
+Na arquitetura REST, o body da requisição ou da resposta desempenha um papel de transportar dados entre o cliente e o servidor. Ele é usado principalmente em métodos HTTP como `POST`, `PUT` e `PATCH`, onde há a necessidade de enviar informações (como a criação ou atualização de recursos) em um formato estruturado. O conteúdo do body pode variar amplamente dependendo da operação realizada e dos dados sendo transmitidos, respeitando os contratos de request e response de comunicação definidos na API. 
+
+<br>
+
+## Principios do REST 
 
 Os principios arquiteturais do REST estabelecem uma série de regras e bases de design para que times de engenharia projetem API's de comunicação distribuida da melhor forma possível, prezando tanto pela experiência de consumo do cliente quanto do ciclo de vida e evolução saudável do projeto a médio e longo prazo. Nesta sessão vamos explorar alguns dos principios que podem ser esperados de implementações RESTFul. 
 
