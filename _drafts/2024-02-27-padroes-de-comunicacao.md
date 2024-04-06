@@ -44,11 +44,11 @@ Dentro do contexto REST, os conceitos de *URI* e *URL* têm papéis específicos
 
 #### URI - Uniform Resource Identifier 
 
-Um URI, ou *Uniform Resource Identifier*, é uma **string de caracteres que identifica um recurso específico**. **Um recurso pode ser qualquer coisa que seja identificável** através de um endereco, como um documento, uma imagem, um serviço de transmissão de vídeo, ou uma coleção de outros recursos como listas de vendas, produtos, dados de usuário e etc. URIs s**ervem como um mecanismo de identificação universal**, permitindo que **recursos sejam localizados e referenciados de forma única**. Dentro do REST, **cada recurso é identificado de forma única por um URI**. Isso permite que clientes e servidores se refiram a um recurso específico sem ambiguidade. Por exemplo, um URI pode ser usado para identificar um determinado livro em um sistema de biblioteca, um usuário em uma rede social, ou uma transação em um sistema financeiro e etc. 
+Um URI, ou *Uniform Resource Identifier*, é uma **string de caracteres que identifica um recurso específico**. **Um recurso pode ser qualquer coisa que seja identificável** através de um endereco, como um documento, uma imagem, um serviço de transmissão de vídeo, ou uma coleção de outros recursos como listas de vendas, produtos, dados de usuário e etc. URIs **servem como um mecanismo de identificação universal**, permitindo que **recursos sejam localizados e referenciados de forma única**. Dentro do REST, **cada recurso é identificado de forma única por um URI**. Isso permite que clientes e servidores se refiram a um recurso específico sem ambiguidade. Por exemplo, um URI pode ser usado para identificar um determinado livro em um sistema de biblioteca, um usuário em uma rede social, ou uma transação em um sistema financeiro e etc. 
 
 #### URL - Uniform Resource Locator
 
-No REST, as **URLs são o meio mais comum de expressar URIs**. Elas especificam **não apenas a identidade de um recurso, mas também como acessá-lo**. Por exemplo, a URL *https://api.fidelissauro.dev/livro/1234* não apenas identifica **um recurso de livro** específico (1234) no domínio `api.fidelissauro.dev`, mas também indica como o recurso pode ser acessado usando o protocolo HTTPS. Uma vez que conseguimos identificar esses recursos de forma universal e padronizada, as URL's que representam esses recursos podem ser usadas em conjunto com os métodos HTTP (GET, POST, PUT, DELETE, etc.) para realizar operações sobre os dados que fazemos gestão via API.
+No REST, as **URLs são o meio mais comum de expressar URIs**, de forma direta, as URL's são um subtipo de URI's. Elas especificam **não apenas a identidade de um recurso, mas também como acessá-lo**. Por exemplo, a URL *https://api.fidelissauro.dev/livro/1234* não apenas identifica **um recurso de livro** específico (1234) no domínio `api.fidelissauro.dev`, mas também indica como o recurso pode ser acessado usando o protocolo HTTPS. Uma vez que conseguimos identificar esses recursos de forma universal e padronizada, as URL's que representam esses recursos podem ser usadas em conjunto com os métodos HTTP (GET, POST, PUT, DELETE, etc.) para realizar operações sobre os dados que fazemos gestão via API.
 
 ### Recursos e Paths 
 
@@ -97,21 +97,25 @@ Os métodos HTTP, também conhecidos como "verbos", **definem ações que podem 
 
 A idempotência é um conceito aplicado em vários lugares do desenvolvimento de software no geral, inclusive no design de APIs RESTful, e desempenha papeis importantes na construção de interfaces confiáveis e previsíveis.
 
-Este conceito, quando aplicado corretamente, **garante que múltiplas chamadas idênticas a um mesmo endpoint resultem sempre no mesmo estado do recurso, sem causar efeitos colaterais adicionais após a primeira aplicação**. Isso garante com que tentativas de retry em uma chamada de um serviço, mesmo que por meio de erros, ou execuções parciais, tenha a capacidade de reproduzir os mesmos requests sem erros ou duplicidades. No REST alguns métodos HTTP devem ser implementados de forma naturalmente idempotente, outros devem implementar alguma lógica de chaves de idempotencia, checagem de ID's para permitirem por exemplo, a criação de registros de forma idempotente. A seguir os métodos HTTP e suas possibilidades de idempotencia: 
+Este conceito, quando aplicado corretamente, **garante que múltiplas chamadas idênticas a um mesmo endpoint resultem sempre no mesmo estado do recurso, sem causar efeitos colaterais adicionais após a primeira aplicação**. Isso garante com que tentativas de retry em uma chamada de um serviço, mesmo que por meio de erros, ou execuções parciais, tenha a capacidade de reproduzir os mesmos requests para nosso serviço evitando erros ou duplicidades. No REST alguns métodos HTTP devem ser implementados de forma naturalmente idempotente, outros devem implementar alguma lógica de composição de chaves de idempotencia, checagem campos e outras estratégias para permitirem por exemplo, a criação de registros de forma idempotente. A seguir os métodos HTTP e suas possibilidades de idempotencia: 
 
 | Método  | Descrição                                                                                                                                 | Idempotência |
 |---------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| GET     | Utilizado para **recuperar a representação de um recurso sem modificá-lo**. É seguro e **idempotente**, o que significa que várias **requisições idênticas devem ter o mesmo efeito que uma única requisição.** | Sim          |
-| POST    | Empregado para **criar um novo recurso**. **Não é idempotente**, pois realizar várias requisições POST pode criar múltiplos recursos.                                                              | Não          |
+| GET     | Utilizado para **recuperar a representação de um recurso sem modificá-lo**. É seguro e **idempotente**, várias **requisições idênticas devem ter o mesmo efeito que uma única requisição.** | Sim          |
+| POST    | Empregado para **criar um novo recurso**. **Não é idempotente**, pois realizar várias requisições POST pode criar múltiplos recursos. Em caso de necessidade de idempotencia, será necessário a implementação de lógicas adicionais. | Não          |
 | PUT     | Utilizado para **atualizar um recurso existente ou criar um novo se ele não existir**, no URI especificado. **É idempotente**, então **múltiplas requisições idênticas terão o mesmo efeito sobre a entidade**.   | Sim          |
-| DELETE  | Empregado para **remover um recurso**. É **idempotente, pois deletar um recurso várias vezes tem o mesmo efeito que deletá-lo uma única vez**.                                                      | Sim          |
 | PATCH   | Utilizado para **aplicar atualizações parciais a um recurso**. Ao contrário do PUT, que substitui o recurso inteiro, o **PATCH modifica apenas as partes especificadas**. É idempotente, pois a execução sob o mesmo recurso tende a gerar sempre o mesmo efeito e gerar o mesmo resultado. | Sim          |
+| DELETE  | Empregado para **remover um recurso**. É **idempotente, pois deletar um recurso várias vezes tem o mesmo efeito que deletá-lo uma única vez**.                                                      | Sim          |
+
 
 <br>
 
+
+
+
 ### Métodos HTTP nas URI's e Recursos
 
-As URIs são utilizadas para identificar os recursos de forma única. Em uma API RESTful, as URIs são projetadas para serem intuitivas e descritivas, facilitando o entendimento e a navegação pelos recursos disponíveis. A estrutura de uma URI em REST reflete a organização dos recursos e suas relações.
+As URIs, como abordamos, são utilizadas para identificar os recursos de forma única. Em uma API RESTful, as URIs são projetadas para serem intuitivas e descritivas, facilitando o entendimento e a navegação pelos recursos disponíveis. A estrutura de uma URI em REST reflete a organização dos recursos e suas relações.
 
 As URIs quando olhadas no modelo REST, devem se referir a recursos e entidades,  e não às ações que serão realizadas diretamentesobre eles. Por exemplo, o path `/users` para acessar recursos do usuário combinado com o método `GET`, e não um basepath imperativo como `/getUsers`.
 
@@ -475,7 +479,7 @@ O grande motivador da tecnologia é reduzir o **over-fetching e under-fetching, 
 
 ## Convergência de Arquiteturas gRPC & REST & GraphQL 
 
-Expor diretamente endpoints gRPC para clientes em escala pode ser uma tarefa trabalhosa, principalmente em arquiteturas corporativas de grande granularidade. Nesse sentido, se olharmos nossa arquitetura com uma ótica de [domínios de software](), podemos fazer uso de uma convergência de mais de um protocolo de comunicação dentro de uma malha de serviços. 
+Expor diretamente endpoints gRPC para clientes em escala pode ser uma tarefa trabalhosa, principalmente em arquiteturas corporativas de grande granularidade. Nesse sentido, se olharmos nossa arquitetura com uma ótica de [domínios de software](/monolitos-microservicos/), podemos fazer uso de uma convergência de mais de um protocolo de comunicação dentro de uma malha de serviços. 
 
 Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma tarefa complicada, e os contrato REST são mais simples de ser interpretados, podemos pensar em acordos onde o domínio de software pode ser exposto dentro de um contrato REST e a comunicação interna entre os microserviços desse domínio possam falar um protocolo mais leve em comunicação como o gRPC. Essa tarefa pode ser extendida para instâncias de GraphQL da mesma forma. 
 
