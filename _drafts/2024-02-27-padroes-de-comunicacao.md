@@ -307,7 +307,7 @@ O Protocol Buffers, ou ProtoBuf, é a linguagem de descrição de interface pref
 
 ### Exemplo de Protobuf
 
-Nesse contrato de exemplo escrevemos a assinatura / contrato de comunicação gRPC que deverá acontecer via client-server utilizando a sintaxe `proto3`. Descrevemos o service chamado `IMCService` que implementa um método chamado `Calcular`, que recebe um objeto de mensagem no padrão descrito no `IMCRequest` e retorna uma mensagem no padrão descrito no `IMCResponse`. A linguagem superficialmente é descritiva e bem simples. 
+Nesse contrato de exemplo escrevemos a assinatura/contrato de comunicação gRPC que deverá acontecer via client-server utilizando a sintaxe `proto3`. Descrevemos o service chamado `IMCService` que implementa um método chamado `Calcular`, que recebe um objeto de mensagem no padrão descrito no `IMCRequest` e retorna uma mensagem no padrão descrito no `IMCResponse`. A linguagem superficialmente é descritiva e bem simples. 
 
 ```proto
 syntax = "proto3";
@@ -449,7 +449,7 @@ Iniciando Calculo...
 
 # Websockets
 
-Uma comunicação baseada em Websockets são uma alternativa para solucionar **problemas de comunicação em tempo real entre clientes e servidores em tecnologias de desenvolvimento web**. Diferentemente do modelo tradicional de requisição e resposta HTTP, que é unidirecional e cria uma nova conexão TCP para cada requisição/resposta, o protocolo WebSocket estabelece uma **conexão full-duplex sobre um único socket TCP**. Isso permite uma **comunicação bidirecional contínua entre o cliente e o servidor**, ideal para aplicações web que necessitem de interações em tempo real de atualizações frequentes e instantâneas, como chats online, dashboards dinamicos, graficos de dados financeiros, sistemas de notificações e jogos online. 
+Uma comunicação baseada em Websockets são uma alternativa para solucionar **problemas de comunicação em tempo real entre clientes e servidores em tecnologias de desenvolvimento web**. Diferentemente do modelo tradicional de requisição e resposta HTTP, que é unidirecional e cria uma nova conexão TCP para cada requisição/resposta, o protocolo WebSocket estabelece uma **conexão full-duplex sobre um único socket TCP**. Isso permite uma **comunicação bidirecional contínua entre o cliente e o servidor**, ideal para aplicações web que necessitem de interações em tempo real de atualizações frequentes e instantâneas, como chats online, dashboards dinâmicos, graficos de dados financeiros, sistemas de notificações e jogos online. 
 
 ![Web Socket](/assets/images/system-design/websocket.png)
 
@@ -465,8 +465,7 @@ Embora a maioria dos navegadores modernos suporte WebSockets, pode haver problem
 
 O GraphQL é uma **linguagem de consulta para APIs e um runtime para execução dessas consultas pelo lado do servidor**. Desenvolvido pelo Facebook em 2012 e lançado publicamente em 2015, GraphQL **oferece uma abordagem flexível para o desenvolvimento de APIs em comparação com a abordagem tradicional REST**. Ele permite que os clientes **definam a estrutura dos dados requeridos, e exatamente esses dados**, nada mais, nada menos, são retornados pelo servidor. Isso não só torna as consultas mais eficientes, mas também resolve o problema de sobrecarga e subutilização de dados frequentemente encontrado em APIs REST.
 
-O grande motivador da tecnologia é reduzir o **over-fetching e under-fetching, pois permite que os clientes solicitem exatamente os dados de que precisam sem a necessidade de lidar com gigantescos payloads**. 
-
+O grande motivador da tecnologia é reduzir o **over-fetching e under-fetching, pois permite que os clientes solicitem exatamente os dados de que precisam sem a necessidade de lidar com payloads gigantescos**. 
 
 <br>
 
