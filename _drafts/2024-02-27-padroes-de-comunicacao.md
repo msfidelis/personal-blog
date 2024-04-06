@@ -8,7 +8,7 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Padrões de Comunicação Sincronos
 ---
 
-Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolos e Comunicação de Redes](/protocolos-de-rede/). A ideia é seguir com os conceitos direcionados anteriormente para aplicá-los em diferentes tipos de padrões de comunicação empregados na contrução de software em arquiteturas modernas e distribuídas. Nesse capítulo iremos falar sobre alguns padrões que podemos utilizar para **construção de chamadas sincronas entre serviços**, aproveitando os conhecimentos ofertados quando abordamos sobre o Protocolo HTTP, TCP/IP e UDP para detalhar conceitualmente com a visão de System Design outras tecnologias e padrões como o **Padrão REST, gRPC, Websockets e GraphQL**. 
+Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolos e Comunicação de Redes](/protocolos-de-rede/). A ideia é seguir com os conceitos direcionados anteriormente para aplicá-los em diferentes tipos de padrões de comunicação empregados na contrução de software em arquiteturas modernas e distribuídas. Nesse capítulo iremos falar sobre alguns padrões que podemos utilizar para **construção de chamadas sincronas entre serviços**, aproveitando os conhecimentos ofertados quando abordamos sobre o **Protocolo HTTP, TCP/IP e UDP** para detalhar conceitualmente com a visão de System Design outras tecnologias e padrões como o **Padrão REST, Webhooks, gRPC, Websockets e GraphQL**. 
 
 <br>
 
@@ -216,7 +216,7 @@ Agora imagine que junto as informações de pagamento, você fornece ao seu parc
 
 # RPC - Remote Procedure Call 
 
-O **RPC** (*Remote Procedure Call*) é um protocolo utilizado para executar **chamadas de procedimento ou métodos em um sistema computacional diferente daquele em que o código está sendo executado**. Este protocolo permite que um programa em um dispositivo (cliente) envie uma solicitação de execução de procedimento para um software em outro dispositivo (servidor), que executa o procedimento e retorna o resultado. O RPC abstrai a complexidade da comunicação em rede, permitindo aos desenvolvedores se concentrarem na lógica de negócios, em vez dos detalhes de como os dados são transmitidos e recebidos. 
+O **RPC** (*Remote Procedure Call*) é um protocolo utilizado para executar **chamadas de procedimento ou métodos em um sistema computacional diferente daquele em que o código está sendo executado**. Este protocolo permite que um programa em um dispositivo cliente envie uma solicitação de execução de procedimento para um software em outro dispositivo servidor, que executa o procedimento e retorna o resultado. O RPC abstrai a complexidade da comunicação em rede, permitindo aos desenvolvedores se concentrarem na lógica de negócios, em vez dos detalhes de como os dados são transmitidos e recebidos. Existem vários tipos de protocolos RPC como por exemplo o SOAP, Thrift CORBA entre outros. Mais a frente, iremos abordar uma alternativa moderna desse tipo de protocolo, o gRPC. 
 
 ### Exemplo de um Servidor RPC
 
@@ -421,7 +421,7 @@ func main() {
 
 ### Exemplo de Client gRPC
 
-Para implementar o client de um server gRPC, precisamos utilizar o mesmo coontrato, criar uma conexão persistente com o endereço/porta do servidor e chamar a o método definido na assinatura `Calcular`, informando os dados no formato acordado, e recebendo a resposta em seguida. 
+Para implementar o client de um server gRPC, precisamos utilizar o mesmo contrato, criar uma conexão persistente com o endereço/porta do servidor e chamar a o método definido na assinatura `Calcular`, informando os dados no formato acordado, e recebendo a resposta em seguida. 
 
 ```go
 package main
