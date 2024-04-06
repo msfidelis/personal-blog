@@ -513,9 +513,23 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 ![gRPC Misc](/assets/images/system-design/grpc-misc.png)
 
 
-## Webhooks 
+# Webhooks 
 
-### API's vs Webhooks
+Os Webhooks são  recursos arquiteturais em que sua implementação **se baseia em enviar dados para os clientes, ainda de forma sincrona, conforme determinadas ações acontecerem dentro do sistema.** Ao contrário de uma API cliente-servidor em que o cliente notifica o servidor para tomar ações e lidar com determinados dados, os webhooks cumprem o papel inverso, **onde através de URL's previamente informadas, o sistema servidor envia notificações para os clientes sempre que algum dado for modificado**, status atualizado ou determinada ação seja necessária da parte dele.
+
+Em cenários onde os **clientes precisam de atualizações contínuas sobre o estado de um recurso de interesse no servidor**, o polling HTTP síncrono, baseado em solicitações periódicas, aumenta a carga no servidor e no cliente, muitas vezes resultando em atrasos na detecção de mudanças e no desperdício de recursos com requisições desnecessárias. Esse é o principal problema que a implementação de sistemas de webhooks resolvem. 
+
+### Pooling e a Diferença entre Webhooks e API's
+
+Para explicar a diferença entre entre o pooling de API's e Webhooks vamos propor um modelo lúdico: Imagine que você comprou um livro novo em algum e-commerce. Você fez as devidas solicitações, pagamentos e confirmações necessárias para isso e agora precisa esperar o produto ficar pronto. Você está bem ansioso pra chegada desse novo material, e de tempos em tempos você vai até sua caixa de correios para verificar se sua encomenda está lá. Esse modelo é diretamente associado ao padrão de comunicação sincrona, onde a partir do momento em que você espera manter o cliente atualizado com os estados observados do servidor, ele precisa de tempos em tempos checar o recurso através de requisições periódicas até recuperar o estado das informações necessárias. 
+
+Agora imagine que você está esperando essa encomenda, mas ao invés de um sistema de caixa de correios a abordagem utilizada é a de um entregador que precisa da sua assinatura e confirmação de recebimento para te entregar o seu pacote. Você pode continuar com todas as suas tarefas normalmente até sua campainha tocar, e receber o seu pacote em mãos, assinando e confirmando o recebimento. Esse é um modelo que pode exemplificar o funcionamento de Webhooks comparado ao pooling de API's. 
+
+Imagine que você possui um e-commerce usa os métodos de pagamento de uma empresa parceira. Essa empresa oferece várias formas de pagamento para você oferecer aos seus clientes em suas compras, como Pix, Cartão de Crédito, Boleto e etc. Imagine que um código Pix é gerado, e você precisa ficar chegando de tempos em tempos na API desse parceiro se o pagamento foi o não concluído para dar sequencia ao processo de compra do cliente. Esse modelo é o pooling não recomendado. 
+
+Agora imagine que junto as informações de pagamento, você fornece ao seu parceiro uma URL do seu sistema, onde ele poderá enviar uma requisição com os dados dessa solicitação sempre que houver uma atualização do lado do sistema dele, como por exemplo informando se o processo de pagamento foi concluído, cancelado, expirado ou recusado, evitando que você fique consultando o mesmo de forma desnecessária. 
+
+
 
 ### Revisores
 
@@ -577,3 +591,5 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 [GraphQL Application Components](https://www.javatpoint.com/graphql-application-components)
 
 [EdgeDB SDL Reference](https://docs.edgedb.com/database/reference/sdl)
+
+[O que é um webhook?](https://www.redhat.com/pt-br/topics/automation/what-is-a-webhook)
