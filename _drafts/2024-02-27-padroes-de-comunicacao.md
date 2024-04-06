@@ -470,9 +470,7 @@ Embora a maioria dos navegadores modernos suporte WebSockets, pode haver problem
 
 # GraphQL
 
-O GraphQL é uma **linguagem de consulta para APIs e um runtime para execução dessas consultas pelo lado do servidor**. Desenvolvido pelo Facebook em 2012 e lançado publicamente em 2015, GraphQL **oferece uma abordagem flexível para o desenvolvimento de APIs em comparação com a abordagem tradicional REST**. Ele permite que os clientes **definam a estrutura dos dados requeridos, e exatamente esses dados**, nada mais, nada menos, são retornados pelo servidor. Isso não só torna as consultas mais eficientes, mas também resolve o problema de sobrecarga e subutilização de dados frequentemente encontrado em APIs REST.
-
-O grande motivador da tecnologia é reduzir o **over-fetching e under-fetching, pois permite que os clientes solicitem exatamente os dados de que precisam sem a necessidade de lidar com gigantescos payloads**. 
+O GraphQL pode ser visto tanto como uma **linguagem de consulta para APIs do lado do cliente, quanto como um runtime para execução dessas consultas pelo lado do servidor**. Desenvolvido pelo Facebook, o GraphQL **oferece uma abordagem diferente para o desenvolvimento de APIs em comparação com a abordagem tradicional REST**. Ele permite que os clientes **definam a estrutura dos dados que desejam receber**, e exatamente esses dados, nada mais, nada menos, são retornados como resposta. Isso não só torna as consultas mais objetivas, mas também resolve o problema de sobrecarga e subutilização de dados frequentemente encontrado em APIs REST. Esse problema em questão, pode ser encontrado em API's REST que possuam payloads muito grandes, onde o cliente por exemplo, não faz uso de todos os campos. Esse problema em questão de trafegar e **lidar com mais dados do que o necessário é conhecido como "ever-fetching"**, e seguindo a mesma lógica, se o cliente não tem todos os dados necessários de forma objetiva, e precisa **consultar outros vários recursos para compor todas as informações necessárias para prosseguir com seu objetivo é um problema conhecido como "under-fetching"**.  
 
 
 <br>
@@ -496,7 +494,7 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 
 [Qual é a diferença entre gRPC e REST?](https://aws.amazon.com/pt/compare/the-difference-between-grpc-and-rest/)
 
-[ntegration challenges in microservices architecture with gRPC & REST ](https://www.cncf.io/blog/2022/02/11/integration-challenges-in-microservices-architecture-with-grpc-rest/)
+[Integration challenges in microservices architecture with gRPC & REST ](https://www.cncf.io/blog/2022/02/11/integration-challenges-in-microservices-architecture-with-grpc-rest/)
 
 [REST vs. GraphQL vs. gRPC vs. WebSocket](https://www.resolutesoftware.com/blog/rest-vs-graphql-vs-grpc-vs-websocket/)
 
@@ -516,10 +514,12 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 
 [Gorilla - Websockets](https://github.com/gorilla/websocket/blob/main/examples/chat/client.go)
 
-[Nutrition Overengineering](https://github.com/msfidelis/nutrition-overengineering)
+[Demo: Nutrition Overengineering](https://github.com/msfidelis/nutrition-overengineering)
 
 [System Design Examples - gRPC](https://github.com/msfidelis/system-design-examples/tree/main/sync_protocols/grpc)
 
 [URI, URN e URL](https://igluonline.com/qual-diferenca-entre-url-uri-e-urn/)
+
+[URL, URI, URN](https://woliveiras.com.br/posts/url-uri-qual-diferenca)
 
 [REST Architectural Constraints](https://restfulapi.net/rest-architectural-constraints/)
