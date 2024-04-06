@@ -512,6 +512,7 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 
 ![gRPC Misc](/assets/images/system-design/grpc-misc.png)
 
+<br>
 
 # Webhooks 
 
@@ -527,9 +528,12 @@ Agora imagine que você está esperando essa encomenda, mas ao invés de um sist
 
 Imagine que você possui um e-commerce usa os métodos de pagamento de uma empresa parceira. Essa empresa oferece várias formas de pagamento para você oferecer aos seus clientes em suas compras, como Pix, Cartão de Crédito, Boleto e etc. Imagine que um código Pix é gerado, e você precisa ficar chegando de tempos em tempos na API desse parceiro se o pagamento foi o não concluído para dar sequencia ao processo de compra do cliente. Esse modelo é o pooling não recomendado. 
 
+![HTTP Pooling](/assets/images/system-design/http-pooling.png)
+
 Agora imagine que junto as informações de pagamento, você fornece ao seu parceiro uma URL do seu sistema, onde ele poderá enviar uma requisição com os dados dessa solicitação sempre que houver uma atualização do lado do sistema dele, como por exemplo informando se o processo de pagamento foi concluído, cancelado, expirado ou recusado, evitando que você fique consultando o mesmo de forma desnecessária. 
 
 
+![Webhook](/assets/images/system-design/webhook.png)
 
 ### Revisores
 
