@@ -472,6 +472,30 @@ Embora a maioria dos navegadores modernos suporte WebSockets, pode haver problem
 
 O GraphQL pode ser visto tanto como uma **linguagem de consulta para APIs do lado do cliente, quanto como um runtime para execução dessas consultas pelo lado do servidor**. Desenvolvido pelo Facebook, o GraphQL **oferece uma abordagem diferente para o desenvolvimento de APIs em comparação com a abordagem tradicional REST**. Ele permite que os clientes **definam a estrutura dos dados que desejam receber**, e exatamente esses dados, nada mais, nada menos, são retornados como resposta. Isso não só torna as consultas mais objetivas, mas também resolve o problema de sobrecarga e subutilização de dados frequentemente encontrado em APIs REST. Esse problema em questão, pode ser encontrado em API's REST que possuam payloads muito grandes, onde o cliente por exemplo, não faz uso de todos os campos. Esse problema em questão de trafegar e **lidar com mais dados do que o necessário é conhecido como "ever-fetching"**, e seguindo a mesma lógica, se o cliente não tem todos os dados necessários de forma objetiva, e precisa **consultar outros vários recursos para compor todas as informações necessárias para prosseguir com seu objetivo é um problema conhecido como "under-fetching"**.  
 
+Diminuindo a complexidade de lidar com "under-fetching" e "over-fetching" através de um único ponto de consulta, ao invés de ter que implementar vários endpoints para lidar com vários tipos de demanda na API REST, é um cenário em que vale a pena levar em consideração o uso do GraphQL. Porém a falta de padrões pode se tornar um grande problema como consequencia da adoção desse tipo de abordagem. 
+
+## Componentes do GraphQL
+
+O GraphQL é construído sobre alguns conceitos que precisam ser compreendidos para garantir uma implementação adequada que faça sentido, sendo eles: 
+
+### Schema
+
+**Um schema é definido através da linguagem SDL** (*Schema Definition Language*), que é uma sintaxe simples para **definicão de estruturas de dados** e é a particularidade mais importante do GraphQL, sendo compartilhado e acessado entre todos os outros componentes. Um schema **funciona como um contrato entre o cliente e o servidor** e **define e limita dos dados que podem ser consultados e modificados** através do que for disponibilizado, e principalmente a forma como os clientes podem interagir com esses dados. 
+
+Um schema é construído para que seja possível definir quais serão as entidades, objetos e suas relações entre si, quais serão seus campos e seus tipos de dados dos mesmos, além de habilitar quais serão as queries, mutations e subscriptions disponibilizadas para o cliente. 
+
+
+### Resolvers e Data Sources
+
+Como podemos entender, o GraphQL não é de fato um banco de dados, apenas uma interface flexível entre o cliente e as fontes disponíveis, e ele pode recuperar dados de várias fontes de dados simultâneamente, incluindo bancos SQL, NoSQL, API's REST e servicos RPC se assim for definido, e os resolvers são funções que fornecem as instruções e integrações necessárias para transformar uma operação do GraphQL em dados reais de fato.  Os resolver são responsáveis em buscar esses dados em suas fontes originais. Cada campo que é definido e configurado dentro de um schema é diretamente associado a um resolver, que é estimulado sempre que aquele campo é solicitado. 
+
+### Query
+
+Uma Query é um request de aplicação feito pelo cliente do GraphQL usada para ler e recuperar valores do servidor. Essa operação de query precisa respeitar os valores definidos no schema, podendo escolher quais deles ele quer recurperar e definir o formato do payload ideal para responder a solicitação em questão. 
+
+### Mutations
+
+Enquanto as queries são usadas para buscar dados, as mutations são utilizadas para modificar dados no servidor, incluindo criação, atualização, e deleção de dados. As mutations no GraphQL são explicitamente feitas para operações que causam efeitos colaterais, podendo também escrever em várias fontes de dados se assim for definido no schema e suas integrações.
 
 <br>
 
@@ -482,6 +506,12 @@ Expor diretamente endpoints gRPC para clientes em escala pode ser uma tarefa tra
 Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma tarefa complicada, e os contrato REST são mais simples de ser interpretados, podemos pensar em acordos onde o domínio de software pode ser exposto dentro de um contrato REST e a comunicação interna entre os microserviços desse domínio possam falar um protocolo mais leve em comunicação como o gRPC. Essa tarefa pode ser extendida para instâncias de GraphQL da mesma forma. 
 
 ![gRPC Misc](/assets/images/system-design/grpc-misc.png)
+
+
+## Webhooks 
+
+
+### API's vs Webhooks
 
 <br>
 
@@ -523,3 +553,11 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 [URL, URI, URN](https://woliveiras.com.br/posts/url-uri-qual-diferenca)
 
 [REST Architectural Constraints](https://restfulapi.net/rest-architectural-constraints/)
+
+[Using GraphQL with Golang](https://www.apollographql.com/blog/using-graphql-with-golang)
+
+[GraphQL Schema](https://graphql.org/learn/schema/)
+
+[GraphQL Application Components](https://www.javatpoint.com/graphql-application-components)
+
+[EdgeDB SDL Reference](https://docs.edgedb.com/database/reference/sdl)
