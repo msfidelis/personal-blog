@@ -22,7 +22,7 @@ Esse padrão é muito bem recebido onde a **consistência dos dados é de extrem
 
 Em quesito de desvantagens, a implementação de uma comunicação sincrona pode **limitar a escalabilidade do sistema**, uma vez que o bloqueio durante a espera por respostas pode **reduzir a capacidade de processamento paralelo**, além de afetar performance em cadeia, onde o mau funcionamento constante ou temporário de uma dependência específica entre uma série de chamadas pode acabar aumentando o tempo de resposta e processamento. O ponto mais crítico é que a indisponibilidade de um serviço que é dependente de um processo bloqueante pode **invariávelmente degradar a disponibilidade geral de uma cadeia de processos**. 
 
-Nesse sentido, por mais simples que sejam a construção e manutenção de chaamdas sincronas, é necessário o **cuidado com questões de retentativas, timeouts e outras estratégias de resiliência** cosntruída de forma pragmática entre cliente-servidor. 
+Nesse sentido, por mais simples que sejam a construção e manutenção de chamadas sincronas, é necessário o **cuidado com questões de retentativas, timeouts e outras estratégias de resiliência** cosntruída de forma pragmática entre cliente-servidor. 
 
 <br>
 
@@ -91,7 +91,7 @@ Na arquitetura REST, o body da requisição ou da resposta desempenha um papel d
 
 ### Utilização de Métodos HTTP para Representar Ações nos Paths
 
-Os métodos HTTP, também conhecidos como "verbos", **definem ações que podem ser realizadas sobre os recursos representados nos paths**. Eles permitem uma **interação semântica com os recursos**, onde cada método tem um propósito específico.. As operações disponíveis para um recurso são definidas, por exemplo, usar o método GET para obter a representação de um recurso, POST para criar um novo recurso, PUT para atualizar um recurso existente, e DELETE para remover um recurso.
+Os métodos HTTP, também conhecidos como "verbos", **definem ações que podem ser realizadas sobre os recursos representados nos paths**. Eles permitem uma **interação semântica com os recursos**, onde cada método tem um propósito específico. As operações disponíveis para um recurso são definidas, por exemplo, usar o método GET para obter a representação de um recurso, POST para criar um novo recurso, PUT para atualizar um recurso existente, e DELETE para remover um recurso.
 
 #### Idempotencia nas Requisições REST 
 
@@ -485,10 +485,6 @@ O GraphQL é construído sobre alguns conceitos que precisam ser compreendidos p
 Um schema é construído para que seja possível definir quais serão as entidades, objetos e suas relações entre si, quais serão seus campos e seus tipos de dados dos mesmos, além de habilitar quais serão as queries, mutations e subscriptions disponibilizadas para o cliente. 
 
 
-### Resolvers e Data Sources
-
-Como podemos entender, o GraphQL não é de fato um banco de dados, apenas uma interface flexível entre o cliente e as fontes disponíveis, e ele pode recuperar dados de várias fontes de dados simultâneamente, incluindo bancos SQL, NoSQL, API's REST e servicos RPC se assim for definido, e os resolvers são funções que fornecem as instruções e integrações necessárias para transformar uma operação do GraphQL em dados reais de fato.  Os resolver são responsáveis em buscar esses dados em suas fontes originais. Cada campo que é definido e configurado dentro de um schema é diretamente associado a um resolver, que é estimulado sempre que aquele campo é solicitado. 
-
 ### Query
 
 Uma Query é um request de aplicação feito pelo cliente do GraphQL usada para ler e recuperar valores do servidor. Essa operação de query precisa respeitar os valores definidos no schema, podendo escolher quais deles ele quer recurperar e definir o formato do payload ideal para responder a solicitação em questão. 
@@ -496,6 +492,15 @@ Uma Query é um request de aplicação feito pelo cliente do GraphQL usada para 
 ### Mutations
 
 Enquanto as queries são usadas para buscar dados, as mutations são utilizadas para modificar dados no servidor, incluindo criação, atualização, e deleção de dados. As mutations no GraphQL são explicitamente feitas para operações que causam efeitos colaterais, podendo também escrever em várias fontes de dados se assim for definido no schema e suas integrações.
+
+### Resolvers e Data Sources
+
+Como podemos entender, o GraphQL não é de fato um banco de dados, apenas uma interface flexível entre o cliente e as fontes disponíveis, e ele pode recuperar dados de várias fontes de dados simultâneamente, incluindo bancos SQL, NoSQL, API's REST e servicos RPC se assim for definido, e os resolvers são funções que fornecem as instruções e integrações necessárias para transformar uma operação do GraphQL em dados reais de fato.  
+
+![Resolvers](/assets/images/system-design/resolvers.png)
+> Exemplo da utilização de vários resolvers dentro de uma query
+
+Os resolver são responsáveis em buscar esses dados em suas fontes originais. Cada campo que é definido e configurado dentro de um schema é diretamente associado a um resolver, que é estimulado sempre que aquele campo é solicitado. 
 
 <br>
 
@@ -510,8 +515,17 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 
 ## Webhooks 
 
-
 ### API's vs Webhooks
+
+### Revisores
+
+* [Tarsila, amor da minha vida](https://twitter.com/tarsilabianca_c/)
+
+* [Carlos Panato](https://twitter.com/comedordexis)
+
+* [Klecianny Melo](https://twitter.com/Kecbm)
+
+* [Kauê Gatto](https://www.linkedin.com/in/kaue-gatto/)
 
 <br>
 
@@ -521,6 +535,8 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 [HTTP Status](https://www.httpstatus.com.br/)
 
 [HTTP Cats](https://http.cat/)
+
+[HTTP Semantics - RFC9110](https://datatracker.ietf.org/doc/html/rfc9110)
 
 [Qual é a diferença entre gRPC e REST?](https://aws.amazon.com/pt/compare/the-difference-between-grpc-and-rest/)
 
