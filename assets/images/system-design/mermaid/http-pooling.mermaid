@@ -1,0 +1,22 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Loja as Loja Online
+    participant API as Sistema de Pagamento Parceiro
+    Note over Loja,API: HTTP Pooling
+    Loja->>API: Checa status do pagamento
+    Note over API: Checa Status
+    API-->>Loja: Pagamento pendente
+    Note over Loja: Espera 10s
+    Loja->>API: Checa status do pagamento
+    Note over API: Checa Status
+    API-->>Loja: Pagamento pendente
+    Note over Loja: Espera 10s
+    Loja->>API: Checa status do pagamento
+    Note over API: Checa Status
+    API-->>Loja: Pagamento pendente       
+    Note over Loja: Espera 10s 
+    Loja->>API: Checa status do pagamento
+    Note over API: Checa Status
+    API-->>Loja: Pagamento concluído
+    Note over Loja: Processa compra
+

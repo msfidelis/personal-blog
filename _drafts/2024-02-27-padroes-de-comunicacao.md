@@ -26,7 +26,7 @@ Nesse sentido, por mais simples que sejam a construção e manutenção de chama
 
 <br>
 
-# REST - Representational State Transfer 
+# API's REST - Representational State Transfer 
 
 O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônico para sistemas distribuídos** que presa pela simplicidade da comunicação entre componentes na internet ou em redes internas de microserviços, sendo a **principal abordagem na construção de comunicação sincrona entre serviços**. Definido por **Roy Fielding** em sua tese de doutorado em 2000, REST não é um protocolo ou padrão, mas um conjunto de princípios arquitetônicos usados para projetar sistemas distribuídos escaláveis, confiáveis e de fácil manutenção. **Os serviços que seguem os princípios REST são conhecidos como RESTful em API's**.
 
@@ -107,11 +107,7 @@ Este conceito, quando aplicado corretamente, **garante que múltiplas chamadas i
 | PATCH   | Utilizado para **aplicar atualizações parciais a um recurso**. Ao contrário do PUT, que substitui o recurso inteiro, o **PATCH modifica apenas as partes especificadas**. É idempotente, pois a execução sob o mesmo recurso tende a gerar sempre o mesmo efeito e gerar o mesmo resultado. | Sim          |
 | DELETE  | Empregado para **remover um recurso**. É **idempotente, pois deletar um recurso várias vezes tem o mesmo efeito que deletá-lo uma única vez**.                                                      | Sim          |
 
-
 <br>
-
-
-
 
 ### Métodos HTTP nas URI's e Recursos
 
@@ -193,7 +189,28 @@ No contexto de APIs REST, o cache pode ser implementado tanto no lado do cliente
 
 A dinamica do cache em transações HTTP e API's RESTful depende de um gerenciamento cuidadoso para garantir que os dados armazenados sejam precisos, úteis e atualizados. Cabeçalhos HTTP, como `Cache-Control`, `Last-Modified`, e `ETag`, são utilizados para controlar o comportamento do cache, incluindo a validade, revalidação e a expiração do cache desses recursos.
 
+<br>
 
+# Webhooks 
+
+Os Webhooks são  recursos arquiteturais em que sua implementação **se baseia em enviar dados para os clientes, ainda de forma sincrona, conforme determinadas ações acontecerem dentro do sistema.** Ao contrário de uma API cliente-servidor em que o cliente notifica o servidor para tomar ações e lidar com determinados dados, os webhooks cumprem o papel inverso, **onde através de URL's previamente informadas, o sistema servidor envia notificações para os clientes sempre que algum dado for modificado**, status atualizado ou determinada ação seja necessária da parte dele.
+
+Em cenários onde os **clientes precisam de atualizações contínuas sobre o estado de um recurso de interesse no servidor**, o polling HTTP síncrono, baseado em solicitações periódicas, aumenta a carga no servidor e no cliente, muitas vezes resultando em atrasos na detecção de mudanças e no desperdício de recursos com requisições desnecessárias. Esse é o principal problema que a implementação de sistemas de webhooks resolvem. 
+
+### Pooling e a Diferença entre Webhooks e API's
+
+Para explicar a diferença entre entre o pooling de API's e Webhooks vamos propor um modelo lúdico: Imagine que você comprou um livro novo em algum e-commerce. Você fez as devidas solicitações, pagamentos e confirmações necessárias para isso e agora precisa esperar o produto ficar pronto. Você está bem ansioso pra chegada desse novo material, e de tempos em tempos você vai até sua caixa de correios para verificar se sua encomenda está lá. Esse modelo é diretamente associado ao padrão de comunicação sincrona, onde a partir do momento em que você espera manter o cliente atualizado com os estados observados do servidor, ele precisa de tempos em tempos checar o recurso através de requisições periódicas até recuperar o estado das informações necessárias. 
+
+Agora imagine que você está esperando essa encomenda, mas ao invés de um sistema de caixa de correios a abordagem utilizada é a de um entregador que precisa da sua assinatura e confirmação de recebimento para te entregar o seu pacote. Você pode continuar com todas as suas tarefas normalmente até sua campainha tocar, e receber o seu pacote em mãos, assinando e confirmando o recebimento. Esse é um modelo que pode exemplificar o funcionamento de Webhooks comparado ao pooling de API's. 
+
+Imagine que você possui um e-commerce usa os métodos de pagamento de uma empresa parceira. Essa empresa oferece várias formas de pagamento para você oferecer aos seus clientes em suas compras, como Pix, Cartão de Crédito, Boleto e etc. Imagine que um código Pix é gerado, e você precisa ficar chegando de tempos em tempos na API desse parceiro se o pagamento foi o não concluído para dar sequencia ao processo de compra do cliente. Esse modelo é o pooling não recomendado. 
+
+![HTTP Pooling](/assets/images/system-design/http-pooling.png)
+
+Agora imagine que junto as informações de pagamento, você fornece ao seu parceiro uma URL do seu sistema, onde ele poderá enviar uma requisição com os dados dessa solicitação sempre que houver uma atualização do lado do sistema dele, como por exemplo informando se o processo de pagamento foi concluído, cancelado, expirado ou recusado, evitando que você fique consultando o mesmo de forma desnecessária. 
+
+
+![Webhook](/assets/images/system-design/webhook.png)
 
 <br>
 
@@ -294,6 +311,8 @@ func main() {
 Iniciando a chamada RPC para o serviço Proteinas.Recomendacao
 O consumo de proteínas adequado para o peso de 85 kg é de 170g por dia
 ```
+
+<br>
 
 # gRPC - Google Remote Procedure Call
 
@@ -513,27 +532,6 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 ![gRPC Misc](/assets/images/system-design/grpc-misc.png)
 
 <br>
-
-# Webhooks 
-
-Os Webhooks são  recursos arquiteturais em que sua implementação **se baseia em enviar dados para os clientes, ainda de forma sincrona, conforme determinadas ações acontecerem dentro do sistema.** Ao contrário de uma API cliente-servidor em que o cliente notifica o servidor para tomar ações e lidar com determinados dados, os webhooks cumprem o papel inverso, **onde através de URL's previamente informadas, o sistema servidor envia notificações para os clientes sempre que algum dado for modificado**, status atualizado ou determinada ação seja necessária da parte dele.
-
-Em cenários onde os **clientes precisam de atualizações contínuas sobre o estado de um recurso de interesse no servidor**, o polling HTTP síncrono, baseado em solicitações periódicas, aumenta a carga no servidor e no cliente, muitas vezes resultando em atrasos na detecção de mudanças e no desperdício de recursos com requisições desnecessárias. Esse é o principal problema que a implementação de sistemas de webhooks resolvem. 
-
-### Pooling e a Diferença entre Webhooks e API's
-
-Para explicar a diferença entre entre o pooling de API's e Webhooks vamos propor um modelo lúdico: Imagine que você comprou um livro novo em algum e-commerce. Você fez as devidas solicitações, pagamentos e confirmações necessárias para isso e agora precisa esperar o produto ficar pronto. Você está bem ansioso pra chegada desse novo material, e de tempos em tempos você vai até sua caixa de correios para verificar se sua encomenda está lá. Esse modelo é diretamente associado ao padrão de comunicação sincrona, onde a partir do momento em que você espera manter o cliente atualizado com os estados observados do servidor, ele precisa de tempos em tempos checar o recurso através de requisições periódicas até recuperar o estado das informações necessárias. 
-
-Agora imagine que você está esperando essa encomenda, mas ao invés de um sistema de caixa de correios a abordagem utilizada é a de um entregador que precisa da sua assinatura e confirmação de recebimento para te entregar o seu pacote. Você pode continuar com todas as suas tarefas normalmente até sua campainha tocar, e receber o seu pacote em mãos, assinando e confirmando o recebimento. Esse é um modelo que pode exemplificar o funcionamento de Webhooks comparado ao pooling de API's. 
-
-Imagine que você possui um e-commerce usa os métodos de pagamento de uma empresa parceira. Essa empresa oferece várias formas de pagamento para você oferecer aos seus clientes em suas compras, como Pix, Cartão de Crédito, Boleto e etc. Imagine que um código Pix é gerado, e você precisa ficar chegando de tempos em tempos na API desse parceiro se o pagamento foi o não concluído para dar sequencia ao processo de compra do cliente. Esse modelo é o pooling não recomendado. 
-
-![HTTP Pooling](/assets/images/system-design/http-pooling.png)
-
-Agora imagine que junto as informações de pagamento, você fornece ao seu parceiro uma URL do seu sistema, onde ele poderá enviar uma requisição com os dados dessa solicitação sempre que houver uma atualização do lado do sistema dele, como por exemplo informando se o processo de pagamento foi concluído, cancelado, expirado ou recusado, evitando que você fique consultando o mesmo de forma desnecessária. 
-
-
-![Webhook](/assets/images/system-design/webhook.png)
 
 ### Revisores
 
