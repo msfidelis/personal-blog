@@ -14,15 +14,16 @@ Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolo
 
 # Definindo Comunicações Sincronas
 
-Uma comunicação síncrona, de forma bem direta e simples, é um padrão de comunicação utilizados em sistemas distribuídos, ou não, onde o **cliente espera por uma resposta do servidor antes de prosseguir a execução de outras tarefas**. Por exemplo, em um ambiente de microserviços de um domínio de logística, um sistema que estima o preço de um frete precisa recuperar em um outro sistema responsável pelo cadastral de seus clientes as informações de endereço antes de prosseguir com o calculo de fato. 
+Uma comunicação síncrona, de forma bem direta e simples, é um padrão de comunicação utilizados em sistemas distribuídos, ou não, onde o **cliente espera por uma resposta do servidor antes de prosseguir a execução de outras tarefas**. Por exemplo, em um ambiente de microserviços de um domínio de logística, um sistema que estima o preço de um frete precisa recuperar em um outro sistema responsável pelo cadastro de seus clientes as informações de endereço antes de prosseguir com o calculo de fato. 
 
-Este modelo de comunicação é caracterizado por sua natureza **"bloqueante"**, significando que o **processo que inicia a chamada fica "bloqueado" até que a operação e a comunicação com o servidor seja concluída**, significando uma "espera ativa" entre os dois componentes. Em outras palavras, a comunicação síncrona envolve uma interação **direta e imediata entre as partes**, facilitando um "diálogo" que precise ser concluído fim-a-fim em tempo de execução de uma tarefa.
+Este modelo de comunicação é caracterizado por sua natureza **"bloqueante"**, significando que o **processo que inicia a chamada fica "bloqueado" até que a operação e a comunicação com o servidor seja concluída**, o que causa uma "espera ativa" entre os dois componentes. Em outras palavras, a comunicação síncrona envolve uma interação **direta e imediata entre as partes**, facilitando um "diálogo" que precise ser concluído fim-a-fim em tempo de execução de uma tarefa.
 
 Esse padrão é muito bem recebido onde a **consistência dos dados é de extrema importância**, pois as operações podem ser facilmente feitas em uma **sequência específica**, além de ser muito mais simples e intuitiva em quesitos de entendimento e implementação. 
 
 Em quesito de desvantagens, a implementação de uma comunicação sincrona pode **limitar a escalabilidade do sistema**, uma vez que o bloqueio durante a espera por respostas pode **reduzir a capacidade de processamento paralelo**, além de afetar performance em cadeia, onde o mau funcionamento constante ou temporário de uma dependência específica entre uma série de chamadas pode acabar aumentando o tempo de resposta e processamento. O ponto mais crítico é que a indisponibilidade de um serviço que é dependente de um processo bloqueante pode **invariávelmente degradar a disponibilidade geral de uma cadeia de processos**. 
 
-Nesse sentido, por mais simples que sejam a construção e manutenção de chamadas sincronas, é necessário o **cuidado com questões de retentativas, timeouts e outras estratégias de resiliência** cosntruída de forma pragmática entre cliente-servidor. 
+Nesse sentido, por mais simples que sejam a construção e manutenção de chamadas sincronas, é necessário o **cuidado com questões de retentativas, timeouts e outras estratégias de resiliência** construída de forma pragmática entre cliente-servidor. 
+
 
 <br>
 
@@ -32,7 +33,7 @@ O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônic
 
 O REST é construído usando referências e recursos do **protocolo HTTP**, definindo papeis e responsabilidades de cliente-servidor e busca **estabelecer uma interface de um cliente com os dados e ações de um sistema** de forma intuitiva. 
 
-Ele utiliza métodos HTTP para definir ações, como **GET, POST, PUT, DELETE e PATCH**, para realizar operações CRUD **(Criar, Ler, Atualizar, Deletar)** em recursos identificados por URI's. Esses recursos são representações de entidades ou objetos do domínio da aplicação. Nesse tópico vamos abordar alguns dos principais componentes do estilo arquitetural REST, e detalhar as partes mais importantes conceitualmente. 
+Ele utiliza métodos HTTP para definir ações, como **GET, POST, PUT, DELETE e PATCH**, para realizar operações CRUD **(Criar, Ler, Atualizar e Deletar)** em recursos identificados por URI's. Esses recursos são representações de entidades ou objetos do domínio da aplicação. Nesse tópico vamos abordar alguns dos principais componentes do estilo arquitetural REST, e detalhar as partes mais importantes conceitualmente. 
 
 ### Componentes de uma requisição REST 
 
@@ -40,11 +41,11 @@ Uma requisição REST é composta por vários componentes que trabalham juntos p
 
 ### URI's e URL's 
 
-Dentro do contexto REST, os conceitos de *URI* e *URL* têm papéis específicos quando se tratam de **identificar e interagir com recursos expostos por API's**. Em REST, um "recurso" é uma **abstração de qualquer informação ou dado que pode ser nomeado e identiticado, como documentos, imagens, serviços, coleções de outros recursos**, e assim por diante. 
+Dentro do contexto REST, os conceitos de *URI* e *URL* têm papéis específicos quando se tratam de **identificar e interagir com recursos expostos por API's**. Em REST, um "recurso" é uma **abstração de qualquer informação ou dado que pode ser nomeado e identificado, como documentos, imagens, serviços ou coleções de outros recursos**, e assim por diante. 
 
 #### URI - Uniform Resource Identifier 
 
-Um URI, ou *Uniform Resource Identifier*, é uma **string de caracteres que identifica um recurso específico**. **Um recurso pode ser qualquer coisa que seja identificável** através de um endereco, como um documento, uma imagem, um serviço de transmissão de vídeo, ou uma coleção de outros recursos como listas de vendas, produtos, dados de usuário e etc. URIs **servem como um mecanismo de identificação universal**, permitindo que **recursos sejam localizados e referenciados de forma única**. Dentro do REST, **cada recurso é identificado de forma única por um URI**. Isso permite que clientes e servidores se refiram a um recurso específico sem ambiguidade. Por exemplo, um URI pode ser usado para identificar um determinado livro em um sistema de biblioteca, um usuário em uma rede social, ou uma transação em um sistema financeiro e etc. 
+Um URI, ou *Uniform Resource Identifier*, é uma **string de caracteres que identifica um recurso específico**. **Um recurso pode ser qualquer coisa que seja identificável** através de um endereço, como um documento, uma imagem, um serviço de transmissão de vídeo, ou uma coleção de outros recursos como listas de vendas, produtos, dados de usuário e etc. URIs **servem como um mecanismo de identificação universal**, permitindo que **recursos sejam localizados e referenciados de forma única**. Dentro do REST, **cada recurso é identificado de forma única por um URI**. Isso permite que clientes e servidores se refiram a um recurso específico sem ambiguidade. Por exemplo, um URI pode ser usado para identificar um determinado livro em um sistema de biblioteca, um usuário em uma rede social, ou uma transação em um sistema financeiro. 
 
 #### URL - Uniform Resource Locator
 
@@ -68,12 +69,12 @@ Exemplificamos alguns dos headers mais comuns quando abordamos o protocolo HTTP,
 |-------------------|----------------------------------------------------------------------------------------------------|
 | `Content-Type`    | Especifica o tipo de mídia do corpo da requisição/resposta (ex: `application/json`).               |
 | `Accept`          | Informa ao servidor os tipos de mídia aceitáveis como resposta.                                    |
-| `Authorization`   | Contém as credenciais para autenticar o usuário que faz a requisição.                             |
-| `Cache-Control`   | Direciona o comportamento do cache no cliente e no servidor (ex: `no-cache`).                     |
-| `ETag`            | Um identificador único para uma versão específica de um recurso, usado para otimizar o cache.     |
-| `Location`        | Indica a URL de um recurso recém-criado ou a URL para onde o cliente deve redirecionar.           |
-| `Content-Length`  | Indica o tamanho, em bytes, do corpo da mensagem de requisição ou resposta.                       |
-| `Date`            | O tempo em que a mensagem foi enviada, para sincronização entre cliente e servidor.               |
+| `Authorization`   | Contém as credenciais para autenticar o usuário que faz a requisição.                              |
+| `Cache-Control`   | Direciona o comportamento do cache no cliente e no servidor (ex: `no-cache`).                      |
+| `ETag`            | Um identificador único para uma versão específica de um recurso, usado para otimizar o cache.      |
+| `Location`        | Indica a URL de um recurso recém-criado ou a URL para onde o cliente deve redirecionar.            |
+| `Content-Length`  | Indica o tamanho, em bytes, do corpo da mensagem de requisição ou resposta.                        |
+| `Date`            | O tempo em que a mensagem foi enviada, para sincronização entre cliente e servidor.                |
 
 <br>
 
@@ -93,16 +94,16 @@ Na arquitetura REST, o body da requisição ou da resposta desempenha um papel d
 
 Os métodos HTTP, também conhecidos como "verbos", **definem ações que podem ser realizadas sobre os recursos representados nos paths**. Eles permitem uma **interação semântica com os recursos**, onde cada método tem um propósito específico. As operações disponíveis para um recurso são definidas, por exemplo, usar o método GET para obter a representação de um recurso, POST para criar um novo recurso, PUT para atualizar um recurso existente, e DELETE para remover um recurso.
 
-#### Idempotencia nas Requisições REST 
+#### Idempotência nas Requisições REST 
 
 A idempotência é um conceito aplicado em vários lugares do desenvolvimento de software no geral, inclusive no design de APIs RESTful, e desempenha papeis importantes na construção de interfaces confiáveis e previsíveis.
 
-Este conceito, quando aplicado corretamente, **garante que múltiplas chamadas idênticas a um mesmo endpoint resultem sempre no mesmo estado do recurso, sem causar efeitos colaterais adicionais após a primeira aplicação**. Isso garante com que tentativas de retry em uma chamada de um serviço, mesmo que por meio de erros, ou execuções parciais, tenha a capacidade de reproduzir os mesmos requests para nosso serviço evitando erros ou duplicidades. No REST alguns métodos HTTP devem ser implementados de forma naturalmente idempotente, outros devem implementar alguma lógica de composição de chaves de idempotencia, checagem campos e outras estratégias para permitirem por exemplo, a criação de registros de forma idempotente. A seguir os métodos HTTP e suas possibilidades de idempotencia: 
+Este conceito, quando aplicado corretamente, **garante que múltiplas chamadas idênticas a um mesmo endpoint resultem sempre no mesmo estado do recurso, sem causar efeitos colaterais adicionais após a primeira aplicação**. Isso garante com que tentativas de retry em uma chamada de um serviço, mesmo que por meio de erros, ou execuções parciais, tenha a capacidade de reproduzir os mesmos requests para nosso serviço evitando erros ou duplicidades. No REST alguns métodos HTTP devem ser implementados de forma naturalmente idempotente, outros devem implementar alguma lógica de composição de chaves de idempotência, checagem campos e outras estratégias para permitirem por exemplo, a criação de registros de forma idempotente. A seguir os métodos HTTP e suas possibilidades de idempotência: 
 
 | Método  | Descrição                                                                                                                                 | Idempotência |
 |---------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | GET     | Utilizado para **recuperar a representação de um recurso sem modificá-lo**. É seguro e **idempotente**, várias **requisições idênticas devem ter o mesmo efeito que uma única requisição.** | Sim          |
-| POST    | Empregado para **criar um novo recurso**. **Não é idempotente**, pois realizar várias requisições POST pode criar múltiplos recursos. Em caso de necessidade de idempotencia, será necessário a implementação de lógicas adicionais. | Não          |
+| POST    | Empregado para **criar um novo recurso**. **Não é idempotente**, pois realizar várias requisições POST pode criar múltiplos recursos. Em caso de necessidade de idempotência, será necessário a implementação de lógicas adicionais. | Não          |
 | PUT     | Utilizado para **atualizar um recurso existente ou criar um novo se ele não existir**, no URI especificado. **É idempotente**, então **múltiplas requisições idênticas terão o mesmo efeito sobre a entidade**.   | Sim          |
 | PATCH   | Utilizado para **aplicar atualizações parciais a um recurso**. Ao contrário do PUT, que substitui o recurso inteiro, o **PATCH modifica apenas as partes especificadas**. É idempotente, pois a execução sob o mesmo recurso tende a gerar sempre o mesmo efeito e gerar o mesmo resultado. | Sim          |
 | DELETE  | Empregado para **remover um recurso**. É **idempotente, pois deletar um recurso várias vezes tem o mesmo efeito que deletá-lo uma única vez**.                                                      | Sim          |
@@ -113,7 +114,7 @@ Este conceito, quando aplicado corretamente, **garante que múltiplas chamadas i
 
 As URIs, como abordamos, são utilizadas para identificar os recursos de forma única. Em uma API RESTful, as URIs são projetadas para serem intuitivas e descritivas, facilitando o entendimento e a navegação pelos recursos disponíveis. A estrutura de uma URI em REST reflete a organização dos recursos e suas relações.
 
-As URIs quando olhadas no modelo REST, devem se referir a recursos e entidades,  e não às ações que serão realizadas diretamentesobre eles. Por exemplo, o path `/users` para acessar recursos do usuário combinado com o método `GET`, e não um basepath imperativo como `/getUsers`.
+As URIs quando olhadas no modelo REST, devem se referir a recursos e entidades, e não às ações que serão realizadas diretamente sobre eles. Por exemplo, o path `/users` para acessar recursos do usuário combinado com o método `GET`, e não um basepath imperativo como `/getUsers`.
 
 A URI de determinadas entidades devem refletir a estrutura hierárquica dos recursos. Por exemplo, `/users/123/posts` pode representar os posts do usuário com ID 123.
 
@@ -161,7 +162,7 @@ Os principios arquiteturais do REST estabelecem uma série de regras e bases de 
 
 #### Interface Uniforme 
 
-A interface uniforme é o princípio central do REST e diz respeito à consistência na forma como as interfaces são expostas aos clientes. Esse principio preza para que cada recurso deve ser identificável de forma única através de URIs e suas respostas sejam representadas por dados padronizados, como JSON ou XML, e enviados ao cliente respeitando esses formatos. Também é importante ressaltar que as requisições e respostas devem conter toda a informação necessária para serem compreendidas, incluindo metadados e hiperlinks de uma forma quase auto-descritiva. De forma resumida, esse princípio garante uma padronização formal na forma como os clientes interagem com o servidor e vice versa. 
+A interface uniforme é o princípio central do REST e diz respeito à consistência na forma como as interfaces são expostas aos clientes. Esse principio preza que cada recurso deve ser identificável de forma única através de URIs e suas respostas sejam representadas por dados padronizados, como JSON ou XML, e enviados ao cliente respeitando esses formatos. Também é importante ressaltar que as requisições e respostas devem conter toda a informação necessária para serem compreendidas, incluindo metadados e hiperlinks de uma forma quase auto-descritiva. De forma resumida, esse princípio garante uma padronização formal na forma como os clientes interagem com o servidor e vice versa. 
 
 Garantindo uma interface uniforme, arbitrariamente garantimos a interoperabilidade, ou seja, compatibilidade entre diferentes sistemas e tecnologias, pois independente do ferramental escolhido para construção do cliente e do servidor, a comunicação possa ser respeitada e padronizada entre ambos, sem o conhecimento das necessidades de implementação. Quando trabalhamos em interfaces, é importante também projetá-las para promover cada vez mais um desacoplamento entre sistemas. 
 
@@ -169,13 +170,13 @@ Garantindo uma interface uniforme, arbitrariamente garantimos a interoperabilida
 
 No REST, cada requisição do cliente para o servidor **deve conter todas as informações necessárias para entender e completar a requisição**. O servidor **não armazena nenhum estado da sessão do cliente**. A comunicação stateless (*sem estado*) é um dos princípios fundamentais que define como os clientes e servidores interagem entre si. Esse princípio assegura que cada requisição de um cliente para um servidor deve conter todas as informações necessárias para o servidor compreender e responder à requisição. Em outras palavras, o **servidor não armazena nenhum estado sobre o cliente entre as requisições. Cada uma delas é tratada como se fosse a primeira, sem qualquer conhecimento prévio ou memória das interações anteriores.**
 
-A natureza stateless também aumenta os níveis de confiabilidade do sistema. Se um **servidor falhar após processar uma requisição, o cliente pode simplesmente tentar novamente, possivelmente usando outro node de pool de servidores de uma arquitetura distribuída**. Como nenhuma informação de estado é mantida entre as requisições, não há perda de continuidade.. Esse é um dos principios que garante a [escalabilidade horizontal](/performance-capacidade-escalabilidade/) de aplicações REST em ambientes sensíveis em demanda de forma transparente. 
+A natureza stateless também aumenta os níveis de confiabilidade do sistema. Se um **servidor falhar após processar uma requisição, o cliente pode simplesmente tentar novamente, possivelmente usando outro node de pool de servidores de uma arquitetura distribuída**. Como nenhuma informação de estado é mantida entre as requisições, não há perda de continuidade. Esse é um dos principios que garante a [escalabilidade horizontal](/performance-capacidade-escalabilidade/) de aplicações REST em ambientes sensíveis em demanda de forma transparente. 
 
 Os desafios de uma arquitetura stateless giram principalmente em torno dos tópicos de autenticação. Usar tokens, como JWT (JSON Web Tokens) pode se tornar uma estratégia recomendada, pois os mesmos podem conter informações comuns do cliente que efetua a solicitação junto com meios de validar a integridade e validade dos mesmos sem a nacessidade de manter histórico entre as requisições. 
 
 #### Camadas 
 
-A **arquitetura em camadas permite que intermediários (como proxies e gateways) facilitem ou melhorem a comunicação entre o cliente e o servidor** de forma transparente, promovendo a **segurança, o balanceamento de carga e a capacidade de cache**. Combinando o conceito e viabilidade de camadas com o padrão stateless, o padrão se torna muito poderoso e escalável. 
+A **arquitetura em camadas permite que intermediários (como proxies e gateways) facilitem ou melhorem a comunicação entre o cliente e o servidor** de forma transparente, promovendo a **segurança, o balanceamento de carga e a capacidade de cache**. Combinando o conceito de viabilidade de camadas com o padrão stateless, o servidor se torna muito poderoso e escalável. 
 
 O princípio de camadas, ou *"Layered System"*, é uma das **restrições arquiteturais mais importantes do REST, pois influencia o design de sistemas distribuídos sensíveis a escala constante**, especialmente APIs RESTful. Este princípio estabelece que a arquitetura de uma aplicação deve ser **organizada em camadas hierárquicas, cada uma com uma função específica**. A comunicação ocorre sequencialmente de uma camada para outra, mas cada camada **não precisa conhecer os detalhes das camadas internas ou externas a ela**, apenas interagir com as camadas imediatamente adjacentes.
 
@@ -242,7 +243,7 @@ type Args struct {
 type Proteinas float64
 
 func (p *Proteinas) Recomendacao(args Args, reply *float64) error {
-	// Calcula o o consumo de proteina recomendado e devolve para o objeto de respotsa
+	// Calcula o o consumo de proteina recomendado e devolve para o objeto de resposta
 	*reply = args.Peso * 2
 	return nil
 }
@@ -316,7 +317,7 @@ O consumo de proteínas adequado para o peso de 85 kg é de 170g por dia
 
 # gRPC - Google Remote Procedure Call
 
-O gRPC é um framework de chamada de procedimento remoto (RPC) de código aberto desenvolvido pelo Google. Ele permite que os desenvolvedores conectem serviços de maneira performática e escalável, possibilitando a comunicação entre serviços construídos de maneira distribuída. Seu design baseia-se no uso de **HTTP/2 como protocolo de transporte**, **Protocol Buffers (ProtoBuf)** como linguagem de interface de descrição de serviço (IDL), e além do conceito das chamadas RPC que já abordamos, ele oferece recursos como autenticação, balanceamento de carga e validações.  Essa arquitetura é ideal para construir arquiteturas de microserviços, onde serviços leves e performáticos são críticos para o desempenho e a escalabilidade. 
+O gRPC é um framework de chamada de procedimento remoto (RPC) de código aberto desenvolvido pelo Google. Ele permite que os desenvolvedores conectem serviços de maneira performática e escalável, possibilitando a comunicação entre serviços construídos de maneira distribuída. Seu design baseia-se no uso de **HTTP/2 como protocolo de transporte**, **Protocol Buffers (ProtoBuf)** como linguagem de interface de descrição de serviço (IDL), e além do conceito das chamadas RPC que já abordamos, ele oferece recursos como autenticação, balanceamento de carga e validações. Essa arquitetura é ideal para construir arquiteturas de microserviços, onde serviços leves e performáticos são críticos para o desempenho e a escalabilidade. 
 
 ![gRPC](/assets/images/system-design/grpc.png)
 
@@ -324,15 +325,15 @@ Com o HTTP/2, **é possível fazer múltiplas chamadas RPC em paralelo sobre uma
 
 O gRPC suporta **streaming bidirecional**, permitindo que **tanto o cliente quanto o servidor enviem uma sequência de mensagens para o outro usando uma única conexão**. Isso é particularmente útil para casos de uso como chat em tempo real, monitoramento em tempo real e outros cenários que exigem comunicação contínua e persistente. 
 
-Implementar e **gerenciar um sistema baseado em gRPC pode ser mais complexo do que usar alternativas mais simples como REST**, especialmente em projetos menores ou com requisitos menos rigorosos de desempenho. A característica de se utilizar contratos por ProtoBuf para manter um contrato consistencia, encontra-se a necessidade de distribuir e versionar esse contrato entre o cliente e o servidor. Uma vez que esse contrato precise ser mudado para adicionar, modificar ou remover alguma variável do mesmo, pode existir a problemática de garantir a atualização de todos os clientes desse serviço. 
+Implementar e **gerenciar um sistema baseado em gRPC pode ser mais complexo do que usar alternativas mais simples como REST**, especialmente em projetos menores ou com requisitos menos rigorosos de desempenho. A característica de se utilizar contratos por ProtoBuf para manter um contrato de consistência, encontra-se a necessidade de distribuir e versionar esse contrato entre o cliente e o servidor. Uma vez que esse contrato precise ser mudado para adicionar, modificar ou remover alguma variável do mesmo, pode existir a problemática de garantir a atualização de todos os clientes desse serviço. 
 
 ## ProtoBufs 
 
-O Protocol Buffers, ou ProtoBuf, é a linguagem de descrição de interface preferida pelo gRPC, é usada para definir os serviços e a **estrutura de dados que serão compartilhados entre cliente e servidor por meio de um contrato forte**. ProtoBuf é um sistema de serialização binária que não só é mais eficiente em termos de espaço do que formatos como JSON, mas também fornece uma maneira clara de especificar a interface do serviço de maneira agnóstica a linguagens e frameworks
+O Protocol Buffers, ou ProtoBuf, é a linguagem de descrição de interface preferida pelo gRPC, é usada para definir os serviços e a **estrutura de dados que serão compartilhados entre cliente e servidor por meio de um contrato forte**. ProtoBuf é um sistema de serialização binária que não só é mais eficiente em termos de espaço do que formatos como JSON, mas também fornece uma maneira clara de especificar a interface do serviço de maneira agnóstica a linguagens e frameworks.
 
 ### Exemplo de Protobuf
 
-Nesse contrato de exemplo escrevemos a assinatura / contrato de comunicação gRPC que deverá acontecer via client-server utilizando a sintaxe `proto3`. Descrevemos o service chamado `IMCService` que implementa um método chamado `Calcular`, que recebe um objeto de mensagem no padrão descrito no `IMCRequest` e retorna uma mensagem no padrão descrito no `IMCResponse`. A linguagem superficialmente é descritiva e bem simples. 
+Nesse contrato de exemplo escrevemos a assinatura/contrato de comunicação gRPC que deverá acontecer via client-server utilizando a sintaxe `proto3`. Descrevemos o service chamado `IMCService` que implementa um método chamado `Calcular`, que recebe um objeto de mensagem no padrão descrito no `IMCRequest` e retorna uma mensagem no padrão descrito no `IMCResponse`. A linguagem superficialmente é descritiva e bem simples. 
 
 ```proto
 syntax = "proto3";
@@ -364,7 +365,6 @@ Após descrever o contrato, precisamos gerar os pacotes `.go` que implementam es
 ```bash
 protoc --go_out=. --go-grpc_out=. imc.proto
 ```
-
 
 ### Exemplo de Server gRPC
 
@@ -475,7 +475,7 @@ Iniciando Calculo...
 
 # Websockets
 
-Uma comunicação baseada em Websockets são uma alternativa para solucionar **problemas de comunicação em tempo real entre clientes e servidores em tecnologias de desenvolvimento web**. Diferentemente do modelo tradicional de requisição e resposta HTTP, que é unidirecional e cria uma nova conexão TCP para cada requisição/resposta, o protocolo WebSocket estabelece uma **conexão full-duplex sobre um único socket TCP**. Isso permite uma **comunicação bidirecional contínua entre o cliente e o servidor**, ideal para aplicações web que necessitem de interações em tempo real de atualizações frequentes e instantâneas, como chats online, dashboards dinamicos, graficos de dados financeiros, sistemas de notificações e jogos online. 
+Uma comunicação baseada em Websockets são uma alternativa para solucionar **problemas de comunicação em tempo real entre clientes e servidores em tecnologias de desenvolvimento web**. Diferentemente do modelo tradicional de requisição e resposta HTTP, que é unidirecional e cria uma nova conexão TCP para cada requisição/resposta, o protocolo WebSocket estabelece uma **conexão full-duplex sobre um único socket TCP**. Isso permite uma **comunicação bidirecional contínua entre o cliente e o servidor**, ideal para aplicações web que necessitem de interações em tempo real de atualizações frequentes e instantâneas, como chats online, dashboards dinâmicos, graficos de dados financeiros, sistemas de notificações e jogos online. 
 
 ![Web Socket](/assets/images/system-design/websocket.png)
 
@@ -500,6 +500,8 @@ O GraphQL é construído sobre alguns conceitos que precisam ser compreendidos p
 ### Schema
 
 **Um schema é definido através da linguagem SDL** (*Schema Definition Language*), que é uma sintaxe simples para **definicão de estruturas de dados** e é a particularidade mais importante do GraphQL, sendo compartilhado e acessado entre todos os outros componentes. Um schema **funciona como um contrato entre o cliente e o servidor** e **define e limita dos dados que podem ser consultados e modificados** através do que for disponibilizado, e principalmente a forma como os clientes podem interagir com esses dados. 
+
+O grande motivador da tecnologia é reduzir o **over-fetching e under-fetching, pois permite que os clientes solicitem exatamente os dados de que precisam sem a necessidade de lidar com payloads gigantescos**. 
 
 Um schema é construído para que seja possível definir quais serão as entidades, objetos e suas relações entre si, quais serão seus campos e seus tipos de dados dos mesmos, além de habilitar quais serão as queries, mutations e subscriptions disponibilizadas para o cliente. 
 
@@ -532,6 +534,7 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 ![gRPC Misc](/assets/images/system-design/grpc-misc.png)
 
 <br>
+
 
 ### Revisores
 
