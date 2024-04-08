@@ -8,7 +8,7 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Padrões de Comunicação Sincronos
 ---
 
-Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolos e Comunicação de Redes](/protocolos-de-rede/). A ideia é seguir com os conceitos direcionados anteriormente para aplicá-los em diferentes tipos de padrões de comunicação empregados na contrução de software em arquiteturas modernas e distribuídas. Nesse capítulo iremos falar sobre alguns padrões que podemos utilizar para **construção de chamadas sincronas entre serviços**, aproveitando os conhecimentos ofertados quando abordamos sobre o Protocolo HTTP, TCP/IP e UDP para detalhar conceitualmente com a visão de System Design outras tecnologias e padrões como o **Padrão REST, gRPC, Websockets e GraphQL**. 
+Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolos e Comunicação de Redes](/protocolos-de-rede/). A ideia é seguir com os conceitos direcionados anteriormente para aplicá-los em diferentes tipos de padrões de comunicação empregados na contrução de software em arquiteturas modernas e distribuídas. Nesse capítulo iremos falar sobre alguns padrões que podemos utilizar para **construção de chamadas sincronas entre serviços**, aproveitando os conhecimentos ofertados quando abordamos sobre o **Protocolo HTTP, TCP/IP e UDP** para detalhar conceitualmente com a visão de System Design outras tecnologias e padrões como o **Padrão REST, Webhooks, gRPC, Websockets e GraphQL**. 
 
 <br>
 
@@ -24,9 +24,10 @@ Em quesito de desvantagens, a implementação de uma comunicação sincrona pode
 
 Nesse sentido, por mais simples que sejam a construção e manutenção de chamadas sincronas, é necessário o **cuidado com questões de retentativas, timeouts e outras estratégias de resiliência** construída de forma pragmática entre cliente-servidor. 
 
+
 <br>
 
-# REST - Representational State Transfer 
+# API's REST - Representational State Transfer 
 
 O **REST**, ou **Representational State Transfer**, é um estilo **arquitetônico para sistemas distribuídos** que presa pela simplicidade da comunicação entre componentes na internet ou em redes internas de microserviços, sendo a **principal abordagem na construção de comunicação sincrona entre serviços**. Definido por **Roy Fielding** em sua tese de doutorado em 2000, REST não é um protocolo ou padrão, mas um conjunto de princípios arquitetônicos usados para projetar sistemas distribuídos escaláveis, confiáveis e de fácil manutenção. **Os serviços que seguem os princípios REST são conhecidos como RESTful em API's**.
 
@@ -191,9 +192,32 @@ A dinamica do cache em transações HTTP e API's RESTful depende de um gerenciam
 
 <br>
 
+# Webhooks 
+
+Os Webhooks são  recursos arquiteturais em que sua implementação **se baseia em enviar dados para os clientes, ainda de forma sincrona, conforme determinadas ações acontecerem dentro do sistema.** Ao contrário de uma API cliente-servidor em que o cliente notifica o servidor para tomar ações e lidar com determinados dados, os webhooks cumprem o papel inverso, **onde através de URL's previamente informadas, o sistema servidor envia notificações para os clientes sempre que algum dado for modificado**, status atualizado ou determinada ação seja necessária da parte dele.
+
+Em cenários onde os **clientes precisam de atualizações contínuas sobre o estado de um recurso de interesse no servidor**, o polling HTTP síncrono, baseado em solicitações periódicas, aumenta a carga no servidor e no cliente, muitas vezes resultando em atrasos na detecção de mudanças e no desperdício de recursos com requisições desnecessárias. Esse é o principal problema que a implementação de sistemas de webhooks resolvem. 
+
+### Pooling e a Diferença entre Webhooks e API's
+
+Para explicar a diferença entre entre o pooling de API's e Webhooks vamos propor um modelo lúdico: Imagine que você comprou um livro novo em algum e-commerce. Você fez as devidas solicitações, pagamentos e confirmações necessárias para isso e agora precisa esperar o produto ficar pronto. Você está bem ansioso pra chegada desse novo material, e de tempos em tempos você vai até sua caixa de correios para verificar se sua encomenda está lá. Esse modelo é diretamente associado ao padrão de comunicação sincrona, onde a partir do momento em que você espera manter o cliente atualizado com os estados observados do servidor, ele precisa de tempos em tempos checar o recurso através de requisições periódicas até recuperar o estado das informações necessárias. 
+
+Agora imagine que você está esperando essa encomenda, mas ao invés de um sistema de caixa de correios a abordagem utilizada é a de um entregador que precisa da sua assinatura e confirmação de recebimento para te entregar o seu pacote. Você pode continuar com todas as suas tarefas normalmente até sua campainha tocar, e receber o seu pacote em mãos, assinando e confirmando o recebimento. Esse é um modelo que pode exemplificar o funcionamento de Webhooks comparado ao pooling de API's. 
+
+Imagine que você possui um e-commerce usa os métodos de pagamento de uma empresa parceira. Essa empresa oferece várias formas de pagamento para você oferecer aos seus clientes em suas compras, como Pix, Cartão de Crédito, Boleto e etc. Imagine que um código Pix é gerado, e você precisa ficar chegando de tempos em tempos na API desse parceiro se o pagamento foi o não concluído para dar sequencia ao processo de compra do cliente. Esse modelo é o pooling não recomendado. 
+
+![HTTP Pooling](/assets/images/system-design/http-pooling.png)
+
+Agora imagine que junto as informações de pagamento, você fornece ao seu parceiro uma URL do seu sistema, onde ele poderá enviar uma requisição com os dados dessa solicitação sempre que houver uma atualização do lado do sistema dele, como por exemplo informando se o processo de pagamento foi concluído, cancelado, expirado ou recusado, evitando que você fique consultando o mesmo de forma desnecessária. 
+
+
+![Webhook](/assets/images/system-design/webhook.png)
+
+<br>
+
 # RPC - Remote Procedure Call 
 
-O **RPC** (*Remote Procedure Call*) é um protocolo utilizado para executar **chamadas de procedimento ou métodos em um sistema computacional diferente daquele em que o código está sendo executado**. Este protocolo permite que um programa em um dispositivo (cliente) envie uma solicitação de execução de procedimento para um software em outro dispositivo (servidor), que executa o procedimento e retorna o resultado. O RPC abstrai a complexidade da comunicação em rede, permitindo aos desenvolvedores se concentrarem na lógica de negócios, em vez dos detalhes de como os dados são transmitidos e recebidos. 
+O **RPC** (*Remote Procedure Call*) é um protocolo utilizado para executar **chamadas de procedimento ou métodos em um sistema computacional diferente daquele em que o código está sendo executado**. Este protocolo permite que um programa em um dispositivo cliente envie uma solicitação de execução de procedimento para um software em outro dispositivo servidor, que executa o procedimento e retorna o resultado. O RPC abstrai a complexidade da comunicação em rede, permitindo aos desenvolvedores se concentrarem na lógica de negócios, em vez dos detalhes de como os dados são transmitidos e recebidos. Existem vários tipos de protocolos RPC como por exemplo o SOAP, Thrift CORBA entre outros. Mais a frente, iremos abordar uma alternativa moderna desse tipo de protocolo, o gRPC. 
 
 ### Exemplo de um Servidor RPC
 
@@ -288,6 +312,8 @@ func main() {
 Iniciando a chamada RPC para o serviço Proteinas.Recomendacao
 O consumo de proteínas adequado para o peso de 85 kg é de 170g por dia
 ```
+
+<br>
 
 # gRPC - Google Remote Procedure Call
 
@@ -463,9 +489,39 @@ Embora a maioria dos navegadores modernos suporte WebSockets, pode haver problem
 
 # GraphQL
 
-O GraphQL é uma **linguagem de consulta para APIs e um runtime para execução dessas consultas pelo lado do servidor**. Desenvolvido pelo Facebook em 2012 e lançado publicamente em 2015, GraphQL **oferece uma abordagem flexível para o desenvolvimento de APIs em comparação com a abordagem tradicional REST**. Ele permite que os clientes **definam a estrutura dos dados requeridos, e exatamente esses dados**, nada mais, nada menos, são retornados pelo servidor. Isso não só torna as consultas mais eficientes, mas também resolve o problema de sobrecarga e subutilização de dados frequentemente encontrado em APIs REST.
+O GraphQL pode ser visto tanto como uma **linguagem de consulta para APIs do lado do cliente, quanto como um runtime para execução dessas consultas pelo lado do servidor**. Desenvolvido pelo Facebook, o GraphQL **oferece uma abordagem diferente para o desenvolvimento de APIs em comparação com a abordagem tradicional REST**. Ele permite que os clientes **definam a estrutura dos dados que desejam receber**, e exatamente esses dados, nada mais, nada menos, são retornados como resposta. Isso não só torna as consultas mais objetivas, mas também resolve o problema de sobrecarga e subutilização de dados frequentemente encontrado em APIs REST. Esse problema em questão, pode ser encontrado em API's REST que possuam payloads muito grandes, onde o cliente por exemplo, não faz uso de todos os campos. Esse problema em questão de trafegar e **lidar com mais dados do que o necessário é conhecido como "ever-fetching"**, e seguindo a mesma lógica, se o cliente não tem todos os dados necessários de forma objetiva, e precisa **consultar outros vários recursos para compor todas as informações necessárias para prosseguir com seu objetivo é um problema conhecido como "under-fetching"**.  
+
+Diminuindo a complexidade de lidar com "under-fetching" e "over-fetching" através de um único ponto de consulta, ao invés de ter que implementar vários endpoints para lidar com vários tipos de demanda na API REST, é um cenário em que vale a pena levar em consideração o uso do GraphQL. Porém a falta de padrões pode se tornar um grande problema como consequencia da adoção desse tipo de abordagem. 
+
+## Componentes do GraphQL
+
+O GraphQL é construído sobre alguns conceitos que precisam ser compreendidos para garantir uma implementação adequada que faça sentido, sendo eles: 
+
+### Schema
+
+**Um schema é definido através da linguagem SDL** (*Schema Definition Language*), que é uma sintaxe simples para **definicão de estruturas de dados** e é a particularidade mais importante do GraphQL, sendo compartilhado e acessado entre todos os outros componentes. Um schema **funciona como um contrato entre o cliente e o servidor** e **define e limita dos dados que podem ser consultados e modificados** através do que for disponibilizado, e principalmente a forma como os clientes podem interagir com esses dados. 
 
 O grande motivador da tecnologia é reduzir o **over-fetching e under-fetching, pois permite que os clientes solicitem exatamente os dados de que precisam sem a necessidade de lidar com payloads gigantescos**. 
+
+Um schema é construído para que seja possível definir quais serão as entidades, objetos e suas relações entre si, quais serão seus campos e seus tipos de dados dos mesmos, além de habilitar quais serão as queries, mutations e subscriptions disponibilizadas para o cliente. 
+
+
+### Query
+
+Uma Query é um request de aplicação feito pelo cliente do GraphQL usada para ler e recuperar valores do servidor. Essa operação de query precisa respeitar os valores definidos no schema, podendo escolher quais deles ele quer recurperar e definir o formato do payload ideal para responder a solicitação em questão. 
+
+### Mutations
+
+Enquanto as queries são usadas para buscar dados, as mutations são utilizadas para modificar dados no servidor, incluindo criação, atualização, e deleção de dados. As mutations no GraphQL são explicitamente feitas para operações que causam efeitos colaterais, podendo também escrever em várias fontes de dados se assim for definido no schema e suas integrações.
+
+### Resolvers e Data Sources
+
+Como podemos entender, o GraphQL não é de fato um banco de dados, apenas uma interface flexível entre o cliente e as fontes disponíveis, e ele pode recuperar dados de várias fontes de dados simultâneamente, incluindo bancos SQL, NoSQL, API's REST e servicos RPC se assim for definido, e os resolvers são funções que fornecem as instruções e integrações necessárias para transformar uma operação do GraphQL em dados reais de fato.  
+
+![Resolvers](/assets/images/system-design/resolvers.png)
+> Exemplo da utilização de vários resolvers dentro de uma query
+
+Os resolver são responsáveis em buscar esses dados em suas fontes originais. Cada campo que é definido e configurado dentro de um schema é diretamente associado a um resolver, que é estimulado sempre que aquele campo é solicitado. 
 
 <br>
 
@@ -479,9 +535,18 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 
 <br>
 
-#### Revisores
+
+### Revisores
+
+* [Tarsila, amor da minha vida](https://twitter.com/tarsilabianca_c/)
+
+* [Carlos Panato](https://twitter.com/comedordexis)
 
 * [Klecianny Melo](https://twitter.com/Kecbm)
+
+* [Kauê Gatto](https://www.linkedin.com/in/kaue-gatto/)
+
+<br>
 
 ### Referências
 
@@ -490,9 +555,11 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 
 [HTTP Cats](https://http.cat/)
 
+[HTTP Semantics - RFC9110](https://datatracker.ietf.org/doc/html/rfc9110)
+
 [Qual é a diferença entre gRPC e REST?](https://aws.amazon.com/pt/compare/the-difference-between-grpc-and-rest/)
 
-[ntegration challenges in microservices architecture with gRPC & REST ](https://www.cncf.io/blog/2022/02/11/integration-challenges-in-microservices-architecture-with-grpc-rest/)
+[Integration challenges in microservices architecture with gRPC & REST ](https://www.cncf.io/blog/2022/02/11/integration-challenges-in-microservices-architecture-with-grpc-rest/)
 
 [REST vs. GraphQL vs. gRPC vs. WebSocket](https://www.resolutesoftware.com/blog/rest-vs-graphql-vs-grpc-vs-websocket/)
 
@@ -512,10 +579,22 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 
 [Gorilla - Websockets](https://github.com/gorilla/websocket/blob/main/examples/chat/client.go)
 
-[Nutrition Overengineering](https://github.com/msfidelis/nutrition-overengineering)
+[Demo: Nutrition Overengineering](https://github.com/msfidelis/nutrition-overengineering)
 
 [System Design Examples - gRPC](https://github.com/msfidelis/system-design-examples/tree/main/sync_protocols/grpc)
 
 [URI, URN e URL](https://igluonline.com/qual-diferenca-entre-url-uri-e-urn/)
 
+[URL, URI, URN](https://woliveiras.com.br/posts/url-uri-qual-diferenca)
+
 [REST Architectural Constraints](https://restfulapi.net/rest-architectural-constraints/)
+
+[Using GraphQL with Golang](https://www.apollographql.com/blog/using-graphql-with-golang)
+
+[GraphQL Schema](https://graphql.org/learn/schema/)
+
+[GraphQL Application Components](https://www.javatpoint.com/graphql-application-components)
+
+[EdgeDB SDL Reference](https://docs.edgedb.com/database/reference/sdl)
+
+[O que é um webhook?](https://www.redhat.com/pt-br/topics/automation/what-is-a-webhook)

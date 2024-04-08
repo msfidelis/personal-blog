@@ -16,8 +16,6 @@ title: System Design - Padrões de Mensageria e Eventos
 
 ## Eventos vs Mensagens
 
-
-
 # Protocolos e Arquiteturas de Eventos
 
 # Protocolos e Arquiteturas de Mensageria
@@ -39,7 +37,7 @@ No quesito de topologia, a arquitetura de uma implementação MQTT precisam de a
 
 ![MQTT - Workflow](/assets/images/system-design/protocolos-mqtt.png)
 
-O **MQTT opera sobre o protocolo TCP/IP**, estabelecendo uma c**onexão de socket persistente entre o cliente e o broker**. Isso proporciona uma comunicação bidirecional confiável, onde os pacotes de dados são garantidos a chegar na ordem e sem duplicidades.
+O **MQTT opera sobre o protocolo TCP/IP**, estabelecendo uma **conexão de socket persistente entre o cliente e o broker**. Isso proporciona uma comunicação bidirecional confiável, onde os pacotes de dados são garantidos a chegar na ordem e sem duplicidades.
 
 Dentro desta conexão persistente, os clientes podem publicar mensagens em tópicos específicos usando a mensagem de `PUBLISH`, e assinar tópicos para receber mensagens usando a mensagem de `SUBSCRIBE`. Dentro dessa conexão todas as mensagens são trocadas de forma performática e confiável.  
 
@@ -94,9 +92,7 @@ O produtor publica mensagens enviando-as ao broker através de um canal específ
 #### Consumers 
 
 
-
-
-
+### Revisores
 
 ### Referências
 

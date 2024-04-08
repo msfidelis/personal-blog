@@ -1,0 +1,28 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Cliente
+    participant ServidorGraphQL as API GraphQL
+    participant Resolver1 as Resolver Clientes
+    participant BancoSQL as Clientes Database - SQL
+    participant Resolver2 as Resolver Vendas
+    participant BancoNaoRelacional as Vendas Database - NoSQL
+    participant Resolver3 as Resolver Cobrança
+    participant APIExterna as API de Cobrança
+
+    Cliente->>ServidorGraphQL: Query GraphQL
+    ServidorGraphQL->>Resolver1: Solicita dados do Resolver de Clientes
+    Resolver1->>BancoSQL: Busca no Banco Relacional
+    BancoSQL->>Resolver1: Retorna dados para o Resolver de Clientes
+    Resolver1->>ServidorGraphQL: Retorna dados ao Servidor GraphQL
+
+    ServidorGraphQL->>Resolver2: Solicita dados do Resolver de Vendas
+    Resolver2->>BancoNaoRelacional: Busca no Banco Não Relacional
+    BancoNaoRelacional->>Resolver2: Retorna dados para o Resolver de Vendas
+    Resolver2->>ServidorGraphQL: Retorna dados ao Servidor GraphQL
+
+    ServidorGraphQL->>Resolver3: Solicita dados do Resolver de Cobranças
+    Resolver3->>APIExterna: Faz requisição à API Externa
+    APIExterna->>Resolver3: Retorna dados para o Resolver de Cobranças
+    Resolver3->>ServidorGraphQL: Retorna dados ao Servidor GraphQL
+
+    ServidorGraphQL->>Cliente: Retorna resposta agregada da Query
