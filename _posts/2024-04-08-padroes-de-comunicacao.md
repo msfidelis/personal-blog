@@ -546,6 +546,8 @@ Uma vez que o problema de distribuir e versionar arquivos de protobufs são uma 
 
 * [Kauê Gatto](https://www.linkedin.com/in/kaue-gatto/)
 
+* [Flávio Suguimoto](https://twitter.com/flaleite)
+
 <br>
 
 ### Referências
