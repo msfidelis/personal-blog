@@ -59,7 +59,7 @@ A **Shared Subscription**, introduzida em versões mais recentes do padrão MQTT
 ![MTT - Shared](/assets/images/system-design/mqtt-shared.png)
 > Modelo de shared subscription do MQTT
 
-Esse modo de subscription é particularmente úteis em cenários de **processamento de mensagens em larga escala**, onde o balanceamento de carga entre múltiplos consumidores é necessária para otimizar o processamento devido ao alto volume de entrada. Elas permitem uma a**rquitetura mais escalável e eficiente**.
+Esse modo de subscription é particularmente úteis em cenários de **processamento de mensagens em larga escala**, onde o balanceamento de carga entre múltiplos consumidores é necessária para otimizar o processamento devido ao alto volume de entrada. Elas permitem uma **arquitetura mais escalável e eficiente**.
 
 Enquanto a **subscrição normal garante que todas as mensagens sejam distribuídas a todos os assinantes**, a **subscrição compartilhada oferece uma abordagem mais eficiente e escalável para o balanceamento de carga entre os assinantes**. Ambos os tipos de subscrição têm seu lugar no ecossistema MQTT e abrem o leque para projetar arquiteturas. Um ponto interessante é que podemos combinar as duas possibilidades, criando várias shared subscriptions que recebem a mesma mensagem, e que distribuem a carga para os membros de cada pool de subscribers.
 
