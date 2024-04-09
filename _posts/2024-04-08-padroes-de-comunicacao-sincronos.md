@@ -24,7 +24,6 @@ Em quesito de desvantagens, a implementação de uma comunicação sincrona pode
 
 Nesse sentido, por mais simples que sejam a construção e manutenção de chamadas sincronas, é necessário o **cuidado com questões de retentativas, timeouts e outras estratégias de resiliência** construída de forma pragmática entre cliente-servidor. 
 
-
 <br>
 
 # API's REST - Representational State Transfer 
@@ -35,7 +34,7 @@ O REST é construído usando referências e recursos do **protocolo HTTP**, defi
 
 Ele utiliza métodos HTTP para definir ações, como **GET, POST, PUT, DELETE e PATCH**, para realizar operações CRUD **(Criar, Ler, Atualizar e Deletar)** em recursos identificados por URI's. Esses recursos são representações de entidades ou objetos do domínio da aplicação. Nesse tópico vamos abordar alguns dos principais componentes do estilo arquitetural REST, e detalhar as partes mais importantes conceitualmente. 
 
-### Componentes de uma requisição REST 
+## Componentes de uma requisição REST 
 
 Uma requisição REST é composta por vários componentes que trabalham juntos para **transmitir a intenção da solicitação do cliente para o servidor**. Cada componente tem um papel específico no fornecimento de informações para que o servidor processe a requisição através de recursos expostos de maneira intuitiva. Vamos abordar alguns dos componentes presentes numa requisição HTTP e seu eventual uso dentro do REST:
 
@@ -160,13 +159,13 @@ Os status codes mais utilizados em implementações RESTFul são os seguintes:
 
 Os principios arquiteturais do REST estabelecem uma série de regras e bases de design para que times de engenharia projetem API's de comunicação distribuida da melhor forma possível, prezando tanto pela experiência de consumo do cliente quanto do ciclo de vida e evolução saudável do projeto a médio e longo prazo. Nesta sessão vamos explorar alguns dos principios que podem ser esperados de implementações RESTFul. 
 
-#### Interface Uniforme 
+### Interface Uniforme 
 
 A interface uniforme é o princípio central do REST e diz respeito à consistência na forma como as interfaces são expostas aos clientes. Esse principio preza que cada recurso deve ser identificável de forma única através de URIs e suas respostas sejam representadas por dados padronizados, como JSON ou XML, e enviados ao cliente respeitando esses formatos. Também é importante ressaltar que as requisições e respostas devem conter toda a informação necessária para serem compreendidas, incluindo metadados e hiperlinks de uma forma quase auto-descritiva. De forma resumida, esse princípio garante uma padronização formal na forma como os clientes interagem com o servidor e vice versa. 
 
 Garantindo uma interface uniforme, arbitrariamente garantimos a interoperabilidade, ou seja, compatibilidade entre diferentes sistemas e tecnologias, pois independente do ferramental escolhido para construção do cliente e do servidor, a comunicação possa ser respeitada e padronizada entre ambos, sem o conhecimento das necessidades de implementação. Quando trabalhamos em interfaces, é importante também projetá-las para promover cada vez mais um desacoplamento entre sistemas. 
 
-#### Comunicação Stateless 
+### Comunicação Stateless 
 
 No REST, cada requisição do cliente para o servidor **deve conter todas as informações necessárias para entender e completar a requisição**. O servidor **não armazena nenhum estado da sessão do cliente**. A comunicação stateless (*sem estado*) é um dos princípios fundamentais que define como os clientes e servidores interagem entre si. Esse princípio assegura que cada requisição de um cliente para um servidor deve conter todas as informações necessárias para o servidor compreender e responder à requisição. Em outras palavras, o **servidor não armazena nenhum estado sobre o cliente entre as requisições. Cada uma delas é tratada como se fosse a primeira, sem qualquer conhecimento prévio ou memória das interações anteriores.**
 
@@ -174,7 +173,7 @@ A natureza stateless também aumenta os níveis de confiabilidade do sistema. Se
 
 Os desafios de uma arquitetura stateless giram principalmente em torno dos tópicos de autenticação. Usar tokens, como JWT (JSON Web Tokens) pode se tornar uma estratégia recomendada, pois os mesmos podem conter informações comuns do cliente que efetua a solicitação junto com meios de validar a integridade e validade dos mesmos sem a nacessidade de manter histórico entre as requisições. 
 
-#### Camadas 
+### Camadas 
 
 A **arquitetura em camadas permite que intermediários (como proxies e gateways) facilitem ou melhorem a comunicação entre o cliente e o servidor** de forma transparente, promovendo a **segurança, o balanceamento de carga e a capacidade de cache**. Combinando o conceito de viabilidade de camadas com o padrão stateless, o servidor se torna muito poderoso e escalável. 
 
@@ -182,7 +181,7 @@ O princípio de camadas, ou *"Layered System"*, é uma das **restrições arquit
 
 Entre essas camadas podem existir camadas de API gateways, camadas de autenticação e autorização, camadas de cacheamento das requisições e respostas, [camadas de balanceadores de carga, camadas de proxy reversos](), camada de roteamento, lógicas de negócios, acesso a dados e etc. 
 
-#### Cache 
+### Cache 
 
 As respostas do servidor **devem ser explícitas quanto à sua cacheabilidade para evitar a reutilização de dados obsoletos ou inapropriados, melhorando a eficiência e a escalabilidade**. O [cache é uma técnica amplamente utilizada no desenvolvimento de software](), especialmente em aplicações web e APIs, incluindo aquelas que seguem o estilo arquitetônico REST (Representational State Transfer). O objetivo **do cache é melhorar a eficiência e a performance da aplicação, armazenando cópias de recursos ou resultados de operações que são caros para gerar ou buscar**, permitindo que esses dados sejam reutilizados em requisições futuras.
 
