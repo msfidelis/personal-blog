@@ -54,7 +54,7 @@ No REST, as **URLs são o meio mais comum de expressar URIs**, de forma direta, 
 
 Na arquitetura REST, os recursos são componentes que representam qualquer tipo de objeto, dado ou serviço que pode ser acessado pela rede em que o mesmo está disponível. Resumindo, um recurso é identificado por URIs, que são usados para localizar esses recursos na rede de forma explicita. 
 
-Os paths, por outro lado, fazem parte da URI, e **especificam o endereço exato onde um recurso pode ser encontrado**. Eles ajudam a **organizar e a endereçar os recursos de forma hierárquica e lógica**, facilitando o acesso e a manipulação destes. A estrutura de paths em uma API REST é projetada para ser intuitiva, refletindo a natureza e a relação entre os recursos. Por exemplo, em uma API que gerencia um sistema de blog, você pode ter um path `/posts` para acessar todos os artigos e `/posts/{id}` para acessar um artigo específico, e seguir com identificadores específicos para subrecursos como `/posts/{id}/comments` para comentários de um artigo específico.
+Os paths, por outro lado, fazem parte da URI, e **especificam o endereço exato onde um recurso pode ser encontrado**. Eles ajudam a **organizar e a endereçar os recursos de forma hierárquica e lógica**, facilitando o acesso e a manipulação destes. A estrutura de paths em uma API REST é projetada para ser intuitiva, refletindo a natureza e a relação entre os recursos. Por exemplo, em uma API que gerencia um sistema de blog, você pode ter um path `/articles` para acessar todos os artigos e `/articles/{id}` para acessar um artigo específico, e seguir com identificadores específicos para subrecursos como `/articles/{id}/comments` para comentários de um artigo específico.
 
 Os recursos são planejados para serem acessados utilizando os métodos HTTP padrão (GET, POST, PUT, DELETE, etc.), em cada recurso que possui seu próprio identificador único como veremos a seguir.
 
@@ -81,7 +81,7 @@ Exemplificamos alguns dos headers mais comuns quando abordamos o protocolo HTTP,
 
 Na arquitetura REST, query strings são mecanismos usados para passar informações adicionais ao servidor durante uma requisição HTTP. Eles permitem a **filtragem, a paginação, a ordenação e a personalização de dados**, entre outras funcionalidades, tornando as APIs RESTful mais flexíveis, principalmente em recursos que fazem exposição e listagem de dados com o método GET. Elas podem ser usadas para uma variedade de propósitos, como filtragem de dados, ordenação e paginação.
 
-As Query strings são utilizadas para fornecer informações adicionais que afetam a operação do servidor, **mas que não fazem parte do path da URL**. Elas são adicionadas ao final da URL com um `?` e seguidas de pares chave-valor, com cada par separado por `&`. Por exemplo, `/posts?author=fidelissauro&sort=date` pode ser usada para solicitar artigos escritos por "fidelissauro", ordenados pela data. As query strings são extremamente úteis para construção de API's.
+As Query strings são utilizadas para fornecer informações adicionais que afetam a operação do servidor, **mas que não fazem parte do path da URL**. Elas são adicionadas ao final da URL com um `?` e seguidas de pares chave-valor, com cada par separado por `&`. Por exemplo, `/articles?author=fidelissauro&sort=date` pode ser usada para solicitar artigos escritos por "fidelissauro", ordenados pela data. As query strings são extremamente úteis para construção de API's.
 
 ### Body e Formatos
 
@@ -115,20 +115,20 @@ As URIs, como abordamos, são utilizadas para identificar os recursos de forma �
 
 As URIs quando olhadas no modelo REST, devem se referir a recursos e entidades, e não às ações que serão realizadas diretamente sobre eles. Por exemplo, o path `/users` para acessar recursos do usuário combinado com o método `GET`, e não um basepath imperativo como `/getUsers`.
 
-A URI de determinadas entidades devem refletir a estrutura hierárquica dos recursos. Por exemplo, `/users/123/posts` pode representar os posts do usuário com ID 123.
+A URI de determinadas entidades devem refletir a estrutura hierárquica dos recursos. Por exemplo, `/users/123/articles` pode representar os posts do usuário com ID 123.
 
-Devem se utilizar querystrings como parametros de consulta para filtrar recursos ou modificar a saída de uma chamada REST. Por exemplo, `/users?active=true` para filtrar apenas usuários ativos ou `/users/1/posts?tag=system-design` para filtrar os posts do usuário com a tag `system-design`. 
+Devem se utilizar querystrings como parametros de consulta para filtrar recursos ou modificar a saída de uma chamada REST. Por exemplo, `/users?active=true` para filtrar apenas usuários ativos ou `/users/1/articles?tag=system-design` para filtrar os posts do usuário com a tag `system-design`. 
 
 Considerando uma API para um portal de notícias ou blog, aqui estão exemplos de como os métodos HTTP e as URIs podem ser utilizados para interagir com os recursos:
 
 | Ação                          | Método | Endpoint     |
 |-------------------------------|--------|--------------|
-| Listar todos os posts         | GET    | `/posts`     |
-| Obter um post específico      | GET    | `/posts/1`   |
-| Criar um novo post            | POST   | `/posts`     |
-| Atualizar um post existente   | PUT    | `/posts/1`   |
-| Deletar um post               | DELETE | `/posts/1`   |
-| Atualizar parte de um post    | PATCH  | `/posts/1`   |
+| Listar todos os posts         | GET    | `/articles`     |
+| Obter um post específico      | GET    | `/articles/1`   |
+| Criar um novo post            | POST   | `/articles`     |
+| Atualizar um post existente   | PUT    | `/articles/1`   |
+| Deletar um post               | DELETE | `/articles/1`   |
+| Atualizar parte de um post    | PATCH  | `/articles/1`   |
 
 <br>
 
