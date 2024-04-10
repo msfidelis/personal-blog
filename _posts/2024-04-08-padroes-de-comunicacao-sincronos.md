@@ -52,7 +52,7 @@ No REST, as **URLs são o meio mais comum de expressar URIs**, de forma direta, 
 
 ### Recursos e Paths 
 
-Na arquitetura REST, os recursos são componentes fundamentais que representam qualquer tipo de objeto, dado ou serviço que pode ser acessado pela rede em que o mesmo está disponível. Resumindo, um recurso é identificado por URIs, que são usados para localizar esses recursos na rede de forma explicita. 
+Na arquitetura REST, os recursos são componentes que representam qualquer tipo de objeto, dado ou serviço que pode ser acessado pela rede em que o mesmo está disponível. Resumindo, um recurso é identificado por URIs, que são usados para localizar esses recursos na rede de forma explicita. 
 
 Os paths, por outro lado, fazem parte da URI, e **especificam o endereço exato onde um recurso pode ser encontrado**. Eles ajudam a **organizar e a endereçar os recursos de forma hierárquica e lógica**, facilitando o acesso e a manipulação destes. A estrutura de paths em uma API REST é projetada para ser intuitiva, refletindo a natureza e a relação entre os recursos. Por exemplo, em uma API que gerencia um sistema de blog, você pode ter um path `/posts` para acessar todos os artigos e `/posts/{id}` para acessar um artigo específico, e seguir com identificadores específicos para subrecursos como `/posts/{id}/comments` para comentários de um artigo específico.
 
@@ -167,7 +167,7 @@ Garantindo uma interface uniforme, arbitrariamente garantimos a interoperabilida
 
 ### Comunicação Stateless 
 
-No REST, cada requisição do cliente para o servidor **deve conter todas as informações necessárias para entender e completar a requisição**. O servidor **não armazena nenhum estado da sessão do cliente**. A comunicação stateless (*sem estado*) é um dos princípios fundamentais que define como os clientes e servidores interagem entre si. Esse princípio assegura que cada requisição de um cliente para um servidor deve conter todas as informações necessárias para o servidor compreender e responder à requisição. Em outras palavras, o **servidor não armazena nenhum estado sobre o cliente entre as requisições. Cada uma delas é tratada como se fosse a primeira, sem qualquer conhecimento prévio ou memória das interações anteriores.**
+No REST, cada requisição do cliente para o servidor **deve conter todas as informações necessárias para entender e completar a requisição**. O servidor **não armazena nenhum estado da sessão do cliente**. A comunicação stateless (*sem estado*) é um dos princípios que definem como os clientes e servidores interagem entre si. Esse princípio assegura que cada requisição de um cliente para um servidor deve conter todas as informações necessárias para o servidor compreender e responder à requisição. Em outras palavras, o **servidor não armazena nenhum estado sobre o cliente entre as requisições. Cada uma delas é tratada como se fosse a primeira, sem qualquer conhecimento prévio ou memória das interações anteriores.**
 
 A natureza stateless também aumenta os níveis de confiabilidade do sistema. Se um **servidor falhar após processar uma requisição, o cliente pode simplesmente tentar novamente, possivelmente usando outro node de pool de servidores de uma arquitetura distribuída**. Como nenhuma informação de estado é mantida entre as requisições, não há perda de continuidade. Esse é um dos principios que garante a [escalabilidade horizontal](/performance-capacidade-escalabilidade/) de aplicações REST em ambientes sensíveis em demanda de forma transparente. 
 
