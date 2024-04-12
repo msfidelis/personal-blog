@@ -20,6 +20,14 @@ Usando um
 
 ## Eventos vs Mensagens
 
+# Conceitos e Padrões
+
+## FIFO - First In First Out
+
+## LIFO - Last In First Out
+
+## Funout 
+
 # Protocolos e Arquiteturas de Eventos
 
 # Protocolos e Arquiteturas de Mensageria
@@ -86,6 +94,10 @@ O produtor publica mensagens enviando-as ao broker através de um canal específ
 ### Brokers 
 
 Dentro da arquitetura do AMQP, um broker é um centralizador de componentes intermediário entre produtores e consumidores que atua realizando a gestão do tráfego de mensagens entre ambos. Os brokers fazem a gestão da recepção, tratamento, armazenamento e direcionamento da mensagem para suas queues apropriadas, fazendo o uso de metadados e informacões enviadas pelo produtor para realizar esse direcionamento de forma correta. Um broker agrupa tanto as exchanges, routes e queues, e  disponibiliza as mensagens para serem consumidas pelos consumidores. 
+
+### Channels
+
+
 
 ### Exchanges e Binding Keys
 
