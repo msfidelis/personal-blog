@@ -97,24 +97,6 @@ Dentro da arquitetura do AMQP, um broker é um centralizador de componentes inte
 
 ### Channels
 
-
-
-### Exchanges e Binding Keys
-
-As Exchanges são os componentes dentro do broker responsáveis por receber as mensagens dos produtores e através das regras de roteamento fazer a entrega para as queues corretas. Existem vários tipos de exchanges, como direct, topic, fanout, e headers, cada um definindo uma estratégia de roteamento diferente para a queue correta. A escolha da exchange depende do padrão de mensageria desejado entre o produtor e consumidor. As exchanges distribuem as mensagens para as queues específicas fazendo uso das **binging keys**. As 
-
-#### Direct Exchange
-
-#### Topic Exchange
-
-#### Fanout Exchange
-
-#### Headers Exchange
-
-#### Dead Letter Exchange
-
-
-
 ### Route / Bindings
 
 ### Queues
@@ -122,6 +104,442 @@ As Exchanges são os componentes dentro do broker responsáveis por receber as m
 ### Producers 
 
 ### Consumers 
+
+### Exchanges e Binding Keys
+
+As Exchanges são os componentes dentro do broker responsáveis por receber as mensagens dos produtores e através das regras de roteamento fazer a entrega para as queues corretas. Existem vários tipos de exchanges, como direct, topic, fanout, e headers, cada um definindo uma estratégia de roteamento diferente para a queue correta. A escolha da exchange depende do padrão de mensageria desejado entre o produtor e consumidor. As exchanges distribuem as mensagens para as queues específicas fazendo uso das **binging keys**. As 
+
+
+### Tipos de Exchanges
+
+#### Direct Exchange
+
+Uma exchange do tipo Direct é o tipo default, e mais comum de produção de mensagens em filas gerenciadas pelo AMQP. Ela é o modelo basico de associação de uma exchange para uma queue, e utiliza a binding key para direcionar a mensagem para a queue correta. Esse é o tipo de roteamento que caracteriza um encaminhamento ponto a ponto, onde a binding key precisa ser interpretada de maneira exata para o encaminhamento correto. Ela pode ser pensada para arquiteturas que façam a distribuição de "comandos" entre sistemas de maneira imperativa, como por exemplo "cobrar", "enviar", "processar", "criar", "cadastrar" e etc. 
+
+![Exchange Default](/assets/images/system-design/amqp-default.png)
+
+Abaixo temos uma implementação básica de um produtor e consumidor no padrão de exchange direct, onde criamos uma exchange chamada `ecommerce.nova.venda`, onde iremos simular que mensagens de vendas concluidas de um suposto e-commerce serão trafegadas. Vamos criar uma queue chamada `cobrar` e a associar a exchange junto a uma binding key também chamada `cobrar`. 
+
+Na produção, nos conectamos no broker e informando a exchange criada, e enviando a binding key `cobrar`, a mesma estará disponível na queue para ser consumida.
+
+##### Setup e Binding no Modo Direct
+```go
+conn, err := amqp.Dial("amqp://user:password@localhost:5672/")
+if err != nil {
+    fmt.Println("Falha ao conectar com o broker", err)
+    return
+}
+defer conn.Close()
+
+// Criando um canal
+ch, err := conn.Channel()
+if err != nil {
+    fmt.Println("Falha ao abrir um canal com o broker", err)
+    return
+}
+defer ch.Close()
+
+// Criação da Exchange
+err = ch.ExchangeDeclare(
+    "ecommerce.nova.venda", // Nome da exchange
+    "direct",               // Tipo da exchange
+    true,                   // durable
+    false,                  // auto-deleted
+    false,                  // internal
+    false,                  // no-wait
+    nil,                    // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao construir a exchange", err)
+    return
+}
+```
+
+
+```go
+// Criação de uma Queue
+q, err := ch.QueueDeclare(
+    "cobrar", // Nome da fila
+    true,     // durable
+    false,    // delete when unused
+    false,    // exclusive
+    false,    // no-wait
+    nil,      // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao criar a queue", err)
+    return
+}
+
+// Associando a Queue até a Exchange
+// e informando a binding key para roteamento
+err = ch.QueueBind(
+    q.Name,                 // Nome da fila
+    "cobrar",               // Binding key de roteamento
+    "ecommerce.nova.venda", // Nome da exchange
+    false,                  // no-wait
+    nil,                    // arguments
+)
+```
+
+##### Producer no Modo Direct
+```go
+// ...
+for i := 0; i < 10; i++ {
+
+    id := uuid.New()
+
+    // Mensagem simples
+    body := fmt.Sprintf("id:%v", id)
+
+    // Publicando a mensagem na exchange
+    err = ch.Publish(
+        "ecommerce.nova.venda", // exchange
+        "cobrar",               // routing key (binding key)
+        false,                  // mandatory
+        false,                  // immediate
+        amqp.Publishing{
+            ContentType: "text/plain",
+            Body:        []byte(body),
+        })
+    if err != nil {
+        fmt.Println("Falha ao publicar a mensagem na exchange", err)
+    }
+
+    fmt.Printf("Mensagem de venda enviada para a exchangeecommerce.nova.venda: %v\n", body)
+}
+
+```
+
+
+##### Consumer no Modo Direct
+```go
+// Criação de uma Queue // Caso já exista, simplesmente se conecta
+q, err := ch.QueueDeclare(
+    "cobrar", // Nome da fila
+    true,     // durable
+    false,    // delete when unused
+    false,    // exclusive
+    false,    // no-wait
+    nil,      // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao criar a queue", err)
+    return
+}
+
+msgs, err := ch.Consume(
+    q.Name, // queue
+    "",     // consumer
+    false,  // auto-ack
+    false,  // exclusive
+    false,  // no-local
+    false,  // no-wait
+    nil,    // args
+)
+
+forever := make(chan bool)
+
+go func() {
+    for d := range msgs {
+        fmt.Printf("Mensagem de cobrança recebida na queue %v: %v\n", q.Name, string(d.Body))
+        d.Ack(true)
+    }
+}()
+
+fmt.Println("[Cobranca de Vendas] Aguardando por mensagens")
+<-forever
+```
+
+
+#### Topic Exchange
+
+As Topic Exchanges oferecem roteamentos mais dinâmicos quando comparados a correspondência exata das Direct Exchanges. Nelas podemos fazer roteamentos entre a exchange e as queues baseados em padrões da binding key. Isso significa que podemos criar bindings baseados em caracteres curingaas como `*` que substituem uma sequencia de palavras ou `#` que subistituem zero ou uma sequência de palavras. 
+
+Vamos imaginar que dentro do nosso e-commerce, o sistema de faturamento é notificado através de mensageria. Utilizaremos uma exchange e uma queue para enviar as mensagens dos pedidos a serem faturados, essa queue chamada `queue.faturamento` é usada para enfileirar todos os comandos de faturamento da solução, porém encontramos um cenário de [gargalo]() em alguns clientes críticos que precisam de um SLA de faturamento menor, e devido ao alto volume financeiro e criticidade, não podem concorrer com o enfileiramento do sistema inteiro. Nesse caso, criamos uma seguda queue chamada `queue.faturamento.prioritario` onde através da binding key informada, a mensagem é destinada para uma carga de trabalho dedicada para esses casos. Nesse caso decidimos utilizar a binding key `faturamento.prioridade.default` e `faturamento.prioridade.alta` para fazer essa diferenciação. 
+
+Esse cenário ainda pode ser facilmente resolvido com a Exchange Direct, somente criando bindings especificos para cada valor de binding key que correspondessem de forma exata. Porém, temos uma segunda integração, ponde todas mensagens de faturamento, independente do nível de criticidade, é enviada para um datalake também com base em mensagens, utilizando a queue `queue.faturamento.datalake`. Nesse caso uma Topic Exchange pode nos ajudar, onde podemos criar regras de binding específicas para cada nível de prioridade, e também uma binding com um curinga `*` para duplicar e rotear também, todas as mensagens para a queue do Data Lake, no formato `faturamento.prioridade.*`.
+
+Nesse cenário, mesmo utilizando tanto a binding key de prioridade default quanto a de prioridade alta, todas as mensagens que corresponderem ao padrão `faturamento.prioridade.*` por tabela também serão enviadas para a fila do lake. 
+
+![Exchange - Topic 1](/assets/images/system-design/amqp-topic-1.png)
+
+![Exchange - Topic 2](/assets/images/system-design/amqp-topic-2.png)
+
+Vamos reproduzir exatamente esse cenário hipotético abaixo, onde criaremos 3 queues e 3 bindings, para o faturamento de prioridade default, o faturamento de prioridade alta e o envio dos faturamentos para o datalake analitico. E informando a prioridade requisitada na produção, a mensagem será devidamente roteada para o microserviço segregado específico, e também de forma genérica para o lake hipotético. 
+
+##### Setup e Binding no Topic
+
+```go
+// Criação da Exchange
+err = ch.ExchangeDeclare(
+    "ecommerce.nova.venda.faturamento", // Nome da exchange
+    "topic",                            // Tipo da exchangem - topic
+    true,                               // durable
+    false,                              // auto-deleted
+    false,                              // internal
+    false,                              // no-wait
+    nil,                                // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao construir a exchange", err)
+    return
+}
+```
+
+```go
+// Criação de uma Queue de faturamento de vendas
+// de prioridade default, onde em teoria a maior parte das
+// mensagens será enviada
+queueDefault, err := ch.QueueDeclare(
+    "queue.faturamento", // Nome da fila
+    true,                // durable
+    false,               // delete when unused
+    false,               // exclusive
+    false,               // no-wait
+    nil,                 // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao criar a queue", err)
+    return
+}
+
+// Associando a Queue até a Exchange
+// e informando a binding key para roteamento
+err = ch.QueueBind(
+    queueDefault.Name,                  // Nome da fila
+    "faturamento.prioridade.default",   // Binding key de roteamento - chave de prioridade default
+    "ecommerce.nova.venda.faturamento", // Nome da exchange
+    false,                              // no-wait
+    nil,                                // arguments
+)
+if err != nil {
+    fmt.Println("Falha associar a queue a exchange", err)
+    return
+}
+```
+
+```go
+// Criação de uma Queue de faturamento de vendas
+// de prioridade alta, onde somente os clientes de maior volume
+// financeiro será destinada
+queuePrioridade, err := ch.QueueDeclare(
+    "queue.faturamento.prioritario", // Nome da fila
+    true,                            // durable
+    false,                           // delete when unused
+    false,                           // exclusive
+    false,                           // no-wait
+    nil,                             // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao criar a queue", err)
+    return
+}
+
+// Associando a Queue até a Exchange
+// e informando a binding key para roteamento
+err = ch.QueueBind(
+    queuePrioridade.Name,               // Nome da fila
+    "faturamento.prioridade.alta",      // Binding key de roteamento - chave de prioridade alta
+    "ecommerce.nova.venda.faturamento", // Nome da exchange
+    false,                              // no-wait
+    nil,                                // arguments
+)
+if err != nil {
+    fmt.Println("Falha associar a queue a exchange", err)
+    return
+}
+```
+    
+```go
+// Criação de uma Queue que receberá todas as mensagens, independente da prioridade
+// A intenção é receber todos os pedidos de faturamento e enviar para um
+// suposto analitico
+queueLake, err := ch.QueueDeclare(
+    "queue.faturamento.datalake", // Nome da fila
+    true,                         // durable
+    false,                        // delete when unused
+    false,                        // exclusive
+    false,                        // no-wait
+    nil,                          // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao criar a queue", err)
+    return
+}
+
+// Associando a queue na exchange, todas as mensagems que forem enviadas com o pattern
+// faturamento.prioridade.* será enviada para essa fila independente da prioridade informada
+err = ch.QueueBind(
+    queueLake.Name,                     // Nome da fila
+    "faturamento.prioridade.*",         // Binding key de roteamento - chave de prioridade alta
+    "ecommerce.nova.venda.faturamento", // Nome da exchange
+    false,                              // no-wait
+    nil,                                // arguments
+)
+if err != nil {
+    fmt.Println("Falha associar a queue a exchange", err)
+    return
+}
+```
+
+##### Producer no Modo Topic
+
+```go
+for i := 0; i < 3000000000; i++ {
+
+    routingKey := "faturamento.prioridade.default"
+    if rand.Float64() < 0.1 { // mock para dar 10% de chance de uma mensagem ser encaminhada para a queue prioritária
+        routingKey = "faturamento.prioridade.alta"
+    }
+
+    id := uuid.New()
+    // Mensagem simples
+    body := fmt.Sprintf("id:%v:%v", routingKey, id)
+
+    // Publicando a mensagem na exchange usando a routing key de default/prioritario
+    err = ch.Publish(
+        "ecommerce.nova.venda.faturamento", // exchange
+        routingKey,                         // routing key (binding key)
+        false,                              // mandatory
+        false,                              // immediate
+        amqp.Publishing{
+            ContentType: "text/plain",
+            Body:        []byte(body),
+        })
+    if err != nil {
+        fmt.Println("Falha ao publicar a mensagem na exchange", err)
+    }
+    fmt.Printf("Mensagem de faturamento enviada para a queue %v: %v\n", routingKey, body)
+}
+```
+
+#### Fanout Exchange
+
+![Exchange Fanout](/assets/images/system-design/amqp-funout.png)
+
+##### Setup no Fanout
+
+
+![Exchange - Fanout](/assets/images/system-design/amqp-funout.png)
+
+```go
+// Criação da Exchange
+err = ch.ExchangeDeclare(
+    "ecommerce.nova.venda", // Nome da exchange
+    "fanout",               // Tipo da exchange
+    true,                   // durable
+    false,                  // auto-deleted
+    false,                  // internal
+    false,                  // no-wait
+    nil,                    // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao construir a exchange", err)
+    return
+}
+```
+
+```go
+// Criação de uma Queue de cobranca
+qCobranca, err := ch.QueueDeclare(
+    "cobrar_pedido", // Nome da fila
+    true,            // durable
+    false,           // delete when unused
+    false,           // exclusive
+    false,           // no-wait
+    nil,             // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao criar a queue", err)
+    return
+}
+// Associando a Queue até a Exchange
+err = ch.QueueBind(
+    qCobranca.Name,         // Nome da fila
+    "",                     // Binding key de roteamento - Ignorada no Fanout
+    "ecommerce.nova.venda", // Nome da exchange
+    false,                  // no-wait
+    nil,                    // arguments
+)
+```
+
+```go
+// Criação de uma Queue de cobranca
+qEstoque, err := ch.QueueDeclare(
+    "reservar_estoque", // Nome da fila
+    true,               // durable
+    false,              // delete when unused
+    false,              // exclusive
+    false,              // no-wait
+    nil,                // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao criar a queue", err)
+    return
+}
+// Associando a Queue até a Exchange
+err = ch.QueueBind(
+    qEstoque.Name,          // Nome da fila
+    "",                     // Binding key de roteamento - Ignorada no Fanout
+    "ecommerce.nova.venda", // Nome da exchange
+    false,                  // no-wait
+    nil,                    // arguments
+)
+```
+
+```go
+// Criação de uma Queue de cobranca
+qLogistica, err := ch.QueueDeclare(
+    "informar_logistica", // Nome da fila
+    true,                 // durable
+    false,                // delete when unused
+    false,                // exclusive
+    false,                // no-wait
+    nil,                  // arguments
+)
+if err != nil {
+    fmt.Println("Falha ao criar a queue", err)
+    return
+}
+// Associando a Queue até a Exchange
+err = ch.QueueBind(
+    qLogistica.Name,        // Nome da fila
+    "",                     // Binding key de roteamento - Ignorada no Fanout
+    "ecommerce.nova.venda", // Nome da exchange
+    false,                  // no-wait
+    nil,                    // arguments
+)
+```
+
+##### Producer no Fanout
+
+```go
+for i := 0; i < 3000000000; i++ {
+
+    id := uuid.New()
+
+    // Mensagem simples
+    body := fmt.Sprintf("id:%v", id)
+
+    // Publicando a mensagem na exchange
+    err = ch.Publish(
+        "ecommerce.nova.venda", // exchange
+        "",                     // Binding key de roteamento - Ignorada no Fanout
+        false,                  // mandatory
+        false,                  // immediate
+        amqp.Publishing{
+            ContentType: "text/plain",
+            Body:        []byte(body),
+        })
+    if err != nil {
+        fmt.Println("Falha ao publicar a mensagem na exchange", err)
+    }
+
+    fmt.Printf("Mensagem de venda enviada para a exchange ecommerce.nova.venda: %v\n", body)
+}
+```
+
 
 
 ### Revisores
