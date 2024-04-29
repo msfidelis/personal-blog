@@ -14,8 +14,6 @@ Arquiteturas assincronas derivadas do uso de mensageria e eventos são recursos 
 
 ## Definindo Mensageria 
 
-Usando um
-
 ## Definindo Eventos
 
 ## Eventos vs Mensagens
@@ -93,28 +91,37 @@ O produtor publica mensagens enviando-as ao broker através de um canal específ
 
 ### Brokers 
 
-Dentro da arquitetura do AMQP, um broker é um centralizador de componentes intermediário entre produtores e consumidores que atua realizando a gestão do tráfego de mensagens entre ambos. Os brokers fazem a gestão da recepção, tratamento, armazenamento e direcionamento da mensagem para suas queues apropriadas, fazendo o uso de metadados e informacões enviadas pelo produtor para realizar esse direcionamento de forma correta. Um broker agrupa tanto as exchanges, routes e queues, e  disponibiliza as mensagens para serem consumidas pelos consumidores. 
+Dentro da arquitetura do AMQP, um broker é um centralizador de componentes intermediário entre produtores e consumidores que atua realizando a gestão do tráfego de mensagens entre ambos. Os brokers fazem a gestão da recepção, tratamento, armazenamento e direcionamento da mensagem para suas queues apropriadas, fazendo o uso de metadados e informacões enviadas pelo produtor para realizar esse direcionamento de forma correta. Um broker agrupa tanto as exchanges, routes e queues, e  disponibiliza as mensagens para serem consumidas pelos consumidores. Eles trabalham mais proximos do físico. 
 
 ### Channels
 
-### Route / Bindings
+No AMQP, um **Channel é uma sessão virtual que é estabelecida tanto pelo consumidor quanto pelo produtor** através do próprio protocolo. Os Channels são persistentes e fornecem a possibilidade de operacões e mensagens sejam trafegados simultâneamente através de uma unica conexão, o que torna o protocolo muito "barato" em termos computacionais. Resumidamente, cada sessão é uma conexão independente que possibilita multiplas operações, evitando assim a necessidade de serem criadas multiplas conexões de rede que podem sobrecarregar os brokers e tornar a performance e gestão dessas conexões ineficientes em média/larga escala.  
 
 ### Queues
 
+Uma queue, de forma genérica tem o mesmo conceito dentro da arquitetura do AMQP, sendo a estrutura de dados que armazena as mensagens temporariamente para que sejam processadas pelo consumidor posteriormentee. Nelas podem ser configurados parâmetros de persistência, visibilidade, durabilidade e time to live. As queues no sentido mais amplo são os intermediários diretos do dado produzido e consumido de forma enfileirada. 
+
 ### Producers 
+
+Um producer é a entidade que **envia as mensagens para uma exchange através de canais estabelecidos AMQP** para que as mesmas sejam direcionadas para a queue correta. A sua responsabilidade é informar a mensagem e a binding key especifica para indicar para onde a mensagem será roteada dentro do conjunto de queues possíveis. Eles podem especificar como será feita a persistência e prioridade da mensagem enviada. 
 
 ### Consumers 
 
+Um consumidor é a entidade que **recebe as mensagens que estavam armazenadas na queue de forma enfileirada**. Suas responsabilidades são se inscrever nas queues de interesse e receber as mensagens conforme a lógica definida nas mesmas. Elas podem operar no modo de auto-ack, onde a primeira recepção já é um indicativo para deletar a mensagem da fila, ou com confirmações manuais, onde após um processamento intenso, o consumidor especifica diretamente para a queue se a mensagem recebida pode, ou não pode ser deletada ou re-enviada para consumo em caso de erros. 
+
 ### Exchanges e Binding Keys
 
-As Exchanges são os componentes dentro do broker responsáveis por receber as mensagens dos produtores e através das regras de roteamento fazer a entrega para as queues corretas. Existem vários tipos de exchanges, como direct, topic, fanout, e headers, cada um definindo uma estratégia de roteamento diferente para a queue correta. A escolha da exchange depende do padrão de mensageria desejado entre o produtor e consumidor. As exchanges distribuem as mensagens para as queues específicas fazendo uso das **binging keys**. As 
-
+As **Exchanges são os componentes dentro do broker responsáveis por receber as mensagens dos produtores e através das regras de roteamento fazer a entrega para as queues corretas**. Existem vários tipos de exchanges, como direct, topic, fanout, e headers, cada um definindo uma estratégia de roteamento diferente para a queue correta. A escolha da exchange depende do padrão de mensageria desejado entre o produtor e consumidor. As exchanges distribuem as mensagens para as queues específicas fazendo uso das **binging keys**. As 
 
 ### Tipos de Exchanges
 
+Dentro do AMQP possuimos alguns tipos de exchanges que tem finalidades e funcionamentos específicos. Nesse tópico vamos abordar algumas das mais importantes e que, ao meu ver, são as mais úteis para projetar soluções de arquitetura. 
+
 #### Direct Exchange
 
-Uma exchange do tipo Direct é o tipo default, e mais comum de produção de mensagens em filas gerenciadas pelo AMQP. Ela é o modelo basico de associação de uma exchange para uma queue, e utiliza a binding key para direcionar a mensagem para a queue correta. Esse é o tipo de roteamento que caracteriza um encaminhamento ponto a ponto, onde a binding key precisa ser interpretada de maneira exata para o encaminhamento correto. Ela pode ser pensada para arquiteturas que façam a distribuição de "comandos" entre sistemas de maneira imperativa, como por exemplo "cobrar", "enviar", "processar", "criar", "cadastrar" e etc. 
+Uma exchange do tipo Direct é o tipo default e mais comum de produção de mensagens em filas gerenciadas pelo AMQP. Ela é o modelo basico de associação de uma exchange para uma queue, e utiliza a binding key para direcionar a mensagem para a queue correta. Esse é o tipo de roteamento que caracteriza um encaminhamento ponto a ponto, onde a binding key precisa ser interpretada de maneira exata para o encaminhamento correto. Ela pode ser pensada para arquiteturas que façam a distribuição de "comandos" entre sistemas de maneira imperativa, como por exemplo "cobrar", "enviar", "processar", "criar", "cadastrar" e etc. 
+
+Imagine em uma arquitetura de e-commerce onde você precisa mandar mensagens com assinaturas e conteúdos diferentes para vários outros sistemas. O conteúdo dessas mensagens é diferente entre os sistemas e não pode ser reaproveitado por N questões. Sempre que uma compra precisar ser confirmada, utilizamos a binding key `confirmar_compra` para enviar a mensagem para a fila de confirmação de compra, a mesma coisa quando precisamos enviar um e-mail de forma assincrona enviamos o conteúdo desse e-mail para a fila correta usando uma binding key `enviar_email`, reforçando o exemplo, quando precisamos notificar o sistema de cobrança para processar financeiramente a compra, utilizamos a binding key `cobrar` para rotear a mensagem para a fila de de cobrança. Esse é um exemplo de uso do funcionamento de uma Direct Exchange. 
 
 ![Exchange Default](/assets/images/system-design/amqp-default.png)
 
@@ -251,14 +258,20 @@ fmt.Println("[Cobranca de Vendas] Aguardando por mensagens")
 <-forever
 ```
 
+```
+```
+
+```
+```
+
 
 #### Topic Exchange
 
 As Topic Exchanges oferecem roteamentos mais dinâmicos quando comparados a correspondência exata das Direct Exchanges. Nelas podemos fazer roteamentos entre a exchange e as queues baseados em padrões da binding key. Isso significa que podemos criar bindings baseados em caracteres curingaas como `*` que substituem uma sequencia de palavras ou `#` que subistituem zero ou uma sequência de palavras. 
 
-Vamos imaginar que dentro do nosso e-commerce, o sistema de faturamento é notificado através de mensageria. Utilizaremos uma exchange e uma queue para enviar as mensagens dos pedidos a serem faturados, essa queue chamada `queue.faturamento` é usada para enfileirar todos os comandos de faturamento da solução, porém encontramos um cenário de [gargalo]() em alguns clientes críticos que precisam de um SLA de faturamento menor, e devido ao alto volume financeiro e criticidade, não podem concorrer com o enfileiramento do sistema inteiro. Nesse caso, criamos uma seguda queue chamada `queue.faturamento.prioritario` onde através da binding key informada, a mensagem é destinada para uma carga de trabalho dedicada para esses casos. Nesse caso decidimos utilizar a binding key `faturamento.prioridade.default` e `faturamento.prioridade.alta` para fazer essa diferenciação. 
+Vamos imaginar que dentro do nosso e-commerce, o sistema de faturamento é notificado através de mensageria. Utilizaremos uma exchange e uma queue para enviar as mensagens dos pedidos a serem faturados, essa queue chamada `queue.faturamento` é usada para enfileirar todos os comandos de faturamento da solução, porém encontramos um cenário de [gargalo](/performance-capacidade-escalabilidade/) em alguns clientes críticos que precisam de um SLA de faturamento menor, e devido ao alto volume financeiro e criticidade, não podem concorrer com as mensagens de todos os outros clientes no sistema inteiro. Nesse caso, criamos uma seguda queue chamada `queue.faturamento.prioritario` onde através da binding key informada, a mensagem é destinada para uma carga de trabalho dedicada para esses casos. Nesse caso decidimos utilizar a binding key `faturamento.prioridade.default` e `faturamento.prioridade.alta` para fazer essa diferenciação. 
 
-Esse cenário ainda pode ser facilmente resolvido com a Exchange Direct, somente criando bindings especificos para cada valor de binding key que correspondessem de forma exata. Porém, temos uma segunda integração, ponde todas mensagens de faturamento, independente do nível de criticidade, é enviada para um datalake também com base em mensagens, utilizando a queue `queue.faturamento.datalake`. Nesse caso uma Topic Exchange pode nos ajudar, onde podemos criar regras de binding específicas para cada nível de prioridade, e também uma binding com um curinga `*` para duplicar e rotear também, todas as mensagens para a queue do Data Lake, no formato `faturamento.prioridade.*`.
+Esse cenário ainda pode ser facilmente resolvido com a Exchange Direct, somente criando bindings especificos para cada valor de binding key que correspondessem de forma exata. Porém, temos uma segunda integração, onde todas mensagens de faturamento, independente do nível de criticidade, são enviadas para um datalake, e isso também é feito de forma assincrona com base em mensageria utilizando a queue `queue.faturamento.datalake`. Nesse caso uma Topic Exchange pode nos ajudar, onde podemos criar regras de binding específicas para cada nível de prioridade, e também uma binding com um curinga `*` para duplicar e rotear também, todas as mensagens para a queue do Data Lake, no formato `faturamento.prioridade.*`.
 
 Nesse cenário, mesmo utilizando tanto a binding key de prioridade default quanto a de prioridade alta, todas as mensagens que corresponderem ao padrão `faturamento.prioridade.*` por tabela também serão enviadas para a fila do lake. 
 
@@ -416,10 +429,11 @@ for i := 0; i < 3000000000; i++ {
 
 #### Fanout Exchange
 
+Uma Fanout Exchange é um tipo muito interessante de abordagem, pois nos permite amarras várias queues em uma exchange, e sem precisar informar nenhuma binding key, replicar a mesma mensagem entre todas elas. Esse tipo de abordagem é interessante quando precisamos notificar subsistemas com uma abordagem um pouco mais proxima de um evento, mas ainda assim funcionando como mensageria. Imagine que no nosso sistema de e-commerce precisamos ao mesmo tempo notificar os sistemas de cobrança, logistica e estoque, com base em uma nova venda que ocorreu. Esses processos podem ser efetuados de forma paralela e não dependem de uma ordem específica para serem concluídos, podendo demorar o quanto for necessário, e todos eles podem fazer uso dos campos presentes de um só payload. Esse é um caso perfeito para uma Exchange do tipo Fanout, onde com base em apenas uma ação de produção, a mesma mensagem é entregue de forma identica entre todas as queues associadas. 
+
 ![Exchange Fanout](/assets/images/system-design/amqp-funout.png)
 
 ##### Setup no Fanout
-
 
 ![Exchange - Fanout](/assets/images/system-design/amqp-funout.png)
 
