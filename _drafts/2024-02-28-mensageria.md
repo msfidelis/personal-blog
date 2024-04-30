@@ -12,11 +12,29 @@ Arquiteturas assincronas derivadas do uso de mensageria e eventos são recursos 
 
 # Mensagens e Eventos
 
+A comunicação em sistemas distribuídos de forma assincrona pode ser categorizada e simplificada através de duas formas: mensagens e ventos. A função da comunicação assincrona, assim como qualquer tipo de comunicação, visa trocar dados e comandos entre diversos componentes que compõe um sistema, e tanto mensagens quanto eventos cumprem esse objetivo de forma louvável, mesmo ambas possuindo peculiaridades, conceitos e características distintas que podem complementar, ou mudar totalmente um padrão de design de comunicação entre sistemas. 
+
 ## Definindo Mensageria 
+
+Mensageria, em termos simplistas, refere-se a troca de mensagens através de componentes intermediários. Ela se baseia em produção e consumo, onde um produtor interessado em notificar e estimular comportamentos em outro componente subsequente, envia os dados necessários para que essa finalidade seja concluída com exito, e esses dados são enfileirados em uma queue, ou fila, onde são recebidos pelo sistema destino de forma ordenada, ou não. Estabelecer um canal comum entre o destinatário e remetente da mensagem é uma premissa para que esse tipo de abordagem funcione bem. 
+
+Mensagens geralmante são **construídas para trabalharem de forma imperativa**, onde eu **"envio uma mensagem para um sistema de e-mail, e espero que esse sistema envie o e-mail para o destinatário especificado com o conteúdo fornecido"**, ou também **"envio uma mensagem para meu sistema de atualização cadastral de usuários, onde esse sistema ao receber a mensagem atualiza o cliente existente na base comum desse domínio com as informações enviadas de forma assincrona"**, ou **"envio os dados de uma compra para um sistema de faturamento, ao receber essa mensagem de uma compra, o sistema resposável realiza todas as tarefas esperadas"**. Em todos os casos, uma mensagem na grande maioria das vezes possui um destinatário conhecido e intencional, que é capaz de tomar ações sobre o dado fornecido conforme o produtor da mensagem espera. Conceitualmente, mas não sempre, um para um. 
+
+<IMAGEM SOBRE UM ROBO RECEBENDO UM CONVITE DE CASAMENTO>
+
+Uma alusão para mensagerias, é de fato, pensar em uma carta, correspondência ou pacote de uma encomenda. Onde ela tem um destinatário único e conhecido. Imagine que você recebe por correio, de meios formais, um envelope que te notifica do casamento de um amigo próximo te convidando para ser padrinho. É uma mensagem especialista enviada unica e exclusivamente para pessoas pelas quais esse amigo tem carinho o suficiente para ser apadrinhado. Pode-se esperar que convidados normais também receberam uma carta por correio, mas com o convite normal, mas com um conteúdo diferente, apenas os convidando para a cerimônia. Podemos imaginar que os noivos utilizaram duas filas: uma para padrinhos, e outra para os demais convidados. 
 
 ## Definindo Eventos
 
+Ao contrário das mensagens que são conteúdos entregues de forma intencional para destinos conhecidos com comportamentos controlados e esperados, um evento pode ser tratado como uma notificação genérica de que algo ocorreu, e diversas partes de um sistema complexo que estejam interessadas nesse tipo de evento, escutam sobre essa notificação e tomam suas devidas ações se necessário, ou não. Ao contrário das mensagens que trafegam suas informações de um para um através de filas, os eventos são trafegados através de tópicos, onde o conteúdo desse evento chega ao mesmo tempo, para todos os interessados no assunto do tópico. Mensagens podem introduzir um nível maior de acoplamento entre o emissor e o receptor, especialmente se o formato da mensagem ou o protocolo de comunicação exigir que ambos os lados concordem com um contrato comum. Eventos tendem a promover um desacoplamento maior, pois o emissor não precisa saber quem está consumindo o evento ou como. Essa é uma forma de mensageria que garante baixo acoplamento entre sistemas, e facilita a escala e criação de novos componentes e subsistemas.  
+
+Eventos são utilizados proximos de streaming, e **esperam que expectadores reajam a uma notificação assim que ela ocorre para executar suas funções**. Ao lado da mensageria, onde em um exemplo de e-commerce teriamos filas especificas para cobrar, faturar, enviar o e-mail, notificar o estoque e o produtor teria que enviar pontualmente a mensagem especifica para cada uma delas, quando olhamos para arquitetura de eventos, teriamos um evento proximo de um **"uma venda aconteceu!!!, sistemas interessados nisso, podem trabalhar"**, e **o sistema de cobrança, faturamento, e-mail e estoque respondem a isso de forma simultânea e isolada**. 
+
 ## Eventos vs Mensagens
+
+Por mais que ambos os conceitos andem proximos em definições de arquiteturas, e comumente sejam até confundidos e intercambiáveis, onde tópicos de eventos sejam usados como filas, e filas sejam usadas como eventos de forma errônea, ou não, entender as diferenças e pontos fortes de cada uma dessas alternativas pode fazer com que engenheiros e arquitetos projetem soluções ainda mais escaláveis e performáticas. Com esse objetivo, vamos analisar os paralelos entre eventos e mensagens de forma conceitual, lado a lado. A principal diferença conceitual que permeia mensagens e ventos, como vimos, é o **propósito imperativo e o propósito reativo**. Enquanto **mensagens são concentradas em enviar mensagens para atores especificos com uma abordagem imperativa e direta de "faça algo"**, **eventos trabalham de forma reativa e desacoplada, onde temos a abordagem de "aconteceu algo", e os membros reativos tomam as devidas decisões com base nisso**. 
+
+Mensagens são geralmente usadas para **transferir dados de um ponto a outro**, frequentemente com a expectativa de uma resposta ou reação de alguma forma. Eventos, por outro lado, **são emitidos para informar outros componentes do sistema sobre mudanças de estado**, sem esperar uma resposta. Muitas vezes em arquiteturas reativas a eventos, **o responsável pela produção do evento não conhece todos os seus consumidores e quais ações os mesmos tomam**, pois a fonte do evento é de uma para muitas, não exigindo confirmação ou conhecimento prévio. Eventos são ideais **para a construção de sistemas reativos que respondem a mudanças de estado**, como o **"o estado de determinada compra se tornou CANCELADO"**, enquanto **mensagens são mais adequadas para integrações diretas** onde uma ação específica é requerida aos dados enviados, como **"cancele essa compra"**.
 
 # Conceitos e Padrões
 
@@ -25,6 +43,8 @@ Arquiteturas assincronas derivadas do uso de mensageria e eventos são recursos 
 ## LIFO - Last In First Out
 
 ## Funout 
+
+## DLQ - Dead Letter Queues
 
 # Protocolos e Arquiteturas de Eventos
 
