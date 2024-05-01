@@ -1,0 +1,15 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant P as Produtor
+    participant Q as Queue Principal
+    participant C as Consumidor
+    participant D as Dead Letter Queue
+
+    P->>Q: Envia mensagem
+    Q->>C: Entrega mensagem
+    C->>C: Processa mensagem
+    alt Falha no Processamento
+        C->>Q: Falha ao processar
+        Q->>D: Encaminha para DLQ
+
+    end

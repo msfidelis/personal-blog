@@ -14,7 +14,7 @@ Arquiteturas assincronas derivadas do uso de mensageria e eventos são recursos 
 
 # Mensagens e Eventos
 
-A comunicação em sistemas distribuídos de forma assincrona pode ser categorizada e simplificada através de duas formas: mensagens e ventos. A função da comunicação assincrona, assim como qualquer tipo de comunicação, visa trocar dados e comandos entre diversos componentes que compõe um sistema, e tanto mensagens quanto eventos cumprem esse objetivo de forma louvável, mesmo ambas possuindo peculiaridades, conceitos e características distintas que podem complementar, ou mudar totalmente um padrão de design de comunicação entre sistemas. 
+A comunicação em sistemas distribuídos de forma assincrona pode ser categorizada e simplificada através de duas formas: **mensagens e eventos**. A função da comunicação assincrona, assim como qualquer tipo de comunicação, **visa trocar dados e comandos entre diversos componentes que compõe um sistema**, e tanto mensagens quanto eventos cumprem esse objetivo de forma louvável, mesmo ambas possuindo peculiaridades, conceitos e características distintas que podem complementar, ou mudar totalmente um padrão de design de comunicação entre sistemas. Ambas podem ser empregadas para **distribuir cargas de trabalho de forma assincrona entre vários consumidores que podem trabalhar paralelamente para processar itens de um mesmo domínio**, assim como os [balanceadores de carga](/load-balancing/) e forma ultra-superficial e simplista, que por sua vez se encarrega de cumprir o mesmo objetivo de forma sincrona. 
 
 <br>
 
@@ -26,7 +26,7 @@ Mensageria, em termos simplistas, refere-se a troca de mensagens através de com
 
 Mensagens geralmente são **construídas para trabalharem de forma imperativa**, onde eu **"envio uma mensagem para um sistema de e-mail, e espero que esse sistema envie o e-mail para o destinatário especificado com o conteúdo fornecido"**, ou também **"envio uma mensagem para meu sistema de atualização cadastral de usuários, onde esse sistema ao receber a mensagem atualiza o cliente existente na base comum desse domínio com as informações enviadas de forma assincrona"**, ou **"envio os dados de uma compra para um sistema de faturamento, ao receber essa mensagem de uma compra, o sistema resposável realiza todas as tarefas esperadas"**. Em todos os casos, uma mensagem na grande maioria das vezes possui um destinatário conhecido e intencional, que é capaz de tomar ações sobre o dado fornecido conforme o produtor da mensagem espera. Conceitualmente, mas não sempre, um para um. 
 
-Uma alusão para mensagerias, é de fato, pensar em uma carta, correspondência ou pacote de uma encomenda. Onde ela tem um destinatário único e conhecido. Imagine que você recebe por correio, de meios formais, um envelope que te notifica do casamento de um amigo próximo te convidando para ser padrinho. É uma mensagem especialista enviada unica e exclusivamente para pessoas pelas quais esse amigo tem carinho o suficiente para ser apadrinhado. Pode-se esperar que convidados normais também receberam uma carta por correio, mas com o convite normal, mas com um conteúdo diferente, apenas os convidando para a cerimônia. Podemos imaginar que os noivos utilizaram duas filas: uma para padrinhos, e outra para os demais convidados. 
+Uma alusão para mensagerias, é de fato, **pensar em uma carta**, correspondência ou pacote de uma encomenda. Onde ela tem um destinatário único e conhecido. Imagine que você recebe por correio, de meios formais, um envelope que te notifica do casamento de um amigo próximo te convidando para ser padrinho. É uma mensagem especialista enviada unica e exclusivamente para pessoas pelas quais esse amigo tem carinho o suficiente para ser apadrinhado. Pode-se esperar que convidados normais também receberam uma carta por correio, mas com o convite normal, mas com um conteúdo diferente, apenas os convidando para a cerimônia. Podemos imaginar que os noivos utilizaram duas filas: uma para padrinhos, e outra para os demais convidados. 
 
 <br>
 
@@ -60,9 +60,9 @@ Tanto em ferramentais que possibilitam o uso de mensageria quanto eventos e stre
 
 ## FIFO e Queues - First In First Out
 
-<!-- ![Queue](/assets/images/system-design/example-queue.png) -->
-
 O Padrão FIFO, ou *First In First Out*, é um conceito muito presente em tecnologias de mensageria e processamento de filas, onde neste modelo, podemos entender que as **mensagens serão tratadas na forma de uma fila literal**, onde **a primeira mensagem a chegar, será consequentemente a primeira a ser disponibilizada para consumo**. Este padrão pode ser habilitado e adotado em mensageria em casos de uso onde uma **ordem mínima de processamento precisa ser garantida**, pois a ordem do consumo representa exatamente a ordem de chegada da mensagem. O FIFO é uma estrutura interessante para ser empregado em sistemas financeiros, onde **a ordem de execução de um grupo de transações precisa ser respeitado**, ou em sistemas de vendas onde a ordem de compra **precisa ser tratada de forma justa pela ordem de confirmação**. 
+
+![Queue](/assets/images/system-design/queue.png)
 
 As operações conhecidas dentro da estrutura de dados de Queue geralmente são conhecidas como `Enqueue`, que se encarrega de adicionar um item ao fim de uma lista ou fila, e o `Dequeue`, que se encarrega de remover o primeiro item da lista ou fila. Abaixo temos um funcionamento simples de uma implementação de Queue FIFO para compreendermos a lógica da estrutura: 
 
@@ -132,9 +132,9 @@ Output: Churrasco
 
 ## LIFO e Stacks - Last In First Out
 
-<!-- ![Stack](/assets/images/system-design/example-stack.png) -->
+Por mais que o padrão LIFO, ou *Last In First Out*, seja empregado também em Queues no conceito de mensageria, em estruturas de dados esse padrão pode ser associado a uma Stack. Ao contrário do FIFO onde temos uma percepção de uma fila literal, onde o primeiro achegar é o primeio a ser atendido, o LIFO nos entrega uma e**xperiência de uma Pilha**, onde **a ultima mensagem a ser incluída, será a primeira a ser consumida na priorização**. Por mais que, pelos exemplos que vimos até então, o conceito de LIFO seja anti-intuitivo quando olhamos para o conceito de distribuição de cargas de trabalho, desacoplamento e processamento em batch, ele pode ser implementado em funcionalidades que podem requerer uma ação de "desfazer", onde precisamos preservar uma "memória" de etapas de um processamento que precisa ser desfeita na ordem inversa, como por exemplo um processo de calculos de descontos dentro de um plano com multiplas condições e regras. 
 
-Por mais que o padrão LIFO, ou Last In First Out, seja empregado também em Queues no conceito de mensageria, em estruturas de dados esse padrão pode ser associado a uma Stack. Ao contrário do FIFO onde temos uma percepção de uma fila literal, onde o primeiro achegar é o primeio a ser atendido, o LIFO nos da experiência de uma Pilha, onde a ultima mensagem a ser incluída, será a primeira a ser consumida na priorização. Por mais que, pelos exemplos que vimos até então, o conceito de LIFO seja antiintuitivo quando olhamos para o conceito de distribuição de cargas de trabalho, desacoplamento e processamento em batch, ele pode ser implementado em funcionalidades que podem requerer uma ação de "desfazer", onde precisamos preservar uma "memória" de etapas de um processamento que precisa ser desfeita na ordem inversa, como por exemplo um processo de calculos de descontos dentro de um plano com multiplas condições e regras. 
+![Stack](/assets/images/system-design/stack.png)
 
 De formas simplistas, a principal diferença entre uma queue e uma stack é a o sentido da remoção dos itens da lista. Uma stack é uma queue ao contrário, e vice versa. As operações conhecidas dentro dessa estrutura de dados são geralmente a definidas como `Push`, onde adicionamos um item no inicio da pilha e `Pop` onde retiramos o primeiro item da mesma. 
 
@@ -202,21 +202,55 @@ Output: Pizza
 
 ## Funout 
 
-O padrão de Funout é um pattern empregado onde é necessário uma estratégia de 1:N no envio de mensagens. Isso pode ser empregado em mensageria quando temos uma unica mensagem que precisa ser distribuída para um numero maior de filas, ou quando olhamos para o comportamento padrão de um evento, em que a mesma mensagem é repassada para todos os grupos de consumidores com funções diferentes interessadas no mesmo tópico. Em termos simplistas, o Fanout é enviar a mesma mensagem para todos os lugares possíveis dentro de algum contexto que faça sentido. 
+O padrão de Funout é um pattern empregado onde é **necessário uma estratégia de 1:N no envio de mensagens**. Isso pode ser empregado em mensageria quando temos **uma unica mensagem que precisa ser distribuída para um numero maior de filas**, ou quando olhamos para o comportamento padrão de um evento, em que a mesma mensagem é repassada para todos os grupos de consumidores com funções diferentes interessadas no mesmo tópico. Em termos simplistas, o **Fanout é enviar a mesma mensagem para todos os lugares possíveis dentro de algum contexto que faça sentido**. 
 
 Esse padrão é útil, como citado, quando precisamos notificar a mesma mensagem para vários grupos, tanto quando para replicação de dados, onde por intermédio de alguma carga de trabalho segundária, replicamos o processamento ou o dado para outros tipos de bancos de dados, datacenters e subsistemas. 
 
 ## DLQ - Dead Letter Queues
 
-As Dead Letter Queues são mecanismos de post-mortem de mensagens que não conseguiram ser processadas. Elas são utilizadas para centralizar mensagens que por ventura falharam em ser consumidas durante seu ciclo de vida, sejam por erros, timeouts para serem confirmadas ou quantidades de retentativas excedidas. Utilizar as DLQ's permite aos times de engenharia que suportam sistemas que fazem uso de mensageria, analisar e tratar os casos de insucesso das integrações sem criarem um overhead desnecessário de retentativas infinitas na fila principal, ou até mesmo as recolocando na fila principal depois de tratamentos em caso de uma indisponibilidade em um subsistema que demorou tempo demais para se reestabelecer e automaticamente moveu suas mensagens até ela. 
+As **Dead Letter Queues são mecanismos de post-mortem de mensagens** que não conseguiram ser processadas. Elas são utilizadas para **centralizar mensagens que por ventura falharam em ser consumidas durante seu ciclo de vida**, sejam por erros, timeouts para serem confirmadas ou quantidades de retentativas excedidas. Utilizar as DLQ's permite aos times de engenharia que suportam sistemas que fazem uso de mensageria, analisar e tratar os casos de insucesso das integrações sem criarem um overhead desnecessário de retentativas infinitas na fila principal, ou até mesmo as recolocando na fila principal depois de tratamentos em caso de uma indisponibilidade em um subsistema que demorou tempo demais para se reestabelecer e automaticamente moveu suas mensagens até ela. 
+
+![DLQ](/assets/images/system-design/dlq.png)
 
 Implementar DLQ's nos permite através de estratégias de monitoramento identificar um possível problema nos sistemas que se comunicam dessa forma, uma vez que, não faz parte do fluxo padrão encaminhar uma grande quantidade de mensagens para elas. Observar o numero de mensagens disponíveis em em DLQ's durante o tempo pode ser um indicador chave em sistemas assincronos. 
 
+<br>
+
 # Protocolos e Arquiteturas de Eventos
 
-## Streaming 
+Prococolos e arquiteturas de eventos, ou event-driven, são ferramentas extremamente úteis em ambientes distribueidos, e podem facilitar o processamento e análise de volumes significativos de dados em tempo real, ou muito próximo disso. 
+
+## Streaming e Reatividade
+
+O Streaming de dados pode ser considerado um pattern que visa realizar o processamento de um fluxo contínuo de dados que são gerados em tempo real. Diferente de processamentos em batch que lida com blocos de dados estáticos, o streaming visa abordar a mesma quantidade de dados, ou até maiores, em tempos muito proximos dos que foram gerados. Streaming engloba tecnologias e padrões de projetos que possibilitam escrever aplicações que se utilizam de reatividade para realizar suas funções para lidar com esses mesmos dados e eventos. 
+
+Um exemplo classico, mas não limitado a isso, é a implementação de streaming em redes sociais e ferramentas de monitoramento de comportamento de usuários, onde acessos e cliques que acontecem dentro de suas plataformas são transformados em eventos analiticos, que assim que são produzidos, são processados e catalogados para enriquecer relatórios analíticos e algoritmos de recomendação. Um simples clique em um botão, a busca por um termo específico, a altura de uma rolagem na págica pode ser um evento capturado, transformado e processado quase no mesmo instante que ocorrem. 
+
+Um outro exemplo interessante e classico são sistemas de fraude, que de acordo com o padrão de comportamento e compra conhecido, pode capturar detalhes, valores e métodos de pagamento para classificar se determinada transação é uma fraude ou está ocorrendo de forma legítima, ou uma plataforma de streaming que com base no seu historico de navegação e títulos consumidos de séries e filmes pode automaticamente recomendar itens parecidos sem precisar de um bloco de tempo grande para tomar essas decisões. 
+
+### Reatividade e Arquiteturas Event-Driven
+
+Aplicações orientadas a eventos, ou event-driven, são projetadas para detectar eventos vindos ou não de streaming e serem estimulados para tomar alguma decisão com base nisso. Várias aplicações processos podem responder ao mesmo evento de forma totalmente indepentene. Esse tipo de arquitetura, ou grupo de patterns, são úteis e bem vindos a aplicações que interagem a ambientes de constate mudanças, ou reagem a mudanças de estado de vários objetos trafegados no sistema. A capacidade de vários atores responderem a eventos em tempo real pode tornar o desacoplamento de sistemas produtivos de larga escala uma tarefa muito mais interessante e eficiente. Imagine que vários sistemas distribuídos e com diferentes finalidades monitoram através de um sistema de notificações a mudança de status de um pedido realizado em uma plataforma de delivery de comida. Um grupo de listeners pode responder quando o pedido está com o status `CRIADO` onde podem notificar o backoffice do restaurante, mandar notificações em push para o usuário, outro grupo pode responder quando o status muda para `ACEITO` onde o processamento de cobrança é iniciado no meio de pagamento escolhido, outro grupo responde para quando status muda para `PRONTO` notificando os entregadores disponíveis, mais grupos tomam decisões com base na mudança do status para `A_CAMINHO`, `ENTREGUE`, `FINALIZADO` e etc.
+
 
 ## Kafka 
+
+O Apache Kafka, por mais que não seja a única opção, é talvez a mais conhecida e associada a arquiteturas orientadas a eventos. O Kafka é uma plataforma de streaming que é projetada intencionalmente para lidar com um volume gigante de dados garantindo performance e alta disponibilidade. O Kafka é composto inicialmente de alguns componentes importantes, e dentro dos componentes e conceitos mais importantes podemos encontrar: 
+
+### Clusters e Brokers 
+
+### Tópicos
+
+### Partições
+
+### Producers 
+
+### Consumers
+
+
+## R2DBC
+
+
 
 # Protocolos e Arquiteturas de Mensageria
 
@@ -771,3 +805,13 @@ for i := 0; i < 3000000000; i++ {
 [RabbitMQ Exchange Type](https://hevodata.com/learn/rabbitmq-exchange-type/)
 
 [Enqueue and Dequeue](https://docs.oracle.com/cd/E19253-01/820-0446/chp-sched-10/index.html)
+
+[Kafka - Architecture](https://kafka.apache.org/10/documentation/streams/architecture)
+
+[Kafka Basics and Core Concepts](https://medium.com/inspiredbrilliance/kafka-basics-and-core-concepts-5fd7a68c3193)
+
+[Apache Kafka: 10 essential terms and concepts explained](https://www.redhat.com/en/blog/apache-kafka-10-essential-terms-and-concepts-explained)
+
+[Event Driven Architecture, The Hard Parts: Events Vs Messages](https://medium.com/simpplr-technology/event-driven-architecture-the-hard-parts-events-vs-messages-0fcfc7243703)
+
+[How Much Data Does Streaming Netflix Use?](https://www.buckeyebroadband.com/support/internet/how-much-data-does-streaming-netflix-use)
