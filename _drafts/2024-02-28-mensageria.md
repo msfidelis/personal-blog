@@ -12,13 +12,11 @@ Arquiteturas assincronas derivadas do uso de mensageria e eventos são recursos 
 
 <br>
 
-
 # Mensagens e Eventos
 
 A comunicação em sistemas distribuídos de forma assincrona pode ser categorizada e simplificada através de duas formas: mensagens e ventos. A função da comunicação assincrona, assim como qualquer tipo de comunicação, visa trocar dados e comandos entre diversos componentes que compõe um sistema, e tanto mensagens quanto eventos cumprem esse objetivo de forma louvável, mesmo ambas possuindo peculiaridades, conceitos e características distintas que podem complementar, ou mudar totalmente um padrão de design de comunicação entre sistemas. 
 
 <br>
-
 
 ## Definindo Mensageria 
 
@@ -52,16 +50,167 @@ Mensagens são geralmente usadas para **transferir dados de um ponto a outro**, 
 
 <br>
 
-
 # Conceitos e Padrões
 
-## FIFO - First In First Out
+![Conceitos](/assets/images/system-design/mensageria-conceitos.png)
 
-## LIFO - Last In First Out
+Tanto em ferramentais que possibilitam o uso de mensageria quanto eventos e streaming, alguns conceitos podem estar presentes de forma singela em ambos os casos. Nessa sessão vamos detalhar alguns deles para que, conceitualmente, seja possível guiar as melhores decisões arquiteturais. 
+
+<br>
+
+## FIFO e Queues - First In First Out
+
+<!-- ![Queue](/assets/images/system-design/example-queue.png) -->
+
+O Padrão FIFO, ou *First In First Out*, é um conceito muito presente em tecnologias de mensageria e processamento de filas, onde neste modelo, podemos entender que as **mensagens serão tratadas na forma de uma fila literal**, onde **a primeira mensagem a chegar, será consequentemente a primeira a ser disponibilizada para consumo**. Este padrão pode ser habilitado e adotado em mensageria em casos de uso onde uma **ordem mínima de processamento precisa ser garantida**, pois a ordem do consumo representa exatamente a ordem de chegada da mensagem. O FIFO é uma estrutura interessante para ser empregado em sistemas financeiros, onde **a ordem de execução de um grupo de transações precisa ser respeitado**, ou em sistemas de vendas onde a ordem de compra **precisa ser tratada de forma justa pela ordem de confirmação**. 
+
+As operações conhecidas dentro da estrutura de dados de Queue geralmente são conhecidas como `Enqueue`, que se encarrega de adicionar um item ao fim de uma lista ou fila, e o `Dequeue`, que se encarrega de remover o primeiro item da lista ou fila. Abaixo temos um funcionamento simples de uma implementação de Queue FIFO para compreendermos a lógica da estrutura: 
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+// Interface genérica para implementar os métodos de enfileiramento
+type Queue []interface{}
+
+// Adiciona um item na fila
+func (q *Queue) Enqueue(item interface{}) {
+	*q = append(*q, item)
+}
+
+// Remove o primeiro item da fila e o retorna
+func (q *Queue) Dequeue() interface{} {
+	if len(*q) == 0 {
+		return nil
+	}
+	item := (*q)[0]
+	*q = (*q)[1:]
+	return item
+}
+
+func main() {
+	queue := Queue{}
+
+	// Itens a serem adicionados na Queue
+	items := []string{
+		"Pizza",
+		"Hamburger",
+		"Churrasco",
+	}
+
+	// Adicionando os itens na ordem da lista
+	for _, item := range items {
+		fmt.Println("Input:", item)
+		queue.Enqueue(item)
+	}
+
+	fmt.Println()
+
+	// Removendo os itens em ordem de chegada na lista
+	fmt.Println("Output:", queue.Dequeue())
+	fmt.Println("Output:", queue.Dequeue())
+	fmt.Println("Output:", queue.Dequeue())
+}
+```
+
+##### Output: 
+
+```
+Input: Pizza
+Input: Hamburger
+Input: Churrasco
+
+Output: Pizza
+Output: Hamburger
+Output: Churrasco
+```
+
+<br>
+
+## LIFO e Stacks - Last In First Out
+
+<!-- ![Stack](/assets/images/system-design/example-stack.png) -->
+
+Por mais que o padrão LIFO, ou Last In First Out, seja empregado também em Queues no conceito de mensageria, em estruturas de dados esse padrão pode ser associado a uma Stack. Ao contrário do FIFO onde temos uma percepção de uma fila literal, onde o primeiro achegar é o primeio a ser atendido, o LIFO nos da experiência de uma Pilha, onde a ultima mensagem a ser incluída, será a primeira a ser consumida na priorização. Por mais que, pelos exemplos que vimos até então, o conceito de LIFO seja antiintuitivo quando olhamos para o conceito de distribuição de cargas de trabalho, desacoplamento e processamento em batch, ele pode ser implementado em funcionalidades que podem requerer uma ação de "desfazer", onde precisamos preservar uma "memória" de etapas de um processamento que precisa ser desfeita na ordem inversa, como por exemplo um processo de calculos de descontos dentro de um plano com multiplas condições e regras. 
+
+De formas simplistas, a principal diferença entre uma queue e uma stack é a o sentido da remoção dos itens da lista. Uma stack é uma queue ao contrário, e vice versa. As operações conhecidas dentro dessa estrutura de dados são geralmente a definidas como `Push`, onde adicionamos um item no inicio da pilha e `Pop` onde retiramos o primeiro item da mesma. 
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+type Stack []interface{}
+
+// Adiciona um item na pilha
+func (s *Stack) Push(item interface{}) {
+	*s = append(*s, item)
+}
+
+// Remove o item do topo da pilha e o retorna
+func (s *Stack) Pop() interface{} {
+	if len(*s) == 0 {
+		return nil
+	}
+	index := len(*s) - 1
+	item := (*s)[index]
+	*s = (*s)[:index]
+	return item
+}
+
+func main() {
+	stack := Stack{}
+
+	// Itens a serem adicionados na Stack
+	items := []string{
+		"Pizza",
+		"Hamburger",
+		"Churrasco",
+	}
+
+	// Adicionando os itens na pilha
+	for _, item := range items {
+		fmt.Println("Input:", item)
+		stack.Push(item)
+	}
+
+	fmt.Println()
+
+	// Removendo os itens da pilha
+	fmt.Println("Output:", stack.Pop())
+	fmt.Println("Output:", stack.Pop())
+	fmt.Println("Output:", stack.Pop())
+}
+```
+
+##### Output: 
+
+```
+Input: Pizza
+Input: Hamburger
+Input: Churrasco
+
+Output: Churrasco
+Output: Hamburger
+Output: Pizza
+```
 
 ## Funout 
 
+O padrão de Funout é um pattern empregado onde é necessário uma estratégia de 1:N no envio de mensagens. Isso pode ser empregado em mensageria quando temos uma unica mensagem que precisa ser distribuída para um numero maior de filas, ou quando olhamos para o comportamento padrão de um evento, em que a mesma mensagem é repassada para todos os grupos de consumidores com funções diferentes interessadas no mesmo tópico. Em termos simplistas, o Fanout é enviar a mesma mensagem para todos os lugares possíveis dentro de algum contexto que faça sentido. 
+
+Esse padrão é útil, como citado, quando precisamos notificar a mesma mensagem para vários grupos, tanto quando para replicação de dados, onde por intermédio de alguma carga de trabalho segundária, replicamos o processamento ou o dado para outros tipos de bancos de dados, datacenters e subsistemas. 
+
 ## DLQ - Dead Letter Queues
+
+As Dead Letter Queues são mecanismos de post-mortem de mensagens que não conseguiram ser processadas. Elas são utilizadas para centralizar mensagens que por ventura falharam em ser consumidas durante seu ciclo de vida, sejam por erros, timeouts para serem confirmadas ou quantidades de retentativas excedidas. Utilizar as DLQ's permite aos times de engenharia que suportam sistemas que fazem uso de mensageria, analisar e tratar os casos de insucesso das integrações sem criarem um overhead desnecessário de retentativas infinitas na fila principal, ou até mesmo as recolocando na fila principal depois de tratamentos em caso de uma indisponibilidade em um subsistema que demorou tempo demais para se reestabelecer e automaticamente moveu suas mensagens até ela. 
+
+Implementar DLQ's nos permite através de estratégias de monitoramento identificar um possível problema nos sistemas que se comunicam dessa forma, uma vez que, não faz parte do fluxo padrão encaminhar uma grande quantidade de mensagens para elas. Observar o numero de mensagens disponíveis em em DLQ's durante o tempo pode ser um indicador chave em sistemas assincronos. 
 
 # Protocolos e Arquiteturas de Eventos
 
@@ -620,3 +769,5 @@ for i := 0; i < 3000000000; i++ {
 [FAQ: What is AMQP and why is it used in RabbitMQ?](https://www.cloudamqp.com/blog/what-is-amqp-and-why-is-it-used-in-rabbitmq.html)
 
 [RabbitMQ Exchange Type](https://hevodata.com/learn/rabbitmq-exchange-type/)
+
+[Enqueue and Dequeue](https://docs.oracle.com/cd/E19253-01/820-0446/chp-sched-10/index.html)
