@@ -246,7 +246,9 @@ O Apache Kafka, por mais que não seja a única opção, é talvez a mais conhec
 
 ### Clusters e Brokers 
 
-Um cluster de Kafka é com posto por multiplos servidores, onde cada um deles é considerado um "nó" e denominado como "broker". Esse grupo de brokers que formam o cluster, é responsável por receber, armazenar, replicar e distribuir os eventos recebidos entre si em tópicos e suas devidas partições, também como tem a responsabilidade de distribuir e disponibilizar os mesmos para todos os membros de grupos de consumidores conectados. 
+Um cluster de Kafka é com posto por multiplos servidores, onde cada um deles é considerado um "nó" e denominado como "broker". Esse grupo de brokers que formam o cluster, é responsável por receber, armazenar, replicar e distribuir os eventos recebidos entre si em tópicos e suas devidas partições, também como tem a responsabilidade de distribuir e disponibilizar os mesmos para todos os membros de grupos de consumidores conectados. Todos os brokers são aptos a receber qualquer tipo de evento e enviá-los para seu tópico informado. A distribuição de carga entre os brokers podem ser facilitadas por meio de [balanceadores de carga](/load-balancing/), [CNAMES de DNS](/protocolos-de-rede/) ou fornecendo a lista de brokers separadas por virgula para os clientes. 
+
+![Kafka Clusters e Brokers](/assets/images/system-design/kafka-cluster.png)
 
 ### Tópicos
 
@@ -254,9 +256,14 @@ Um tópico dentro da arquitetura do Kafka pode ser considerado como uma "categor
 
 Como os tópicos são representações de um feed de dados de um determinado assunto ou contexto específico, é importante que os mesmos sejam criados com uma nomenclatura consistente e clara, facilitando a compreensão de que tipo de dados trafegam ali. Nomenclaturas e clareza para exemplificar domínios e dados são fatures chave para a construção de sistemas distribuídos de larga escala e que envolvam muitos times. 
 
+![Kafka Topicos](/assets/images/system-design/kafka-topics.png)
+
 ### Partições
 
 Partições podem ser vistos como subdivisões de um tópico, garantindo uma distribuição e balanceamento de carga entre todos os dados enviados. Como citado a sessão anterior, as partições de dentro de um tópico por tabela possibilitam que dados dadsos sejam divididos e distribuídos entre multiplos brokers do cluster, permitindo que possam ser associados a multiplos consumidores de um mesmo grupo, gerando toda a capacidade de paralelismo proposta pela arquitetura distribuída orientadas a eventos. Cada consumidor pode ler uma ou mais partições em paralelo. 
+
+
+![Kafka Partitions](/assets/images/system-design/kafka-partitions.png)
 
 ### Fatores de Replicação
 
@@ -264,17 +271,24 @@ Os fatores de replicação, ou replication factor, é o que permite a alta dispo
 
 Se um tópico é configurado com um replication factor de 2, isso significa que duas cópias do mesmo dado serão mantidas brokers diferentes, incluindo o dado "original". Significando uma cópia adicional além dele. O mesmo para o replication factor de 3, onde serão criadas 2 replicas adicionais ao dado original, totalizando 3. 
 
+![Kafka Replication Factor](/assets/images/system-design/kafka-replication.png)
+
 Uma consideração importante é que o fator de replicação de um tópico nunca deve exceder o numero de brokers que fazem a composição do cluster. 
+
 
 ### Producers 
 
 Os producers, ou produtores, são componententes ou processos que publicam eventos diretamente para um tópico específico dentro do Kafka. Os producers podem especificar em qual partição desejam enviar o evento manualmente através de uma chave de partição, ou permitir que o próprio kafka se encarregue de fazer a distribuição uniforme. 
 
-Espeficicar uma chave de partição para publicar a mensagem em tópicos especificos permite por exemplo que todos os eventos vindos de um determinado cliente, subsistema ou produto seja tratado sempre pelo mesmo consumidor conectado, o que pode ser muito útil quando uma experiência de "continuidade" ou "ordem" é necessária durante um processamento, mas também pode gerar "hot partitions" na distribuição desse eventos, desbalanceando a carga de trabalho dos consumidores. Nesse caso em cenários de produção uniforme, talvez seja mais indicado confiar nos algoritmos de distribuições nativos do Kafka para evitar gargalos em certas partiçõese em outras não. 
+Espeficicar uma chave de partição para publicar a mensagem em tópicos especificos permite por exemplo que todos os eventos vindos de um determinado cliente, subsistema ou produto seja tratado sempre pelo mesmo consumidor conectado, o que pode ser muito útil quando uma experiência de "continuidade" ou "ordem" é necessária durante um processamento, mas também pode gerar "hot partitions" na distribuição desse eventos, desbalanceando a carga de trabalho dos consumidores. Nesse caso em cenários de produção uniforme, talvez seja mais indicado confiar nos algoritmos de distribuições nativos do Kafka para evitar gargalos em certas partições e em outras não. 
+
+Em consumidores precisamos pensar no replication factor para encontrar uma balança entre disponibilidade e performance. Durante a produção do evento, o produto precisa especificar o limite mínimo de ACK's (Acknowlegments) que ele precisa receber dos brokers. Se por exemplo for especificado um volume de ACK igual a 0, isso significa maior throughput de produção, em sacrificio da garantia de entrega do evento. Quanto maior o numero de ACK's definidos, maior a confiabilidade de entrega e menor throughput. Quanto menor o numero de ACK's definidor, maior throughput e menor confiabilidade de entrega. 
 
 ### Consumers e Consumer Groups
 
 Ao contrário dos producers, os consumers, ou consumidores, lêem registros inseridos em um ou mais partições de um tópico para processá-los. Para permitir multiplas leituras de um mesmo dado por consumidores com propostas diferentes, os consumidors se organizam em grupos chamados "consumer groups" identificados nominalmente. Cada registro entregue em uma partição é entregue a um unico consumidor dentro de cada "consumer group" associado ao tópico. O  afka gerencia a distribuição de registros e particionamento entre os consumidores automaticamente, rebalanceando as partições entre os consumidores conforme necessário.
+
+![Kafka Consumer Groups](/assets/images/system-design/kafka-consumer-groups.png)
 
 <br>
 
