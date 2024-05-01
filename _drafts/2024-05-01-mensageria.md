@@ -222,6 +222,8 @@ Implementar DLQ's nos permite através de estratégias de monitoramento identifi
 
 Prococolos e arquiteturas de eventos, ou event-driven, são ferramentas extremamente úteis em ambientes distribueidos, e podem facilitar o processamento e análise de volumes significativos de dados em tempo real, ou muito próximo disso. 
 
+<br>
+
 ## Streaming e Reatividade
 
 O Streaming de dados pode ser considerado um pattern que visa **realizar o processamento de um fluxo contínuo de dados que são gerados em tempo real**. Diferente de processamentos em batch que lida com blocos de dados estáticos, o streaming visa abordar a mesma quantidade de dados, ou até maiores, em tempos muito proximos dos que foram gerados. Streaming engloba tecnologias e padrões de projetos que possibilitam escrever aplicações que se utilizam de reatividade para realizar suas funções para lidar com esses mesmos dados e eventos. 
@@ -230,29 +232,55 @@ Um exemplo classico, mas não limitado a isso, é a implementação de streaming
 
 Um outro exemplo interessante e classico são sistemas de fraude, que de acordo com o padrão de comportamento e compra conhecido, pode capturar detalhes, valores e métodos de pagamento para classificar se determinada transação é uma fraude ou está ocorrendo de forma legítima, ou uma plataforma de streaming que com base no seu historico de navegação e títulos consumidos de séries e filmes pode automaticamente recomendar itens parecidos sem precisar de um bloco de tempo grande para tomar essas decisões. 
 
+<br>
+
 ### Reatividade e Arquiteturas Event-Driven
 
 Aplicações orientadas a eventos, ou event-driven, são projetadas para **detectar eventos vindos ou não de streaming e serem estimulados para tomar alguma decisão com base nisso**. Várias **aplicações processos podem responder ao mesmo evento de forma totalmente independente**. Esse tipo de arquitetura, ou grupo de patterns, são úteis e bem vindos a aplicações que interagem a **ambientes de constate mudanças**, ou **reagem a mudanças de estado de vários objetos trafegados no sistema**. A capacidade de **vários atores responderem a eventos em tempo real** pode tornar o desacoplamento de sistemas produtivos de larga escala uma tarefa muito mais interessante e eficiente. Imagine que vários sistemas distribuídos e com diferentes finalidades monitoram através de um sistema de notificações a mudança de status de um pedido realizado em uma plataforma de delivery de comida. Um grupo de listeners pode responder quando o pedido está com o status `CRIADO` onde podem notificar o backoffice do restaurante, mandar notificações em push para o usuário, outro grupo pode responder quando o status muda para `ACEITO` onde o processamento de cobrança é iniciado no meio de pagamento escolhido, outro grupo responde para quando status muda para `PRONTO` notificando os entregadores disponíveis, mais grupos tomam decisões com base na mudança do status para `A_CAMINHO`, `ENTREGUE`, `FINALIZADO` e etc.
 
+<br>
 
 ## Kafka 
 
-O Apache Kafka, por mais que não seja a única opção, é talvez a mais conhecida e associada a arquiteturas orientadas a eventos. O Kafka é uma plataforma de streaming que é projetada intencionalmente para lidar com um volume gigante de dados garantindo performance e alta disponibilidade. O Kafka é composto inicialmente de alguns componentes importantes, e dentro dos componentes e conceitos mais importantes podemos encontrar: 
+O Apache Kafka, por mais que não seja a única opção, é talvez a mais conhecida e associada a arquiteturas orientadas a eventos. O Kafka é uma plataforma de streaming que é projetada intencionalmente para lidar com um volume alto de dados garantindo performance e alta disponibilidade. O Kafka é composto inicialmente de alguns componentes importantes, e dentro dos componentes e conceitos mais importantes podemos encontrar: 
 
 ### Clusters e Brokers 
 
+Um cluster de Kafka é com posto por multiplos servidores, onde cada um deles é considerado um "nó" e denominado como "broker". Esse grupo de brokers que formam o cluster, é responsável por receber, armazenar, replicar e distribuir os eventos recebidos entre si em tópicos e suas devidas partições, também como tem a responsabilidade de distribuir e disponibilizar os mesmos para todos os membros de grupos de consumidores conectados. 
+
 ### Tópicos
+
+Um tópico dentro da arquitetura do Kafka pode ser considerado como uma "categoria" ou um "assunto", bem próximo do que entendemos como um "feed" de eventos, no qual mensagens com um certo contexto são publicados e associados. Eles são os motores das arquiteturas reativas orientadas a eventos. Os tópicos do Kafka podem ter vários assinantes que se inscrevem nele para receber cópias desses dados a medida que são publicados. Os tópicos são distribuídos e balanceados entre diferentes partições para permitir um grupo maior de consumidores de um mesmo grupo possam dividir a carga de trabalho entre si. 
+
+Como os tópicos são representações de um feed de dados de um determinado assunto ou contexto específico, é importante que os mesmos sejam criados com uma nomenclatura consistente e clara, facilitando a compreensão de que tipo de dados trafegam ali. Nomenclaturas e clareza para exemplificar domínios e dados são fatures chave para a construção de sistemas distribuídos de larga escala e que envolvam muitos times. 
 
 ### Partições
 
+Partições podem ser vistos como subdivisões de um tópico, garantindo uma distribuição e balanceamento de carga entre todos os dados enviados. Como citado a sessão anterior, as partições de dentro de um tópico por tabela possibilitam que dados dadsos sejam divididos e distribuídos entre multiplos brokers do cluster, permitindo que possam ser associados a multiplos consumidores de um mesmo grupo, gerando toda a capacidade de paralelismo proposta pela arquitetura distribuída orientadas a eventos. Cada consumidor pode ler uma ou mais partições em paralelo. 
+
+### Fatores de Replicação
+
+Os fatores de replicação, ou replication factor, é o que permite a alta disponibilidade dos eventos enviados a um tópico. Essa configuração é efetuada diretamente nos tópicos quando são criados ou alterados, e garante que uma cópia de um mesmo dado possa ser mantida em diferentes brokers do cluster. Cada partição tem um broker do cluster que atua como lider da mesma que tem a função de gerenciar todas as operações de replicação passiva para os brokers seguidores do tópico, tanto quanto as operações de leitura.
+
+Se um tópico é configurado com um replication factor de 2, isso significa que duas cópias do mesmo dado serão mantidas brokers diferentes, incluindo o dado "original". Significando uma cópia adicional além dele. O mesmo para o replication factor de 3, onde serão criadas 2 replicas adicionais ao dado original, totalizando 3. 
+
+Uma consideração importante é que o fator de replicação de um tópico nunca deve exceder o numero de brokers que fazem a composição do cluster. 
+
 ### Producers 
 
-### Consumers
+Os producers, ou produtores, são componententes ou processos que publicam eventos diretamente para um tópico específico dentro do Kafka. Os producers podem especificar em qual partição desejam enviar o evento manualmente através de uma chave de partição, ou permitir que o próprio kafka se encarregue de fazer a distribuição uniforme. 
 
+Espeficicar uma chave de partição para publicar a mensagem em tópicos especificos permite por exemplo que todos os eventos vindos de um determinado cliente, subsistema ou produto seja tratado sempre pelo mesmo consumidor conectado, o que pode ser muito útil quando uma experiência de "continuidade" ou "ordem" é necessária durante um processamento, mas também pode gerar "hot partitions" na distribuição desse eventos, desbalanceando a carga de trabalho dos consumidores. Nesse caso em cenários de produção uniforme, talvez seja mais indicado confiar nos algoritmos de distribuições nativos do Kafka para evitar gargalos em certas partiçõese em outras não. 
+
+### Consumers e Consumer Groups
+
+Ao contrário dos producers, os consumers, ou consumidores, lêem registros inseridos em um ou mais partições de um tópico para processá-los. Para permitir multiplas leituras de um mesmo dado por consumidores com propostas diferentes, os consumidors se organizam em grupos chamados "consumer groups" identificados nominalmente. Cada registro entregue em uma partição é entregue a um unico consumidor dentro de cada "consumer group" associado ao tópico. O  afka gerencia a distribuição de registros e particionamento entre os consumidores automaticamente, rebalanceando as partições entre os consumidores conforme necessário.
+
+<br>
 
 ## R2DBC
 
-
+<br>
 
 # Protocolos e Arquiteturas de Mensageria
 
