@@ -214,6 +214,8 @@ As **Dead Letter Queues são mecanismos de post-mortem de mensagens** que não c
 
 Implementar DLQ's nos permite através de estratégias de monitoramento identificar um possível problema nos sistemas que se comunicam dessa forma, uma vez que, não faz parte do fluxo padrão encaminhar uma grande quantidade de mensagens para elas. Observar o numero de mensagens disponíveis em em DLQ's durante o tempo pode ser um indicador chave em sistemas assincronos. 
 
+## Processamento em Batch
+
 <br>
 
 # Protocolos e Arquiteturas de Eventos
@@ -222,7 +224,7 @@ Prococolos e arquiteturas de eventos, ou event-driven, são ferramentas extremam
 
 ## Streaming e Reatividade
 
-O Streaming de dados pode ser considerado um pattern que visa realizar o processamento de um fluxo contínuo de dados que são gerados em tempo real. Diferente de processamentos em batch que lida com blocos de dados estáticos, o streaming visa abordar a mesma quantidade de dados, ou até maiores, em tempos muito proximos dos que foram gerados. Streaming engloba tecnologias e padrões de projetos que possibilitam escrever aplicações que se utilizam de reatividade para realizar suas funções para lidar com esses mesmos dados e eventos. 
+O Streaming de dados pode ser considerado um pattern que visa **realizar o processamento de um fluxo contínuo de dados que são gerados em tempo real**. Diferente de processamentos em batch que lida com blocos de dados estáticos, o streaming visa abordar a mesma quantidade de dados, ou até maiores, em tempos muito proximos dos que foram gerados. Streaming engloba tecnologias e padrões de projetos que possibilitam escrever aplicações que se utilizam de reatividade para realizar suas funções para lidar com esses mesmos dados e eventos. 
 
 Um exemplo classico, mas não limitado a isso, é a implementação de streaming em redes sociais e ferramentas de monitoramento de comportamento de usuários, onde acessos e cliques que acontecem dentro de suas plataformas são transformados em eventos analiticos, que assim que são produzidos, são processados e catalogados para enriquecer relatórios analíticos e algoritmos de recomendação. Um simples clique em um botão, a busca por um termo específico, a altura de uma rolagem na págica pode ser um evento capturado, transformado e processado quase no mesmo instante que ocorrem. 
 
@@ -230,7 +232,7 @@ Um outro exemplo interessante e classico são sistemas de fraude, que de acordo 
 
 ### Reatividade e Arquiteturas Event-Driven
 
-Aplicações orientadas a eventos, ou event-driven, são projetadas para detectar eventos vindos ou não de streaming e serem estimulados para tomar alguma decisão com base nisso. Várias aplicações processos podem responder ao mesmo evento de forma totalmente indepentene. Esse tipo de arquitetura, ou grupo de patterns, são úteis e bem vindos a aplicações que interagem a ambientes de constate mudanças, ou reagem a mudanças de estado de vários objetos trafegados no sistema. A capacidade de vários atores responderem a eventos em tempo real pode tornar o desacoplamento de sistemas produtivos de larga escala uma tarefa muito mais interessante e eficiente. Imagine que vários sistemas distribuídos e com diferentes finalidades monitoram através de um sistema de notificações a mudança de status de um pedido realizado em uma plataforma de delivery de comida. Um grupo de listeners pode responder quando o pedido está com o status `CRIADO` onde podem notificar o backoffice do restaurante, mandar notificações em push para o usuário, outro grupo pode responder quando o status muda para `ACEITO` onde o processamento de cobrança é iniciado no meio de pagamento escolhido, outro grupo responde para quando status muda para `PRONTO` notificando os entregadores disponíveis, mais grupos tomam decisões com base na mudança do status para `A_CAMINHO`, `ENTREGUE`, `FINALIZADO` e etc.
+Aplicações orientadas a eventos, ou event-driven, são projetadas para **detectar eventos vindos ou não de streaming e serem estimulados para tomar alguma decisão com base nisso**. Várias **aplicações processos podem responder ao mesmo evento de forma totalmente independente**. Esse tipo de arquitetura, ou grupo de patterns, são úteis e bem vindos a aplicações que interagem a **ambientes de constate mudanças**, ou **reagem a mudanças de estado de vários objetos trafegados no sistema**. A capacidade de **vários atores responderem a eventos em tempo real** pode tornar o desacoplamento de sistemas produtivos de larga escala uma tarefa muito mais interessante e eficiente. Imagine que vários sistemas distribuídos e com diferentes finalidades monitoram através de um sistema de notificações a mudança de status de um pedido realizado em uma plataforma de delivery de comida. Um grupo de listeners pode responder quando o pedido está com o status `CRIADO` onde podem notificar o backoffice do restaurante, mandar notificações em push para o usuário, outro grupo pode responder quando o status muda para `ACEITO` onde o processamento de cobrança é iniciado no meio de pagamento escolhido, outro grupo responde para quando status muda para `PRONTO` notificando os entregadores disponíveis, mais grupos tomam decisões com base na mudança do status para `A_CAMINHO`, `ENTREGUE`, `FINALIZADO` e etc.
 
 
 ## Kafka 
