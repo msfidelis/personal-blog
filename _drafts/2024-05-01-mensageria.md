@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Padrões de Mensageria e Eventos
+title: System Design - Mensageria, Eventos, Streaming e Arquitetura Assincrona
 ---
 
 Arquiteturas assíncronas derivadas do uso de mensageria e eventos são recursos muito valiosos quando arquitetamos soluções complexas de sistemas distribuídos. Assim como os dois capítulos anteriores, onde falamos sobre [protocolos e padrões de rede](/protocolos-de-rede/) e [padrões de comunicação síncronos](/padroes-de-comunicacao-sincronos/) em sistemas, esse tópico também visa detalhar comunicações entre componentes de uma arquitetura de serviço, mas com uma abordagem de comunicação assíncrona. Vamos detalhar e diferenciar alguns tópicos importantes, como Mensagens e Eventos, e como utilizá-los para resolver problemas de comunicação em larga escala utilizando protocolos como MQTT, AMQP, comunicação assíncrona over-TCP com o Kafka, arquitetura desses componentes, assim como suas vantagens e limitações.
@@ -856,6 +856,10 @@ for i := 0; i < 3000000000; i++ {
 
 
 ### Revisores
+
+* [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
+
+
 
 ### Referências
 
