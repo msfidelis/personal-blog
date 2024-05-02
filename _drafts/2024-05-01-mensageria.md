@@ -224,6 +224,12 @@ Implementar DLQs nos permite, através de estratégias de monitoramento, identif
 
 ## Processamento em Batch
 
+Os processamentos em batch podem ser considerados, em termos arquiteturais de software, como o motivo seminal pelo qual as comunicações assíncronas foram criadas, evoluindo até os termos mais complexos e modernos disponíveis hoje para projetar sistemas. Processar em batch é uma estratégia na qual uma ou um grupo de tarefas processa de uma vez um lote de dados acumulado dentro de um período de tempo.
+
+Processamentos bancários normalmente ocorrem em batch durante horários que evitam os picos de uso. Essa abordagem também é comum em sistemas que processam relatórios gerenciais no fechamento de períodos estratégicos, fechamentos contábeis, de caixa, etc., onde muitos lançamentos, notas fiscais e transações efetuadas em tempo real são acumulados para serem contabilizados de fato em lote.
+
+Devido ao seu modo de operação autônomo, os sistemas de batch devem possuir robustos mecanismos de gerenciamento de erros e recuperação de falhas para garantir que os processos possam ser retomados ou refeitos em caso de falha. Devido ao grande volume de dados que esses tipos de cargas de trabalho normalmente processam, lidar com erros fatais pode gerar prejuízos financeiros e estratégicos significativos devido a atrasos e prazos.
+
 <br>
 
 # Protocolos e Arquiteturas de Eventos
@@ -296,11 +302,12 @@ Para produção pode ser considerado o uso de batchs de eventos para aproveitar 
 
 ### Consumers e Consumer Groups
 
-Ao contrário dos producers, os consumers, ou consumidores, leem registros inseridos em uma ou mais partições de um tópico para processá-los. Para permitir múltiplas leituras de um mesmo dado por consumidores com propostas diferentes, os consumidores se organizam em grupos chamados "consumer groups" identificados nominalmente. Cada registro entregue em uma partição é entregue a um único consumidor dentro de cada "consumer group" associado ao tópico. O Kafka gerencia a distribuição de registros e o particionamento entre os consumidores automaticamente, rebalanceando as partições entre os consumidores conforme necessário. 
+Ao contrário dos producers, os consumers, ou consumidores, leem registros inseridos em uma ou mais partições de um tópico para processá-los. Para permitir múltiplas leituras de um mesmo dado por consumidores com propósitos diferentes, os consumidores se organizam em grupos chamados "consumer groups", identificados nominalmente. Cada registro entregue em uma partição é entregue a um único consumidor dentro de cada "consumer group" associado ao tópico. O Kafka gerencia a distribuição de registros e o particionamento entre os consumidores automaticamente, rebalanceando as partições entre os consumidores conforme necessário.
 
-Um consumidor pode consumir um dado de uma ou mais partições em paralelo, porém o número maximo de consumidores ativos nas partições nunca poderá exceder o numero de partições de fato. Caso você tenha um tópico com 9 partições, com 9 consumidores trabalhando, cada um em uma delas, significa que você atingiu o numero maximo de atores trabalhando no consumo. Mesmo que você tenha 20, 30, 40 e 50 replicas disponíveis desses consumidores, apenas 9 delas vão estar de fato trabalhando. Por mais que esse tipo de arquitetura consiga processar um número muito alto de eventos dentro de um curto período de tempo, a escala horizontal de consumidores sempre será limitada ao número de partições disponíveis. 
+Um consumidor pode consumir dados de uma ou mais partições em paralelo, porém o número máximo de consumidores ativos em partições nunca poderá exceder o número de partições de fato. Caso você tenha um tópico com 9 partições e 9 consumidores trabalhando, cada um em uma delas, isso significa que você atingiu o número máximo de atores trabalhando no consumo. Mesmo que você tenha 20, 30, 40 ou 50 réplicas disponíveis desses consumidores, apenas 9 delas estarão de fato trabalhando. Embora esse tipo de arquitetura consiga processar um volume muito alto de eventos em um curto período de tempo, a escala horizontal de consumidores sempre será limitada ao número de partições disponíveis.
 
 ![Kafka Consumer Groups](/assets/images/system-design/kafka-consumer-groups.png)
+
 
 <br>
 
@@ -883,3 +890,5 @@ for i := 0; i < 3000000000; i++ {
 [Event Driven Architecture, The Hard Parts: Events Vs Messages](https://medium.com/simpplr-technology/event-driven-architecture-the-hard-parts-events-vs-messages-0fcfc7243703)
 
 [How Much Data Does Streaming Netflix Use?](https://www.buckeyebroadband.com/support/internet/how-much-data-does-streaming-netflix-use)
+
+[Apache Kafka – linger.ms and batch.size](https://www.geeksforgeeks.org/apache-kafka-linger-ms-and-batch-size/)
