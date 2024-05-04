@@ -24,11 +24,11 @@ A comunicação em sistemas distribuídos de forma assíncrona pode ser categori
 
 ![Exemplo Mensagem](/assets/images/system-design/Mensageria-Exemplo.png)
 
-Mensageria, em termos simplistas, refere-se à troca de mensagens através de componentes intermediários. Ela se baseia na produção e consumo, onde um produtor interessado em notificar e estimular comportamentos em outro componente subsequente, envia os dados necessários para que essa finalidade seja concluída com êxito, e esses dados são enfileirados em uma queue, ou fila, onde são recebidos pelo sistema destino de forma ordenada, ou não. Estabelecer um canal comum entre o destinatário e remetente da mensagem é uma premissa para que esse tipo de abordagem funcione bem.
+Mensageria, em termos simplistas, **refere-se à troca de mensagens através de componentes intermediários**. Ela se baseia na produção e consumo, onde um p**rodutor interessado em notificar e estimular comportamentos em outro componente subsequente**, envia os dados necessários para que essa finalidade seja concluída com êxito, e esses dados são enfileirados em uma queue, ou fila, onde são recebidos pelo sistema destino de forma ordenada, ou não. Estabelecer um canal comum entre o destinatário e remetente da mensagem é uma premissa para que esse tipo de abordagem funcione bem.
 
 Mensagens geralmente são **construídas para trabalharem de forma imperativa**, onde eu **"envio uma mensagem para um sistema de e-mail, e espero que esse sistema envie o e-mail para o destinatário especificado com o conteúdo fornecido"**, ou também **"envio uma mensagem para meu sistema de atualização cadastral de usuários, onde esse sistema ao receber a mensagem atualiza o cliente existente na base comum desse domínio com as informações enviadas de forma assíncrona"**, ou **"envio os dados de uma compra para um sistema de faturamento, ao receber essa mensagem de uma compra, o sistema responsável realiza todas as tarefas esperadas"**. Em todos os casos, uma mensagem na grande maioria das vezes possui um destinatário conhecido e intencional, que é capaz de tomar ações sobre o dado fornecido conforme o produtor da mensagem espera. Conceitualmente, mas não sempre, um para um.
 
-Uma alusão para o conceito de mensageria, de fato, é **pensar em uma carta**, correspondência ou pacote de uma encomenda. Onde ela tem um destinatário único e conhecido. Imagine que você recebe por correio, de meios formais, um envelope que te notifica do casamento de um amigo próximo te convidando para ser padrinho. É uma mensagem especialista enviada unicamente e exclusivamente para pessoas pelas quais esse amigo tem carinho o suficiente para ser apadrinhado. Pode-se esperar que convidados normais também tenham recebido uma carta por correio, mas com o convite normal, mas com um conteúdo diferente, apenas os convidando para a cerimônia. Podemos imaginar que os noivos utilizaram duas filas: uma para padrinhos, e outra para os demais convidados.
+Uma alusão para o conceito de mensageria, de fato, é **pensar em uma carta**, correspondência ou pacote de uma encomenda. Onde ela **tem um destinatário único e conhecido**. Imagine que você recebe por correio, de meios formais, um envelope que te notifica do casamento de um amigo próximo te convidando para ser padrinho. É uma mensagem especialista enviada unicamente e exclusivamente para pessoas pelas quais esse amigo tem carinho o suficiente para ser apadrinhado. Pode-se esperar que convidados normais também tenham recebido uma carta por correio, mas com o convite normal, mas com um conteúdo diferente, apenas os convidando para a cerimônia. Podemos imaginar que os noivos utilizaram duas filas: uma para padrinhos, e outra para os demais convidados.
 
 
 <br>
@@ -1181,6 +1181,12 @@ Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:90edb0cd-ba26
 
 [Enqueue and Dequeue](https://docs.oracle.com/cd/E19253-01/820-0446/chp-sched-10/index.html)
 
+[Livro - Criando Microsserviços: Projetando Sistemas com Componentes Menores e Mais Especializados](https://www.amazon.com.br/Criando-Microsserviços-Projetando-Componentes-Especializados/dp/6586057884/)
+
+[Livro - Software Architecture: The Hard Parts (English Edition)](https://www.amazon.com.br/Software-Architecture-Hard-Parts-English-ebook/dp/B09H2H5QKC)
+
+[Livro - Arquitetura de software: as partes difíceis: análises modernas de trade-off para arquiteturas distribuídas (Edição PT-BR)](https://www.amazon.com.br/Arquitetura-software-trade-off-arquiteturas-distribuídas-ebook/dp/B0CY5B9G9Y)
+
 [Kafka - Architecture](https://kafka.apache.org/10/documentation/streams/architecture)
 
 [Kafka Basics and Core Concepts](https://medium.com/inspiredbrilliance/kafka-basics-and-core-concepts-5fd7a68c3193)
@@ -1208,3 +1214,7 @@ Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:90edb0cd-ba26
 [R2DBC - Reactive Relational Database Connectivity](https://www.baeldung.com/r2dbc)
 
 [Getting Started with Reactive Relational Database Connectivity and the Oracle R2DBC Driver](https://juarezjunior.medium.com/getting-started-with-r2dbc-reactive-relational-database-connectivity-and-the-oracle-r2dbc-driver-2c50ab1d9e66)
+
+[Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging)
+
+[Amazon SQS](https://aws.amazon.com/pt/sqs/getting-started/)
