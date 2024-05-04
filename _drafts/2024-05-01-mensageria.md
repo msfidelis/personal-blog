@@ -52,6 +52,10 @@ Por mais que ambos os conceitos andem próximos em definições de arquiteturas,
 
 Mensagens são geralmente usadas para **transferir dados de um ponto a outro**, frequentemente com a expectativa de uma resposta ou reação de alguma forma. Eventos, por outro lado, **são emitidos para informar outros componentes do sistema sobre mudanças de estado**, sem esperar uma resposta. Muitas vezes em arquiteturas reativas a eventos, **o responsável pela produção do evento não conhece todos os seus consumidores e quais ações os mesmos tomam**, pois a fonte do evento é de uma para muitas, não exigindo confirmação ou conhecimento prévio. Eventos são ideais **para a construção de sistemas reativos que respondem a mudanças de estado**, como **"o estado de determinada compra se tornou CANCELADO"**, enquanto **mensagens são mais adequadas para integrações diretas** onde uma ação específica é requerida aos dados enviados, como **"cancele essa compra"**.
 
+### Eventos São Mensagens
+
+Conceitualmente, como discutido anteriormente, mensagens são dados enviados de um ponto a outro, enquanto eventos são notificações sem destinatários específicos que podem ser utilizados para estimular várias partes do sistema. Porém, o conceito comum entre ambos pode ser reaproveitado em alguns cenários onde mensagens são interpretadas computacionalmente como uma forma simples de construir sistemas de comunicação assíncrona. Alguns autores definem mensagens de forma genérica e descrevem várias subcategorias de mensagens, como **Documentos**, onde a mensagem contém apenas dados anêmicos e quem recebe decide como interpretá-la sem referências externas; um **Comando**, onde um sistema evoca uma ação em outro sistema de forma imperativa; e um **Evento** de fato, que é a representação de "algo ocorreu", sendo uma mudança de estado de um objeto de domínio. Os termos discutidos anteriormente como **Mensagens** podem se encaixar facilmente nos subtipos de **Documentos** e **Comandos** em termos práticos.
+
 
 <br>
 
@@ -69,7 +73,7 @@ O padrão FIFO, ou *First In First Out*, é um conceito muito presente em tecnol
 
 ![Queue](/assets/images/system-design/queue.png)
 
-As operações conhecidas dentro da estrutura de dados de Queue geralmente são conhecidas como `Enqueue`, que se encarrega de adicionar um item ao fim de uma lista ou fila, e o `Dequeue`, que se encarrega de remover o primeiro item da lista ou fila. Abaixo temos um funcionamento simples de uma implementação de Queue FIFO para compreendermos a lógica da estrutura:
+As operações conhecidas dentro da estrutura de dados Queue geralmente são conhecidas como `Enqueue`, que se encarrega de adicionar um item ao fim de uma lista ou fila, e o `Dequeue`, que se encarrega de remover o primeiro item da lista ou fila. Abaixo temos um funcionamento simples de uma implementação de Queue FIFO para compreendermos a lógica da estrutura:
 
 
 ```go
@@ -232,7 +236,7 @@ Processamentos bancários normalmente ocorrem em batch durante horários que evi
 
 <br>
 
-# Protocolos e Arquiteturas de Eventos
+# Protocolos e Arquiteturas Event-Driven
 
 Protocolos e arquiteturas de eventos, ou event-driven, são ferramentas extremamente úteis em ambientes distribuídos e podem facilitar o processamento e análise de volumes significativos de dados em tempo real, ou muito próximo disso.
 
@@ -242,7 +246,7 @@ Protocolos e arquiteturas de eventos, ou event-driven, são ferramentas extremam
 
 O Streaming de dados pode ser considerado um padrão que visa **realizar o processamento de um fluxo contínuo de dados que são gerados em tempo real**. Diferente de processamentos em batch, que lidam com blocos de dados estáticos, o streaming visa abordar a mesma quantidade de dados, ou até maiores, em tempos muito próximos dos que foram gerados. Streaming engloba tecnologias e padrões de projetos que possibilitam escrever aplicações que se utilizam de reatividade para realizar suas funções e lidar com esses mesmos dados e eventos.
 
-Um exemplo clássico, mas não limitado a isso, é a implementação de streaming em redes sociais e ferramentas de monitoramento de comportamento de usuários, onde acessos e cliques que acontecem dentro de suas plataformas são transformados em eventos analíticos, que assim que são produzidos, são processados e catalogados para enriquecer relatórios analíticos e algoritmos de recomendação. **Um simples clique em um botão, a busca por um termo específico, a altura de uma rolagem na página pode ser um evento capturado, transformado e processado quase no mesmo instante que ocorrem**.
+Um exemplo clássico, mas não limitado a isso, é a implementação de streaming em redes sociais e ferramentas de monitoramento de comportamento de usuários, onde acessos e cliques que acontecem dentro de suas plataformas são transformados em eventos analíticos, que assim que são produzidos, são processados e catalogados para enriquecer relatórios analíticos e algoritmos de recomendação. **Um simples clique em um botão, a busca por um termo específico, a altura de uma rolagem na página pode ser um evento capturado, transformado e processado quase no mesmo instante em que ocorrem**.
 
 Outro exemplo interessante e clássico são sistemas de fraude, que de acordo com o padrão de comportamento e compra conhecido, podem capturar detalhes, valores e métodos de pagamento para classificar se determinada transação é uma fraude ou está ocorrendo de forma legítima, ou uma plataforma de streaming que com base no seu histórico de navegação e títulos consumidos de séries e filmes pode automaticamente recomendar itens parecidos sem precisar de um bloco de tempo grande para tomar essas decisões.
 
@@ -318,9 +322,9 @@ Um consumidor pode consumir dados de uma ou mais partições em paralelo, porém
 
 <br>
 
-# Protocolos e Arquiteturas de Mensageria
+# Protocolos e Arquiteturas de Message-Driven
 
-Os protocolos de mensageria desempenham papéis na facilitação da comunicação entre sistemas distribuídos, permitindo a troca eficiente de mensagens de forma assíncrona. Dois dos protocolos mais importantes nesta categoria são o **MQTT** (*Message Queuing Telemetry Transport*) e o **AMQP** (*Advanced Message Queuing Protocol*). Esses protocolos são projetados para otimizar o tráfego de dados, garantir a entrega de mensagens e suportar padrões de comunicação flexíveis, confiáveis e performáticos. Normalmente, as comunicações que utilizam HTTP têm uma responsabilidade síncrona de solicitação e resposta, usadas onde é necessário receber do servidor uma resposta imediata para a transação solicitada. Porém, em termos de performance, os protocolos que possibilitam comunicações assíncronas podem nos ajudar a estender as capacidades de processamento em background de tarefas custosas, paralelizar e distribuir tarefas entre diversos microserviços com diferentes possibilidades necessárias para completar a solicitação, e continuar o trabalho de uma solicitação inicialmente síncrona em background, entre diversas outras possibilidades. Aqui falaremos inicialmente de como funciona o protocolo. Em breve, falaremos mais detalhadamente da aplicação e implementação de tarefas assíncronas em engenharia de fato.
+Os protocolos de mensageria, ou arquiteturas Message-Driven, desempenham papéis na facilitação da comunicação entre sistemas distribuídos, permitindo a troca eficiente de mensagens de forma assíncrona. Dois dos protocolos mais importantes nesta categoria são o **MQTT** (*Message Queuing Telemetry Transport*) e o **AMQP** (*Advanced Message Queuing Protocol*). Esses protocolos são projetados para otimizar o tráfego de dados, garantir a entrega de mensagens e suportar padrões de comunicação flexíveis, confiáveis e performáticos. Normalmente, as comunicações que utilizam HTTP têm uma responsabilidade síncrona de solicitação e resposta, usadas onde é necessário receber do servidor uma resposta imediata para a transação solicitada. Porém, em termos de performance, os protocolos que possibilitam comunicações assíncronas podem nos ajudar a estender as capacidades de processamento em background de tarefas custosas, paralelizar e distribuir tarefas entre diversos microserviços com diferentes possibilidades necessárias para completar a solicitação, e continuar o trabalho de uma solicitação inicialmente síncrona em background, entre diversas outras possibilidades. Aqui falaremos inicialmente de como funciona o protocolo. Em breve, falaremos mais detalhadamente da aplicação e implementação de tarefas assíncronas em engenharia de fato.
 
 <br>
 
@@ -371,7 +375,7 @@ Enquanto a **subscrição normal garante que todas as mensagens sejam distribuí
 
 ## AMQP (Advanced Message Queuing Protocol)
 
-O **AMQP** (*Advanced Message Queuing Protocol*) é um protocolo de mensageria aberto que, ao contrário do MQTT, que se concentra na simplicidade e eficiência, oferece um **conjunto mais rico de funcionalidades, incluindo confirmação de mensagens, roteamento flexível e transações seguras**. Ele é projetado para **integrar sistemas corporativos e aplicações complexas**, proporcionando uma solução interoperável para mensageria assíncrona. O AMQP **suporta tanto o modelo de publicação/assinatura quanto o de enfileiramento de mensagens**, oferecendo uma maior flexibilidade na implementação de padrões de comunicação. Esse padrão é implementado por **RabbitMQ**, uma solução muito conhecida para troca de mensagens de forma assíncrona.
+O **AMQP** (*Advanced Message Queuing Protocol*) é um protocolo de mensageria aberto que, ao contrário do MQTT, que se concentra na simplicidade e eficiência na troca de mensagens, oferece um **conjunto mais rico de funcionalidades, incluindo confirmação de mensagens, roteamento flexível e transações seguras**. Ele é projetado para **integrar sistemas corporativos e aplicações complexas**, proporcionando uma solução interoperável para mensageria assíncrona. O AMQP **suporta tanto o modelo de publicação/assinatura quanto o de enfileiramento de mensagens**, oferecendo uma maior flexibilidade na implementação de padrões de comunicação. Esse padrão é implementado por **RabbitMQ**, uma solução muito conhecida para troca de mensagens de forma assíncrona.
 
 ![Arquitetura AMQP](/assets/images/system-design/amqp-arquitetura.png)
 
@@ -411,7 +415,7 @@ As **Exchanges são componentes dentro do broker responsáveis por receber mensa
 
 Dentro do AMQP, possuímos alguns tipos de exchanges que têm finalidades e funcionamentos específicos. Nesse tópico, vamos abordar algumas das mais importantes e que, ao meu ver, são as mais úteis para projetar soluções de arquitetura:
 
-Cada tipo de exchange oferece flexibilidade na configuração do comportamento de roteamento das mensagens e pode ser selecionado com base em requisitos específicos de distribuição e processamento. Vamos entender o funcionamento de três opções entre as conhecidas entre os tipos de exchanges.
+Cada tipo de exchange oferece flexibilidade na configuração do comportamento de roteamento das mensagens e pode ser selecionado com base em requisitos específicos de distribuição e processamento. Entre os tipos de exchanges existentes, vamos entender o funcionamento de três delas, sendo elas Direct, Topic e Fanout Exchanges.
 
 
 #### Direct Exchange
@@ -862,6 +866,9 @@ for i := 0; i < 3000000000; i++ {
 
 * [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
 * [Klecianny Melo](https://twitter.com/kecbm)
+* [Daniel Moreto](https://twitter.com/moretoend)
+* [Gabriel Suaki](https://twitter.com/deploydesexta)
+* [Jonathan Henrique](https://twitter.com/jhmede_)
 
 
 
@@ -900,3 +907,11 @@ for i := 0; i < 3000000000; i++ {
 [How Much Data Does Streaming Netflix Use?](https://www.buckeyebroadband.com/support/internet/how-much-data-does-streaming-netflix-use)
 
 [Apache Kafka – linger.ms and batch.size](https://www.geeksforgeeks.org/apache-kafka-linger-ms-and-batch-size/)
+
+[Message Driven vs Event Driven](https://developer.lightbend.com/docs/akka-guide/concepts/message-driven-event-driven.html)
+
+[R2DBC](https://r2dbc.io/)
+
+[R2DBC - Reactive Relational Database Connectivity](https://www.baeldung.com/r2dbc)
+
+[Getting Started with Reactive Relational Database Connectivity and the Oracle R2DBC Driver](https://juarezjunior.medium.com/getting-started-with-r2dbc-reactive-relational-database-connectivity-and-the-oracle-r2dbc-driver-2c50ab1d9e66)
