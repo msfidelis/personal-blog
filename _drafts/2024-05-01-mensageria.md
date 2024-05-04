@@ -306,6 +306,9 @@ Ao contrário dos producers, os consumers, ou consumidores, leem registros inser
 
 Um consumidor pode consumir dados de uma ou mais partições em paralelo, porém o número máximo de consumidores ativos em partições nunca poderá exceder o número de partições de fato. Caso você tenha um tópico com 9 partições e 9 consumidores trabalhando, cada um em uma delas, isso significa que você atingiu o número máximo de atores trabalhando no consumo. Mesmo que você tenha 20, 30, 40 ou 50 réplicas disponíveis desses consumidores, apenas 9 delas estarão de fato trabalhando. Embora esse tipo de arquitetura consiga processar um volume muito alto de eventos em um curto período de tempo, a escala horizontal de consumidores sempre será limitada ao número de partições disponíveis.
 
+* Commits Manuais vs Autocommit
+
+
 ![Kafka Consumer Groups](/assets/images/system-design/kafka-consumer-groups.png)
 
 
