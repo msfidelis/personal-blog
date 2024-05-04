@@ -207,7 +207,7 @@ Output: Hamburger
 Output: Pizza
 ```
 
-## Funout 
+## Fanout 
 
 O padrão de Fanout é um pattern empregado onde é **necessária uma estratégia de 1:N no envio de mensagens**. Isso pode ser aplicado em mensageria quando temos **uma única mensagem que precisa ser distribuída para um número maior de filas**, ou quando observamos o comportamento padrão de um evento, em que a mesma mensagem é repassada para todos os grupos de consumidores com funções diferentes interessados no mesmo tópico. Em termos simplistas, o **Fanout é enviar a mesma mensagem para todos os lugares possíveis dentro de algum contexto que faça sentido**.
 
@@ -228,7 +228,7 @@ Os processamentos em batch podem ser considerados, em termos arquiteturais de so
 
 Processamentos bancários normalmente ocorrem em batch durante horários que evitam os picos de uso. Essa abordagem também é comum em sistemas que processam relatórios gerenciais no fechamento de períodos estratégicos, fechamentos contábeis, de caixa, etc., onde muitos lançamentos, notas fiscais e transações efetuadas em tempo real são acumulados para serem contabilizados de fato em lote.
 
-Devido ao seu modo de operação autônomo, os sistemas de batch devem possuir robustos mecanismos de gerenciamento de erros e recuperação de falhas para garantir que os processos possam ser retomados ou refeitos em caso de falha. Devido ao grande volume de dados que esses tipos de cargas de trabalho normalmente processam, lidar com erros fatais pode gerar prejuízos financeiros e estratégicos significativos devido a atrasos e prazos.
+**Devido ao seu modo de operação autônomo, os sistemas de batch devem possuir robustos mecanismos de gerenciamento de erros e recuperação de falhas para garantir que os processos possam ser retomados ou refeitos em caso de falha**. Devido ao grande volume de dados que esses tipos de cargas de trabalho normalmente processam, lidar com erros fatais pode gerar prejuízos financeiros e estratégicos significativos devido a atrasos e prazos.
 
 <br>
 
@@ -242,7 +242,7 @@ Protocolos e arquiteturas de eventos, ou event-driven, são ferramentas extremam
 
 O Streaming de dados pode ser considerado um padrão que visa **realizar o processamento de um fluxo contínuo de dados que são gerados em tempo real**. Diferente de processamentos em batch, que lidam com blocos de dados estáticos, o streaming visa abordar a mesma quantidade de dados, ou até maiores, em tempos muito próximos dos que foram gerados. Streaming engloba tecnologias e padrões de projetos que possibilitam escrever aplicações que se utilizam de reatividade para realizar suas funções e lidar com esses mesmos dados e eventos.
 
-Um exemplo clássico, mas não limitado a isso, é a implementação de streaming em redes sociais e ferramentas de monitoramento de comportamento de usuários, onde acessos e cliques que acontecem dentro de suas plataformas são transformados em eventos analíticos, que assim que são produzidos, são processados e catalogados para enriquecer relatórios analíticos e algoritmos de recomendação. Um simples clique em um botão, a busca por um termo específico, a altura de uma rolagem na página pode ser um evento capturado, transformado e processado quase no mesmo instante que ocorrem.
+Um exemplo clássico, mas não limitado a isso, é a implementação de streaming em redes sociais e ferramentas de monitoramento de comportamento de usuários, onde acessos e cliques que acontecem dentro de suas plataformas são transformados em eventos analíticos, que assim que são produzidos, são processados e catalogados para enriquecer relatórios analíticos e algoritmos de recomendação. **Um simples clique em um botão, a busca por um termo específico, a altura de uma rolagem na página pode ser um evento capturado, transformado e processado quase no mesmo instante que ocorrem**.
 
 Outro exemplo interessante e clássico são sistemas de fraude, que de acordo com o padrão de comportamento e compra conhecido, podem capturar detalhes, valores e métodos de pagamento para classificar se determinada transação é uma fraude ou está ocorrendo de forma legítima, ou uma plataforma de streaming que com base no seu histórico de navegação e títulos consumidos de séries e filmes pode automaticamente recomendar itens parecidos sem precisar de um bloco de tempo grande para tomar essas decisões.
 
@@ -334,7 +334,7 @@ No quesito de topologia, a arquitetura de uma implementação MQTT necessita de 
 
 ![MQTT - Workflow](/assets/images/system-design/protocolos-mqtt.png)
 
-O **MQTT opera sobre o protocolo TCP/IP**, estabelecendo uma **conexão de socket persistente entre o cliente e o broker**. Isso proporciona uma comunicação bidirecional confiável, onde os pacotes de dados são garantidos a chegar na ordem e sem duplicidades.
+O **MQTT opera sobre o protocolo TCP/IP**, estabelecendo uma **conexão de socket persistente entre o cliente e o broker**. O que proporciona uma comunicação bidirecional confiável, onde os pacotes de dados são garantidos a chegar na ordem e sem duplicidades.
 
 Dentro desta conexão persistente, os clientes podem:
 - **Publicar mensagens** em tópicos específicos usando a mensagem de `PUBLISH`.
@@ -663,7 +663,7 @@ if err != nil {
 ```go
 // Criação de uma Queue que receberá todas as mensagens, independente da prioridade
 // A intenção é receber todos os pedidos de faturamento e enviar para um
-// suposto analitico
+// suposto analítico
 queueLake, err := ch.QueueDeclare(
     "queue.faturamento.datalake", // Nome da fila
     true,                         // durable
@@ -858,6 +858,7 @@ for i := 0; i < 3000000000; i++ {
 ### Revisores
 
 * [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
+* [Klecianny Melo](https://twitter.com/kecbm)
 
 
 
