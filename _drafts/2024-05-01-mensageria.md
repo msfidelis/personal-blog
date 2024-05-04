@@ -304,16 +304,145 @@ Ao considerar os consumidores, precisamos pensar no replication factor para **en
 
 Para produção pode ser considerado o uso de batchs de eventos para aproveitar uma unica solicitação para produzir um lote de muitas mensagens. Especificar o tamanho do batch pode ter um impacto significativo em performance, throughput e sobrecarga de rede, porém pode impactar em tempo de resposta e uso de memória. Junto a definição do tamanho do batch, talvez seja interessante especificar o `linger time` do produtor, que funciona como um tempo maximo para bufferizar os dados em memória antes de enviar o batch, basicamente um tempo para considerar o acumulo de eventos. Isso significa que mesmo que você defina um batch size de 1000 eventos ao lado de um linger time de 200ms, se o produtor acumular um número menor de eventos, como 300, 400 até o timeout, ele irá considerar e enviar o batch para evitar represar muitos eventos em memória. 
 
+##### Exemplo de Produtor 
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
+)
+
+func main() {
+
+	// Nome do Tópico que enviaremos os eventos
+	topic := "ecommerce_nova_venda"
+
+    // Configuração do Produtor
+	p, err := kafka.NewProducer(
+		&kafka.ConfigMap{
+			"bootstrap.servers":      "localhost:29092",
+			"acks":                   "1",   // Configuração para garantir durabilidade sem degradar muito a performance
+			"batch.size":             1,     // Tamanho do Batch Size - No caso enviaremos 1 item por vez
+			"linger.ms":              0,     // Ajuste conforme a necessidade de latência e throughput
+			"queue.buffering.max.ms": 0,     // Enfileiramento de Mensagem
+			"compression.type":       "lz4", // Tipo de Compressão da mensagem
+		})
+	if err != nil {
+		panic(err)
+	}
+	defer p.Close()
+
+	// Buffer para evitar bloqueio na produção
+	deliveryChan := make(chan kafka.Event, 100)
+	go func() {
+		for e := range deliveryChan {
+			m := e.(*kafka.Message)
+			if m.TopicPartition.Error != nil {
+				fmt.Printf("Falha na entrega: %v\n", m.TopicPartition.Error)
+			} else {
+				fmt.Printf("Mensagem entregue em %v\n", m.TopicPartition)
+			}
+		}
+	}()
+
+	// Looping para envio dos Eventos de forma contínua
+	for i := 0; i < 100000; i++ {
+		message := "Exemplo de um evento"
+
+		p.Produce(&kafka.Message{
+			TopicPartition: kafka.TopicPartition{
+				Topic:     &topic,
+				Partition: kafka.PartitionAny, // Seleção aleatória da partição
+			},
+			Value: []byte(message), // Payload com o conteúdo do evento
+		}, deliveryChan)
+	}
+
+	p.Flush(15 * 1000)  // Aguarda até 15 segundos para entregar todas as mensagens
+	close(deliveryChan) // Fecha o canal após completar a produção e o flush
+}
+```
+
 ### Consumers e Consumer Groups
 
 Ao contrário dos producers, os consumers, ou consumidores, leem registros inseridos em uma ou mais partições de um tópico para processá-los. Para permitir múltiplas leituras de um mesmo dado por consumidores com propósitos diferentes, os consumidores se organizam em grupos chamados "consumer groups", identificados nominalmente. Cada registro entregue em uma partição é entregue a um único consumidor dentro de cada "consumer group" associado ao tópico. O Kafka gerencia a distribuição de registros e o particionamento entre os consumidores automaticamente, rebalanceando as partições entre os consumidores conforme necessário.
 
+![Kafka Consumer Groups](/assets/images/system-design/kafka-consumer-groups.png)
+
 Um consumidor pode consumir dados de uma ou mais partições em paralelo, porém o número máximo de consumidores ativos em partições nunca poderá exceder o número de partições de fato. Caso você tenha um tópico com 9 partições e 9 consumidores trabalhando, cada um em uma delas, isso significa que você atingiu o número máximo de atores trabalhando no consumo. Mesmo que você tenha 20, 30, 40 ou 50 réplicas disponíveis desses consumidores, apenas 9 delas estarão de fato trabalhando. Embora esse tipo de arquitetura consiga processar um volume muito alto de eventos em um curto período de tempo, a escala horizontal de consumidores sempre será limitada ao número de partições disponíveis.
 
-* Commits Manuais vs Autocommit
+##### Exemplo de um consumidor 
 
+```go
+package main
 
-![Kafka Consumer Groups](/assets/images/system-design/kafka-consumer-groups.png)
+import (
+	"fmt"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
+)
+
+func main() {
+
+	// Nome do Tópico que enviaremos os eventos
+	topic := "ecommerce_nova_venda"
+
+	// Configuração do Consumidor
+	c, err := kafka.NewConsumer(&kafka.ConfigMap{
+		"bootstrap.servers":             "localhost:29092",    // Endereço dos Brokers
+		"group.id":                      "faturamento",        // Consumer Group
+		"auto.offset.reset":             "earliest",           // Controle do Offset
+		"partition.assignment.strategy": "cooperative-sticky", // Partition Assignment
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer c.Close()
+
+	// Subscreve o consumidor ao tópico
+	c.SubscribeTopics([]string{topic}, nil)
+
+	// Looping de consumo
+	for {
+		msg, err := c.ReadMessage(-1)
+		if err == nil {
+			fmt.Printf("Mensagem recebida: %s\n", string(msg.Value))
+
+			// Faz o commit do offset manualmente
+			_, commitErr := c.CommitMessage(msg)
+			if commitErr != nil {
+				fmt.Printf("Erro no commit do offset: %v\n", commitErr)
+			} else {
+				fmt.Println("Offset commitado com sucesso")
+			}
+
+		} else {
+			fmt.Printf("Erro ao consumir o evento: %v (%v)\n", err, msg)
+			break
+		}
+	}
+
+	c.Close()
+}
+```
+
+##### Output 
+
+```
+...
+Mensagem recebida: "Exemplo de um evento"
+Offset commitado com sucesso
+Mensagem recebida: "Exemplo de um evento"
+Offset commitado com sucesso
+Mensagem recebida: "Exemplo de um evento"
+Offset commitado com sucesso
+Mensagem recebida: "Exemplo de um evento"
+Offset commitado com sucesso
+...
+```
 
 
 <br>
@@ -520,6 +649,19 @@ for i := 0; i < 10; i++ {
 
 ```
 
+##### Output 
+
+```
+//...
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:344d0852-fbda-4bec-ba56-12d000bd9a84
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:a432d77e-cb62-492e-8d0a-a6d88f9ff8c3
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:4e392f03-06c2-4635-be18-56448cfaa73e
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:f90a1933-18e1-4468-8d9b-5f21efe33f4f
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:ea83ff96-4d34-4668-ac8f-d42950d1ae2a
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:45999a70-5bdf-4290-911e-e3467cbc8932
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:6dc48557-66ee-45f8-b747-09e8630407e3
+//...
+```
 
 ##### Consumer no Modo Direct
 ```go
@@ -560,11 +702,20 @@ fmt.Println("[Cobranca de Vendas] Aguardando por mensagens")
 <-forever
 ```
 
-```
-```
+##### Output 
 
 ```
+//...
+Mensagem de cobrança recebida na queue cobrar: id:344d0852-fbda-4bec-ba56-12d000bd9a84
+Mensagem de cobrança recebida na queue cobrar: id:a432d77e-cb62-492e-8d0a-a6d88f9ff8c3
+Mensagem de cobrança recebida na queue cobrar: id:4e392f03-06c2-4635-be18-56448cfaa73e
+Mensagem de cobrança recebida na queue cobrar: id:f90a1933-18e1-4468-8d9b-5f21efe33f4f
+Mensagem de cobrança recebida na queue cobrar: id:ea83ff96-4d34-4668-ac8f-d42950d1ae2a
+Mensagem de cobrança recebida na queue cobrar: id:45999a70-5bdf-4290-911e-e3467cbc8932
+Mensagem de cobrança recebida na queue cobrar: id:59755eb6-d0f6-4157-8dcc-47c93b2c7ec3
+//...
 ```
+
 
 
 #### Topic Exchange
@@ -702,7 +853,7 @@ if err != nil {
 ##### Producer no Modo Topic
 
 ```go
-for i := 0; i < 3000000000; i++ {
+for i := 0; i < 20; i++ {
 
     routingKey := "faturamento.prioridade.default"
     if rand.Float64() < 0.1 { // mock para dar 10% de chance de uma mensagem ser encaminhada para a queue prioritária
@@ -728,6 +879,86 @@ for i := 0; i < 3000000000; i++ {
     }
     fmt.Printf("Mensagem de faturamento enviada para a queue %v: %v\n", routingKey, body)
 }
+```
+
+##### Output - Produtor
+
+```
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:e835f635-c4db-4e2d-b416-e3872ec7991d
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:d00636db-8038-49d8-9b24-7c47b9d265ea
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:c5dc8d36-5d2e-4fe3-9190-5a071cf5dff0
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:3c7fc12c-da4a-41ff-81b4-8654df9f524e
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:094a2d71-74a7-4d1b-ba82-ac9371888b92
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:00f2db5a-839a-4d09-963c-246d35ea814a
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:fee006ae-dd69-4fbb-b4a1-509e23bfd961
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:85fee2fb-e363-4599-b3dc-e9636949b034
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:69a291d0-f667-45f0-8ac0-31c9f72ced9d
+Mensagem de faturamento enviada para a queue faturamento.prioridade.alta: id:faturamento.prioridade.alta:0a2e5547-1d10-4b45-bb3d-9f38f11c84e5
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:323cefa6-fe63-46d3-a726-36ab20ce70e7
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:37fd2521-39f1-4a21-a34d-5ed9d82b49fa
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:cf0afd26-8b64-4a3e-9a79-bc104c6666bc
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:22373924-1922-40a8-9880-23cb72c451dc
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:3b17d750-0349-499d-b94a-45ac5ce145e7
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:d704b372-3ed3-40ab-8095-6a7555fa772a
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:b7e0f456-288f-47c9-a426-3b9f48059a49
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:6504429c-3682-4fa2-b38f-58746de458f8
+Mensagem de faturamento enviada para a queue faturamento.prioridade.alta: id:faturamento.prioridade.alta:bcf4cf3a-c654-4e7e-b21f-d5714d595ca8
+Mensagem de faturamento enviada para a queue faturamento.prioridade.default: id:faturamento.prioridade.default:52d1612e-0360-406a-88d2-b34a8e264026
+```
+
+##### Output - Consumidor Default
+
+```
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:e835f635-c4db-4e2d-b416-e3872ec7991d
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:d00636db-8038-49d8-9b24-7c47b9d265ea
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:c5dc8d36-5d2e-4fe3-9190-5a071cf5dff0
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:3c7fc12c-da4a-41ff-81b4-8654df9f524e
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:094a2d71-74a7-4d1b-ba82-ac9371888b92
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:00f2db5a-839a-4d09-963c-246d35ea814a
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:fee006ae-dd69-4fbb-b4a1-509e23bfd961
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:85fee2fb-e363-4599-b3dc-e9636949b034
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:69a291d0-f667-45f0-8ac0-31c9f72ced9d
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:323cefa6-fe63-46d3-a726-36ab20ce70e7
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:37fd2521-39f1-4a21-a34d-5ed9d82b49fa
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:cf0afd26-8b64-4a3e-9a79-bc104c6666bc
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:22373924-1922-40a8-9880-23cb72c451dc
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:3b17d750-0349-499d-b94a-45ac5ce145e7
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:d704b372-3ed3-40ab-8095-6a7555fa772a
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:b7e0f456-288f-47c9-a426-3b9f48059a49
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:6504429c-3682-4fa2-b38f-58746de458f8
+[Default] faturando o pedido queue.faturamento: id:faturamento.prioridade.default:52d1612e-0360-406a-88d2-b34a8e264026
+```
+
+##### Output - Consumidor Prioritario 
+
+```
+[Prioritario] faturando o pedido queue.faturamento.prioritario: id:faturamento.prioridade.alta:0a2e5547-1d10-4b45-bb3d-9f38f11c84e5
+[Prioritario] faturando o pedido queue.faturamento.prioritario: id:faturamento.prioridade.alta:bcf4cf3a-c654-4e7e-b21f-d5714d595ca8
+```
+
+##### Output - Consumidor Lake
+
+```
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:e835f635-c4db-4e2d-b416-e3872ec7991d
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:d00636db-8038-49d8-9b24-7c47b9d265ea
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:c5dc8d36-5d2e-4fe3-9190-5a071cf5dff0
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:3c7fc12c-da4a-41ff-81b4-8654df9f524e
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:094a2d71-74a7-4d1b-ba82-ac9371888b92
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:00f2db5a-839a-4d09-963c-246d35ea814a
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:fee006ae-dd69-4fbb-b4a1-509e23bfd961
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:85fee2fb-e363-4599-b3dc-e9636949b034
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:69a291d0-f667-45f0-8ac0-31c9f72ced9d
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.alta:0a2e5547-1d10-4b45-bb3d-9f38f11c84e5
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:323cefa6-fe63-46d3-a726-36ab20ce70e7
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:37fd2521-39f1-4a21-a34d-5ed9d82b49fa
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:cf0afd26-8b64-4a3e-9a79-bc104c6666bc
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:22373924-1922-40a8-9880-23cb72c451dc
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:3b17d750-0349-499d-b94a-45ac5ce145e7
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:d704b372-3ed3-40ab-8095-6a7555fa772a
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:b7e0f456-288f-47c9-a426-3b9f48059a49
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:6504429c-3682-4fa2-b38f-58746de458f8
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.alta:bcf4cf3a-c654-4e7e-b21f-d5714d595ca8
+[DataLake] enviando o pedido queue.faturamento.datalake: id:faturamento.prioridade.default:52d1612e-0360-406a-88d2-b34a8e264026
 ```
 
 #### Fanout Exchange
@@ -835,7 +1066,7 @@ err = ch.QueueBind(
 ##### Producer no Fanout
 
 ```go
-for i := 0; i < 3000000000; i++ {
+for i := 0; i < 10; i++ {
 
     id := uuid.New()
 
@@ -860,6 +1091,65 @@ for i := 0; i < 3000000000; i++ {
 }
 ```
 
+##### Output - Produtor 
+
+```
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:8c251e58-2330-4208-8515-a1e19cce0ba6
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:47873b03-5395-46f2-a7d0-125e8fdc05be
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:f8f95822-ba1c-4f05-8709-24de011326e5
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:1a750661-2310-49fa-8695-a2c7bcd9a1a6
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:d2521c96-8077-4822-b107-b38aedccc222
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:f42d154f-9cbb-4642-9f99-efb6b33e2a65
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:2203f410-da6a-455b-8de7-77fdb7461313
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:a57079d2-4dbb-4d23-8984-d3cac84171e5
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:c63d881c-10db-4544-8063-2d08456e247c
+Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:90edb0cd-ba26-4d72-b74c-bec7032853e1
+```
+
+##### Output - Consumidor Cobranca 
+
+```
+[Cobranca] Mensagem de cobrança recebida na queue cobrar_pedido: id:8c251e58-2330-4208-8515-a1e19cce0ba6
+[Cobranca] Mensagem de cobrança recebida na queue cobrar_pedido: id:47873b03-5395-46f2-a7d0-125e8fdc05be
+[Cobranca] Mensagem de cobrança recebida na queue cobrar_pedido: id:f8f95822-ba1c-4f05-8709-24de011326e5
+[Cobranca] Mensagem de cobrança recebida na queue cobrar_pedido: id:1a750661-2310-49fa-8695-a2c7bcd9a1a6
+[Cobranca] Mensagem de cobrança recebida na queue cobrar_pedido: id:d2521c96-8077-4822-b107-b38aedccc222
+[Cobranca] Mensagem de cobrança recebida na queue cobrar_pedido: id:f42d154f-9cbb-4642-9f99-efb6b33e2a65
+[Cobranca] Mensagem de cobrança recebida na queue cobrar_pedido: id:2203f410-da6a-455b-8de7-77fdb7461313
+[Cobranca] Mensagem de cobrança recebida na queue cobrar_pedido: id:a57079d2-4dbb-4d23-8984-d3cac84171e5
+[Cobranca] Mensagem de cobrança recebida na queue cobrar_pedido: id:c63d881c-10db-4544-8063-2d08456e247c
+[Cobranca] Mensagem de cobrança recebida na queue cobrar_pedido: id:90edb0cd-ba26-4d72-b74c-bec7032853e1
+```
+
+##### Output - Consumidor Logistica 
+
+```
+[Integração Logistica] Mensagem de cobrança recebida na queue informar_logistica: id:8c251e58-2330-4208-8515-a1e19cce0ba6
+[Integração Logistica] Mensagem de cobrança recebida na queue informar_logistica: id:47873b03-5395-46f2-a7d0-125e8fdc05be
+[Integração Logistica] Mensagem de cobrança recebida na queue informar_logistica: id:f8f95822-ba1c-4f05-8709-24de011326e5
+[Integração Logistica] Mensagem de cobrança recebida na queue informar_logistica: id:1a750661-2310-49fa-8695-a2c7bcd9a1a6
+[Integração Logistica] Mensagem de cobrança recebida na queue informar_logistica: id:d2521c96-8077-4822-b107-b38aedccc222
+[Integração Logistica] Mensagem de cobrança recebida na queue informar_logistica: id:f42d154f-9cbb-4642-9f99-efb6b33e2a65
+[Integração Logistica] Mensagem de cobrança recebida na queue informar_logistica: id:2203f410-da6a-455b-8de7-77fdb7461313
+[Integração Logistica] Mensagem de cobrança recebida na queue informar_logistica: id:a57079d2-4dbb-4d23-8984-d3cac84171e5
+[Integração Logistica] Mensagem de cobrança recebida na queue informar_logistica: id:c63d881c-10db-4544-8063-2d08456e247c
+[Integração Logistica] Mensagem de cobrança recebida na queue informar_logistica: id:90edb0cd-ba26-4d72-b74c-bec7032853e1
+```
+
+##### Output - Consumidor Estoque 
+
+```
+[Estoque] Mensagem de cobrança recebida na queue reservar_estoque: id:8c251e58-2330-4208-8515-a1e19cce0ba6
+[Estoque] Mensagem de cobrança recebida na queue reservar_estoque: id:47873b03-5395-46f2-a7d0-125e8fdc05be
+[Estoque] Mensagem de cobrança recebida na queue reservar_estoque: id:f8f95822-ba1c-4f05-8709-24de011326e5
+[Estoque] Mensagem de cobrança recebida na queue reservar_estoque: id:1a750661-2310-49fa-8695-a2c7bcd9a1a6
+[Estoque] Mensagem de cobrança recebida na queue reservar_estoque: id:d2521c96-8077-4822-b107-b38aedccc222
+[Estoque] Mensagem de cobrança recebida na queue reservar_estoque: id:f42d154f-9cbb-4642-9f99-efb6b33e2a65
+[Estoque] Mensagem de cobrança recebida na queue reservar_estoque: id:2203f410-da6a-455b-8de7-77fdb7461313
+[Estoque] Mensagem de cobrança recebida na queue reservar_estoque: id:a57079d2-4dbb-4d23-8984-d3cac84171e5
+[Estoque] Mensagem de cobrança recebida na queue reservar_estoque: id:c63d881c-10db-4544-8063-2d08456e247c
+[Estoque] Mensagem de cobrança recebida na queue reservar_estoque: id:90edb0cd-ba26-4d72-b74c-bec7032853e1
+```
 
 
 ### Revisores
@@ -907,6 +1197,14 @@ for i := 0; i < 3000000000; i++ {
 [How Much Data Does Streaming Netflix Use?](https://www.buckeyebroadband.com/support/internet/how-much-data-does-streaming-netflix-use)
 
 [Apache Kafka – linger.ms and batch.size](https://www.geeksforgeeks.org/apache-kafka-linger-ms-and-batch-size/)
+
+[Github: AMQP Producer e Consumer Default - Exemplos](https://github.com/msfidelis/system-design-examples/tree/main/messages/rabbit-mq/default)
+
+[Github: AMQP Producer e Consumer Topic - Exemplos](https://github.com/msfidelis/system-design-examples/tree/main/messages/rabbit-mq/topic)
+
+[Github: AMQP Producer e Consumer Fanout - Exemplos](https://github.com/msfidelis/system-design-examples/tree/main/messages/rabbit-mq/fanout)
+
+[Github: Kafka Producer e Consumer Exemplos](https://github.com/msfidelis/system-design-examples/tree/main/kafka)
 
 [Message Driven vs Event Driven](https://developer.lightbend.com/docs/akka-guide/concepts/message-driven-event-driven.html)
 
