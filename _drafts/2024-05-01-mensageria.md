@@ -444,11 +444,6 @@ Offset commitado com sucesso
 ...
 ```
 
-
-<br>
-
-## R2DBC
-
 <br>
 
 # Protocolos e Arquiteturas de Message-Driven
