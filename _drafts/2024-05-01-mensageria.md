@@ -35,9 +35,9 @@ Uma alusão para o conceito de mensageria, de fato, é **pensar em uma carta**, 
 
 ## Definindo Eventos
 
-![Exemplo Evento](/assets/images/system-design/Eventos-Exemplo.png)
-
 Ao contrário das mensagens que são conteúdos entregues de forma intencional para destinos conhecidos com comportamentos controlados e esperados, **um evento pode ser tratado como uma notificação genérica de que algo ocorreu**, e diversas partes de um sistema complexo que estejam interessadas nesse tipo de evento, **escutam essa notificação e tomam suas devidas ações, se necessário**, ou não. Ao contrário das mensagens que trafegam suas informações de um para um através de filas, **os eventos são trafegados através de tópicos, onde o conteúdo desse evento chega ao mesmo tempo, para todos os interessados no assunto do tópico**. Mensagens podem introduzir um nível maior de acoplamento entre o emissor e o receptor, especialmente se o formato da mensagem ou o protocolo de comunicação exigir que ambos os lados concordem com um contrato comum. **Eventos tendem a promover um desacoplamento maior, pois o emissor não precisa saber quem está consumindo o evento ou como**. Essa é uma forma de mensageria que garante baixo acoplamento entre sistemas, e facilita a escala e criação de novos componentes e subsistemas.
+
+![Exemplo Evento](/assets/images/system-design/Eventos-Exemplo.png)
 
 Eventos são utilizados próximos de streaming, e **esperam que espectadores reajam a uma notificação assim que ela ocorre para executar suas funções**. Ao lado da mensageria, onde em um exemplo de e-commerce teríamos filas específicas para cobrar, faturar, enviar o e-mail, notificar o estoque e o produtor teria que enviar pontualmente a mensagem específica para cada uma delas, quando olhamos para arquitetura de eventos, teríamos um evento próximo de um **"uma venda aconteceu!!!, sistemas interessados nisso, podem trabalhar"**, e **o sistema de cobrança, faturamento, e-mail e estoque respondem a isso de forma simultânea e isolada**.
 
@@ -211,11 +211,17 @@ Output: Hamburger
 Output: Pizza
 ```
 
+<br>
+
 ## Fanout 
 
 O padrão de Fanout é um pattern empregado onde é **necessária uma estratégia de 1:N no envio de mensagens**. Isso pode ser aplicado em mensageria quando temos **uma única mensagem que precisa ser distribuída para um número maior de filas**, ou quando observamos o comportamento padrão de um evento, em que a mesma mensagem é repassada para todos os grupos de consumidores com funções diferentes interessados no mesmo tópico. Em termos simplistas, o **Fanout é enviar a mesma mensagem para todos os lugares possíveis dentro de algum contexto que faça sentido**.
 
+![Fanout](/assets/images/system-design/Fanout.png)
+
 Esse padrão é útil, como citado, quando precisamos notificar a mesma mensagem para vários grupos, tanto para replicação de dados, onde por intermédio de alguma carga de trabalho secundária, replicamos o processamento ou o dado para outros tipos de bancos de dados, datacenters e subsistemas.
+
+<br>
 
 ## DLQ - Dead Letter Queues
 
@@ -225,6 +231,7 @@ As **Dead Letter Queues são mecanismos de post-mortem de mensagens** que não c
 
 Implementar DLQs nos permite, através de estratégias de monitoramento, identificar um possível problema nos sistemas que se comunicam dessa forma, uma vez que não faz parte do fluxo padrão encaminhar uma grande quantidade de mensagens para elas. Observar o número de mensagens disponíveis em DLQs durante o tempo pode ser um indicador chave em sistemas assíncronos.
 
+<br>
 
 ## Processamento em Batch
 
@@ -238,9 +245,7 @@ Processamentos bancários normalmente ocorrem em batch durante horários que evi
 
 # Protocolos e Arquiteturas Event-Driven
 
-Protocolos e arquiteturas de eventos, ou event-driven, são ferramentas extremamente úteis em ambientes distribuídos e podem facilitar o processamento e análise de volumes significativos de dados em tempo real, ou muito próximo disso.
-
-<br>
+Protocolos e arquiteturas de eventos, ou event-driven, são padrões arquiteturais extremamente úteis em ambientes distribuídos e podem facilitar o processamento e análise de volumes significativos de dados em tempo real, ou muito próximo disso. Eles são ideais principalmente para compartilhar mudanças de estados de objetos de domínios entre vários interessados nesse tipo de alteração e também para replicação de dados distribuição de responsabilidades entre sistemas de forma desacopladas. 
 
 ## Streaming e Reatividade
 
@@ -250,15 +255,13 @@ Um exemplo clássico, mas não limitado a isso, é a implementação de streamin
 
 Outro exemplo interessante e clássico são sistemas de fraude, que de acordo com o padrão de comportamento e compra conhecido, podem capturar detalhes, valores e métodos de pagamento para classificar se determinada transação é uma fraude ou está ocorrendo de forma legítima, ou uma plataforma de streaming que com base no seu histórico de navegação e títulos consumidos de séries e filmes pode automaticamente recomendar itens parecidos sem precisar de um bloco de tempo grande para tomar essas decisões.
 
-<br>
-
-### Reatividade e Arquiteturas Event-Driven
+## Reatividade e Arquiteturas Event-Driven
 
 Aplicações orientadas a eventos, ou event-driven, são projetadas para **detectar eventos, vindos ou não de streaming, e serem estimuladas para tomar alguma decisão com base nisso**. Várias **aplicações e processos podem responder ao mesmo evento de forma totalmente independente**. Esse tipo de arquitetura, ou grupo de padrões, são úteis e bem-vindos em aplicações que interagem em **ambientes de constante mudança**, ou **reagem a mudanças de estado de vários objetos trafegados no sistema**. A capacidade de **vários atores responderem a eventos em tempo real** pode tornar o desacoplamento de sistemas produtivos de larga escala uma tarefa muito mais interessante e eficiente. Imagine que vários sistemas distribuídos e com diferentes finalidades monitoram, através de um sistema de notificações, a mudança de status de um pedido realizado em uma plataforma de delivery de comida. Um grupo de listeners pode responder quando o pedido está com o status `CRIADO`, onde podem notificar o backoffice do restaurante, mandar notificações push para o usuário; outro grupo pode responder quando o status muda para `ACEITO`, onde o processamento de cobrança é iniciado no meio de pagamento escolhido; outro grupo responde quando o status muda para `PRONTO`, notificando os entregadores disponíveis; mais grupos tomam decisões com base na mudança do status para `A_CAMINHO`, `ENTREGUE`, `FINALIZADO`, etc.
 
 <br>
 
-## Kafka
+## Kafka e Event Streaming
 
 O Apache Kafka, embora não seja a única opção, é talvez a mais conhecida e associada a arquiteturas orientadas a eventos. O Kafka é uma plataforma de streaming projetada intencionalmente para lidar com um volume alto de dados, garantindo performance e alta disponibilidade. O Kafka é composto inicialmente por alguns componentes importantes, e entre os componentes e conceitos mais importantes, podemos encontrar:
 
@@ -461,7 +464,6 @@ O **MQTT** (*Message Queuing Telemetry Transport*) é um protocolo de mensageria
 
 No quesito de topologia, a arquitetura de uma implementação MQTT necessita de alguns agentes e responsabilidades. Como a **finalidade do protocolo é o envio de mensagens assíncronas vindas de diferentes tipos de dispositivos**, que serão processadas por outros tipos de aplicação no lado do servidor, o responsável por receber e orquestrar essas mensagens para seus destinatários são clusters de servidores MQTT. **Esse conjunto de servidores são conhecidos como brokers**, que trabalham como centralizadores dessas mensagens enviadas por vários dispositivos. Esses agentes **responsáveis por enviar as mensagens são conhecidos como Publishers**. Os brokers, após receberem as mensagens, as armazenam em **tópicos** identificados durante a publicação. Após o armazenamento, o cluster disponibiliza as mensagens para serem consumidas por outras aplicações que farão uso dessas informações publicadas. **Essas aplicações que consomem os dados são identificadas como Subscribers.**
 
-### Quebrar em Componentes
 
 ![MQTT - Workflow](/assets/images/system-design/protocolos-mqtt.png)
 
@@ -710,8 +712,6 @@ Mensagem de cobrança recebida na queue cobrar: id:45999a70-5bdf-4290-911e-e3467
 Mensagem de cobrança recebida na queue cobrar: id:59755eb6-d0f6-4157-8dcc-47c93b2c7ec3
 //...
 ```
-
-
 
 #### Topic Exchange
 
@@ -1154,6 +1154,7 @@ Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:90edb0cd-ba26
 * [Daniel Moreto](https://twitter.com/moretoend)
 * [Gabriel Suaki](https://twitter.com/deploydesexta)
 * [Jonathan Henrique](https://twitter.com/jhmede_)
+* [Murillo](https://twitter.com/opequidugoias)
 
 
 
