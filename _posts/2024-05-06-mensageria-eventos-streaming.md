@@ -1148,6 +1148,8 @@ Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:90edb0cd-ba26
 
 ## IMPORTANTE 
 
+![SOS](https://static.vakinha.com.br/uploads/vakinha/image/4740291/1715010738.642.png)
+
 > As recentes chuvas no Rio Grande do Sul deixaram muitas famílias desabrigadas, enfrentando grandes dificuldades. Nós, da Saneli Transportes, estamos comprometidos em ajudar essas famílias a reconstruírem suas vidas. Por isso, estamos organizando uma campanha de arrecadação de fundos para comprar itens essenciais que farão uma grande diferença neste momento crítico.
 
 Essa Vakinha é de confiança. São amigos pessoais meus que estão arrecandando doações nas regiões de Itu, Salto e Cabreúva - SP para levar até as vitimas do Rio Grande do Sul. Eles são donos de uma transportadora e vão fazer a doação do frente dos itens doados e adquiridos através da Vakinha. Quem puder ajudar contribuindo ou compartilhando, ficaria extremamente feliz. 
