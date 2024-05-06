@@ -1155,6 +1155,8 @@ Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:90edb0cd-ba26
 * [Gabriel Suaki](https://twitter.com/deploydesexta)
 * [Jonathan Henrique](https://twitter.com/jhmede_)
 * [Murillo](https://twitter.com/opequidugoias)
+* [Bernardo](https://twitter.com/indiepagodeiro)
+* [Pedro Amaral](https://twitter.com/predotaku)
 
 
 

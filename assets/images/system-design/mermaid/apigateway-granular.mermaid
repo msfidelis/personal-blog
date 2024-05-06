@@ -1,0 +1,29 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart LR
+  Client[Cliente das Aplicações]
+  apigateway[API Gateway]
+
+  cliente[Serviço de Cadastro de Cliente - Escrita]
+  cliente_leitura[Serviço de Cadastro de Cliente - Leitura]
+  db_cliente[(DB Clientes Transacional)]
+  db_clienteanalitico[(DB Clientes Analitico)]
+
+
+  Client --> apigateway
+   
+  apigateway --[GET] /cliente --> cliente_leitura
+  apigateway --[POST] /cliente --> cliente
+  apigateway --[PUT] /cliente --> cliente
+  apigateway --[DELETE] /cliente --> cliente
+  cliente_leitura[Serviço de Cadastro de Cliente - Leitura]
+  
+
+
+  cliente --> db_cliente
+  cliente_leitura --> db_clienteanalitico
+
+  style cliente fill:#FFE6CC,stroke:#333,stroke-width:2px
+  style cliente_leitura fill:#E1D5E7,stroke:#333,stroke-width:2px
+
+  style apigateway fill:#F3B1,stroke:#333,stroke-width:2px
+

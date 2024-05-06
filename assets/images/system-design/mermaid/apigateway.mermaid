@@ -1,0 +1,42 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart LR
+  Client[Cliente das Aplicações]
+  apigateway[API Gateway]
+  cliente[Serviço de Cadastro de Cliente]
+  pacote[Serviço de Compra de Pacote]
+  voo[Serviço de Reserva de Passagem]
+  hotel[Serviço de Reserva de Hotel]
+  carro[Serviço de Reserva de Carro]
+  pagamento[Serviço de Pagamento]
+  db_cliente[(DB Clientes)]
+  db_pacote[(DB Pacotes)]
+  db_voo[(DB Vôos)]
+  db_hotel[(DB Hoteis)]
+  db_carro[(DB Carros)]
+  db_pagamento[(DB Pagamentos)]
+
+
+  Client --> apigateway
+
+  apigateway --/cliente --> cliente
+  apigateway --/pacote  --> pacote
+  apigateway --/passagem --> voo
+  apigateway --/hotel -->hotel
+  apigateway --/carro -->carro
+  apigateway --/pagamento -->pagamento
+
+  cliente --> db_cliente
+  pacote --> db_pacote
+  voo --> db_voo
+  hotel --> db_hotel
+  carro --> db_carro
+  pagamento --> db_pagamento
+
+  style cliente fill:#FFE6CC,stroke:#333,stroke-width:2px
+  style pacote fill:#E1D5E7,stroke:#333,stroke-width:2px
+  style voo fill:#F8CECC,stroke:#333,stroke-width:2px
+  style hotel fill:#D5E8D4,stroke:#333,stroke-width:2px
+  style carro fill:#DAE8FC,stroke:#333,stroke-width:2px
+  style pagamento fill:#F5F5,stroke:#333,stroke-width:2px
+  style apigateway fill:#F3B1,stroke:#333,stroke-width:2px
+
