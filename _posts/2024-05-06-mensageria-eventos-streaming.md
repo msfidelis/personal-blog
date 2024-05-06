@@ -1158,7 +1158,7 @@ Mensagem de venda enviada para a exchange ecommerce.nova.venda: id:90edb0cd-ba26
 * [Bernardo](https://twitter.com/indiepagodeiro)
 * [Pedro Amaral](https://twitter.com/predotaku)
 
-
+> Imagens geradas pelo DALL-E
 
 ### Referências
 
