@@ -1,7 +1,5 @@
 %%{init: {'theme':'neutral'}}%%
 flowchart LR
-  Client[Clientes]
-  apigateway[API Gateway]
   cliente[Serviço de Cadastro de Cliente]
   pacote[Serviço de Compra de Pacote]
   voo[Serviço de Reserva de Passagem]
@@ -15,15 +13,12 @@ flowchart LR
   db_carro[(DB Carros)]
   db_pagamento[(DB Pagamentos)]
 
-
-  Client --> http://api.viagens.io --> apigateway
-
-  apigateway --/cliente --> cliente
-  apigateway --/pacote  --> pacote
-  apigateway --/passagem --> voo
-  apigateway --/hotel -->hotel
-  apigateway --/carro -->carro
-  apigateway --/pagamento -->pagamento
+  Clientes -- http://api-clientes.viagens.io/cliente --> cliente
+  Clientes -- http://api-pacotes.viagens.io/pacote --> pacote
+  Clientes -- http://api-passagens.viagens.io/passagem --> voo
+  Clientes -- http://api-hoteis.viagens.io/hotel --> hotel
+  Clientes -- http://api-carros.viagens.io/carros --> carro
+  Clientes -- http://api-pagamentos.viagens.io/pagamentos --> pagamento
 
   cliente --> db_cliente
   pacote --> db_pacote
@@ -37,6 +32,4 @@ flowchart LR
   style voo fill:#F8CECC,stroke:#333,stroke-width:2px
   style hotel fill:#D5E8D4,stroke:#333,stroke-width:2px
   style carro fill:#DAE8FC,stroke:#333,stroke-width:2px
-  style pagamento fill:#F5F5,stroke:#333,stroke-width:2px
-  style apigateway fill:#F3B1,stroke:#333,stroke-width:2px
-
+  style pagamento fill:#F5F5F5,stroke:#333,stroke-width:2px

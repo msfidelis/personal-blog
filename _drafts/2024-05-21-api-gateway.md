@@ -8,6 +8,8 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - API Gateways
 ---
 
+O objetivo deste capítulo é aproveitar as jornadas de [protocolos de rede](), [balanceadores de carga](), [monolitos e microserviços]() para analisarmos os **API Gateways**. Ter a oportunidade de olhar os Gateways como um pattern e detalhar seus conceitos abstraindo as implamentações, desassociando os mesmos de tecnologias nominais, pode nos abrir caminhos para elucidar soluções e sugerir melhorias em arquiteturas complexas de exposição de serviços, interna e externamente das organizações, além de gerar insights produtivos para governança desse tipo de cenário.  
+
 <br>
 
 # Definindo API Gateways
@@ -16,7 +18,7 @@ Em sistemas modernos, as arquiteturas tendem a se tornar mais complexas, granula
 
 Um API Gateway é uma **camada de abstração entre os clientes e os serviços**, oferecendo uma **interface única** e **roteamento entre vários serviços**. Ele atua como um **centralizador de comunicações síncronas** entre os microserviços de um ambiente específico. O API Gateway recebe todas as chamadas de API, as encaminha para os serviços internos apropriados com base em regras predefinidas (como basepaths e métodos) e depois retorna as respostas dos serviços aos clientes solicitantes. 
 
-Visto como um padrão, ele busca unificar as comunicações entre cliente e servidor através de um único ponto de contato conhecido, centralizando funcionalidades comuns entre eles, como autenticação, autorização, cache, firewalls, rate limits, etc.
+Visto como um padrão, ele busca unificar as comunicações entre cliente e servidor através de um único ponto de entrada conhecido, centralizando funcionalidades comuns entre eles, como autenticação, autorização, cache, firewalls, rate limits, etc.
 
 Importante ressaltar que os Gateways, por padrão, são intermediários primariamente de APIs REST.
 
@@ -25,13 +27,17 @@ Importante ressaltar que os Gateways, por padrão, são intermediários primaria
 
 Vamos propor um cenário. Em um backend monolítico, em ambientes modernos, se os clientes precisassem recuperar alguns dados ou consumir serviços dessa aplicação, eles fariam uma chamada de API para a URL do backend, e um balanceador de carga que responderia primariamente pelo endereço encaminharia a requisição para um dos nodes disponíveis na sua lista de hosts. Até aí, nada novo. 
 
-// IMAGEM DE API'S DE BACKEND
+![API Monolito](/assets/images/system-design/api-gateway-monolito.png)
+
+> Exemplo de exposição direta de uma aplicação monolítica
 
 Partindo para um paralelo com microserviços, a dinâmica é praticamente a mesma, porém o cliente efetuaria a chamada diretamente para o microserviço responsável pela especificidade da sua solicitação, diversificando as opções de chamadas entre várias URLs diferentes.
 
 Vamos melhorar um pouco o cenário, onde todos esses endpoints precisam ser públicos, pois os clientes são Single Page Applications, Aplicações Mobile ou Integrações de Terceiros.
 
-// IMAGEM DE API'S DE BACKEND MICROSERVICOS
+![API Microservices](/assets/images/system-design/api-gateway-microservices.png)
+
+> Exemplo de exposição direta de vários microserviços
 
 A necessidade de disponibilizá-los publicamente se tornaria algo complexo, uma vez que ficaria a cargo dos clientes conhecer todos os endpoints disponíveis e gerenciar cada um deles com documentações e URLs individuais. Além disso, haveria a dificuldade de implementação de mecanismos de segurança pelos times internos, como gestão de autenticação e autorização, onde seria necessário garantir que todos eles implementassem esses mecanismos da mesma forma, assegurando os mesmos padrões de segurança.
 
@@ -43,11 +49,13 @@ Os API Gateways resolvem esse tipo de cenário, pois encapsulam os sistemas inte
 
 # API Gateways em Arquiteturas de Microserviços
 
-Como abordado, em arquiteturas baseadas em microserviços que podem envolver dezenas ou centenas de serviços distintos, os API Gateways simplificam a interação dos clientes com esses serviços. Eles abstraem a complexidade do backend, proporcionando um ponto de entrada único e coeso para todos os serviços disponíveis, e pois isso reduzem a complexidade para os clientes. Isso significa que os clientes não precisam saber onde cada serviço está localizado ou como eles estão divididos internamente.
+Como abordado, em arquiteturas baseadas em microserviços que podem envolver dezenas ou centenas de serviços distintos, os API Gateways simplificam a interação dos clientes com esses serviços. Eles abstraem a complexidade do backend, proporcionando um ponto de entrada único e coeso para todos os serviços disponíveis, e pois isso reduzem a complexidade para os clientes. Isso significa que os clientes não precisam saber onde cada serviço está localizado ou como eles estão divididos internamente. 
 
 Basicamente, os API Gateways encapsulam a complexidade dos sistemas distribuídos e expõem endpoints simplificados. Eles podem agrupar vários endpoints e redirecionar as solicitações para diferentes microserviços e sistemas, tudo através de um único ponto de contato.
 
 ![API Gateway](/assets/images/system-design/api-gateway.png)
+
+> Exemplo funcional de exposição de vários microserviços através de um API Gateway
 
 Esse tipo de arquitetura te permite fazer com que cada requisição feita para um `recurso` ou `método` da API descrita no Gateway, seja encaminhado pora um microserviço diferente. Esse tipo de flexibilidade é muito interessante para solucionar problemas de governança e organização de produtos oferecidos internamente ou externamente. Essa abordagem pode facilitar tanto em casos mais simples, quanto pra casos de roteamento mais complexos.  
 
@@ -56,6 +64,21 @@ Esse tipo de arquitetura te permite fazer com que cada requisição feita para u
 
 ![API Gateway](/assets/images/system-design/api-gateway-2.png)
 > API Gateway redirecionando tráfego para diversos microserviços com base em regras mais específicas de método e path
+
+Uma vez que o sistema é totalmente abstraído por um recurso do gateway, a troca ou substituição desse serviço se torna muito simples. Respeitando os contratos pré-estabelecidos, uma troca de backend em vôo sem muitos impactos é extremamente possível. 
+
+<br>
+
+# API Gateways e Load Balancers
+
+A comparação entre API Gateways e Load Balancers e Proxies Reversos pode surgir de forma natural uma vez que todas as opções se dispõe a intermediar requisições entre os clientes e um backend conhecido, e mais ainda se API Gateways em sua totalidade de implementação podem em algum momento substituir o uso de balanceadores de carga. Enquanto balanceadores se concentram em balancear requisições entre N replicas da mesma aplicação em diversas camadas de rede como Layer 7 ou Layer 4, com a possibilidade dessa aplicação ser qualquer tipo de coisa, como uma página na Web, um serviço RPC, banco de dados ou API's REST, os API Gateways se concentram em apenas criar uma abstração unificada para diversos endpoints que de alguma forma são construídos para lidar com o protocolo HTTP, como API's REST, Websockets e etc. 
+
+Os API Gateways se concentram em resolver problemas de governança em um ambito muito especifico de API's REST, fazendo com que os mesmos exponham somente os endpoints selecionados e fazendo gestão de consumo dos mesmos, já as outras opções possuem outras propostas mais abrangentes, e que muitas vezes não suprem a necessidade de uma gestão granular de um API Gateway. 
+
+![API Gateway](/assets/images/system-design/api-gateway-balancer.png)
+> API Gateways tendo Load Balancers como Backend
+
+Ambas as soluções, podem e são utilizadas em conjunto, com API's Gateways concentrando seus backends em forma de balanceadores de carga, sejam eles qual forem, mas que abstraem a distribuição de tráfego entre todos as upstreams disponíveis e cuidando da checkagem de saúde e resiliência dos mesmos. 
 
 <br>
 
@@ -74,69 +97,27 @@ A **Autenticação é o processo de verificar a identidade do usuário**, enquan
 Em muitos casos, os API Gateways precisam contar com um servidor de identidade externo para se integrar com provedores de autenticação e autorização.
 
 
-### Bearer JSON Web Tokens (JWT)
-
-Os Bearer JSON Web Tokens, ou JWT, são tokens que representam uma série de informações que podem ser lidas e validadas entre cliente e servidor. Os JWTs são uma forma eficiente e performática de implementar capacidades de autenticação e autorização em API's Stateless. Os JWTs possuem informações autocontidas, ou seja, quando abertos, possuem todas as informações necessárias para autenticar os usuários.
-
-Os Tokens JWT são compostos por três partes: o **Header**, que contém informações sobre o token, como o **algoritmo utilizado para a assinatura**; o **Payload**, que contém as declarações e informações abertas do usuário, além de metadados importantes para facilitar a integração com o servidor; e a **Signature**, ou assinatura, que é uma **hash gerada pelo servidor no momento da criação do token, baseada em seu conteúdo, garantindo que nenhum atributo ou informação foi alterado**. Tanto o header quanto o payload são codificados em base64 para facilitar o tráfego através de um cabeçalho HTTP, e a assinatura é criada com base nesses valores utilizando algoritmos como HMAC ou uma chave Privada RSA. Todos os campos são separados por um ponto (`.`) e enviados via header no formato:
-
-Abaixo temos um exemplo:
-
-```bash
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJGaWRlbGlzc2F1cm8iLCJpYXQiOjE3MTY4NTM5MDUsImV4cCI6MTc0ODM4OTkwNSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6Ik1hdGhldXMiLCJTdXJuYW1lIjoiRmlkZWxpcyIsIkVtYWlsIjoibWF0aGV1c0BmaWRlbGlzc2F1cm8uZGV2IiwiUm9sZSI6WyJNYW5hZ2VyIiwiQWRtaW4iXX0.K1i9STmcgsq4LnamxuJUrZYkXYscVTk23JnTukcScAk
-```
-
-Decodificando cada um dos campos, ou *"abrindo o JWT"*, podemos ver todas as informações que foram utilizadas para gerar o mesmo, incluindo a assinatura gerada pelo servidor. Se qualquer informação for alterada, o algoritmo usado para gerar o token não irá validar a autenticidade do mesmo.
-
-```bash
-❯ echo "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9" | base64 --decode
-{"typ":"JWT","alg":"HS256"}
-```
-
-```bash
-❯ echo "eyJpc3MiOiJGaWRlbGlzc2F1cm8iLCJpYXQiOjE3MTY4NTM5MDUsImV4cCI6MTc0ODM4OTkwNSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6Ik1hdGhldXMiLCJTdXJuYW1lIjoiRmlkZWxpcyIsIkVtYWlsIjoibWF0aGV1c0BmaWRlbGlzc2F1cm8uZGV2IiwiUm9sZSI6WyJNYW5hZ2VyIiwiQWRtaW4iXX0" | base64 --decode
-{"iss":"Fidelissauro","iat":1716853905,"exp":1748389905,"aud":"www.example.com","sub":"jrocket@example.com","GivenName":"Matheus","Surname":"Fidelis","Email":"matheus@fidelissauro.dev","Role":["Manager","Admin"]}
-```
-
-```bash
-❯ echo "K1i9STmcgsq4LnamxuJUrZYkXYscVTk23JnTukcScAk" | base64 --decode
-+X�I9��ʸ.v���T��$]�U96ܙӺ
-
-```
-
-É importante ressaltar que todas as informações utilizadas para compor o JWT podem ser facilmente abertas ao decodificar o base64, então é altamente não recomendado utilizar dados sensíveis para gerar os mesmos.
-
-### OAuth 2.0 & OpenID Connect
-
-### Basic Auth
-
-### Certificados de Cliente e mTLS
-
-### SAML (Security Assertation Markup Language)
-
-### API Keys Customizadas
-
-
 ## Limitação de taxa (Rate Limiting) e Throttling
 
-Limitação de taxa (Rate Limiting) é o processo de **restringir o número de solicitações que um usuário pode fazer a um serviço em um período específico**. Essa é uma estratégia muito valiosa para prevenir abusos de uso e proteger os recursos do backend de saturarem e atuar além da capacidade disponível sem ferir a qualidade. Imagine que você conhece as limitações do serviço de compra de pacotes de backend que responde no basepath `/pacote`. Você sabe que seu serviço atende sem degradar até 100 requisições por segundo e esse é o gargalo limitador desse backend. Você pode utilizar o Rate Limit para segurar as demais requisições que ultrapassarem os 100 TPS no Gateway e evitar passar o volume sobressalente para o serviço. 
+Os API Gateways comumente fazem uso de mecanismos de limitação e controle de uso de seus recursos para evitar sobrecarga em seus sistemas adjacentes, ou até mesmo na propria infraestrutura do gateway. Esses recursos são as implementações de Rate Limiting e Throttling.
 
-O Throttling é a **prática de controlar a quantidade de recursos usados por uma aplicação ou cliente**, geralmente diminuindo ou bloqueando a taxa de solicitações permitidas quando a mesma é ultrapassada. Pode ser consequencia do Rate Limit quando o mesmo é ultrapassado. O throttling pode ser implementado de forma temporária, até que o serviço do backend seja estabilizado. 
+
+O Rate Limiting, ou Limitação de taxa, é o processo de **restringir o número de solicitações que um usuário pode fazer a um serviço em um período específico**, é a **prática de controlar a quantidade de recursos usados por uma aplicação ou cliente**. Essa é uma estratégia muito valiosa para prevenir abusos de uso pontuais e proteger os recursos do backend de saturarem e atuar além da capacidade disponível sem ferir a qualidade. Imagine que você conhece as limitações do serviço de compra de pacotes de backend que responde no basepath `/pacote`. Você sabe que seu serviço atende sem degradar até 100 requisições por segundo e esse é o gargalo limitador desse backend. Você pode utilizar o Rate Limit para segurar as demais requisições que ultrapassarem os 100 TPS no Gateway e evitar passar o volume sobressalente para o serviço. As limitações de taxa são medidas preventivas e também podem ser utilizadas como features comerciais de uso das API's, em que o podem ser comercializados rate limits maiores para clientes que tem planos maiores do seu produto. 
+
+O Throttling, ou estrangulamento, é a **prática de controlar a quantidade de recursos usados quando os limites são atingidos**, geralmente diminuindo ou bloqueando a taxa de solicitações permitidas quando a mesma é ultrapassada. Pode ser consequencia do Rate Limit quando o mesmo é ultrapassado numa escala global do gateway. O throttling pode ser implementado de forma temporária, até que o serviço do backend seja estabilizado em caso de saturação dos sistemas adjacentes. Ele pode ser configurado como um recurso do próprio gateway, e não dos sub sistemas de backend. Como por exemplo, sabemos que cada cliente pode realizar até 10 requisições no período de 1 segundo. Porém independente dessa taxa ser criada para proteger o sistema destino, o próprio gateway tem suas limitações de escalabilidade e infraestrutura, e pode suportar até 10.000 de transações por segundo. Caso a soma de todos os clientes ultrapasse o limite do próprio gateway, uma medida de throttling pode ser acionada, limitando parcialmente a quantidade de requisições que podem ser atentidas para reestabelecer a saúde de toda a malha de serviço. 
+
+Tanto o Rate Limit quando Throttling se baseiam em controlar a quantidade de tráfego, mas o Rate Limit funciona de forma preventiva, e to throttling de forma reativa. 
 
 
 ## Gerenciamento de APIs e Versionamento
 
-O gerenciamento de APIs envolve a criação, publicação, manutenção e monitoração das APIs. O versionamento é a prática de gerenciar mudanças nas APIs, permitindo que múltiplas versões de uma API coexistam para suportar diferentes clientes e casos de uso ao longo do tempo.
+O gerenciamento de APIs envolve a criação, publicação, manutenção e monitoração das APIs. O versionamento é a prática de gerenciar mudanças nas APIs, permitindo que múltiplas versões de uma API coexistam para suportar diferentes clientes e casos de uso ao longo do tempo. Esse tipo de recurso normalmente se dispõe em reescrever a chamada do backend além do path do gateway, como por exemplo: 
 
-## Monitoramento e Análise de APIs
+![API Gateway Versionamento](/assets/images/system-design/api-gateway-version.png)
 
-# Tecnologias e Ferramentas de API Gateway
+A capacidade de fazer uma gestão de tráfego entre duas versões do mesmo backend também é uma necessidade verdadeira. API Gateways de uma forma geral também podem oferecer uma proposta de release gradativa, como um canary deployment progressivo e controlado para facilitar uma substituição a quente de um serviço por outro, desde que os dois respeitem os mesmos contratos, como por exemplo: 
 
-## Cloud Providers 
-
-## Kong 
-
-## Envoy Based Solutions
+![API Gateway Canary](/assets/images/system-design/api-gateway-caanry.png)
 
 
 

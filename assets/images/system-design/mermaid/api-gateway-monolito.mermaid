@@ -1,0 +1,32 @@
+%%{init: {'theme':'neutral'}}%%
+flowchart LR
+  subgraph Monolito
+    cliente("Cadastro de Cliente")
+    pacote("Compra de Pacote")
+    voo("Reserva de Passagem")
+    hotel("Reserva de Hotel")
+    carro("Reserva de Carro")
+    pagamento("Processa Pagamento")
+    cliente --- pacote
+    pacote --- voo
+    voo --- hotel
+    hotel --- carro
+    carro --- pagamento
+  end
+  Clientes -- https://api.viagens.io/cliente--> Monolito
+  Clientes -- https://api.viagens.io/pacote--> Monolito
+  Clientes -- https://api.viagens.io/passagem--> Monolito
+  Clientes -- https://api.viagens.io/hotel--> Monolito
+  Clientes -- https://api.viagens.io/carros--> Monolito
+  Clientes -- https://api.viagens.io/pagamentos--> Monolito
+Monolito --> db[(Database)]
+  style Monolito fill:#FFF2CC,stroke:#333,stroke-width:2px
+  style cliente fill:#FFE6CC,stroke:#333,stroke-width:2px
+  style pacote fill:#E1D5E7,stroke:#333,stroke-width:2px
+  style voo fill:#F8CECC,stroke:#333,stroke-width:2px
+  style hotel fill:#D5E8D4,stroke:#333,stroke-width:2px
+  style carro fill:#DAE8FC,stroke:#333,stroke-width:2px
+  style pagamento fill:#F5F5F5,stroke:#333,stroke-width:2px
+
+  
+
