@@ -106,6 +106,8 @@ O Rate Limiting, ou Limitação de taxa, é o processo de **restringir o número
 
 O Throttling, ou estrangulamento, é a **prática de controlar a quantidade de recursos usados quando os limites são atingidos**, geralmente diminuindo ou bloqueando a taxa de solicitações permitidas quando a mesma é ultrapassada. Pode ser consequencia do Rate Limit quando o mesmo é ultrapassado numa escala global do gateway. O throttling pode ser implementado de forma temporária, até que o serviço do backend seja estabilizado em caso de saturação dos sistemas adjacentes. Ele pode ser configurado como um recurso do próprio gateway, e não dos sub sistemas de backend. Como por exemplo, sabemos que cada cliente pode realizar até 10 requisições no período de 1 segundo. Porém independente dessa taxa ser criada para proteger o sistema destino, o próprio gateway tem suas limitações de escalabilidade e infraestrutura, e pode suportar até 10.000 de transações por segundo. Caso a soma de todos os clientes ultrapasse o limite do próprio gateway, uma medida de throttling pode ser acionada, limitando parcialmente a quantidade de requisições que podem ser atentidas para reestabelecer a saúde de toda a malha de serviço. 
 
+O Throttling é como um sistema de defesa. Imagine que um componente de uma máquina atinge uma temperatura que pode causar uma pane geral no funcionamento. Uma operação de Throttling restringiria a capacidade de funcionamento da máquina significativamente até que a temperatura diminua. Durante esse meio tempo, a vazão da máquina é reduzida para proteger sua integridade. 
+
 Tanto o Rate Limit quando Throttling se baseiam em controlar a quantidade de tráfego, mas o Rate Limit funciona de forma preventiva, e to throttling de forma reativa. 
 
 
@@ -127,3 +129,18 @@ A capacidade de fazer uma gestão de tráfego entre duas versões do mesmo backe
 
 [JWT Introduction](https://jwt.io/introduction)
 
+[What Is an API Gateway & How Does It Work?](https://blog.hubspot.com/website/api-gateway)
+
+[API Gateways - Microservices](https://microservices.io/patterns/apigateway.html)
+
+[My experiences with API gateways…](https://mahesh-mahadevan.medium.com/my-experiences-with-api-gateways-8a93ad17c4c4)
+
+[O que é thermal throttling e como corrigir](https://canaltech.com.br/amp/hardware/o-que-e-thermal-throttling/)
+
+[WCF - Throttling e Pooling](http://www.linhadecodigo.com.br/artigo/1996/wcf-throttling-e-pooling.aspx#:~:text=Basicamente%20a%20id%C3%A9ia%20do%20Throttling,do%20servi%C3%A7o%2C%20independente%20de%20endpoints)
+
+[The Ultimate Guide to API Gateways](https://blog.softwareag.com/ultimate-guide-api-gateways/)
+
+[What is API Gateway | System Design ?](https://www.geeksforgeeks.org/what-is-api-gateway-system-design/)
+
+[API Gateway - System Design](https://medium.com/@karan99/system-design-api-gateway-6e6b41de45e3)
