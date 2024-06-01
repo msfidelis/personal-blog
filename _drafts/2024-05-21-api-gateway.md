@@ -119,7 +119,7 @@ O gerenciamento de APIs envolve a criação, publicação, manutenção e monito
 
 A capacidade de fazer uma gestão de tráfego entre duas versões do mesmo backend também é uma necessidade verdadeira. API Gateways de uma forma geral também podem oferecer uma proposta de release gradativa, como um canary deployment progressivo e controlado para facilitar uma substituição a quente de um serviço por outro, desde que os dois respeitem os mesmos contratos, como por exemplo: 
 
-![API Gateway Canary](/assets/images/system-design/api-gateway-caanry.png)
+![API Gateway Canary](/assets/images/system-design/api-gateway-canary.png)
 
 
 
