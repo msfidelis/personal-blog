@@ -57,7 +57,7 @@ Basicamente, os API Gateways encapsulam a complexidade dos sistemas distribuído
 
 > Exemplo funcional de exposição de vários microserviços através de um API Gateway
 
-Esse tipo de arquitetura te permite fazer com que cada requisição feita para um `recurso` ou `método` da API descrita no Gateway, seja encaminhado pora um microserviço diferente. Esse tipo de flexibilidade é muito interessante para solucionar problemas de governança e organização de produtos oferecidos internamente ou externamente. Essa abordagem pode facilitar tanto em casos mais simples, quanto pra casos de roteamento mais complexos.  
+Esse tipo de arquitetura te permite fazer com que cada requisição feita para um `recurso` ou `método` da API descrita no Gateway, seja encaminhado para um microserviço diferente. Esse tipo de flexibilidade é muito interessante para solucionar problemas de governança e organização de produtos oferecidos internamente ou externamente. Essa abordagem pode facilitar tanto em casos mais simples, quanto pra casos de roteamento mais complexos.  
 
 ![API Gateway](/assets/images/system-design/api-gateway-1.png)
 > API Gateway redirecionando tráfego para diversos microserviços com base no path-prefix
@@ -78,7 +78,7 @@ Os API Gateways se concentram em resolver problemas de governança em um ambito 
 ![API Gateway](/assets/images/system-design/api-gateway-balancer.png)
 > API Gateways tendo Load Balancers como Backend
 
-Ambas as soluções, podem e são utilizadas em conjunto, com API's Gateways concentrando seus backends em forma de balanceadores de carga, sejam eles qual forem, mas que abstraem a distribuição de tráfego entre todos as upstreams disponíveis e cuidando da checkagem de saúde e resiliência dos mesmos. 
+Ambas as soluções, podem e são utilizadas em conjunto, com API's Gateways concentrando seus backends em forma de balanceadores de carga, sejam eles qual forem, mas que abstraem a distribuição de tráfego entre todos as hosts disponíveis e cuidando da checkagem de saúde e resiliência dos mesmos. 
 
 <br>
 
@@ -102,13 +102,13 @@ Em muitos casos, os API Gateways precisam contar com um servidor de identidade e
 Os API Gateways comumente fazem uso de mecanismos de limitação e controle de uso de seus recursos para evitar sobrecarga em seus sistemas adjacentes, ou até mesmo na propria infraestrutura do gateway. Esses recursos são as implementações de Rate Limiting e Throttling.
 
 
-O Rate Limiting, ou Limitação de taxa, é o processo de **restringir o número de solicitações que um usuário pode fazer a um serviço em um período específico**, é a **prática de controlar a quantidade de recursos usados por uma aplicação ou cliente**. Essa é uma estratégia muito valiosa para prevenir abusos de uso pontuais e proteger os recursos do backend de saturarem e atuar além da capacidade disponível sem ferir a qualidade. Imagine que você conhece as limitações do serviço de compra de pacotes de backend que responde no basepath `/pacote`. Você sabe que seu serviço atende sem degradar até 100 requisições por segundo e esse é o gargalo limitador desse backend. Você pode utilizar o Rate Limit para segurar as demais requisições que ultrapassarem os 100 TPS no Gateway e evitar passar o volume sobressalente para o serviço. As limitações de taxa são medidas preventivas e também podem ser utilizadas como features comerciais de uso das API's, em que o podem ser comercializados rate limits maiores para clientes que tem planos maiores do seu produto. 
+O Rate Limiting, ou Limitação de taxa, é o processo de **restringir o número de solicitações que um usuário pode fazer a um serviço em um período específico**, é a **prática de controlar a quantidade de recursos usados por uma aplicação ou cliente**. Essa é uma estratégia muito valiosa para prevenir abusos de uso pontuais e proteger os recursos do backend de saturarem e atuar além da capacidade disponível sem ferir a qualidade. Imagine que você conhece as limitações do serviço de compra de pacotes de backend que responde no basepath `/pacote`. Você sabe que seu serviço atende sem degradar até 100 requisições por segundo e esse é o gargalo limitador desse backend. Você pode utilizar o Rate Limit para segurar as demais requisições que ultrapassarem os 100 TPS no Gateway e evitar passar o volume sobressalente para o serviço. As limitações de taxa são medidas preventivas e também podem ser utilizadas como features comerciais de uso das API's, em que podem ser comercializados rate limits maiores para clientes que tem planos maiores do seu produto. 
 
 O Throttling, ou estrangulamento, é a **prática de controlar a quantidade de recursos usados quando os limites são atingidos**, geralmente diminuindo ou bloqueando a taxa de solicitações permitidas quando a mesma é ultrapassada. Pode ser consequencia do Rate Limit quando o mesmo é ultrapassado numa escala global do gateway. O throttling pode ser implementado de forma temporária, até que o serviço do backend seja estabilizado em caso de saturação dos sistemas adjacentes. Ele pode ser configurado como um recurso do próprio gateway, e não dos sub sistemas de backend. Como por exemplo, sabemos que cada cliente pode realizar até 10 requisições no período de 1 segundo. Porém independente dessa taxa ser criada para proteger o sistema destino, o próprio gateway tem suas limitações de escalabilidade e infraestrutura, e pode suportar até 10.000 de transações por segundo. Caso a soma de todos os clientes ultrapasse o limite do próprio gateway, uma medida de throttling pode ser acionada, limitando parcialmente a quantidade de requisições que podem ser atentidas para reestabelecer a saúde de toda a malha de serviço. 
 
 O Throttling é como um sistema de defesa. Imagine que um componente de uma máquina atinge uma temperatura que pode causar uma pane geral no funcionamento. Uma operação de Throttling restringiria a capacidade de funcionamento da máquina significativamente até que a temperatura diminua. Durante esse meio tempo, a vazão da máquina é reduzida para proteger sua integridade. 
 
-Tanto o Rate Limit quando Throttling se baseiam em controlar a quantidade de tráfego, mas o Rate Limit funciona de forma preventiva, e to throttling de forma reativa. 
+Tanto o Rate Limit quando Throttling se baseiam em controlar a quantidade de tráfego, mas o Rate Limit funciona de forma preventiva, e throttling de forma reativa. 
 
 
 ## Gerenciamento de APIs e Versionamento
@@ -121,7 +121,17 @@ A capacidade de fazer uma gestão de tráfego entre duas versões do mesmo backe
 
 ![API Gateway Canary](/assets/images/system-design/api-gateway-canary.png)
 
+<br>
 
+#### Obrigado aos Revisores 
+
+* [Tarsila, amor da minha vida](https://twitter.com/tarsilabianca_c/)
+
+* [Pedro Rivero](https://twitter.com/pedrosrtcosta/)
+
+* [Felipe Madureira](https://twitter.com/madfelps/)
+
+* [Kauê Gatto](https://www.linkedin.com/in/kaue-gatto/)
 
 ### Referências
 
