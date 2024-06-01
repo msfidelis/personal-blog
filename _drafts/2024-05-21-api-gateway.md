@@ -8,7 +8,7 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - API Gateways
 ---
 
-O objetivo deste capítulo é aproveitar as jornadas de [protocolos de rede](), [balanceadores de carga](), [monolitos e microserviços]() para analisarmos os **API Gateways**. Ter a oportunidade de olhar os Gateways como um pattern e detalhar seus conceitos, abstraindo as implementações e desassociando-os de tecnologias específicas, pode nos abrir caminhos para elucidar soluções e sugerir melhorias em arquiteturas complexas de exposição de serviços, tanto interna quanto externamente nas organizações. Além disso, pode gerar insights produtivos para a governança desse tipo de cenário.
+O objetivo deste capítulo é aproveitar as jornadas de [protocolos de rede](/protocolos-de-rede/), [balanceadores de carga](/load-balancing/), [Padrões de comunicações sincronos](/padroes-de-comunicacao-sincronos/) ,[monolitos e microserviços](/monolitos-microservicos/) para analisarmos os **API Gateways**. Ter a oportunidade de olhar os Gateways como um pattern e detalhar seus conceitos, abstraindo as implementações e desassociando-os de tecnologias específicas, pode nos abrir caminhos para elucidar soluções e sugerir melhorias em arquiteturas complexas de exposição de serviços, tanto interna quanto externamente nas organizações. Além disso, pode gerar insights produtivos para a governança desse tipo de cenário.
 
 <br>
 
