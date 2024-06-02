@@ -1,0 +1,9 @@
+---
+layout: post
+image: assets/images/system-design/escalabilidade-capa.png
+author: matheus
+featured: false
+published: true
+categories: [ system-design, engineering, cloud ]
+title: System Design - Containers e Clusterização
+---
