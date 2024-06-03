@@ -165,6 +165,6 @@ A capacidade de fazer uma gestão de tráfego entre duas versões do mesmo backe
 
 [The Ultimate Guide to API Gateways](https://blog.softwareag.com/ultimate-guide-api-gateways/)
 
-[What is API Gateway | System Design ?](https://www.geeksforgeeks.org/what-is-api-gateway-system-design/)
+[What is API Gateway on System Design ?](https://www.geeksforgeeks.org/what-is-api-gateway-system-design/)
 
 [API Gateway - System Design](https://medium.com/@karan99/system-design-api-gateway-6e6b41de45e3)
