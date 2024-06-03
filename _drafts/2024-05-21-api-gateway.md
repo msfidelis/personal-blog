@@ -8,7 +8,7 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - API Gateways
 ---
 
-O objetivo deste capítulo é aproveitar as jornadas de [protocolos de rede](/protocolos-de-rede/), [balanceadores de carga](/load-balancing/), [Padrões de comunicações síncronos](/padroes-de-comunicacao-sincronos/), [monolitos e microserviços](/monolitos-microservicos/) para analisarmos os **API Gateways**. Ter a oportunidade de olhar os Gateways como um pattern e detalhar seus conceitos, abstraindo as implementações e desassociando-os de tecnologias específicas, pode nos abrir caminhos para elucidar soluções e sugerir melhorias em arquiteturas complexas de exposição de serviços, tanto interna quanto externamente nas organizações. Além disso, pode gerar insights produtivos para a governança desse tipo de cenário.
+O objetivo deste capítulo é aproveitar as jornadas de [protocolos de rede](/protocolos-de-rede/), [balanceadores de carga](/load-balancing/), [padrões de comunicações síncronos](/padroes-de-comunicacao-sincronos/), [monolitos e microserviços](/monolitos-microservicos/) para analisarmos os **API Gateways**. Ter a oportunidade de olhar os Gateways como um pattern e detalhar seus conceitos, abstraindo as implementações e desassociando-os de tecnologias específicas, pode nos abrir caminhos para elucidar soluções e sugerir melhorias em arquiteturas complexas de exposição de serviços, tanto interna quanto externamente nas organizações. Além disso, pode gerar insights produtivos para a governança desse tipo de cenário.
 
 <br>
 
@@ -16,7 +16,7 @@ O objetivo deste capítulo é aproveitar as jornadas de [protocolos de rede](/pr
 
 Em sistemas modernos, as arquiteturas tendem a se tornar mais complexas, granulares e distribuídas. Neste contexto, os API Gateways surgem como uma solução para um problema significativo: como acessar os diversos componentes de forma consistente?
 
-Um API Gateway é uma **camada de abstração entre os clientes e os serviços existentes dentro de uma arquitetura**, oferecendo uma **interface única** e **roteamento entre esses vários serviços**. Ele atua como um **centralizador de comunicações síncronas** entre os microserviços de um ambiente específico. O API Gateway recebe todas as chamadas de API, as encaminha para os serviços internos apropriados com base em regras predefinidas (como basepaths e métodos) e depois retorna as respostas dos serviços aos clientes solicitantes.
+Um API Gateway é uma **camada de abstração entre os clientes e os serviços existentes dentro de uma arquitetura**, oferecendo uma **interface única** e **roteamento entre esses vários serviços**. Ele atua como um **centralizador de comunicações síncronas** entre os microserviços de um ambiente específico. O API Gateway recebe todas as chamadas de API, as encaminha para os serviços internos apropriados com base em regras predefinidas (como basepaths e métodos) e depois retorna as respostas dos serviços aos clientes solicitantes. Resumindo, oferece a experiência ao usuário final da API de consumir diversos serviços como se fosse um só. 
 
 Visto como um padrão, ele busca unificar as comunicações entre cliente e servidor através de um único ponto de entrada conhecido, centralizando funcionalidades comuns entre eles, como autenticação, autorização, cache, firewalls, rate limits, etc.
 
