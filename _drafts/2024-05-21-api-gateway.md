@@ -143,6 +143,10 @@ A capacidade de fazer uma gestão de tráfego entre duas versões do mesmo backe
 
 * [Luiz Aoqui, o revisor universal da comunidade](https://twitter.com/luiz_aoqui)
 
+* [Clayton Cavaleiro](https://x.com/claydeveloper)
+
+* [Daniel Moreto](https://x.com/moretoend)
+
 ### Referências
 
 [What Is an API Gateway?](https://www.nginx.com/learn/api-gateway/)
