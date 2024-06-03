@@ -39,7 +39,7 @@ Vamos melhorar um pouco o cenário, onde todos esses endpoints precisam ser púb
 
 > Exemplo de exposição direta de vários microserviços
 
-A necessidade de disponibilizá-los publicamente se torna algo complexo, uma vez que fica a cargo dos clientes conhecer todos os endpoints disponíveis, cada um com documentações e URLs próprias. Além disso, existe a dificuldade de implementação de mecanismos de segurança pelos times internos, como gestão de autenticação e autorização, onde é necessário garantir que todos eles implementem esses mecanismos da mesma forma, assegurando os mesmos padrões de segurança.
+A necessidade de disponibilizá-los publicamente se torna algo complexo, uma vez que fica a cargo dos clientes conhecer todos os endpoints disponíveis, cada um com documentações e URLs próprias. Além disso, existe a dificuldade de implementação de mecanismos de segurança pelos times internos, como gestão de autenticação e autorização, onde é necessário garantir que todos eles implementem esses mecanismos da mesma forma, assegurando os padrões definidos pela organização.
 
 Ainda podemos expandir esse cenário para o ciclo de vida da aplicação, onde seria necessária a substituição de um desses serviços por uma solução mais moderna, desativando o antigo. O esforço para fazer essa mudança iria muito além dos times de tecnologia responsáveis, levando trabalho adicional para os clientes de integração.
 
