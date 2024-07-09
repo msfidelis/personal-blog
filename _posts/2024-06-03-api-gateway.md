@@ -137,7 +137,7 @@ A capacidade de fazer uma gestão de tráfego entre duas versões do mesmo backe
 
 * [Felipe Madureira](https://twitter.com/madfelps/)
 
-* [Kauê Gatto](https://www.linkedin.com/in/kaue-gatto/)
+* [Kauê Gatto](https://www.linkedin.com/in/-gatto/)
 
 * [André Fernandes](https://x.com/andrenit)
 
