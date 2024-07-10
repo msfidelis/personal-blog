@@ -1,0 +1,30 @@
+%%{init: {'theme':'neutral'}}%%
+graph LR
+    subgraph Contexto de Command
+        A[Comando API] --> B[Command Handler]
+        B --> C[(Modelo de Escrita )]
+    end
+    
+    subgraph Contexto de Query
+        C --> D[Evento]
+        D --> E[Query Handler]
+        E --> F[(Modelo de Leitura)]
+        H[Query API]
+    end
+    
+    subgraph Contexto de Usuário 
+        G[Cliente]
+        G -->|Comando de Escrita| A
+        G -->|Query de Consulta| H
+        H --> F
+        H -->|Resposta da Consulta| G
+    end
+
+style A fill:#F8CECC,stroke:#333,stroke-width:2px
+style B fill:#F8CECC,stroke:#333,stroke-width:2px
+style C fill:#F8CECC,stroke:#333,stroke-width:2px
+style G fill:#FFE6CC,stroke:#333,stroke-width:2px
+style D fill:#E1D5E7,stroke:#333,stroke-width:2px
+style E fill:#E1D5E7,stroke:#333,stroke-width:2px
+style F fill:#E1D5E7,stroke:#333,stroke-width:2px  
+style H fill:#E1D5E7,stroke:#333,stroke-width:2px 
