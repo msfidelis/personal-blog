@@ -5,5 +5,5 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Replicação de Dados
+title: System Design - Sharding e Replicação
 ---
