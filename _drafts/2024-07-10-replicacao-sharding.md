@@ -8,6 +8,44 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Sharding e Hashing Consistente
 ---
 
+# Definindo Sharding
+
+# Escalabilidade e Performance 
+
+Que problemas shardings resolvem? 
+
+<br>
+
+# Estratégias e Aplicações de Sharding
+
+## Vertical e Horizontal Sharding
+
+## Sharding Keys 
+
+## Sharding por Hashing Consistente
+
+## Sharding por Ranges
+
+# Sharding de Dados
+
+# Shardings Computacionais
+
+## Distribuição Por Hashing Consistente
+
+## Serviço de gestão de chaves
+
+<br>
+
+# Problemas Conhecidos
+
+## Hot Partitions
+
+## Balanceamento 
+
+## Extensão do número de shardings
+
+<br>
+
 #### Referencias 
 
 [Sharding pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/sharding)
