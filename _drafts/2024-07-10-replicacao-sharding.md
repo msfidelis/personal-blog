@@ -12,8 +12,11 @@ title: System Design - Sharding e Hashing Consistente
 
 Sharding, ou Partição, é uma técnica de divisão de grandes conjuntos em várias partes de conjuntos menores. Essas partes são cosideradas um shard, ou uma partição, de um todo. Esse todo, é frequentemente associado a dados por ser a abordagem mais comum de utilizar partições, porém não se limita a esse tópico nas disciplinas de engenharia. 
 
+![Sharding Definição](/assets/images/system-design/sharding-definicao.png)
+
 Usando dados como exemplo, cada shard é um subconjunto do banco de dados original e pode ser armazenado em diferentes servidores ou nós de um sistema distribuído. Esta abordagem permite que os dados sejam distribuídos e gerenciados de maneira eficiente, melhorando a escalabilidade, a performance e a disponibilidade do sistema que outrora agruparia e centralizaria todos os dados em um único ponto. 
 
+<br>
 
 # Escalabilidade e Performance 
 
@@ -32,6 +35,27 @@ Sharding pode melhorar a disponibilidade do sistema. Se um servidor que contém 
 ## Sharding Keys 
 
 A shard key é a chave utilizada para determinar em qual shard os dados serão armazenados. A shard key deve ter uma alta cardinalidade para garantir uma distribuição uniforme dos dados, e deve ser baseada em campos frequentemente acessados. 
+
+## Sharding por Ranges
+
+Estabelecer Sharding por ranges é uma estratégia de particionamento de dados onde os dados são divididos em intervalos contínuos baseados em valores das sharding keys. Cada shard contém um intervalo específico de valores, e as consultas são direcionadas ao shard apropriado com base na chave de partição. Esta abordagem é particularmente útil quando os dados podem ser ordenados de forma natural, ou não e as consultas frequentemente envolvem intervalos de valores. 
+
+Imagine que temos uma base de 10.000 usuários que foram ordenados de forma sequencial durante a sua criação. Após supostas análises, foi visto que essa base de dados poderia ser particionada em 3 shards, e inclusive suportar a criação de novos usuários. Se levarmos o aspecto sequencial ao pé da letra, teriamos 2 shards "cheios" e um com capacidade ociosa suficiente para suportar o crescimento de usuários da base. 
+
+![Sharding Range](/assets/images/system-design/sharding-range.png)
+
+Utilizar atributos sequenciais é uma das possibilidades quando olhamos para distribuições baseadas em ranges de valores das sharding keys, esse aspecto pode ser reaproveitado por exemplo por ranges de tempo. Dentro deum microserviço de vendas, poderiamos por exemplo definir o sharding por intervalos de datas, em um exemplo mais direto, imagine que temos uma base de dados para comportar as transações que ocorreram dentro de cada ano. A longo prazo teriamos uma base de dados que seria responsável por agrupar todas as transacões do ano. 
+
+![Sharding Ano](/assets/images/system-design/sharding-ano.png)
+
+Nesse sentido poderiamos aplicar uma outra estratégia que normalmente se aplicam em shardings que é ter vários "tiers" de storage dos dados, deixando opções mais caras e performáticas para o ano corrente e ano anterior em tier "hot", ter um tier intermediário "warm" para anos que ainda tem acesso frequente mas sem a mesma intensidade que os anos acessados em meior volume e uma opção de tier mais barata e menos performática em "cold" para armazenar os dados de vendas de anos muito anteriores que são acessados esporádicamente. 
+
+![Sharding Letras](/assets/images/system-design/sharding-letras.png)
+
+Uma estratégia, não tão efetiva, mas ótima para ilustrar a estratégia de sharding por ranges é ilustrar um exemplo de distribuição de uma base de usuários, clientes ou tenants baseado na inicial. Podemos definir a distribuição dos dados entre intervalos de iniciais das sharding keys, como por exemplo utilizando intervalos de A-E para um shard, F-J para outro, K-N, O-R, S-V e W-Z consecutivamente. Embora seja o exemplo mais simples de ilustrar uma distribuição de dados entre partições, encontramos um dos problemas que o sharding conceitualmente tende a evitar, que são as hot-partitions, ou partições quentes, onde teremos um outlier de uso entre os shards. Para complementar o exemplo, em um caso de distribuição baseada em iniciais de um cliente, podemos presumir por inferência que existem mais Anas, Brunos, Carlos e Danielas do que Wesleys, Yasmins e Ziraldos. Nesse caso, em um curto médio prazo teremos um desbalanceamento de performance muito grande entre a partição 1 e 6, onde a 1 seria superutilizada enquanto a 6 viveria em sub-utilização. 
+
+
+<br>
 
 ## Sharding por Hashing Consistente
 
@@ -108,15 +132,12 @@ Tenant: Acougue-Zona-Oeste, Shard: 0
 Tenant: Acougue-Zona-Norte, Shard: 1
 ```
 
-## Sharding por Ranges
+## Sharding Consistente e Gestão de Chaves
 
-# Sharding de Dados
+![Sharding Key Service](/assets/images/system-design/sharding-hash-consistente-key-service.png)
 
-# Shardings Computacionais
+<br>
 
-## Distribuição Por Hashing Consistente
-
-## Serviço de gestão de chaves
 
 <br>
 
@@ -151,3 +172,5 @@ Tenant: Acougue-Zona-Norte, Shard: 1
 [Shuffle Sharding: Massive and Magical Fault Isolation](https://aws.amazon.com/pt/blogs/architecture/shuffle-sharding-massive-and-magical-fault-isolation/)
 
 [System Design — Consistent Hashing](https://medium.com/must-know-computer-science/system-design-consistent-hashing-f66fa9b75f3f)
+
+[A Crash Course in Database Sharding](https://blog.bytebytego.com/p/a-crash-course-in-database-sharding)
