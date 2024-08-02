@@ -20,13 +20,13 @@ Usando dados como exemplo, cada shard é um subconjunto do banco de dados origin
 
 # Escalabilidade e Performance 
 
-A importância do sharding em sistemas distribuídos se dá principalmente devido à necessidade de lidar com grandes volumes de dados e garantir que o sistema possa escalar horizontalmente em que seria o ponto mais crítico de escala: O volume de dados. 
+A importância do sharding em sistemas distribuídos está principalmente n**a necessidade de lidar com grandes volumes de dados** e garantir que o **sistema possa escalar horizontalmente, um dos pontos mais críticos de escala, que são os databases**.
 
-Ao dividir os dados em múltiplos shards, cada shard pode ser armazenado e gerenciado em servidores diferentes. Isso permite que mais capacidade seja adicionada ao sistema, sem a necessidade de reestruturar a base de dados original.
+Ao dividir os dados em múltiplos shards, **cada shard pode ser armazenado e gerenciado em servidores diferentes**. Isso permite que mais capacidade seja adicionada ao sistema sem a necessidade de reestruturar a base de dados original.
 
-Com os dados divididos em shards menores, as operações de leitura e escrita podem ser distribuídas entre diferentes servidores. Isso reduz a carga em qualquer servidor individual, resultando em tempos de resposta mais rápidos e melhor performance geral.
+Com os dados divididos em shards menores, as **operações de leitura e escrita podem ser distribuídas entre diferentes capacidades computacionais**. Isso **reduz a carga em qualquer servidor individual**, resultando em tempos de resposta mais rápidos e melhor performance geral.
 
-Sharding pode melhorar a disponibilidade do sistema. Se um servidor que contém um shard específico falhar, os outros shards ainda estarão disponíveis, permitindo que o sistema continue a operar com funcionalidades reduzidas, em vez de uma falha total.
+Além disso, **o sharding pode contribuir para a alta disponibilidade do sistema**. Se um servidor que contém **um shard específico falhar, os outros shards ainda estarão disponíveis**, permitindo que o sistema continue a operar com funcionalidades reduzidas, em vez de ocorrer uma falha total.
 
 <br>
 
@@ -34,7 +34,13 @@ Sharding pode melhorar a disponibilidade do sistema. Se um servidor que contém 
 
 ## Sharding Keys 
 
-A shard key é a chave utilizada para determinar em qual shard os dados serão armazenados. A shard key deve ter uma alta cardinalidade para garantir uma distribuição uniforme dos dados, e deve ser baseada em campos frequentemente acessados. 
+Quando pensamos em uma estratégia de particionamento de dados para resolver problemas de escalabilidade, a primeira pergunta que devemos fazer é: **"Particionar baseado em quê?"**. Definir como vamos dividir os dados de um determinado contexto é o passo mais importante, antes de qualquer escolha de tecnologia. **Ao definir uma dimensão de corte para o particionamento, encontramos nossa sharding key**.
+
+A **sharding key é a chave utilizada como critério para determinar como e em qual partição os dados serão armazenados**. A shard key deve ter alta cardinalidade para **garantir uma distribuição uniforme dos dados e deve ser baseada em campos frequentemente acessados, como datas, identificadores, categorias, etc**.
+
+Sharding keys comuns podem incluir as iniciais de um identificador de cliente, o ID de uma entidade, o hash de um valor comum e categorias. Por exemplo, em um sistema financeiro, **é comum dividir a base de clientes entre Pessoas Físicas e Pessoas Jurídicas**. Instituições bancárias podem realizar **shardings baseados em ranges de agências**. Em sistemas de vendas ou logística, **dividir a base por intervalo de datas em que as transações ocorreram** pode ser uma alternativa de escalabilidade, utilizando sharding keys como meses ou anos. Em sistemas multi-tenant, é possível **particionar baseado no hash de um identificador do tenant**.
+
+Existem várias estratégias e aplicações para definir quais sharding keys escolher para a distribuição de dados. Iremos explorar algumas adiante.
 
 ## Sharding por Ranges
 
@@ -60,6 +66,8 @@ Uma estratégia, não tão efetiva, mas ótima para ilustrar a estratégia de sh
 ## Sharding por Hashing Consistente
 
 Sharding por hashing consistente é uma técnica onde uma função de hash é usada para mapear dados para diferentes shards. Em vez de distribuir os dados uniformemente entre os shards, o hashing consistente distribui os dados de maneira a minimizar o número de movimentos de dados quando os shards são adicionados ou removidos. A função hash é aplicada a partir do valor da Sharding Key, e a partir do algoritmo selecionado, o número do shard é retornado com base no hash da sharding key. 
+
+![Hash function](/assets/images/system-design/sharding-hash.png)
 
 ```go
 package main
