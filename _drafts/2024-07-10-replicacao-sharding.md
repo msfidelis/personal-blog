@@ -36,32 +36,38 @@ Além disso, **o sharding pode contribuir para a alta disponibilidade do sistema
 
 Quando pensamos em uma estratégia de particionamento de dados para resolver problemas de escalabilidade, a primeira pergunta que devemos fazer é: **"Particionar baseado em quê?"**. Definir como vamos dividir os dados de um determinado contexto é o passo mais importante, antes de qualquer escolha de tecnologia. **Ao definir uma dimensão de corte para o particionamento, encontramos nossa sharding key**.
 
-A **sharding key é a chave utilizada como critério para determinar como e em qual partição os dados serão armazenados**. A shard key deve ter alta cardinalidade para **garantir uma distribuição uniforme dos dados e deve ser baseada em campos frequentemente acessados, como datas, identificadores, categorias, etc**.
+A **sharding key, ou chave de partição, é a chave utilizada como critério para determinar como e em qual partição os dados serão armazenados**. A shard key deve ter alta cardinalidade para **garantir uma distribuição uniforme dos dados e deve ser baseada em campos frequentemente acessados, como datas, identificadores, categorias, etc**.
 
 Sharding keys comuns podem incluir as iniciais de um identificador de cliente, o ID de uma entidade, o hash de um valor comum e categorias. Por exemplo, em um sistema financeiro, **é comum dividir a base de clientes entre Pessoas Físicas e Pessoas Jurídicas**. Instituições bancárias podem realizar **shardings baseados em ranges de agências**. Em sistemas de vendas ou logística, **dividir a base por intervalo de datas em que as transações ocorreram** pode ser uma alternativa de escalabilidade, utilizando sharding keys como meses ou anos. Em sistemas multi-tenant, é possível **particionar baseado no hash de um identificador do tenant**.
 
 Existem várias estratégias e aplicações para definir quais sharding keys escolher para a distribuição de dados. Iremos explorar algumas adiante.
 
-## Sharding por Ranges
+## Sharding por ranges de iniciais
 
-Estabelecer Sharding por ranges é uma estratégia de particionamento de dados onde os dados são divididos em intervalos contínuos baseados em valores das sharding keys. Cada shard contém um intervalo específico de valores, e as consultas são direcionadas ao shard apropriado com base na chave de partição. Esta abordagem é particularmente útil quando os dados podem ser ordenados de forma natural, ou não e as consultas frequentemente envolvem intervalos de valores. 
+Uma estratégia, não tão efetiva, mas ótima para ilustrar a estratégia de sharding é ilustrar um exemplo de distribuição de uma base de usuários, clientes ou tenants baseado na inicial. Podemos **definir a distribuição dos dados entre intervalos de iniciais das sharding keys**, como por exemplo **utilizando intervalos de A-E para um shard, F-J para outro, K-N, O-R, S-V e W-Z consecutivamente**. 
+
+![Sharding Letras](/assets/images/system-design/sharding-letras.png)
+
+Embora seja o exemplo mais simples de ilustrar uma distribuição de dados entre partições, encontramos um dos problemas que o sharding conceitualmente tende a evitar, **que são as hot-partitions, ou partições quentes, onde teremos um outlier de uso entre os shards**. Para complementar o exemplo, em um caso de distribuição baseada em iniciais de um cliente, **podemos presumir por inferência que existem mais Anas, Brunos, Carlos e Danielas do que Wesleys, Yasmins e Ziraldos**. Nesse caso, em um curto médio prazo teremos um **desbalanceamento de performance** muito grande entre a partição 1 e 6, onde a 1 seria superutilizada enquanto a 6 viveria em sub-utilização.
+
+## Sharding por Ranges de Identificadores
+
+Estabelecer uma estratégia de distribuição onde os dados são divididos baseados em intervalos contínuos de valores da sharding key também é uma estratégia muito comum quando olhamos para o mercado. Uma distribuição sequencial requer um controle maior de governança onde acabamos por ter um fenômeno de "transbordo", pois pode ser traçado um paralelo onde shardings podem estar "cheios" e outros "vazios". 
+
+No mais, a estratégia consiste na ideia em que cada shard contém um intervalo específico de valores, e as consultas são direcionadas ao shard apropriado com base na sharding key. Esta abordagem é particularmente útil quando os dados podem ser ordenados de forma natural, ou não e as consultas frequentemente envolvem intervalos de valores. 
+
+![Sharding Range](/assets/images/system-design/sharding-range.png)
 
 Imagine que temos uma base de 10.000 usuários que foram ordenados de forma sequencial durante a sua criação. Após supostas análises, foi visto que essa base de dados poderia ser particionada em 3 shards, e inclusive suportar a criação de novos usuários. Se levarmos o aspecto sequencial ao pé da letra, teriamos 2 shards "cheios" e um com capacidade ociosa suficiente para suportar o crescimento de usuários da base. 
 
-![Sharding Range](/assets/images/system-design/sharding-range.png)
+## Sharding por Ranges de Datas
 
 Utilizar atributos sequenciais é uma das possibilidades quando olhamos para distribuições baseadas em ranges de valores das sharding keys, esse aspecto pode ser reaproveitado por exemplo por ranges de tempo. Dentro deum microserviço de vendas, poderiamos por exemplo definir o sharding por intervalos de datas, em um exemplo mais direto, imagine que temos uma base de dados para comportar as transações que ocorreram dentro de cada ano. A longo prazo teriamos uma base de dados que seria responsável por agrupar todas as transacões do ano. 
 
 ![Sharding Ano](/assets/images/system-design/sharding-ano.png)
 
 Nesse sentido poderiamos aplicar uma outra estratégia que normalmente se aplicam em shardings que é ter vários "tiers" de storage dos dados, deixando opções mais caras e performáticas para o ano corrente e ano anterior em tier "hot", ter um tier intermediário "warm" para anos que ainda tem acesso frequente mas sem a mesma intensidade que os anos acessados em meior volume e uma opção de tier mais barata e menos performática em "cold" para armazenar os dados de vendas de anos muito anteriores que são acessados esporádicamente. 
-
-![Sharding Letras](/assets/images/system-design/sharding-letras.png)
-
-Uma estratégia, não tão efetiva, mas ótima para ilustrar a estratégia de sharding por ranges é ilustrar um exemplo de distribuição de uma base de usuários, clientes ou tenants baseado na inicial. Podemos definir a distribuição dos dados entre intervalos de iniciais das sharding keys, como por exemplo utilizando intervalos de A-E para um shard, F-J para outro, K-N, O-R, S-V e W-Z consecutivamente. Embora seja o exemplo mais simples de ilustrar uma distribuição de dados entre partições, encontramos um dos problemas que o sharding conceitualmente tende a evitar, que são as hot-partitions, ou partições quentes, onde teremos um outlier de uso entre os shards. Para complementar o exemplo, em um caso de distribuição baseada em iniciais de um cliente, podemos presumir por inferência que existem mais Anas, Brunos, Carlos e Danielas do que Wesleys, Yasmins e Ziraldos. Nesse caso, em um curto médio prazo teremos um desbalanceamento de performance muito grande entre a partição 1 e 6, onde a 1 seria superutilizada enquanto a 6 viveria em sub-utilização. 
-
-
-<br>
+ 
 
 ## Sharding por Hashing Consistente
 
