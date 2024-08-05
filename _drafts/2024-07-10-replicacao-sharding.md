@@ -69,11 +69,15 @@ Utilizar atributos sequenciais é uma das possibilidades quando olhamos para dis
 Nesse sentido poderiamos aplicar uma outra estratégia que normalmente se aplicam em shardings que é ter vários "tiers" de storage dos dados, deixando opções mais caras e performáticas para o ano corrente e ano anterior em tier "hot", ter um tier intermediário "warm" para anos que ainda tem acesso frequente mas sem a mesma intensidade que os anos acessados em meior volume e uma opção de tier mais barata e menos performática em "cold" para armazenar os dados de vendas de anos muito anteriores que são acessados esporádicamente. 
  
 
-## Sharding por Hashing Consistente
+## Sharding por Hashing
 
-Sharding por hashing consistente é uma técnica onde uma função de hash é usada para mapear dados para diferentes shards. Em vez de distribuir os dados uniformemente entre os shards, o hashing consistente distribui os dados de maneira a minimizar o número de movimentos de dados quando os shards são adicionados ou removidos. A função hash é aplicada a partir do valor da Sharding Key, e a partir do algoritmo selecionado, o número do shard é retornado com base no hash da sharding key. 
+O Sharding por Hashing é uma técnica de particionamento de dados ou computação onde uma função hash é aplicada sobre a Shard Key e o resultado é utilizado para decidir onde cada dado será armazenado, ou o cliente será roteado. Essa função converte o valor do atributo em um valor de hash que deve resultar em um número inteiro. O valor de hash é então mapeado para um dos shards disponíveis usando uma operação de módulo (`mod`), que retorna o resto da divisão de um número por outro. Por exemplo, se o valor de hash for 15 e houver 3 shards, a operação `15 % 3` resultará em um mod 0, indicando que o registro deve ser armazenado no shard 0. Caso o valor do hash for 10, a operação `10 % 3`, o modulo retornará 1, o que significa que o cliente será alocado no shard 1. 
 
 ![Hash function](/assets/images/system-design/sharding-hash.png)
+
+#### Exemplo de Balanceamento por Hash Functions
+
+No exemplo, vamos imaginar um sistema multi-tenant que atende vários cenários de negócio. Foi visto que o identificador do tenant seria a melhor shard key para distribuir os clientes de forma total entre os shards. Nesse caso, para descobrir em qual shard o cliente será alocado, podemos aplicar um algoritmo de sha256 para criar uma hash do valor, e em seguida converter o hash para um inteiro. Com base nesse inteiro, aplicamos a função de modulo pelo número de shards disponíveis e o resultado será o shard no qual o tenant será alocado. 
 
 ```go
 package main
@@ -87,10 +91,16 @@ import (
 
 // Calcula o hash SHA-256 do valor do tenant e o converte para um inteiro
 func hashTenant(tenant string) int {
-	tenant = strings.ToLower(tenant) // Converte o valor do tenant para minúsculas
+
+	// Converte o valor do tenant para minúsculas
+	tenant = strings.ToLower(tenant) 
+
+	// Converte a string tenant para um byte slice e calcula o hash.
 	hash := sha256.New()
 	hash.Write([]byte(tenant))
 	hashBytes := hash.Sum(nil)
+
+	// Converte o hash para um número inteiro
 	hashInt := binary.BigEndian.Uint64(hashBytes)
 	
 	// Converte o valor para um valor positivo caso o hashint venha a ser negativo
@@ -102,8 +112,10 @@ func hashTenant(tenant string) int {
 
 // Recebe uma string do tenant e o número de shards, retornando o número do shard correspondente
 func getShardByTenant(tenant string) int {
+	// Número disponível de Shards 
 	numShards := 3
 
+	// Calcula o mod do hash baseado no numero de shards
 	hashValue := hashTenant(tenant)
 	shard := hashValue % numShards
 	return shard
@@ -145,6 +157,16 @@ Tenant: Acougue-Zona-Leste, Shard: 2
 Tenant: Acougue-Zona-Oeste, Shard: 0
 Tenant: Acougue-Zona-Norte, Shard: 1
 ```
+
+Este esquema de distribuição é simples, intuitivo e funciona bem. Ou seja, até que o número de servidores mude. O que acontece se um dos servidores falhar ou ficar indisponível? As chaves precisam ser redistribuídas para a conta do servidor ausente, é claro. O mesmo se aplica se um ou mais servidores novos forem adicionados ao pool;
+
+## Sharding por Hashing Consistente
+
+Sharding por hashing consistente é uma técnica onde uma função de hash é usada para mapear dados para diferentes shards. Em vez de distribuir os dados uniformemente entre os shards, o hashing consistente distribui os dados de maneira a minimizar o número de movimentos de dados quando os shards são adicionados ou removidos. A função hash é aplicada a partir do valor da Sharding Key, e a partir do algoritmo selecionado, o número do shard é retornado com base no hash da sharding key. 
+
+### Algoritmos de Hashing Consistente
+
+
 
 ## Sharding Consistente e Gestão de Chaves
 
