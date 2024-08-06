@@ -20,7 +20,7 @@ Usando dados como exemplo, cada shard é um subconjunto do banco de dados origin
 
 # Escalabilidade e Performance 
 
-A importância do sharding em sistemas distribuídos está principalmente n**a necessidade de lidar com grandes volumes de dados** e garantir que o **sistema possa escalar horizontalmente, um dos pontos mais críticos de escala, que são os databases**.
+A importância do sharding em sistemas distribuídos está principalmente **na necessidade de lidar com grandes volumes de dados** e garantir que o **sistema possa escalar horizontalmente, em um dos pontos mais críticos de escala, que são os databases**.
 
 Ao dividir os dados em múltiplos shards, **cada shard pode ser armazenado e gerenciado em servidores diferentes**. Isso permite que mais capacidade seja adicionada ao sistema sem a necessidade de reestruturar a base de dados original.
 
@@ -71,13 +71,15 @@ Nesse sentido poderiamos aplicar uma outra estratégia que normalmente se aplica
 
 ## Sharding por Hashing
 
-O Sharding por Hashing é uma técnica de particionamento de dados ou computação onde uma função hash é aplicada sobre a Shard Key e o resultado é utilizado para decidir onde cada dado será armazenado, ou o cliente será roteado. Essa função converte o valor do atributo em um valor de hash que deve resultar em um número inteiro. O valor de hash é então mapeado para um dos shards disponíveis usando uma operação de módulo (`mod`), que retorna o resto da divisão de um número por outro. Por exemplo, se o valor de hash for 15 e houver 3 shards, a operação `15 % 3` resultará em um mod 0, indicando que o registro deve ser armazenado no shard 0. Caso o valor do hash for 10, a operação `10 % 3`, o modulo retornará 1, o que significa que o cliente será alocado no shard 1. 
+O Sharding por Hashing é uma técnica de particionamento de dados ou computação onde uma função hash é aplicada sobre a Shard Key e o resultado é utilizado para decidir onde cada dado será armazenado, ou o cliente será roteado. Essa função converte o valor do atributo em um valor de hash que deve resultar em um número inteiro. O valor de hash é então mapeado para um dos shards disponíveis usando uma operação de módulo (`mod`), que retorna o resto da divisão de um número por outro. Por exemplo, se o valor de hash for 15 e houver 3 shards, a operação `15 % 3` resultará em 0, indicando que o registro deve ser armazenado no shard 0. Caso o valor do hash seja 10, a operação `10 % 3` retornará 1, o que significa que o cliente será alocado no shard 1.
 
 ![Hash function](/assets/images/system-design/sharding-hash.png)
 
 #### Exemplo de Balanceamento por Hash Functions
 
-No exemplo, vamos imaginar um sistema multi-tenant que atende vários cenários de negócio. Foi visto que o identificador do tenant seria a melhor shard key para distribuir os clientes de forma total entre os shards. Nesse caso, para descobrir em qual shard o cliente será alocado, podemos aplicar um algoritmo de sha256 para criar uma hash do valor, e em seguida converter o hash para um inteiro. Com base nesse inteiro, aplicamos a função de modulo pelo número de shards disponíveis e o resultado será o shard no qual o tenant será alocado. 
+Vamos imaginar um sistema multi-tenant que atende a vários cenários de negócio. Foi identificado que o identificador do tenant seria a melhor shard key para distribuir os clientes de forma equitativa entre os shards. Nesse caso, para descobrir em qual shard o cliente será alocado, podemos aplicar o algoritmo SHA-256 para criar um hash do valor e, em seguida, converter o hash para um inteiro. Com base nesse inteiro, aplicamos a operação de módulo pelo número de shards disponíveis, e o resultado será o shard no qual o tenant será alocado.
+
+
 
 ```go
 package main
@@ -158,13 +160,18 @@ Tenant: Acougue-Zona-Oeste, Shard: 0
 Tenant: Acougue-Zona-Norte, Shard: 1
 ```
 
-Este esquema de distribuição é simples, intuitivo e funciona bem. Ou seja, até que o número de servidores mude. O que acontece se um dos servidores falhar ou ficar indisponível? As chaves precisam ser redistribuídas para a conta do servidor ausente, é claro. O mesmo se aplica se um ou mais servidores novos forem adicionados ao pool;
+Este esquema de distribuição é simples, intuitivo e funciona bem. Ou seja, até que o número de servidores mude. O que acontece se um dos servidores falhar ou ficar indisponível? As chaves precisam ser redistribuídas para compensar a ausência do servidor, é claro. O mesmo se aplica se um ou mais servidores novos forem adicionados ao pool. Resumindo, sempre que o número de servidores mudar, o resultado da operação de módulo também mudará, o que acarretará em uma perda de referências da distribuição.
+
+![Sharding: Rehash](/assets/images/system-design/sharding-rehash.png)
+
+Em recursos stateless, como por exemplo um shardeamento de recursos computacionais, como servidores de aplicação, essa é uma dificuldade fácil de ser superada. Ou também em aplicações que mantêm dados em estado, mas esses dados possam ser facilmente recriados e reconsistidos, como por exemplo camadas de cache. No entanto, em particionamentos que envolvem dados, essa estratégia passa a apresentar dificuldades com a mudança de servidores, perdendo totalmente o roteamento para o armazenamento de dados original, podendo instantaneamente criar inconsistências. Nesse caso, é necessário um árduo trabalho de redistribuição de dados entre os shards, imediatamente após a escalabilidade horizontal ocorrer. Para estender esse tipo de abordagem de hashing para cenários onde os nodes podem mudar, normalmente adotamos uma estratégia de Hashing Consistente.
+
 
 ## Sharding por Hashing Consistente
 
-Sharding por hashing consistente é uma técnica onde uma função de hash é usada para mapear dados para diferentes shards. Em vez de distribuir os dados uniformemente entre os shards, o hashing consistente distribui os dados de maneira a minimizar o número de movimentos de dados quando os shards são adicionados ou removidos. A função hash é aplicada a partir do valor da Sharding Key, e a partir do algoritmo selecionado, o número do shard é retornado com base no hash da sharding key. 
 
 ### Algoritmos de Hashing Consistente
+
 
 
 
