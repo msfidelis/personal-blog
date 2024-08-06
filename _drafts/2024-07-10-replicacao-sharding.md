@@ -160,14 +160,19 @@ Tenant: Acougue-Zona-Oeste, Shard: 0
 Tenant: Acougue-Zona-Norte, Shard: 1
 ```
 
-Este esquema de distribuição é simples, intuitivo e funciona bem. Ou seja, até que o número de servidores mude. O que acontece se um dos servidores falhar ou ficar indisponível? As chaves precisam ser redistribuídas para compensar a ausência do servidor, é claro. O mesmo se aplica se um ou mais servidores novos forem adicionados ao pool. Resumindo, sempre que o número de servidores mudar, o resultado da operação de módulo também mudará, o que acarretará em uma perda de referências da distribuição.
+Este esquema de distribuição é simples, intuitivo e funciona bem. Ou seja, **até que o número de servidores mude**. **O que acontece se um dos servidores falhar ou ficar indisponível? As chaves precisam ser redistribuídas** para compensar a ausência do servidor, é claro. O mesmo se aplica se um ou mais servidores novos forem adicionados ao pool. Resumindo, **sempre que o número de servidores mudar, o resultado da operação de módulo também mudará**, o que acarretará em uma perda de referências da distribuição.
 
 ![Sharding: Rehash](/assets/images/system-design/sharding-rehash.png)
+> Exemplo de perda de referências entre shardings pelo resultado do modulo
 
-Em recursos stateless, como por exemplo um shardeamento de recursos computacionais, como servidores de aplicação, essa é uma dificuldade fácil de ser superada. Ou também em aplicações que mantêm dados em estado, mas esses dados possam ser facilmente recriados e reconsistidos, como por exemplo camadas de cache. No entanto, em particionamentos que envolvem dados, essa estratégia passa a apresentar dificuldades com a mudança de servidores, perdendo totalmente o roteamento para o armazenamento de dados original, podendo instantaneamente criar inconsistências. Nesse caso, é necessário um árduo trabalho de redistribuição de dados entre os shards, imediatamente após a escalabilidade horizontal ocorrer. Para estender esse tipo de abordagem de hashing para cenários onde os nodes podem mudar, normalmente adotamos uma estratégia de Hashing Consistente.
+Em recursos stateless, como por exemplo um shardeamento de recursos computacionais, como servidores de aplicação, essa é uma dificuldade fácil de ser superada. Ou também em aplicações que mantêm dados em estado, mas esses dados possam ser facilmente recriados e reconsistidos, como por exemplo camadas de cache. No entanto, **em particionamentos que envolvem dados, essa estratégia passa a apresentar dificuldades com a mudança de servidores, perdendo totalmente o roteamento para o armazenamento de dados original**, podendo instantaneamente criar inconsistências. Nesse caso, é necessário um árduo trabalho de redistribuição de dados entre os shards, imediatamente após a escalabilidade horizontal ocorrer. Para estender esse tipo de abordagem de hashing para cenários onde os nodes podem mudar, normalmente adotamos uma estratégia de Hashing Consistente.
+
+<br>
 
 
 ## Sharding por Hashing Consistente
+
+Hashing Consistente é uma técnica de sharding de sistemas distribuídos usada para particionar em sistemas onde a adição ou remoção de servidores (ou shards) é uma tarefa comum. Diferente do sharding por hashing simples, onde a adição ou remoção de um shard pode exigir a redistribuição de muitos dados, o hashing consistente minimiza a quantidade de dados que precisam ser realocados, adicionando mais alguns graus de escalabilidade. 
 
 
 ### Algoritmos de Hashing Consistente
