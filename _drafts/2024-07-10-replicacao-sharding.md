@@ -147,7 +147,8 @@ func main() {
 ```
 
 #### Output
-```
+
+```bash
 Tenant: Petshops-Souza, Shard: 1
 Tenant: Pizzarias-Carvalho, Shard: 2
 Tenant: Mecanica-Dois-Irmaos, Shard: 1
@@ -166,6 +167,176 @@ Este esquema de distribuição é simples, intuitivo e funciona bem. Ou seja, **
 > Exemplo de perda de referências entre shardings pelo resultado do modulo
 
 Em recursos stateless, como por exemplo um shardeamento de recursos computacionais, como servidores de aplicação, essa é uma dificuldade fácil de ser superada. Ou também em aplicações que mantêm dados em estado, mas esses dados possam ser facilmente recriados e reconsistidos, como por exemplo camadas de cache. No entanto, **em particionamentos que envolvem dados, essa estratégia passa a apresentar dificuldades com a mudança de servidores, perdendo totalmente o roteamento para o armazenamento de dados original**, podendo instantaneamente criar inconsistências. Nesse caso, é necessário um árduo trabalho de redistribuição de dados entre os shards, imediatamente após a escalabilidade horizontal ocorrer. Para estender esse tipo de abordagem de hashing para cenários onde os nodes podem mudar, normalmente adotamos uma estratégia de Hashing Consistente.
+
+### Distribuição e os Algoritmos de Hashing
+
+```go
+package main
+
+import (
+	"crypto/md5"
+	"crypto/sha256"
+	"crypto/sha512"
+	"encoding/binary"
+	"fmt"
+	"hash/fnv"
+	"strings"
+)
+
+// Função de hash utilizando SHA-256
+func hashSHA256(tenant string) int {
+	tenant = strings.ToLower(tenant)
+	hash := sha256.New()
+	hash.Write([]byte(tenant))
+	hashBytes := hash.Sum(nil)
+	hashInt := binary.BigEndian.Uint64(hashBytes)
+	return int(hashInt)
+}
+
+// Função de hash utilizando SHA-512
+func hashSHA512(tenant string) int {
+	tenant = strings.ToLower(tenant)
+	hash := sha512.New()
+	hash.Write([]byte(tenant))
+	hashBytes := hash.Sum(nil)
+	hashInt := binary.BigEndian.Uint64(hashBytes)
+	return int(hashInt)
+}
+
+// Função de hash utilizando MD5
+func hashMD5(tenant string) int {
+	tenant = strings.ToLower(tenant)
+	hash := md5.New()
+	hash.Write([]byte(tenant))
+	hashBytes := hash.Sum(nil)
+	hashInt := binary.BigEndian.Uint64(hashBytes)
+	return int(hashInt)
+}
+
+// Função de hash utilizando FNV-1a
+func hashFNV1a(tenant string) int {
+	tenant = strings.ToLower(tenant)
+	hash := fnv.New64a()
+	hash.Write([]byte(tenant))
+	hashInt := hash.Sum64()
+	return int(hashInt)
+}
+
+// Função de hash simples
+func hashSimple(tenant string) int {
+	tenant = strings.ToLower(tenant)
+	var hash int
+	for _, char := range tenant {
+		hash += int(char)
+	}
+	return hash
+}
+
+// Função para obter o shard utilizando o hash escolhido
+func getShardByTenant(tenant string, hashFunc func(string) int, numShards int) int {
+	hashValue := hashFunc(tenant)
+	shard := hashValue % numShards
+
+	if int(shard) < 0 {
+		return -int(shard)
+	}
+	return shard
+}
+
+func main() {
+	// Lista de tenants
+	tenants := []string{
+		"Petshops-Souza",
+		"Pizzarias-Carvalho",
+		"Mecanica-Dois-Irmaos",
+		"Padaria-Estrela-Filial-1",
+		"Padaria-Estrela-Filial-2",
+		"Salão-Beleza-Filial-1",
+		"Salão-Beleza-Filial-2",
+		"Auto-Peças-Sul",
+		"Academia-BoaForma",
+		"Escola-Livre",
+		// ... 
+	}
+
+	// Número de shards
+	numShards := 5
+
+	// Hash functions
+	hashFuncs := map[string]func(string) int{
+		"SHA-256":      hashSHA256,
+		"SHA-512":      hashSHA512,
+		"MD5":          hashMD5,
+		"FNV-1a":       hashFNV1a,
+		"Hash Simples": hashSimple,
+	}
+
+	// Resultado das distribuições
+	distributions := make(map[string][]int)
+
+	// Inicializa as distribuições
+	for name := range hashFuncs {
+		distributions[name] = make([]int, numShards)
+	}
+
+	// Calcula a distribuição dos tenants entre os shards para cada algoritmo de hash
+	for _, tenant := range tenants {
+		for name, hashFunc := range hashFuncs {
+			shard := getShardByTenant(tenant, hashFunc, numShards)
+			distributions[name][shard]++
+		}
+	}
+
+	// Exibe os resultados
+	for name, dist := range distributions {
+		fmt.Printf("Distribuição para %s:\n", name)
+		for i, count := range dist {
+			fmt.Printf("Shard %d: %d tenants\n", i, count)
+		}
+		fmt.Println()
+	}
+}
+```
+
+#### Output
+
+```bash
+ go run main.go
+Distribuição para SHA-512:
+Shard 0: 8 tenants
+Shard 1: 9 tenants
+Shard 2: 12 tenants
+Shard 3: 7 tenants
+Shard 4: 5 tenants
+
+Distribuição para MD5:
+Shard 0: 13 tenants
+Shard 1: 9 tenants
+Shard 2: 4 tenants
+Shard 3: 5 tenants
+Shard 4: 10 tenants
+
+Distribuição para FNV-1a:
+Shard 0: 6 tenants
+Shard 1: 6 tenants
+Shard 2: 6 tenants
+Shard 3: 14 tenants
+Shard 4: 9 tenants
+
+Distribuição para Hash Simples:
+Shard 0: 5 tenants
+Shard 1: 7 tenants
+Shard 2: 9 tenants
+Shard 3: 10 tenants
+Shard 4: 10 tenants
+
+Distribuição para SHA-256:
+Shard 0: 9 tenants
+Shard 1: 7 tenants
+Shard 2: 6 tenants
+Shard 3: 8 tenants
+Shard 4: 11 tenants
+```
 
 <br>
 
