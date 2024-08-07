@@ -172,7 +172,177 @@ Em recursos stateless, como por exemplo um shardeamento de recursos computaciona
 
 ## Sharding por Hashing Consistente
 
-Hashing Consistente é uma técnica de sharding de sistemas distribuídos usada para particionar em sistemas onde a adição ou remoção de servidores (ou shards) é uma tarefa comum. Diferente do sharding por hashing simples, onde a adição ou remoção de um shard pode exigir a redistribuição de muitos dados, o hashing consistente minimiza a quantidade de dados que precisam ser realocados, adicionando mais alguns graus de escalabilidade. 
+Hashing Consistente é uma técnica de sharding de sistemas distribuídos usada para particionar em sistemas onde a adição ou remoção de servidores (ou shards) é uma tarefa comum. Diferente do sharding por hashing simples, onde a adição ou remoção de um shard pode exigir a redistribuição de muitos, senão todos os dados, o hashing consistente minimiza a quantidade de dados que precisam ser realocados, adicionando mais alguns graus de escalabilidade. Importante ressaltar que, por mais que seja minimizado, a redistribuição precisa acontecer, ainda que em menor escala. 
+
+```go
+package main
+
+import (
+	"crypto/sha256"
+	"encoding/binary"
+	"fmt"
+	"sort"
+	"strconv"
+	"strings"
+)
+
+// Representa um nó no anel de hash.
+type Node struct {
+	ID   string
+	Hash uint64
+}
+
+// Representa o hash ring que contém vários nós.
+type ConsistentHashRing struct {
+	Nodes       []Node
+	NumReplicas int
+}
+
+// Cria um novo anel de hash ring.
+func NewConsistentHashRing(numReplicas int) *ConsistentHashRing {
+	return &ConsistentHashRing{
+		Nodes:       []Node{},
+		NumReplicas: numReplicas,
+	}
+}
+
+// Adiciona um novo node ao Hash Ring
+func (ring *ConsistentHashRing) AddNode(nodeID string) {
+	for i := 0; i < ring.NumReplicas; i++ {
+		replicaID := nodeID + strconv.Itoa(i)
+		hash := hashTenant(replicaID)
+		ring.Nodes = append(ring.Nodes, Node{ID: nodeID, Hash: hash})
+	}
+	sort.Slice(ring.Nodes, func(i, j int) bool {
+		return ring.Nodes[i].Hash < ring.Nodes[j].Hash
+	})
+}
+
+// Remove um node existente do Hash Ring
+func (ring *ConsistentHashRing) RemoveNode(nodeID string) {
+	var newNodes []Node
+	for _, node := range ring.Nodes {
+		if node.ID != nodeID {
+			newNodes = append(newNodes, node)
+		}
+	}
+	ring.Nodes = newNodes
+	sort.Slice(ring.Nodes, func(i, j int) bool {
+		return ring.Nodes[i].Hash < ring.Nodes[j].Hash
+	})
+}
+
+// Retorna o node onde o Tenant deverá estar alocado
+func (ring *ConsistentHashRing) GetTenantNode(key string) string {
+	hash := hashTenant(key)
+	idx := sort.Search(len(ring.Nodes), func(i int) bool {
+		return ring.Nodes[i].Hash >= hash
+	})
+
+	// Se o índice estiver fora dos limites, retorna ao primeiro nó
+	if idx == len(ring.Nodes) {
+		idx = 0
+	}
+
+	return ring.Nodes[idx].ID
+}
+
+// Calcula o hash do tenant e a converte para uint64.
+func hashTenant(s string) uint64 {
+	s = strings.ToLower(s)
+	hash := sha256.New()
+	hash.Write([]byte(s))
+	hashBytes := hash.Sum(nil)
+	return binary.BigEndian.Uint64(hashBytes[:8])
+}
+
+func main() {
+	// Cria um novo anel de hash consistente com 3 réplicas por nó.
+	ring := NewConsistentHashRing(3)
+
+	// Adiciona pseudo-nodes ao hash ring
+	ring.AddNode("Shard-00")
+	ring.AddNode("Shard-01")
+	ring.AddNode("Shard-02")
+	ring.AddNode("Shard-03")
+
+	// Lista de Tenants
+	keys := []string{
+		"Petshops-Souza",
+		"Pizzarias-Carvalho",
+		"Mecanica-Dois-Irmaos",
+		"Padaria-Estrela-Filial-1",
+		"Padaria-Estrela-Filial-2",
+		"Padaria-Estrela-Filial-3",
+		"Hortifruti-Oba",
+		"Acougue-Zona-Leste",
+		"Acougue-Zona-Oeste",
+		"Acougue-Zona-Norte",
+	}
+
+	// Distribuição Inicial dos Tenants pelos Nodes
+	for _, key := range keys {
+		node := ring.GetTenantNode(key)
+		fmt.Printf("Tenant: %s, Node: %s\n", key, node)
+	}
+
+	// Remove um nó e exibe a nova distribuição de chaves.
+	ring.RemoveNode("Shard-02")
+	fmt.Println("\nRemovendo Shard-02:\n")
+	for _, key := range keys {
+		node := ring.GetTenantNode(key)
+		fmt.Printf("Tenant: %s, Shard: %s\n", key, node)
+	}
+
+	ring.AddNode("Shard-04")
+	fmt.Println("\nAdicionando Shard-04:\n")
+	for _, key := range keys {
+		node := ring.GetTenantNode(key)
+		fmt.Printf("Tenant: %s, Shard: %s\n", key, node)
+	}
+
+}
+```
+
+```
+❯ go run main.go
+Tenant: Petshops-Souza, Node: Shard-03
+Tenant: Pizzarias-Carvalho, Node: Shard-01
+Tenant: Mecanica-Dois-Irmaos, Node: Shard-02
+Tenant: Padaria-Estrela-Filial-1, Node: Shard-01
+Tenant: Padaria-Estrela-Filial-2, Node: Shard-03
+Tenant: Padaria-Estrela-Filial-3, Node: Shard-02
+Tenant: Hortifruti-Oba, Node: Shard-01
+Tenant: Acougue-Zona-Leste, Node: Shard-02
+Tenant: Acougue-Zona-Oeste, Node: Shard-03
+Tenant: Acougue-Zona-Norte, Node: Shard-01
+
+Removendo Shard-02:
+
+Tenant: Petshops-Souza, Shard: Shard-03
+Tenant: Pizzarias-Carvalho, Shard: Shard-01
+Tenant: Mecanica-Dois-Irmaos, Shard: Shard-00 // Nova movimentação
+Tenant: Padaria-Estrela-Filial-1, Shard: Shard-01
+Tenant: Padaria-Estrela-Filial-2, Shard: Shard-03
+Tenant: Padaria-Estrela-Filial-3, Shard: Shard-00 // Nova movimentação
+Tenant: Hortifruti-Oba, Shard: Shard-01
+Tenant: Acougue-Zona-Leste, Shard: Shard-00 // Nova movimentação
+Tenant: Acougue-Zona-Oeste, Shard: Shard-03
+Tenant: Acougue-Zona-Norte, Shard: Shard-01
+
+Adicionando Shard-04:
+
+Tenant: Petshops-Souza, Shard: Shard-03
+Tenant: Pizzarias-Carvalho, Shard: Shard-01
+Tenant: Mecanica-Dois-Irmaos, Shard: Shard-00
+Tenant: Padaria-Estrela-Filial-1, Shard: Shard-01
+Tenant: Padaria-Estrela-Filial-2, Shard: Shard-03
+Tenant: Padaria-Estrela-Filial-3, Shard: Shard-00
+Tenant: Hortifruti-Oba, Shard: Shard-04 // Nova movimentação
+Tenant: Acougue-Zona-Leste, Shard: Shard-00
+Tenant: Acougue-Zona-Oeste, Shard: Shard-03
+Tenant: Acougue-Zona-Norte, Shard: Shard-01
+```
 
 
 ### Algoritmos de Hashing Consistente
