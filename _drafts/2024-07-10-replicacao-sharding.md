@@ -343,7 +343,10 @@ Shard 4: 11 tenants
 
 ## Sharding por Hashing Consistente
 
-Hashing Consistente é uma técnica de sharding de sistemas distribuídos usada para particionar em sistemas onde a adição ou remoção de servidores (ou shards) é uma tarefa comum. Diferente do sharding por hashing simples, onde a adição ou remoção de um shard pode exigir a redistribuição de muitos, senão todos os dados, o hashing consistente minimiza a quantidade de dados que precisam ser realocados, adicionando mais alguns graus de escalabilidade. Importante ressaltar que, por mais que seja minimizado, a redistribuição precisa acontecer, ainda que em menor escala. 
+O Hashing Consistente é uma técnica de sharding de sistemas distribuídos usada para particionar em sistemas onde a adição ou remoção de servidores (ou shards) é uma tarefa comum. Diferente do sharding por hashing simples, onde a adição ou remoção de um shard pode exigir a redistribuição de muitos, senão todos os dados, o hashing consistente minimiza a quantidade de dados que precisam ser realocados, adicionando mais alguns graus de escalabilidade. Importante ressaltar que, por mais que seja minimizado, a redistribuição precisa acontecer, ainda que em menor escala. 
+
+As representações visuais de hashing consistente normalmente são representadas de forma cíclica, logo sua estrutura de dado central para a distribuição das chaves entre os nós é representada em forma de anel, e é conhecida como anel de hashs, ou hash ring. Dado isso, a implementação da distribuição de uma hash em num nó, na verdade se dá por um range de intervalos do anel, não apenas pelo valor da hash da chave diretamente, o que permite que ao alterar a quantidade de nós, os valores de mod se movimentem pouco.
+
 
 ```go
 package main
