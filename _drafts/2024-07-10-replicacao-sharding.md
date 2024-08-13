@@ -10,75 +10,91 @@ title: System Design - Sharding e Hashing Consistente
 
 # Definindo Sharding
 
-Sharding, ou Partição, é uma técnica de divisão de grandes conjuntos em várias partes de conjuntos menores. Essas partes são cosideradas um shard, ou uma partição, de um todo. Esse todo, é frequentemente associado a dados por ser a abordagem mais comum de utilizar partições, porém não se limita a esse tópico nas disciplinas de engenharia. 
+Sharding, ou Particionamento, é uma técnica de design de sistemas distribuídos utilizada para **dividir grandes conjuntos de dados em várias partes menores**, chamadas de **shards ou partições**. Cada **shard representa uma fração do todo**, permitindo que o **sistema gerencie grandes volumes de dados de forma mais  eficiênte e segura**. Essa técnica é amplamente empregada para **melhorar a [escalabilidade, performance e disponibilidade]() dos sistemas**, especialmente em ambientes onde a quantidade de dados é tão grande que não pode ser gerenciada eficientemente por um único local, servidor, banco de dados ou carga de trabalho. 
+
+O conceito de **sharding não se limita apenas a databases**. Embora seu uso mais comum seja a distribuição de dados, o particionamento pode ser aplicado em várias áreas da engenharia de software, como a distribuição de cargas de trabalho em microserviços, cache distribuído, e até mesmo na segmentação de [tráfego de rede]().
 
 ![Sharding Definição](/assets/images/system-design/sharding-definicao.png)
 
-Usando dados como exemplo, cada shard é um subconjunto do banco de dados original e pode ser armazenado em diferentes servidores ou nós de um sistema distribuído. Esta abordagem permite que os dados sejam distribuídos e gerenciados de maneira eficiente, melhorando a escalabilidade, a performance e a disponibilidade do sistema que outrora agruparia e centralizaria todos os dados em um único ponto. 
+No contexto de bancos de dados, **cada shard é um subconjunto do banco de dados original, que pode ser armazenado em diferentes servidores ou nós de um sistema distribuído**. Essa divisão permite que o sistema distribua e gerencie dados de maneira eficaz, **evitando os gargalos e pontos únicos de falha** que podem ocorrer quando todos os dados são centralizados em um único ponto. Além disso, o sharding facilita a escalabilidade horizontal, onde novos servidores podem ser adicionados para armazenar shards adicionais conforme a quantidade de dados cresce, sem comprometer o desempenho.
+
+Essa técnica também traz a complexidade de manutenção e balanceamento dos shards, além da necessidade de garantir a consistência dos dados entre diferentes shards em escala.
+
 
 <br>
 
 # Escalabilidade e Performance 
 
-A importância do sharding em sistemas distribuídos está principalmente **na necessidade de lidar com grandes volumes de dados** e garantir que o **sistema possa escalar horizontalmente, em um dos pontos mais críticos de escala, que são os databases**.
+A importância do sharding em sistemas distribuídos reside principalmente na **necessidade de lidar com grandes volumes de dados e garantir que o sistema possa escalar horizontalmente**. Um dos pontos mais críticos de escala em sistemas distribuídos é o banco de dados, e o sharding desempenha um papel fundamental nessa área.
 
-Ao dividir os dados em múltiplos shards, **cada shard pode ser armazenado e gerenciado em servidores diferentes**. Isso permite que mais capacidade seja adicionada ao sistema sem a necessidade de reestruturar a base de dados original.
+Ao **dividir os dados em múltiplos shards, cada shard pode ser armazenado e gerenciado em servidores diferentes**. Isso permite que mais capacidade seja adicionada ao sistema sem a necessidade de reestruturar a base de dados original por completo, facilitando a **expansão da infraestrutura** à medida que a demanda aumenta. Essa capacidade de escalabilidade horizontal é importante para **sistemas que precisam crescer continuamente sem comprometer o desempenho ou a integridade dos dados como um todo**.
 
-Com os dados divididos em shards menores, as **operações de leitura e escrita podem ser distribuídas entre diferentes capacidades computacionais**. Isso **reduz a carga em qualquer servidor individual**, resultando em tempos de resposta mais rápidos e melhor performance geral.
+Com os dados divididos em shards menores, as **operações de leitura e escrita podem ser distribuídas entre diferentes recursos computacionais**. Essa distribuição reduz a carga em qualquer servidor individual, resultando em tempos de resposta mais rápidos e uma performance geral melhorada. Além disso, o particionamento dos dados ajuda a evitar gargalos, **permitindo que o sistema mantenha um desempenho consistente mesmo sob altas cargas**.
 
-Além disso, **o sharding pode contribuir para a alta disponibilidade do sistema**. Se um servidor que contém **um shard específico falhar, os outros shards ainda estarão disponíveis**, permitindo que o sistema continue a operar com funcionalidades reduzidas, em vez de ocorrer uma falha total.
+Outro benefício significativo do sharding é a **contribuição para a alta disponibilidade**. **Se um nó de um sistema que contém um shard específico falhar, os outros shards ainda estarão disponíveis, permitindo que o sistema continue a operar com funcionalidades reduzidas**, em vez de enfrentar uma falha total. Essa resiliência é crítica em ambientes de produção onde a disponibilidade contínua é essencial para a experiência do usuário e a integridade dos serviços.
 
 <br>
 
-# Estratégias e Aplicações de Sharding
+# Sharding Keys e Hot Partitions
 
 ## Sharding Keys 
 
-Quando pensamos em uma estratégia de particionamento de dados para resolver problemas de escalabilidade, a primeira pergunta que devemos fazer é: **"Particionar baseado em quê?"**. Definir como vamos dividir os dados de um determinado contexto é o passo mais importante, antes de qualquer escolha de tecnologia. **Ao definir uma dimensão de corte para o particionamento, encontramos nossa sharding key**.
+Quando pensamos em uma estratégia de particionamento de dados para resolver problemas de escalabilidade, a primeira pergunta que devemos fazer é: **"Particionar baseado em quê?"**. **Definir como vamos dividir os dados em um determinado contexto é o passo mais importante**, antes de qualquer escolha de tecnologia. Ao definir uma dimensão de corte para o particionamento, encontramos nossa **sharding key**.
 
-A **sharding key, ou chave de partição, é a chave utilizada como critério para determinar como e em qual partição os dados serão armazenados**. A shard key deve ter alta cardinalidade para **garantir uma distribuição uniforme dos dados e deve ser baseada em campos frequentemente acessados, como datas, identificadores, categorias, etc**.
+A **sharding key**, ou **chave de partição**, é o **critério utilizado para determinar como e em qual partição os dados serão armazenados**. A escolha dessa chave **deve ser pensada para garantir uma distribuição eficiente e balanceada dos dados entre os shards**. Uma sharding key ideal deve ter alta cardinalidade, o que significa que ela deve ser capaz de **gerar um grande número de valores únicos para garantir uma distribuição uniforme dos dados**. Além disso, a sharding key deve ser **baseada em campos que são frequentemente acessados nas consultas, como datas, identificadores, categorias, entre outros**.
 
-Sharding keys comuns podem incluir as iniciais de um identificador de cliente, o ID de uma entidade, o hash de um valor comum e categorias. Por exemplo, em um sistema financeiro, **é comum dividir a base de clientes entre Pessoas Físicas e Pessoas Jurídicas**. Instituições bancárias podem realizar **shardings baseados em ranges de agências**. Em sistemas de vendas ou logística, **dividir a base por intervalo de datas em que as transações ocorreram** pode ser uma alternativa de escalabilidade, utilizando sharding keys como meses ou anos. Em sistemas multi-tenant, é possível **particionar baseado no hash de um identificador do tenant**.
+Sharding keys comuns podem incluir as i**niciais de um identificador de cliente**, o **ID de uma entidade**, o **hash de um valor comum**, ou **categorias específicas**. Por exemplo, em um sistema financeiro, **é comum dividir a base de clientes entre Pessoas Físicas e Pessoas Jurídicas**. Instituições bancárias podem **realizar sharding baseado em ranges de agências**. Em sistemas de vendas ou logística, uma abordagem comum é **dividir a base por intervalos de datas em que as transações ocorreram**, utilizando sharding keys como meses ou anos. Em sistemas multi-tenant, é possível particionar com base no hash de um identificador do tenant, garantindo que os dados de cada tenant sejam armazenados de forma isolada e eficiente.
 
-Existem várias estratégias e aplicações para definir quais sharding keys escolher para a distribuição de dados. Iremos explorar algumas adiante.
+Existem várias estratégias e aplicações para definir quais sharding keys escolher para a distribuição de dados. A escolha da estratégia correta depende do contexto e das características específicas do sistema. Nos próximos tópicos, exploraremos algumas dessas estratégias em mais detalhes.
 
 ## Hot Partitions
 
-As hot partitions são problemas que ocorrem mediante a má distribuição de dados e alocações entre as partições de um sistema. 
+As **Hot partitions são problemas que ocorrem devido à má distribuição de dados e alocações entre as partições de um sistema**. Esse fenômeno ocorre quando **uma ou mais partições recebem uma carga de trabalho desproporcionalmente alta em comparação com as outras**, resultando em um desempenho degradado.
 
-Vamos elaborar mais um caso hipotético em nosso sistema multi-tenant, onde comportamos em média 300 clientes distribuídos entre 10 partições, o que por inferência podemos presumir que cada uma das partições comportaria 30 clientes, e 10% do uso, se imaginarmos o melhor dos casos. Desses 300 clientes totais, temos 3 principais clientes que representam juntos o uso de 50% de todo o sistema. Por algum calculo de hash, imagine que esses 3 clientes são alocados na mesma partição. Isso acarretaria de uma única fatia do nosso shard representar mais de 50% do uso total, enquanto as outras 9 estariam sub utilizadas. Isso ilustraria o problema de uma hot partition. 
+Vamos elaborar um caso hipotético de um sistema multi-tenant, onde comportamos em média 300 clientes distribuídos entre 10 partições. Idealmente, cada partição comportaria cerca de 30 clientes, representando aproximadamente 10% do uso total do sistema, assumindo uma distribuição equilibrada. No entanto, suponha que três desses 300 clientes principais representem juntos 50% de todo o uso do sistema. Agora, **imagine que, devido a um cálculo de hash, esses três clientes sejam alocados na mesma partição**. Isso faria com que uma única partição representasse mais de 50% do uso total, enquanto as outras nove partições ficariam subutilizadas. **Esse cenário ilustra o problema de uma hot partition**.
 
-Como a forma de controle de distribuição normalmente é realizado mediante a alguma operação lógica e matemática efetuada sobre a chave de partição, e não diretamente pelo tamanho e padrão de uso dos dados alocados nas mesmas, pode acabar ocorrendo o fenômeno onde uma ou mais partições de dados recebam uma quantidade desproporcional de tráfego ou carga de trabalho em relação às outras. Essas partições sobrecarregadas podem causar lentidão nas operações e, em casos extremos, levar a falhas no sistema. Além disso, enquanto uma partição pode estar sofrendo com excesso de tráfego, outras podem estar subutilizadas, resultando em uma utilização ineficiente dos recursos disponíveis. 
+Como a distribuição dos dados entre as partições geralmente é **realizada por meio de operações lógicas e matemáticas efetuadas sobre a chave de partição**, **e não diretamente com base no tamanho ou padrão de uso dos dados**, pode ocorrer o fenômeno onde uma ou mais partições recebem uma quantidade desproporcional de tráfego ou carga de trabalho. **Essas partições sobrecarregadas podem causar lentidão nas operações e, em casos extremos, levar a falhas graves no sistema**. Enquanto isso, as outras partições, estando subutilizadas, resultam em uma utilização ineficiente dos recursos disponíveis.
 
-Técnicas como o uso de chaves de particionamento aleatórias, pré-partitionamento, capacidade de isolar sharding keys específicas em partições isoladas e caching inteligente podem ajudar a evitar que essas partições se tornem um gargalo no desempenho do sistema.
+Para mitigar o problema de hot partitions, algumas técnicas podem ser aplicadas, **como o uso de chaves de particionamento aleatórias**, que ajudam a distribuir a carga de forma mais uniforme. Outra abordagem é o **pré-partitionamento, onde a distribuição dos dados é planejada antecipadamente com base em padrões de uso conhecidos**. Adicionalmente, **a capacidade de isolar sharding keys específicas em partições dedicadas pode ser útil** em cenários onde certos clientes ou dados geram tráfego significativamente maior. Por fim, o uso de caching inteligente pode aliviar a carga sobre as partições mais utilizadas, **redistribuindo as operações de leitura e melhorando o desempenho geral do sistema**.
+
+# Estratégias e Aplicações de Sharding
 
 ## Sharding por ranges de iniciais
 
-Uma estratégia, não tão efetiva, mas ótima para ilustrar a estratégia de sharding é ilustrar um exemplo de distribuição de uma base de usuários, clientes ou tenants baseado na inicial. Podemos **definir a distribuição dos dados entre intervalos de iniciais das sharding keys**, como por exemplo **utilizando intervalos de A-E para um shard, F-J para outro, K-N, O-R, S-V e W-Z consecutivamente**. 
+Uma estratégia, embora não tão eficaz, mas útil para ilustrar o conceito de sharding, é a distribuição de uma base de usuários, clientes ou tenants baseada nas iniciais de um identificador. Podemos definir a distribuição dos dados entre intervalos de iniciais das **sharding keys**, como, por exemplo, **utilizando intervalos de A-E para um shard, F-J para outro, K-N, O-R, S-V e W-Z consecutivamente**.
 
 ![Sharding Letras](/assets/images/system-design/sharding-letras.png)
 
-Embora seja o exemplo mais simples de ilustrar uma distribuição de dados entre partições, encontramos um dos problemas que o sharding conceitualmente tende a evitar, **que são as hot-partitions, ou partições quentes, onde teremos um outlier de uso entre os shards**. Para complementar o exemplo, em um caso de distribuição baseada em iniciais de um cliente, **podemos presumir por inferência que existem mais Anas, Brunos, Carlos e Danielas do que Wesleys, Yasmins e Ziraldos**. Nesse caso, em um curto médio prazo teremos um **desbalanceamento de performance** muito grande entre a partição 1 e 6, onde a 1 seria superutilizada enquanto a 6 viveria em sub-utilização.
+Embora este seja um exemplo simples e fácil de compreender para ilustrar a distribuição de dados entre partições, ele também revela um dos problemas que o sharding busca evitar: as **hot partitions** ou partições quentes. Esse problema ocorre quando há um uso desproporcional entre os shards, resultando em um desequilíbrio de carga.
+
+Para complementar o exemplo, em um cenário de distribuição baseada nas iniciais dos nomes dos clientes, **podemos inferir que existem mais Anas, Brunos, Carlos e Danielas do que Wesleys, Yasmins e Ziraldos**. Nesse caso, a partição responsável por armazenar os dados de clientes com iniciais de A-E (partição 1) seria muito mais utilizada em comparação com a partição responsável por W-Z (partição 6). Isso resultaria em um **desbalanceamento de performance** significativo, onde a partição 1 estaria sobrecarregada perante a uma hot partition, enquanto a partição 6 estaria quase que completamente subutilizada.
+
+Este exemplo demonstra a importância de escolher uma **sharding key** que promova uma distribuição equilibrada dos dados para evitar gargalos e garantir o desempenho eficiente do sistema.
 
 ## Sharding por Ranges de Identificadores
 
-Estabelecer uma estratégia de distribuição onde os dados são divididos baseados em intervalos contínuos de valores da sharding key também é uma estratégia muito comum quando olhamos para o mercado. Uma distribuição sequencial requer um controle maior de governança onde acabamos por ter um fenômeno de "transbordo", pois pode ser traçado um paralelo onde shardings podem estar "cheios" e outros "vazios". 
+Estabelecer uma estratégia de distribuição onde os dados são divididos com base em intervalos contínuos de valores da **sharding key** é uma abordagem comum no mercado. **Uma distribuição sequencial requer um controle maior de governança**, pois pode resultar em um **fenômeno de "transbordo"**, onde alguns **shards podem ficar "cheios" enquanto outros permanecem "vazios"** ou subutilizados.
 
-No mais, a estratégia consiste na ideia em que cada shard contém um intervalo específico de valores, e as consultas são direcionadas ao shard apropriado com base na sharding key. Esta abordagem é particularmente útil quando os dados podem ser ordenados de forma natural, ou não e as consultas frequentemente envolvem intervalos de valores. 
+Essa estratégia consiste na ideia de que cada **shard contém um intervalo específico de valores**, e as consultas são direcionadas ao shard apropriado com base na **sharding key**. Esta abordagem é particularmente útil quando **os dados podem ser ordenados de forma natural e as consultas frequentemente envolvem intervalos de valores**.
 
 ![Sharding Range](/assets/images/system-design/sharding-range.png)
 
-Imagine que temos uma base de 10.000 usuários que foram ordenados de forma sequencial durante a sua criação. Após supostas análises, foi visto que essa base de dados poderia ser particionada em 3 shards, e inclusive suportar a criação de novos usuários. Se levarmos o aspecto sequencial ao pé da letra, teriamos 2 shards "cheios" e um com capacidade ociosa suficiente para suportar o crescimento de usuários da base. 
+Imagine que temos uma base de 10.000 usuários que foram ordenados de forma sequencial durante a sua criação. Após análises, **foi determinado que essa base de dados poderia ser particionada em 3 shards**, cada um contendo um **intervalo específico de identificadores de usuários**. Além disso, essa estratégia **deveria suportar a criação de novos usuários**. Se levarmos o aspecto sequencial ao pé da letra, poderíamos acabar com dois shards "cheios" e um com capacidade ociosa suficiente para suportar o crescimento futuro da base de usuários.
 
-## Sharding por Ranges de Datas
+No entanto, **esse tipo de particionamento pode levar a problemas de balanceamento de carga**. Se a distribuição dos valores não for uniforme, **alguns shards podem atingir sua capacidade máxima enquanto outros permanecem subutilizados**, criando ineficiências e possíveis gargalos no sistema. Portanto, ao utilizar sharding por ranges de identificadores, é obrigatório monitorar e ajustar a distribuição conforme o sistema cresce para evitar esses ocasionais problemas para garantir uma performance consistente entre todos os shards.
 
-Utilizar atributos sequenciais é uma das possibilidades quando olhamos para distribuições baseadas em ranges de valores das sharding keys, esse aspecto pode ser reaproveitado por exemplo por ranges de tempo. Dentro deum microserviço de vendas, poderiamos por exemplo definir o sharding por intervalos de datas, em um exemplo mais direto, imagine que temos uma base de dados para comportar as transações que ocorreram dentro de cada ano. A longo prazo teriamos uma base de dados que seria responsável por agrupar todas as transacões do ano. 
+
+## Sharding por Ranges de Datas e Tiers de Storage
+
+Utilizar atributos sequenciais é uma das possibilidades ao definir distribuições baseadas em ranges de valores das **sharding keys**. Esse aspecto pode ser aproveitado, por exemplo, em **sharding por intervalos de tempo**. Dentro de um hipotético sistema de vendas, **poderíamos definir o sharding com base em intervalos de datas**. Em um exemplo mais direto, imagine que temos uma base de dados projetada para armazenar as transações que ocorreram dentro de cada ano. A longo prazo, isso resultaria em uma base de dados responsável por agrupar todas as transações de um determinado ano.
 
 ![Sharding Ano](/assets/images/system-design/sharding-ano.png)
 
-Nesse sentido poderiamos aplicar uma outra estratégia que normalmente se aplicam em shardings que é ter vários "tiers" de storage dos dados, deixando opções mais caras e performáticas para o ano corrente e ano anterior em tier "hot", ter um tier intermediário "warm" para anos que ainda tem acesso frequente mas sem a mesma intensidade que os anos acessados em meior volume e uma opção de tier mais barata e menos performática em "cold" para armazenar os dados de vendas de anos muito anteriores que são acessados esporádicamente. 
- 
+Nessa abordagem, **poderíamos aplicar uma outra estratégia comum em sharding: a utilização de diferentes "tiers" de armazenamento para os dados**. Essa estratégia envolve **categorizar os dados em camadas de armazenamento com diferentes níveis de desempenho e custo**. Por exemplo, os dados do ano corrente e do ano anterior poderiam ser armazenados em um **tier "hot"**, utilizando opções de armazenamento mais caras e performáticas, para garantir acesso rápido e eficiente. Para os anos que ainda têm acesso frequente, mas sem a mesma intensidade dos anos mais recentes, um **tier intermediário "warm"** poderia ser utilizado. Finalmente, para os dados de vendas de anos muito anteriores, que são acessados esporadicamente, poderíamos utilizar um **tier "cold"**, que oferece uma opção de armazenamento mais barata e menos performática.
 
+Essa combinação de sharding por intervalos de datas com tiers de armazenamento permite não apenas uma distribuição eficiente dos dados, mas também uma **otimização de custos e desempenho, adaptando os recursos de acordo com a frequência de acesso e a importância dos dados ao longo do tempo**.
+
+ 
 ## Sharding por Hashing
 
 O Sharding por Hashing é uma técnica de particionamento de dados ou computação onde uma função hash é aplicada sobre a Shard Key e o resultado é utilizado para decidir onde cada dado será armazenado, ou o cliente será roteado. Essa função converte o valor do atributo em um valor de hash que deve resultar em um número inteiro. O valor de hash é então mapeado para um dos shards disponíveis usando uma operação de módulo (`mod`), que retorna o resto da divisão de um número por outro. Por exemplo, se o valor de hash for 15 e houver 3 shards, a operação `15 % 3` resultará em 0, indicando que o registro deve ser armazenado no shard 0. Caso o valor do hash seja 10, a operação `10 % 3` retornará 1, o que significa que o cliente será alocado no shard 1.
@@ -89,6 +105,20 @@ O Sharding por Hashing é uma técnica de particionamento de dados ou computaç�
 
 Vamos imaginar um sistema multi-tenant que atende a vários cenários de negócio. Foi identificado que o identificador do tenant seria a melhor shard key para distribuir os clientes de forma equitativa entre os shards. Nesse caso, para descobrir em qual shard o cliente será alocado, podemos aplicar o algoritmo SHA-256 para criar um hash do valor e, em seguida, converter o hash para um inteiro. Com base nesse inteiro, aplicamos a operação de módulo pelo número de shards disponíveis, e o resultado será o shard no qual o tenant será alocado.
 
+
+## Sharding por Hashing
+
+O sharding por hashing é uma **técnica de particionamento de dados ou computação onde uma função hash é aplicada sobre a shard key** para decidir onde cada dado será armazenado ou para onde o cliente será roteado. Essa função **converte o valor do atributo, ou sharding key, em um valor de hash, que é então mapeado para um dos shards disponíveis** utilizando uma operação de módulo (`mod`), que retorna o resto da divisão de um número por outro. 
+
+Por exemplo, se o valor de hash for 15 e houver 3 shards, a operação `15 % 3` resultará em 0, indicando que o registro deve ser armazenado no shard 0. Caso o valor do hash seja 10, a operação `10 % 3` retornará 1, o que significa que o cliente será alocado no shard 1.
+
+![Hash function](/assets/images/system-design/sharding-hash.png)
+
+#### Exemplo de Balanceamento por Hash Functions
+
+Vamos imaginar um sistema multi-tenant que atende a vários cenários de negócio. Foi identificado que o identificador do tenant seria a melhor **shard key** para distribuir os clientes de forma equitativa entre os shards. Nesse caso, para **determinar em qual shard o cliente será alocado, podemos aplicar o algoritmo SHA-256 para gerar um hash do valor do identificador**. Em seguida, **o hash é convertido para um número inteiro. Com base nesse inteiro, aplicamos a operação de módulo pelo número de shards disponíveis**, e o resultado indicará o shard no qual o tenant será alocado.
+
+Essa abordagem de sharding por hashing é especialmente útil para evitar hot partitions, uma vez que a função hash tende a distribuir os dados de forma uniforme entre os shards. Além disso, a simplicidade da operação de módulo torna esse método eficiente e fácil de implementar, mesmo em sistemas de grande escala.
 
 
 ```go
@@ -171,12 +201,15 @@ Tenant: Acougue-Zona-Oeste, Shard: 0
 Tenant: Acougue-Zona-Norte, Shard: 1
 ```
 
-Este esquema de distribuição é simples, intuitivo e funciona bem. Ou seja, **até que o número de servidores mude**. **O que acontece se um dos servidores falhar ou ficar indisponível? As chaves precisam ser redistribuídas** para compensar a ausência do servidor, é claro. O mesmo se aplica se um ou mais servidores novos forem adicionados ao pool. Resumindo, **sempre que o número de servidores mudar, o resultado da operação de módulo também mudará**, o que acarretará em uma perda de referências da distribuição.
+Este esquema de distribuição é simples, intuitivo e funciona bem. Ou seja, **até que o número de servidores mude**. **O que acontece se um dos servidores falhar ou ficar indisponível? As chaves precisam ser redistribuídas** para compensar a ausência do servidor, naturalmente. O mesmo se aplica se um ou mais servidores novos forem adicionados ao pool. Resumindo, **sempre que o número de servidores mudar, o resultado da operação de módulo também mudará**, o que acarretará em uma perda de referências na distribuição dos dados.
 
 ![Sharding: Rehash](/assets/images/system-design/sharding-rehash.png)
-> Exemplo de perda de referências entre shardings pelo resultado do modulo
+> Exemplo de perda de referências entre shards devido à mudança no resultado do módulo
 
-Em recursos stateless, como por exemplo um shardeamento de recursos computacionais, como servidores de aplicação, essa é uma dificuldade fácil de ser superada. Ou também em aplicações que mantêm dados em estado, mas esses dados possam ser facilmente recriados e reconsistidos, como por exemplo camadas de cache. No entanto, **em particionamentos que envolvem dados, essa estratégia passa a apresentar dificuldades com a mudança de servidores, perdendo totalmente o roteamento para o armazenamento de dados original**, podendo instantaneamente criar inconsistências. Nesse caso, é necessário um árduo trabalho de redistribuição de dados entre os shards, imediatamente após a escalabilidade horizontal ocorrer. Para estender esse tipo de abordagem de hashing para cenários onde os nodes podem mudar, normalmente adotamos uma estratégia de Hashing Consistente.
+Em recursos **stateless**, como, por exemplo, um shardeamento de recursos computacionais, como servidores de aplicação, essa dificuldade é fácil de superar. Da mesma forma, em aplicações que mantêm dados em estado, mas que podem ser facilmente recriados e reconsistidos, como camadas de cache, o impacto é menor. No entanto, **em particionamentos que envolvem dados persistentes, essa estratégia começa a apresentar sérios desafios com a mudança de servidores, perdendo totalmente o roteamento para o armazenamento de dados original** e potencialmente criando inconsistências instantâneas. 
+
+Nesse cenário, é necessário um árduo trabalho de redistribuição de dados entre os shards, que deve ocorrer imediatamente após qualquer alteração na escalabilidade horizontal. Para mitigar esse problema em cenários onde os nodes podem mudar, a estratégia de Hashing Consistente é frequentemente adotada.
+
 
 ### Distribuição e os Algoritmos de Hashing
 
@@ -350,18 +383,17 @@ Shard 4: 11 tenants
 
 <br>
 
-
 ## Sharding por Hashing Consistente
 
-O Hashing Consistente **é uma técnica de sharding de sistemas distribuídos usada para particionar em sistemas onde a adição ou remoção de servidores (ou shards) é uma tarefa comum**. Diferente do sharding por hashing simples, onde a adição ou remoção de um shard pode exigir a redistribuição de muitos, senão todos os dados, **o hashing consistente minimiza a quantidade de dados que precisam ser realocados**, adicionando mais alguns graus de escalabilidade na solução. Importante ressaltar que, **por mais que seja minimizado, a redistribuição precisa acontecer, ainda que em menor escala**. 
+O Hashing Consistente **é uma técnica de sharding em sistemas distribuídos usada para particionar dados em ambientes onde a adição ou remoção de servidores (ou shards) é uma tarefa comum**. Diferentemente do sharding por hashing simples, onde a adição ou remoção de um shard pode exigir a redistribuição de muitos, senão de todos os dados, **o hashing consistente minimiza a quantidade de dados que precisam ser realocados**, proporcionando mais escalabilidade à solução. É importante ressaltar que, **embora a redistribuição seja minimizada, ela ainda ocorre, porém em uma escala muito menor**.
 
-As representações visuais de **hashing consistente normalmente são representadas de forma cíclica**, logo sua estrutura de dado central para a distribuição das chaves entre os nós é conceituada em forma de anel, **e é conhecida como anel de hashs**, ou **hash ring**. Dado isso, a implementação da distribuição de uma hash em num nó, na verdade **se dá por um range de intervalos do anel**, não apenas pelo valor da hash da chave diretamente, o que permite que ao alterar a quantidade de nós, os valores de mod se movimentem pouco.
+As representações visuais de **hashing consistente são geralmente ilustradas de forma cíclica**, e a estrutura de dados central para a distribuição das chaves entre os nós é conceituada como um anel, **conhecido como "hash ring"**. A **distribuição de uma hash em um nó ocorre, na verdade, por um intervalo de valores dentro do anel**, e não diretamente pelo valor da hash da chave. Isso permite que, **ao alterar a quantidade de nós, os valores resultantes do cálculo de módulo mudem muito pouco, reduzindo a necessidade de redistribuição de dados**.
 
-Se usássemos uma abordagem tradicional de hashing para distribuir os dados dos tenants entre os servidores, toda vez que adicionássemos ou removêssemos um servidor, muitos dados precisariam ser redistribuídos, o que pode ser caro e demorado.
+Se utilizássemos uma abordagem tradicional de hashing para distribuir os dados dos tenants entre os servidores, toda vez que adicionássemos ou removêssemos um servidor, muitos dados precisariam ser redistribuídos, o que pode ser caro e demorado.
 
-Imagine um círculo que representa todos os possíveis valores de hash, cada nó de servidor é mapeado para um ponto nesse círculo, e cada tenant é mapeado para um ponto no círculo usando uma função de hash. Logo, os dados de um tenant são armazenados no servidor que aparece primeiro no sentido horário a partir do ponto onde o tenant foi mapeado. Caso o o anel seja composto de numeros incrementais, caso o limite de hash exceda, a posição retona para o marco 0 do circulo e dos possiveis valores hash, "dando uma volta" no hash ring. 
+Voltamos para a o exemplo hipotético de um sistema de sharding multi-tentant. **Imagine um círculo que representa todos os possíveis valores de hash**. **Cada nó de servidor é mapeado para um ponto nesse círculo, e cada tenant é mapeado para um ponto no círculo** usando uma função de hash. Os dados de um tenant **são armazenados no servidor que aparece primeiro no sentido horário a partir do ponto onde o tenant foi mapeado**. Caso o anel seja composto de números incrementais, se o valor da hash exceder o limite, a posição **retorna para o marco 0 do círculo, "dando uma volta"** no hash ring.
 
-Nesse caso, quando um novo nó é adicionado, ele também é mapeado para algum ponto desse circulo, sendo nessessária a redistribuição apenas dos valores que estiverem entre o novo servidor e o próximo servidor no círculo, o restante podem permanecer onde estavam previamente. O mesmo acontece com a remoção de um nó, onde seus dados deverão ser transferidos para o próximo nó no sentido horário no círculo, minimizando a também a redistribuição.
+Nesse caso, quando um novo nó é adicionado, ele também é mapeado para um ponto específico desse círculo. Somente os dados que estão entre o novo nó e o próximo nó no sentido horário precisam ser redistribuídos, enquanto o restante pode permanecer onde estava. O mesmo ocorre com a remoção de um nó: seus dados devem ser transferidos para o próximo nó no sentido horário no círculo, minimizando a redistribuição e mantendo a integridade dos dados de forma eficiente.
 
 
 ```go
@@ -534,18 +566,19 @@ Tenant: Acougue-Zona-Oeste, Shard: Shard-03
 Tenant: Acougue-Zona-Norte, Shard: Shard-01
 ```
 
-
-### Algoritmos de Hashing Consistente
-
 <br>
 
 ## Sharding por Hashing e Gestão de Chaves
 
-Uma forma de implementação de um sharding baseado em hashing é tratar a distribuição e identificação da partição de uma forma cadastral, sendo necessárias implementações adicionais de arquitetura. A parte ótima de um algoritmo de hashing para distribuição da carga é que o calculo é geralmente, computacionalmente muito barato, porém em caso de redistribuição é um case muito caro. Podemos presumir uma arquitetura baseada em hashing onde a distribuição é executada somente na criação de uma nova sharding key, e a consulta é realizada através de uma API de consulta. 
+Uma forma de implementar um sharding baseado em hashing é **tratar a distribuição e identificação da partição de forma cadastral**, o que requer implementações adicionais na arquitetura do sistema. A principal vantagem de um algoritmo de hashing para distribuição de carga é que o cálculo é geralmente muito barato em termos computacionais. No entanto, em caso de redistribuição, o processo pode se tornar extremamente custoso. 
+
+Podemos imaginar uma arquitetura baseada em hashing onde a distribuição é executada apenas no momento da criação de uma nova **sharding key**, e as consultas subsequentes são realizadas por meio de uma API de consulta específica.
 
 ![Sharding Key Service](/assets/images/system-design/sharding-hash-consistente-key-service.png)
 
-Esse tipo de estratégia, por mais que necessite de engenharia, pode ser utilizada para gerenciar manualmente a distribuição clientes e usuários entre as partições, permitindo inclusive o isolamento de algum cliente que seja o gerador de uma hot partition em um shard segregado pra ele, isolando usuários intensos de um sistema em infraestruturas dedicadas. 
+Esse tipo de estratégia, embora exija um maior esforço de engenharia, **permite um gerenciamento mais manual e controlado da distribuição de clientes e usuários entre as partições**. Além disso, ela possibilita o isolamento de clientes que geram hot partitions, alocando-os em shards segregados. Dessa forma, usuários que consomem muitos recursos podem ser isolados em infraestruturas dedicadas, prevenindo que seu impacto afete o desempenho geral do sistema.
+
+Essa arquitetura por exigir uma abordagem mais manual, também permite a implementação de demais técnicas de design, como implementação de caching, balancemento de carga, replicação e etc. 
 
 <br>
 
