@@ -42,6 +42,16 @@ Sharding keys comuns podem incluir as iniciais de um identificador de cliente, o
 
 Existem várias estratégias e aplicações para definir quais sharding keys escolher para a distribuição de dados. Iremos explorar algumas adiante.
 
+## Hot Partitions
+
+As hot partitions são problemas que ocorrem mediante a má distribuição de dados e alocações entre as partições de um sistema. 
+
+Vamos elaborar mais um caso hipotético em nosso sistema multi-tenant, onde comportamos em média 300 clientes distribuídos entre 10 partições, o que por inferência podemos presumir que cada uma das partições comportaria 30 clientes, e 10% do uso, se imaginarmos o melhor dos casos. Desses 300 clientes totais, temos 3 principais clientes que representam juntos o uso de 50% de todo o sistema. Por algum calculo de hash, imagine que esses 3 clientes são alocados na mesma partição. Isso acarretaria de uma única fatia do nosso shard representar mais de 50% do uso total, enquanto as outras 9 estariam sub utilizadas. Isso ilustraria o problema de uma hot partition. 
+
+Como a forma de controle de distribuição normalmente é realizado mediante a alguma operação lógica e matemática efetuada sobre a chave de partição, e não diretamente pelo tamanho e padrão de uso dos dados alocados nas mesmas, pode acabar ocorrendo o fenômeno onde uma ou mais partições de dados recebam uma quantidade desproporcional de tráfego ou carga de trabalho em relação às outras. Essas partições sobrecarregadas podem causar lentidão nas operações e, em casos extremos, levar a falhas no sistema. Além disso, enquanto uma partição pode estar sofrendo com excesso de tráfego, outras podem estar subutilizadas, resultando em uma utilização ineficiente dos recursos disponíveis. 
+
+Técnicas como o uso de chaves de particionamento aleatórias, pré-partitionamento, capacidade de isolar sharding keys específicas em partições isoladas e caching inteligente podem ajudar a evitar que essas partições se tornem um gargalo no desempenho do sistema.
+
 ## Sharding por ranges de iniciais
 
 Uma estratégia, não tão efetiva, mas ótima para ilustrar a estratégia de sharding é ilustrar um exemplo de distribuição de uma base de usuários, clientes ou tenants baseado na inicial. Podemos **definir a distribuição dos dados entre intervalos de iniciais das sharding keys**, como por exemplo **utilizando intervalos de A-E para um shard, F-J para outro, K-N, O-R, S-V e W-Z consecutivamente**. 
@@ -343,9 +353,15 @@ Shard 4: 11 tenants
 
 ## Sharding por Hashing Consistente
 
-O Hashing Consistente é uma técnica de sharding de sistemas distribuídos usada para particionar em sistemas onde a adição ou remoção de servidores (ou shards) é uma tarefa comum. Diferente do sharding por hashing simples, onde a adição ou remoção de um shard pode exigir a redistribuição de muitos, senão todos os dados, o hashing consistente minimiza a quantidade de dados que precisam ser realocados, adicionando mais alguns graus de escalabilidade. Importante ressaltar que, por mais que seja minimizado, a redistribuição precisa acontecer, ainda que em menor escala. 
+O Hashing Consistente **é uma técnica de sharding de sistemas distribuídos usada para particionar em sistemas onde a adição ou remoção de servidores (ou shards) é uma tarefa comum**. Diferente do sharding por hashing simples, onde a adição ou remoção de um shard pode exigir a redistribuição de muitos, senão todos os dados, **o hashing consistente minimiza a quantidade de dados que precisam ser realocados**, adicionando mais alguns graus de escalabilidade na solução. Importante ressaltar que, **por mais que seja minimizado, a redistribuição precisa acontecer, ainda que em menor escala**. 
 
-As representações visuais de hashing consistente normalmente são representadas de forma cíclica, logo sua estrutura de dado central para a distribuição das chaves entre os nós é representada em forma de anel, e é conhecida como anel de hashs, ou hash ring. Dado isso, a implementação da distribuição de uma hash em num nó, na verdade se dá por um range de intervalos do anel, não apenas pelo valor da hash da chave diretamente, o que permite que ao alterar a quantidade de nós, os valores de mod se movimentem pouco.
+As representações visuais de **hashing consistente normalmente são representadas de forma cíclica**, logo sua estrutura de dado central para a distribuição das chaves entre os nós é conceituada em forma de anel, **e é conhecida como anel de hashs**, ou **hash ring**. Dado isso, a implementação da distribuição de uma hash em num nó, na verdade **se dá por um range de intervalos do anel**, não apenas pelo valor da hash da chave diretamente, o que permite que ao alterar a quantidade de nós, os valores de mod se movimentem pouco.
+
+Se usássemos uma abordagem tradicional de hashing para distribuir os dados dos tenants entre os servidores, toda vez que adicionássemos ou removêssemos um servidor, muitos dados precisariam ser redistribuídos, o que pode ser caro e demorado.
+
+Imagine um círculo que representa todos os possíveis valores de hash, cada nó de servidor é mapeado para um ponto nesse círculo, e cada tenant é mapeado para um ponto no círculo usando uma função de hash. Logo, os dados de um tenant são armazenados no servidor que aparece primeiro no sentido horário a partir do ponto onde o tenant foi mapeado. Caso o o anel seja composto de numeros incrementais, caso o limite de hash exceda, a posição retona para o marco 0 do circulo e dos possiveis valores hash, "dando uma volta" no hash ring. 
+
+Nesse caso, quando um novo nó é adicionado, ele também é mapeado para algum ponto desse circulo, sendo nessessária a redistribuição apenas dos valores que estiverem entre o novo servidor e o próximo servidor no círculo, o restante podem permanecer onde estavam previamente. O mesmo acontece com a remoção de um nó, onde seus dados deverão ser transferidos para o próximo nó no sentido horário no círculo, minimizando a também a redistribuição.
 
 
 ```go
@@ -521,25 +537,15 @@ Tenant: Acougue-Zona-Norte, Shard: Shard-01
 
 ### Algoritmos de Hashing Consistente
 
+<br>
 
+## Sharding por Hashing e Gestão de Chaves
 
-
-## Sharding Consistente e Gestão de Chaves
+Uma forma de implementação de um sharding baseado em hashing é tratar a distribuição e identificação da partição de uma forma cadastral, sendo necessárias implementações adicionais de arquitetura. A parte ótima de um algoritmo de hashing para distribuição da carga é que o calculo é geralmente, computacionalmente muito barato, porém em caso de redistribuição é um case muito caro. Podemos presumir uma arquitetura baseada em hashing onde a distribuição é executada somente na criação de uma nova sharding key, e a consulta é realizada através de uma API de consulta. 
 
 ![Sharding Key Service](/assets/images/system-design/sharding-hash-consistente-key-service.png)
 
-<br>
-
-
-<br>
-
-# Problemas Conhecidos
-
-## Hot Partitions
-
-## Balanceamento 
-
-## Extensão do número de shardings
+Esse tipo de estratégia, por mais que necessite de engenharia, pode ser utilizada para gerenciar manualmente a distribuição clientes e usuários entre as partições, permitindo inclusive o isolamento de algum cliente que seja o gerador de uma hot partition em um shard segregado pra ele, isolando usuários intensos de um sistema em infraestruturas dedicadas. 
 
 <br>
 
