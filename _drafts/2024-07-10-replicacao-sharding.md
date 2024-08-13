@@ -1,12 +1,16 @@
 ---
 layout: post
-image: assets/images/system-design/escalabilidade-capa.png
+image: assets/images/system-design/sharding-logo.png
 author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Sharding e Hashing Consistente
+title: System Design - Sharding e Hashing
 ---
+
+Esse é mais um capitulo da nossa série de System Design, e novamente vamos abordar assuntos delicados relacionados a escalabilidade, focando em assuntos críticos como dados. Dessa vez, iremos abordar algumas das estratégias mais efetivas e interessantes na arquitetura de sistemas, que são o particionamento, ou shardings. O objetivo desse trabalho será apresentar estratégias, prós e contras entre algumas das possibilidades arquiteturais de segregação de dados, clientes e esforço computacional. 
+
+<br>
 
 # Definindo Sharding
 
@@ -20,6 +24,33 @@ No contexto de bancos de dados, **cada shard é um subconjunto do banco de dados
 
 Essa técnica também traz a complexidade de manutenção e balanceamento dos shards, além da necessidade de garantir a consistência dos dados entre diferentes shards em escala.
 
+
+<br>
+
+## Topologia de Sharding
+
+No contexto de sharding, existem várias topologias que podem ser aplicadas para suprir as necessidades específicas de sistemas. Se olharmos o conceito fora da caixa, podemos encontrar várias abordagens diferentes para distribuir cargas e aumentar a performance e resiliência de um sistema.
+
+### Sharding para Segregação de Dados
+
+O **sharding para segregação de dados** é a técnica mais conhecida quando pensamos em sharding.  É essencialmente utilizada para distribuir diferentes conjuntos de dados entre shards distintos, sendo esses shards **conhecidos como diferentes tabelas ou instâncias de bancos de dados sendo roteados com base em algum critério**. Esta abordagem é frequentemente aplicada em sistemas onde há necessidade de isolar certos tipos de dados por motivos de segurança, compliance, ou simplesmente para facilitar a gestão e o desempenho.
+
+![Sharding Data](/assets/images/system-design/sharding-data-horizontal.png)
+
+Uma aplicação multi-tenant, os dados de cada um dos **clientes principais podem ser segregados em diferentes shards**. Isso não só melhora a segurança, **garantindo que os dados de um cliente não sejam acessíveis por outro**, ou diminuindo a superficie de acesso, mas também **permite otimizar a performance ao adaptar a infraestrutura de cada shard às necessidades específicas de cada cliente**. 
+
+Outro caso comum de sharding para segregação de dados ocorre em sistemas que **armazenam dados sensíveis e não sensíveis**. Dados altamente confidenciais ou que sejam inerentes a alguma regulamentação externa **podem ser segregados em shards com maior segurança ou com capacidades adicionais de auditoria**, enquanto dados menos críticos podem ser armazenados em shards com configurações mais leves, reduzindo custos e complexidade para um público geral
+
+
+### Sharding para Segregação Computacional
+
+O **sharding para segregação computacional** é uma abordagem focada na distribuição das cargas de trabalho computacionais entre diferentes shards. **Em vez de apenas distribuir dados, essa técnica visa isolar operações computacionais intensivas para shards dedicados**, elevando algumas camadas a mais de otimização. 
+
+![Sharding Computing](/assets/images/system-design/sharding-computing.png)
+
+Em sistemas que realizam operações computacionais pesadas, como cálculos em tempo real, processamento de grandes volumes de dados ou execução de algoritmos de machine learning, **a segregação computacional permite que essas tarefas sejam isoladas em shards específicos**, enquanto **operações menos intensivas são alocadas em outros shards**. Isso evita que as operações mais leves sejam afetadas pelo consumo de recursos das operações mais pesadas, garantindo uma performance mais consistente em todo o sistema.
+
+Essa abordagem também **é útil em ambientes onde diferentes tipos de operações exigem configurações de hardware específicas**. Shards voltados para operações de I/O intensivo podem ser otimizados com discos rápidos e maior largura de banda, enquanto shards que realizam processamento de CPU intensivo podem ser configurados com mais núcleos de processamento.
 
 <br>
 
@@ -213,6 +244,12 @@ Nesse cenário, é necessário um árduo trabalho de redistribuição de dados e
 
 ### Distribuição e os Algoritmos de Hashing
 
+A escolha correta de um algoritmo de hashing para basear a distribuição de dados é um ponto de tunning fino que pode mudar completamente o resultado da solução. Após uma escolha inteligente da sharding key, é recomendado aplicar diversos tipos de algoritmo de hashing sobre uma amostra das chaves de forma comparativa chegar em uma conclusão sobre qual implementação garantirá a melhor distribuição. 
+
+Dependendo do algoritmo selecionado, os dados podem ser distribuídos de forma mais ou menos uniforme entre os shards, impactando diretamente a performance e a resiliência do sistema.
+
+O código a seguir implementa cinco funções de hash: **SHA-256**, **SHA-512**, **MD5**, **FNV-1a**, e uma função de **hash simples**. Cada função de hash converte o identificador de um tenant em um valor de hash, que é então utilizado para determinar em qual shard o tenant será alocado. 
+
 ```go
 package main
 
@@ -381,11 +418,15 @@ Shard 3: 8 tenants
 Shard 4: 11 tenants
 ```
 
+É de extrema importância ressaltar que o resultado desse experimento somente tem valor para os critérios das sharding keys do exemplo. Em caso de um outro tipo de valor, os resultados podem ser completamente diferentes. O exemplo é apenas para ilustrar a diferença de resultado na distribuição. 
+
 <br>
 
 ## Sharding por Hashing Consistente
 
 O Hashing Consistente **é uma técnica de sharding em sistemas distribuídos usada para particionar dados em ambientes onde a adição ou remoção de servidores (ou shards) é uma tarefa comum**. Diferentemente do sharding por hashing simples, onde a adição ou remoção de um shard pode exigir a redistribuição de muitos, senão de todos os dados, **o hashing consistente minimiza a quantidade de dados que precisam ser realocados**, proporcionando mais escalabilidade à solução. É importante ressaltar que, **embora a redistribuição seja minimizada, ela ainda ocorre, porém em uma escala muito menor**.
+
+![Hash Ring](/assets/images/system-design/sharding-hash-ring.png)
 
 As representações visuais de **hashing consistente são geralmente ilustradas de forma cíclica**, e a estrutura de dados central para a distribuição das chaves entre os nós é conceituada como um anel, **conhecido como "hash ring"**. A **distribuição de uma hash em um nó ocorre, na verdade, por um intervalo de valores dentro do anel**, e não diretamente pelo valor da hash da chave. Isso permite que, **ao alterar a quantidade de nós, os valores resultantes do cálculo de módulo mudem muito pouco, reduzindo a necessidade de redistribuição de dados**.
 
