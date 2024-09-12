@@ -20,13 +20,31 @@ Os beneficios de estratégias de replicação são vários, como por exemplo, ao
 
 ## Replicação Total e Parcial
 
+A Replicação Total se refere à prática de replicar todos os dados em todos os nós de um sistema. Isso significa que cada nó tem uma cópia completa dos dados. A vantagem da replicação total é que ela maximiza a disponibilidade e resiliência de forma com que qualquer nó possa atender a uma solicitação do cliente caso a escrita seja amplamente permitida. No entanto,como um tradeoff, essa estratégia pode aumentar os custos de armazenamento e a latência de escrita, já que cada nova informação precisa ser replicada e confirmada em todos os nós que compõe um cluster do dado. 
+
+Em contraponto, a Replicação Parcial, por outro lado, distribui apenas uma parte dos dados em cada nó. Assim, cada nó contém apenas uma fração dos dados totais. Esse modelo é eficiente em termos de armazenamento e reduz a latência de escrita, mas aumenta a complexidade na leitura, pois os dados solicitados podem não estar disponíveis localmente e podem exigir comunicação entre nós, fazendo com que o cliente precise fazer queries em mais de um nó, ou deixar para que o sitema de consulta abstraia essa complexidade. Para encontrar o dado entre os nós, é comum implementar algoritmos de [Sharding]() como Hashing Consistente. 
+
 ## Replicação Sincrona
+
+Na Replicação Síncrona, todas as alterações de todos os dados devem ser replicadas em todos os nós antes que a operação seja considerada bem-sucedida. Isso garante consistência forte entre os nós, ou seja, todos eles terão os mesmos dados em qualquer momento.
+
+Em uma dimensão onde um cliente precisa salvar uma informação em um cluster de cache, ele envia o dado a ser salvo em uma forma de chave e valor para o endpoint primário de um cluster de cache, que por sua vez se encarrega de distribuir o dado entre todos os nós do mesmo. A solicitação só é finalizada e encerrada para o cliente prosseguir com o restante de suas tarefas quando essa operação é concluída por completo. 
+
+A replicação síncrona tem vantagens em cenários onde a consistência é crítica, como em sistemas de pagamento ou bancos de dados financeiros, onde qualquer discrepância entre os nós pode causar grandes problemas. No entanto, ela pode aumentar a latência, especialmente quando há grandes distâncias entre os nós, ou uma grande quantidade deles. 
 
 ## Replicação Assincrona
 
-## Replicação por Logs
+Na Replicação Assíncrona, as alterações de dados são enviadas um dos nós de um cluster, e replicada para os outros nós de forma eventual, o que significa que a operação pode ser considerada bem-sucedida sem esperar que todas as réplicas tenham sido atualizadas. Isso resulta em maior desempenho nas operações de escrita, pois o sistema não precisa esperar pelas confirmações de todos os nós. Porém pode se aceitar uma inconsistência eventual em uma consulta subsequente, uma vez que o dado possa não ter sido replicado totalmente nos demais nós, e possam existir mais de uma versão do dado existindo ao mesmo tempo até que a replicação termine por completo. 
+
+A replicação assíncrona é amplamente utilizada em cenários onde a disponibilidade e o desempenho são mais importantes que a consistência imediata, como redes sociais, assets em uma CDN, dados pouco importantes utilizados somente para evitar excesso de acessos a uma origem, clusters de cache e afins. 
 
 ## Replicação Semi-Sincrona
+
+A Replicação Semi-Síncrona combina aspectos da replicação síncrona e assíncrona. Neste modelo, pelo menos uma ou um pequeno subconjunto de réplicas deve confirmar a gravação de dados antes que a operação seja considerada bem-sucedida. As demais réplicas podem ser atualizadas de forma assíncrona.
+
+Esse tipo de replicação oferece um equilíbrio entre consistência e desempenho. Ele melhora a resiliência, garantindo que os dados sejam gravados em pelo menos um nó de forma síncrona, enquanto mantém a baixa latência ao não exigir que todas as réplicas estejam atualizadas imediatamente. Alguns flavors de bancos de dados, como o MySQL e MariaDB, a escrita é confirmada assim que um nó secundário grava os dados. Outros nós podem receber as atualizações posteriormente de forma assíncrona, garantindo um grau adicional de consistência sem comprometer a performance por completo.
+
+## Replicação por Logs
 
 ## Replicação Primary-Replica
 
