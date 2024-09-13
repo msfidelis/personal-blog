@@ -10,7 +10,7 @@ title: System Design - Replicação de Dados
 
 # Definindo Replicação na Engenharia de Software
 
-Replicação, principalmente dentro nos requisitos de engenharia, se refere ao ato de criar uma ou mais cópias do mesmo dado em destinos diferentes. Essa é uma prática bem vista e bem vinda, especialmente em sistemas distribuídos, onde a consistência, disponibilidade e tolerância a falhas são requisitos mandatórios para uma operabilidade saudável e duradoura. Quando olhamos para [Bancos de Dados](), a replicação permite que mesmo em caso de falhas terminais de hardware ou problemas de rede, os dados permaneçam acessíveis em outros locais e dão a garantia de que o sistema se tornará consistente em algum momento. 
+Replicação, principalmente dentro nos requisitos de engenharia, se refere ao ato de criar uma ou mais cópias do mesmo dado em destinos diferentes. Essa é uma prática bem vista e bem vinda, especialmente em sistemas distribuídos, onde a consistência, disponibilidade e tolerância a falhas são requisitos mandatórios para uma operabilidade saudável e duradoura. Quando olhamos para [Bancos de Dados](/teorema-cap/), a replicação permite que mesmo em caso de falhas terminais de hardware ou problemas de rede, os dados permaneçam acessíveis em outros locais e dão a garantia de que o sistema se tornará consistente em algum momento. 
 
 Essas réplicas podem estar localizadas em servidores diferentes, em datacenters separados geograficamente ou até mesmo em diferentes regiões de nuvens públicas. A finalidade principal da replicação é garantir que os dados estejam disponíveis em vários locais, o que é crítico para sistemas que exigem alta disponibilidade e continuidade de negócios.
 
@@ -18,11 +18,13 @@ Os beneficios de estratégias de replicação são vários, como por exemplo, ao
 
 # Tipos de Replicacão
 
+Dentro das disciplinas de engenharia, podemos encontrar várias estratégias de replicação, tanto abordagens que se aplicam somente para dados, que é geralmente o foco desse tipo de estratégia devido a importância e a complexidade, tanto quanto para outras abordagens não convencionais como cargas de trabalho completas, domínios de software em cache e etc. O objetivo desse capítulo é exemplificar alguns dos modelos mais utilizados de replicação e explicar suas diferenças, vantagens e desvantagens. 
+
 ## Replicação Total e Parcial
 
 A Replicação Total se refere à prática de replicar todos os dados em todos os nós de um sistema. Isso significa que cada nó tem uma cópia completa dos dados. A vantagem da replicação total é que ela maximiza a disponibilidade e resiliência de forma com que qualquer nó possa atender a uma solicitação do cliente caso a escrita seja amplamente permitida. No entanto,como um tradeoff, essa estratégia pode aumentar os custos de armazenamento e a latência de escrita, já que cada nova informação precisa ser replicada e confirmada em todos os nós que compõe um cluster do dado. 
 
-Em contraponto, a Replicação Parcial, por outro lado, distribui apenas uma parte dos dados em cada nó. Assim, cada nó contém apenas uma fração dos dados totais. Esse modelo é eficiente em termos de armazenamento e reduz a latência de escrita, mas aumenta a complexidade na leitura, pois os dados solicitados podem não estar disponíveis localmente e podem exigir comunicação entre nós, fazendo com que o cliente precise fazer queries em mais de um nó, ou deixar para que o sitema de consulta abstraia essa complexidade. Para encontrar o dado entre os nós, é comum implementar algoritmos de [Sharding]() como Hashing Consistente. 
+Em contraponto, a Replicação Parcial, por outro lado, distribui apenas uma parte dos dados em cada nó. Assim, cada nó contém apenas uma fração dos dados totais. Esse modelo é eficiente em termos de armazenamento e reduz a latência de escrita, mas aumenta a complexidade na leitura, pois os dados solicitados podem não estar disponíveis localmente e podem exigir comunicação entre nós, fazendo com que o cliente precise fazer queries em mais de um nó, ou deixar para que o sitema de consulta abstraia essa complexidade. Para encontrar o dado entre os nós, é comum implementar algoritmos de [Sharding](/sharding/) como Hashing Consistente. 
 
 ## Replicação Sincrona
 
@@ -46,10 +48,26 @@ Esse tipo de replicação oferece um equilíbrio entre consistência e desempenh
 
 ## Replicação por Logs
 
+A Replicação por Logs é uma abordagem em que todas as operações ofetuadas em um sistema são registradas em um log de operações sequenciais, e esse log é então replicado para outros nós do cluster para executarem as mesmas operações. Em vez de replicar o estado completo dos dados, o sistema replica as mudanças, permitindo que as réplicas apliquem essas mudanças localmente e mantenham seus dados consistentes.
+
+Essa abordagem é vantajosa em cenários onde as alterações são mais frequentes que leituras, ou onde o volume de dados é muito grande, pois apenas as modificações são replicadas, reduzindo a quantidade de dados trafegados entre um ponto a outro de um cluster. Esse tipo de abordagem pode ser encontrado em tecnologias que permitem interoperabilidade entre multiplas regiões de núvens públicas, multiplos datacenters, zonas de recuperação de desastre e afins. 
+
+Tecnologias altamente conhecidas e maduras como o [Apache Kafka ou outras tecnologias de streaming e eventos](/mensageria-eventos-streaming/) usa replicação por logs em sua arquitetura de nós e replicas. Cada tópico em Kafka é composto por múltiplas partições, e as alterações nessas partições são registradas em logs de transações que são replicados entre os brokers, garantindo durabilidade e resiliência. 
+
 ## Replicação Primary-Replica
 
-## Replicação Primary-Primary* - verificar se não tem um termo novo
+Na Replicação Primary-Replica, podemos presumir a existência de um nó primário que recebe todas as operações de escrita e, em seguida, replica essas operações para um ou mais nós secundários, suas replicas. As réplicas geralmente são usadas apenas para leitura, enquanto todas as operações de escrita são gerenciadas pelo nó primário. Essa arquitetura é útil quando se deseja escalar leituras em um sistema, distribuindo-as entre réplicas, mas mantendo a simplicidade no gerenciamento de escrita. 
+
+O nó primário é responsável por garantir a consistência dos dados em todas as réplicas. Essa abordagem pode ser eficiente em cenários de alta demanda de leitura, ou quando fazemos um uso intensivo de [CQRS](/cqrs/), mas cria um ponto único de falha no nó primário. Se o nó primário falhar, um novo primário deve ser promovido de uma das réplicas, o que pode introduzir um tempo de inatividade até que essa atividade seja concluída. 
+
+## Replicação Primary-Primary - Multimaster
+
+A Replicação Primary-Primary, também conhecida como Multi-Master Replication, é uma arquitetura onde múltiplos nós podem atuar simultaneamente como primários, recebendo tanto operações de leitura quanto de escrita. Nessa configuração, qualquer nó pode processar atualizações e as mudanças são replicadas entre todos os nós, permitindo alta disponibilidade e escalabilidade de escrita. 
+
+Esse modelo reduz o ponto único de falha da replicação Primary-Replica e permite maior flexibilidade na distribuição de carga de trabalho. No entanto, ele também introduz complexidade adicional, especialmente para resolver conflitos de escrita. Quando duas operações de escrita ocorrem em diferentes nós primários simultaneamente, o sistema precisa de uma estratégia para resolver esses conflitos, como basear-se em timestamps de ordem de execução das tarefas, ou ter políticas específicas de resolução de conflitos por conta de [particionamento temporário por falha de rede](/teorema-cap/).
 
 # Arquitetura
 
 ## Replicação de Domínios
+
+## Replicação de Cargas de Trabalho
