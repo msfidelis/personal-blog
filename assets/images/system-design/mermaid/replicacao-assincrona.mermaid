@@ -1,0 +1,13 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Request
+    participant Primário
+    participant Réplica 1
+    participant Réplica 2
+
+    Request->>Primário: Envia requisição de escrita
+    Primário->>Request: Confirmação de sucesso
+    Primário-->>Réplica 1: Replicação assíncrona
+    Primário-->>Réplica 2: Replicação assíncrona
+    Réplica 1-->>Primário: Confirmação de escrita (Assíncrona)
+    Réplica 2-->>Primário: Confirmação de escrita (Assíncrona)

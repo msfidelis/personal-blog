@@ -1,0 +1,16 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Request
+    participant Primário
+    participant Log as Log de Escrita
+    participant Réplica 1
+    participant Réplica 2
+
+    Request->>Primário: Envia requisição de escrita
+    Primário->>Log: Escreve no log de operações
+    Log->>Primário: Confirmação de escrita no log
+    Primário->>Request: Confirmação de sucesso
+    Log-->>Réplica 1: Envia log de replicação
+    Log-->>Réplica 2: Envia log de replicação
+    Réplica 1-->>Log: Confirmação de aplicação do log
+    Réplica 2-->>Log: Confirmação de aplicação do log

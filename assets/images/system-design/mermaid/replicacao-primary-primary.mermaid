@@ -1,0 +1,16 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Cliente 1
+    participant Cliente 2
+    participant Primário 1
+    participant Primário 2
+
+    Cliente 1->>Primário 1: Envia requisição de escrita
+    Primário 1-->>Primário 2: Replicação de escrita (Assíncrona)
+    Primário 1->>Cliente 1: Confirmação de sucesso
+    Primário 2-->>Primário 1: Confirmação de replicação (Assíncrona)
+    
+    Cliente 2->>Primário 2: Envia requisição de escrita
+    Primário 2-->>Primário 1: Replicação de escrita (Assíncrona)
+    Primário 2->>Cliente 2: Confirmação de sucesso
+    Primário 1-->>Primário 2: Confirmação de replicação (Assíncrona)
