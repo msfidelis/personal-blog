@@ -149,13 +149,59 @@ Sempre que um evento de desligamento de Spot for informado, ou solicitado via co
 
 
 
-<!-- ### Karpenter - Interruption Handling
+### Karpenter - Interruption Handling
 
 *Update 17/11/2023* - Como mencionado no topico anterior, agora o Karpenter possui a feature de realizar handling dos nodes que mudam de estado. 
 
+
 Para fazer o provisionamento temos que criar a fila SQS da mesma forma como 
 
-{% gist a928496d90f36656ad2efe49a121db06 %} -->
+{% gist a928496d90f36656ad2efe49a121db06 %} 
+
+Para hablitar o Interruption Handling nativo do Karpenter, basta informar o nome da queue na instalação do helm 
+
+
+```hcl
+resource "aws_sqs_queue" "node_termination_handler" {
+  name                       = format("%s-aws-node-termination-handler", var.cluster_name)
+  delay_seconds              = 0
+  max_message_size           = 2048
+  message_retention_seconds  = 86400
+  receive_wait_time_seconds  = 10
+  visibility_timeout_seconds = 60
+}
+```
+
+
+```hcl
+resource "helm_release" "karpenter" {
+    namespace        = "karpenter"
+    create_namespace = true
+
+    name       = "karpenter"
+    repository = "https://charts.karpenter.sh"
+    chart      = "karpenter"
+
+
+    set {
+        name  = "clusterName"
+        value = var.cluster_name
+    }
+
+    set {
+        name  = "clusterEndpoint"
+        value = aws_eks_cluster.eks_cluster.endpoint
+    }
+
+    set {
+        name = "settings.interruptionQueue"
+        value = aws_sqs_queue.node_termination_handler.name
+    }
+
+}
+```
+
+<br>
 
 ### Referências / Material de Apoio 
 - **EKS Best Pratices** [https://aws.github.io/aws-eks-best-practices/karpenter/](https://aws.github.io/aws-eks-best-practices/karpenter/)
