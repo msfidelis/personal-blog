@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/sharding-capa.png
+image: assets/images/system-design/replicacao-capa.png
 author: matheus
 featured: false
 published: true
@@ -19,6 +19,8 @@ Os beneficios de estratégias de replicação são vários, como por exemplo, ao
 <br>
 
 # Modelos de Replicação 
+
+Antes de entrarmos nos tópicos sobre estratégias de replicação, precisamos entender alguns modelos pelos quais os sistemas de replicação são construídos. Independente da estratégia adotada para garantir a existência de várias cópias do mesmo dado em diferentes locais ou nós, o modelo pelo qual essa estratégia é adotada normalmente trafega entre os modelos Primary-Replica ou Primary-Primary, também conhecido como Multi-Master. Vamos entender conceitualmente essas duas estratégias para nivelar o conhecimento para as implementações de fato.  
 
 ## Replicação Primary-Replica
 
@@ -87,16 +89,63 @@ Tecnologias altamente conhecidas e maduras como o [Apache Kafka ou outras tecnol
 
 # Arquitetura
 
+## Event-Carried State Transfer - Replicação de Estados e Objetos de Domínios
+
+Em grandes sistemas, especialmente em arquiteturas corporativas complexas, uma possível solução para se lidar com a alta disponibilidade de grandes volumes de dados é o **Event-Carried State Transfer**.
+
+Esse padrão permite que o estado de um objeto seja transmitido entre serviços ou domínios de software por meio de eventos. Ele combina estratégias de cache, sistemas baseados em eventos e replicação de dados, proporcionando uma maneira custoza, porém poderosa de lidar com altos volumes de dados sem agravar níveis de acoplamento.
+
+A ideia central é que, sempre que houver uma atualização em uma entidade de um domínio, essa mudança seja publicada em tópicos de eventos. Os demais serviços que dependem desse domínio podem consumir esses eventos e atualizar suas próprias bases de dados locais, criando uma cópia em cache do estado. Isso é especialmente útil em sistemas que toleram consistência eventual, pois, em vez de consultar uma fonte centralizada a cada solicitação, os serviços mantêm e utilizam suas próprias versões dos dados, que são atualizadas conforme os eventos são processados. Em sistemas complexos e altamente distribuído, a curva de custo x benefício desse tipo de abordagem pode se tornar viável. 
+
+![State Transfer](/assets/images/system-design/state-transfer.drawio.png)
+
+Imagine um sistema governamental que compartilha os dados dos cidadãos entre diferentes sistemas de diversos orgãos bancários, fiscais, entidades de segurança, sistemas de transito, imobiliário e social. Se pensarmos esse case orientado a eventos, sempre que o cliente atualizar um estado cívil, renda, endereço, telefone de contato em um sistema central de cadastro, essa informação seja notificada por um evento, e cada um desses sistemas de orgãos públicos o consuma e atualize sua base cadastral. 
+
 <br>
 
-## Replicação de Domínios
+## Change Data Capture - Captura de Alterações de Dados
 
+O **Change Data Capture (CDC)** é uma técnica que detecta e captura as alterações feitas em uma fonte de dados, como um **[banco de dados relacional](/teorema-cap/)**, e as **transmite para outros sistemas em tempo real**. Isso **permite que outros serviços sejam imediatamente atualizados sem precisarem consultar diretamente o banco de dados original**. Essa abordagem é muito útil para **sincronizar dados entre diferentes sistemas**, alimentar filas de mensagens, ou manter caches atualizados com as últimas informações.
+
+![CDC](/assets/images/system-design/cdc.drawio.png)
+
+O objetivo do padrão é oferecer um mecanismo que **monitora operações como inserções, atualizações e deleções**, **capturando essas mudanças à medida que elas acontecem**. Depois de capturadas, as **alterações podem ser enviadas para tópicos de eventos ou diretamente para sistemas que dependem desses dados**. Isso possibilita que outros serviços recebam as informações mais recentes **sem sobrecarregar o banco de dados principal com consultas constantes**.
+
+Essa técnica funciona como uma base para outras estratégias, como o **Event-Carried State Transfer**, que se beneficia da captura de eventos para replicar dados de forma inteligente e proativa. O CDC também é um viabilizador em processos que envolvem streaming de dados para Datalakes, [cacheamento proativo](/caching/), e [CQRS](/cqrs/), atuando como uma ponte reativa que facilita a replicação e a integração com outros padrões.
 
 <br>
 
 ## Replicação de Cargas de Trabalho
 
+![Workload](/assets/images/system-design/workload.drawio.png)
+
+A Replicação de Cargas de Trabalho vai além da replicação de dados, focando em duplicar processos de computação ou serviços inteiros em diferentes nós, datacenters ou regiões. Essa estratégia é muito usada para garantir que sistemas distribuídos estejam sempre disponíveis, com uma carga de trabalho bem distribuída e tolerância a falhas.
+
+Com essa abordagem, mesmo que um nó ou região de computação falhe, outras réplicas continuam processando as requisições, assegurando que o serviço siga funcionando sem interrupções.
+
+<br>
+
+### Obrigado aos Revisores
+
+<br>
 
 ### Referências
 
+[What is Change Data Capture?](https://www.qlik.com/us/change-data-capture/cdc-change-data-capture)
+
+[O que é Change Data Capture](https://triggo.ai/blog/o-que-e-change-data-capture/)
+
+[SQL-Server: O que é a CDA (captura de dados de alterações)?](https://learn.microsoft.com/pt-br/sql/relational-databases/track-changes/about-change-data-capture-sql-server?view=sql-server-ver16)
+
+[Event-Carried State Transfer Pattern](https://rivery.io/data-learning-center/data-replication/)
+
+[7 Data Replication Strategies & Real World Use Cases 2024](https://estuary.dev/data-replication-strategies/)
+
 [Replication Strategies and Partitioning in Cassandra](https://www.baeldung.com/cassandra-replication-partitioning)
+
+[Event-Carried State Transfer: A Pattern for Distributed Data Management in Event-Driven Systems ](https://dev.to/cadienvan/event-carried-state-transfer-a-pattern-for-distributed-data-management-in-event-driven-systems-165h)
+
+[Event-Carried State Transfer: Consistência e isolamento entre microsserviços](https://medium.com/@lauanguermandi/event-carried-state-transfer-consist%C3%AAncia-e-isolamento-entre-microsservi%C3%A7os-89d1937de33d)
+
+[Event-Carried State Transfer Pattern](https://www.grahambrooks.com/event-driven-architecture/patterns/stateful-event-pattern/)
+
