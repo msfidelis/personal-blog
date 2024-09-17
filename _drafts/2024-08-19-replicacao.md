@@ -111,6 +111,8 @@ O **Change Data Capture (CDC)** é uma técnica que detecta e captura as altera�
 
 O objetivo do padrão é oferecer um mecanismo que **monitora operações como inserções, atualizações e deleções**, **capturando essas mudanças à medida que elas acontecem**. Depois de capturadas, as **alterações podem ser enviadas para tópicos de eventos ou diretamente para sistemas que dependem desses dados**. Isso possibilita que outros serviços recebam as informações mais recentes **sem sobrecarregar o banco de dados principal com consultas constantes**.
 
+![Replicacao Proativa](/assets/images/system-design/replicacao-proativa.drawio.png)
+
 Essa técnica funciona como uma base para outras estratégias, como o **Event-Carried State Transfer**, que se beneficia da captura de eventos para replicar dados de forma inteligente e proativa. O CDC também é um viabilizador em processos que envolvem streaming de dados para Datalakes, [cacheamento proativo](/caching/), e [CQRS](/cqrs/), atuando como uma ponte reativa que facilita a replicação e a integração com outros padrões.
 
 <br>
