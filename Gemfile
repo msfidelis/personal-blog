@@ -22,5 +22,6 @@ group :jekyll_plugins do
     gem 'rouge'
     gem "rss"
     gem 'safe_yaml'
+    gem 'jekyll-compress-images'
     gem "jekyll-import", git: "https://github.com/pew/jekyll-import.git"
 end
