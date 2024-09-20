@@ -61,11 +61,11 @@ Por outro lado, a **Replicação Parcial distribui apenas uma parte dos dados pa
 
 ## Replicação Síncrona
 
-Na Replicação Síncrona, **todas as alterações nos dados devem ser replicadas em todos os nós antes que a operação seja considerada bem-sucedida**. Isso **garante consistência forte entre os nós**, ou seja, todos eles terão os mesmos dados em qualquer momento.
+Na Replicação Síncrona, **todas as alterações nos dados devem ser replicadas em todos os nós antes que a operação seja considerada bem-sucedida**. Isso **garante consistência forte entre os nós**, pois uma valor escrito ou atualizado só estará disponível para leitura após todos os nós confirmarem a escrita, ou seja, todos eles responderão com os mesmos dados em qualquer momento.
 
 ![Replicação Síncrona](/assets/images/system-design/replicacao-sincrona.png)
 
-Em um cenário onde um cliente precisa salvar uma informação em um cluster que, por exemplo, oferece funcionalidades de cache, ele envia o dado, em formato de chave e valor, para o endpoint primário do cluster de cache. **Esse endpoint é responsável por distribuir o dado entre todos os nós do cluster**. A solicitação **só é finalizada e confirmada ao cliente quando essa operação é concluída por completo**.
+Em um cenário onde um cliente precisa salvar uma informação em um cluster que, por exemplo, oferece funcionalidades de cache, ele envia o dado, em formato de chave e valor, para o endpoint primário do cluster de cache. **Esse endpoint é responsável por distribuir o dado entre todos os nós do cluster**. A solicitação **só é finalizada e confirmada ao cliente quando essa operação é concluída por completo**. Uma técnica comum para implementação de replicação síncrona é o [two-phase commit](https://martinfowler.com/articles/patterns-of-distributed-systems/two-phase-commit.html).
 
 A replicação síncrona tem **vantagens em cenários onde a consistência é crítica**, como em sistemas de pagamento ou bancos de dados financeiros, onde **qualquer discrepância entre os nós pode causar grandes problemas**. No entanto, essa abordagem **pode aumentar a latência**, especialmente quando os nós estão distribuídos geograficamente ou em grande quantidade.
 
@@ -98,6 +98,7 @@ Essa abordagem é vantajosa em **cenários onde as alterações são mais freque
 
 Tecnologias amplamente conhecidas e maduras, como o [Apache Kafka e outras plataformas de streaming e eventos](/mensageria-eventos-streaming/), utilizam replicação por logs em sua arquitetura de nós e réplicas. Em Kafka, cada tópico é composto por múltiplas partições, e as alterações nessas partições são registradas em logs de transações que são replicados entre os brokers, garantindo durabilidade e resiliência.
 
+Replicação por Logs também é utilizada em algoritmos essenciais para sistemas distribuídos, como [Paxos](https://paxos.systems/how/#why) (utilizado em sistemas como [BigTable](https://research.google/pubs/bigtable-a-distributed-storage-system-for-structured-data/) e [Apache Mesos](https://mesos.apache.org/documentation/latest/replicated-log-internals/)), [Raft](https://thesecretlivesofdata.com/raft/) (usado no [etcd](https://github.com/etcd-io/raft), [ScyllaDB](https://opensource.docs.scylladb.com/stable/architecture/raft.html), [Consul](https://developer.hashicorp.com/consul/docs/architecture/consensus) e [CockroachDB](https://www.cockroachlabs.com/resources/the-raft-protocol-explained-via-sql-database-cockroachdb-consensus-protocol/)) e [Viewstamped Replication](https://pmg.csail.mit.edu/papers/vr-revisited.pdf) (usado no [TigerBeetle](https://sim.tigerbeetle.com/)), e em técnicas como o [write-ahead log](https://martinfowler.com/articles/patterns-of-distributed-systems/write-ahead-log.html), que é utilizado para guarantir a durabilidade de dados durante replicação em caso de falhas em nós.
 
 <br>
 
