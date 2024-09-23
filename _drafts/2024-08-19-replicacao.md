@@ -10,7 +10,6 @@ title: System Design - Replicação de Dados
 
 Neste capítulo da nossa série de System Design, vamos explorar os conceitos de escalabilidade de aplicações críticas, com foco especial na replicação de dados. Este tema está diretamente relacionado ao capítulo anterior sobre [Sharding e Particionamento de Dados](/sharding/), já que esses conceitos costumam ser usados em conjunto em diversas abordagens arquiteturais. Nosso objetivo é **apresentar diferentes padrões e estratégias de replicação, demonstrando como esses conceitos podem melhorar a disponibilidade, confiabilidade e performance de sistemas distribuídos**.
 
-
 <br>
 
 # Definindo Replicação na Engenharia de Software
@@ -137,6 +136,18 @@ Essa técnica serve como base para outras estratégias, como o **Event-Carried S
 
 <br>
 
+## CRDT's - Conflict Free Replicated Data Types 
+
+Em ambientes de replicação distribuídas, especialmente em arquiteturas **primary-primary** ou **multi-master**, os CRDTs *(Conflict-Free Replicated Data Types)* são estruturas de dados que resolvem um dos maiores desafios desse modelo de replicação: **como lidar com conflitos entre diferentes atualizações de um dado**. Esse tipo de situação ocorre quando **mais de um nó recebe alterações distintas do mesmo dado**, e durante a propagação dessas versões, **surge a necessidade de resolver o conflito para decidir "qual será a versão final e correta" do dado**. Os CRDTs garantem que esses conflitos sejam resolvidos automaticamente, sem a necessidade de coordenação ou bloqueio entre os nós.
+
+Pense em um sistema de edição de documentos colaborativo, onde **várias pessoas de uma equipe podem editar o mesmo artigo ao mesmo tempo**. Se dois usuários, em nós diferentes, editarem a mesma linha do texto simultaneamente, **um sistema que utiliza CRDTs pode mesclar as alterações automaticamente, resultando em uma versão final sem exigir intervenção manual ou gerar conflitos**.
+
+Os **CRDTs são projetados de maneira que, mesmo que múltiplos nós atualizem um dado de forma independente,** quando essas atualizações forem sincronizadas, o estado final será consistente. Isso é possível graças a propriedades matemáticas que tornam as operações **associativas, comutativas e idempotentes**, o que significa que a ordem das operações não importa — o resultado final será sempre o mesmo.
+
+Além disso, os CRDTs **garantem consistência eventual**, ou seja, todos os nós eventualmente terão uma cópia consistente do dado, mesmo que tenham feito atualizações simultâneas. Como essa **abordagem não exige bloqueios ou coordenação entre os nós**, cada nó pode operar de forma independente, o que aumenta a disponibilidade do sistema. Isso torna os CRDTs especialmente adequados para **ambientes primary-primary, onde todos os nós aceitam escritas de forma simultânea**.
+
+<br>
+
 ### Revisores
 
 * [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
@@ -164,4 +175,8 @@ Essa técnica serve como base para outras estratégias, como o **Event-Carried S
 [Event-Carried State Transfer: Consistência e isolamento entre microsserviços](https://medium.com/@lauanguermandi/event-carried-state-transfer-consist%C3%AAncia-e-isolamento-entre-microsservi%C3%A7os-89d1937de33d)
 
 [Event-Carried State Transfer Pattern](https://www.grahambrooks.com/event-driven-architecture/patterns/stateful-event-pattern/)
+
+[A Gentle Introduction to CRDTs](https://vlcn.io/blog/intro-to-crdts)
+
+[CRDTs: The Hard Parts](https://martin.kleppmann.com/2020/07/06/crdt-hard-parts-hydra.html)
 
