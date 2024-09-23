@@ -7,15 +7,15 @@ title: Argo-Rollouts — 'Qual a forma mais simples de executar Canary Relea
 canonical_url: https://medium.com/@fidelissauro/argo-rollouts-qual-a-forma-mais-simples-de-executar-canary-releases-e-blue-green-deployments-no-e030c2ee3af5?source=rss-fc2fda5e9bc2------2
 categories: [ aws, kubernetes, terraform, argo-rollouts ]
 ---
-O Deploy em ambientes **Cloud Native** pode ser, se não é, a parte mais desafiadora no dia a dia do ciclo de vida de um software, principalmente se a atualização é realizada em aplicações criticas que possuem volumes consideráveis de transações.
+O Deploy em ambientes **Cloud Native** pode ser, se não é, a parte mais desafiadora no dia a dia do ciclo de vida de um software, principalmente se a atualização é realizada em aplicações críticas que possuem volumes consideráveis de transações.
 
 Nesse contexto, possuímos uma vasta gama de ferramental para gerenciar deployments em ambientes de **Kubernetes**, algumas melhores, outras mais modestas e poucas simples e sucintas.
 
 Existe um ponto de atenção muito importante quando falamos de realizar um deploy em produção: **O rollback**.
 
-Uma frase simples, mas que mudou minha forma de pensar sobre qualquer coisa que eu colocaria a mão quando trato desse tema veio do meu mestre [**Fernando Ike**](https://twitter.com/fernandoike). **_“Mais importante que entregar rápido, é voltar rápido” _** — Algo assim.
+Uma frase simples, mas que mudou minha forma de pensar sobre qualquer coisa que eu colocaria a mão quando trato desse tema, veio do meu mestre, [**Fernando Ike**](https://twitter.com/fernandoike). **_“Mais importante que entregar rápido, é voltar rápido” _** — Algo assim.
 
-Nesses dias um colega de trabalho me fez uma pergunta que me deixou pensativo das ideia, e que pra responder de forma decente, prometi escrever esse artigo:
+Nesses dias, um colega de trabalho me fez uma pergunta que me deixou pensativo das ideia, e que pra responder de forma decente, prometi escrever esse artigo:
 
 > **_“Qual a forma mais simples de executar um Canary ou um Blue Green no Kubernetes?”_**
 
@@ -29,21 +29,21 @@ O **Argo Rollouts** é uma ferramenta de automação de implantação em cluster
 
 O **Argo Rollouts** é uma extensão do **Argo CD**, outra ferramenta popular de automação de implantação de **Kubernetes**. Ele é construído em cima do controlador de implantação nativo do **Kubernetes** e é compatível com várias plataformas em nuvem, incluindo **AWS**, **Google Cloud** e **Microsoft Azure**.
 
-O **Argo CD** é talvez a ferramenta favorita da maioria das pessoas, eu tento não ser fã de tooling, mas provavelmente é a minha também. Porém, não é simples. As vezes precisamos dar um simples upgrade do que já temos nativamente pra resolver a maioria dos problemas. O **Argo-Rollouts** talvez tenha sido uma resposta a isso.
+O **Argo CD** é talvez a ferramenta favorita da maioria das pessoas, eu tento não ser fã de tooling, mas provavelmente é a minha também. Porém, não é simples. Às vezes precisamos dar um simples upgrade do que já temos nativamente pra resolver a maioria dos problemas. O **Argo-Rollouts** talvez tenha sido uma resposta a isso.
 
 <br>
 
 ## Premissas
 
-A proposta desse post é mostrar o funcionamento básico do Argo-Rollouts resolvendo problemas reais, de forma que consiga ser adaptado ao maior numero de contextos possíveis.
+A proposta desse post é mostrar o funcionamento básico do Argo-Rollouts resolvendo problemas reais, de forma que consiga ser adaptado ao maior número de contextos possíveis.
 
-Com excessão do argo-rollouts, não vou focar em nenhuma outra ferramenta que por ventura possa aparecer nesse post.
+Com exceção do argo-rollouts, não vou focar em nenhuma outra ferramenta que por ventura possa aparecer nesse post.
 
-Todas as possíveis soluções para os problemas apresentados serão apresentados de duas formas:
+Todas as possíveis soluções para os problemas serão apresentadas de duas formas:
 
 - Os exemplos desse artigo serão apresentados em forma de perguntas ou requisitos hipotéticos, seguido da implementação que resolveria a questão. Gosto desse tipo de abordagem.
-- Utilizarei o modo mais “manual” possível para que as logicas possam ser reaproveitados de forma genérica em qualquer tipo de orquestrador de pipelines que eventualmente faça entregas de software num cluster Kubernetes.
-- No final apresentando um componente adicional, da dashboard do argo-rollouts, que pode ser um grande aliado na hora de separar os processos de CI/CD e deixar a progressão dos deploys mais customizáveis e cautelosos.
+- Utilizarei o modo mais “manual” possível para que as lógicas possam ser reaproveitadas de forma genérica em qualquer tipo de orquestrador de pipelines que eventualmente faça entregas de software num cluster Kubernetes.
+- No final, apresentando um componente adicional, da dashboard do argo-rollouts, que pode ser um grande aliado na hora de separar os processos de CI/CD e deixar a progressão dos deploys mais customizáveis e cautelosos.
 
 <br>
 
@@ -51,7 +51,7 @@ Todas as possíveis soluções para os problemas apresentados serão apresentado
 
 A arquitetura de manipulação do **Argo Rollouts** funciona primeiramente como um **client / server**.
 
-Basicamente, caso você não escreva passos de deployment que se viram sozinhos, baseados em tempo e etc, você precisará utilizar o plugin do kubectl para o rollouts para promover, abortar ou dar rollback de versões. Então entende-se que esse plugin precisa estar instalado no seu orquestrador de pipelines caso necessite gerenciar o ciclo dessa forma.
+Basicamente, caso você não escreva passos de deployment que se viram sozinhos, baseados em tempo, etc., você precisará utilizar o plugin do kubectl para o rollouts para promover, abortar ou dar rollback de versões. Então, entende-se que esse plugin precisa estar instalado no seu orquestrador de pipelines caso necessite gerenciar o ciclo dessa forma.
 
 A instalação, siga o **[Installation Guide](https://argoproj.github.io/argo-rollouts/installation/)** oficial do Argo Rollouts.
 
@@ -107,7 +107,7 @@ resource "helm_release" "argo_rollouts" {
 
 Uma coisa que precisa ficar evidente, na lata, quando começamos a utilizar o *Argo-Rollouts*, é que vamos parar de utilizar os manifestos de Deployment. Isso é a premissa inicial da ferramenta, mas calma. É muito simples.
 
-No lugar do que escreveríamos nossos pod templates e replicas, no Deployment vamos começar a utilizar o objeto Rollout, disponível a partir dos CRD's do Argo Rollouts no lugar.
+No lugar do que escreveríamos nossos pod templates e réplicas, no Deployment vamos começar a utilizar o objeto Rollout, disponível a partir dos CRD's do Argo Rollouts no lugar.
 
 De forma genérica, migraríamos um Deployment convencional que já estamos acostumados disso:
 
@@ -135,7 +135,7 @@ spec:
           protocol: TCP
 ```
 
-Para algo parecido com o item abaixo, onde temos a mesma estrutura de template/spec para os pods, porém adicionamos o campo strategy onde vamos descrever como será executado os rollouts de versão. Não se atente a esse modelo agora, vamos evoluir bastante o case a seguir:
+Para algo parecido com o item abaixo, onde temos a mesma estrutura de template/spec para os pods, porém adicionamos o campo strategy onde vamos descrever como serão executados os rollouts de versão. Não se atente a esse modelo agora, vamos evoluir bastante o case a seguir:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -177,9 +177,9 @@ spec:
 
 O **Canary Deployment** é um padrão de deploy onde uma nova versão de uma aplicação é implantada em uma quantidade determinada e progressiva de instâncias para fins de teste e validação a quente antes de ser totalmente implantada em todo o ambiente de produção.
 
-Esse processo também é conhecido sem estrangeirismo como **Canário**. Durante o período de teste, **o tráfego é direcionado para o canário, permitindo que a nova versão do aplicativo seja validada em um ambiente real, mas com um menor risco de interrupção** para o restante dos usuários,** recebendo uma quantidade pequena, porém progressiva, do tráfego** até que seja promovida a versão estável.
+Esse processo também é conhecido sem estrangeirismo como **Canário**. Durante o período de teste, **o tráfego é direcionado para o canário, permitindo que a nova versão do aplicativo seja validada em um ambiente real, mas com um menor risco de interrupção** para o restante dos usuários, **recebendo uma quantidade pequena, porém progressiva, do tráfego** até que seja promovida a versão estável.
 
-**O ideal, é que se houver algum problema durante os testes, a implantação do canário pode ser revertida com facilidade, minimizando o impacto para o restante dos usuários.**
+**O ideal é que, se houver algum problema durante os testes, a implantação do canário pode ser revertida com facilidade, minimizando o impacto para o restante dos usuários.**
 
 Os **Canary Deployments** são amplamente utilizados em ambientes de produção, especialmente em implantações críticas em que os erros podem ter consequências graves, ou onde **queremos validar um de-para a quente de alguma feature**, modificação, migração. Essa técnica ajuda a garantir a estabilidade e a qualidade do aplicativo, ao mesmo tempo em que permite que as equipes de desenvolvimento e operações **realizem testes e validações com segurança junto ao tráfego real**.
 
@@ -193,7 +193,7 @@ Tentei elaborar mentalmente alguns requisitos de plataforma nos quais o Canary R
 
 Essa talvez seja a abordagem inicial dos espectros do canary automatizado. Temos alguns time-boxes que podem variar de segundos, minutos, horas ou dias e queremos que a progressão da porcentagem do uso progrida dentro desses intervalos. Tudo dependendo do nível de exigência e criticidade da aplicação ou o quão específica e crítica aquela mudança pode ser em relação ao todo.
 
-Então para este primeiro cenário, vamos aplicar o seguinte manifesto, adicionando vários steps com o peso desejado da porcentagem do rollout e informando as pausas desejadas para cada uma das progressões de carga.
+Então, para este primeiro cenário, vamos aplicar o seguinte manifesto, adicionando vários steps com o peso desejado da porcentagem do rollout e informando as pausas desejadas para cada uma das progressões de carga.
 
 ```yaml
 ---
@@ -232,11 +232,11 @@ kubectl argo rollouts get rollout chip -n chip --watch
 
 ![Canary Release Progression Image](https://cdn-images-1.medium.com/max/1024/1*5QYh21jVsmbiPI-hnPp99Q.png)
 
-Para ilustrar, na imagem abaixo tem um loop de consumo de uma API que retorna a devida versão da mesma. Assim podemos acompanhar visualmente como funciona a progressão a quente para os consumidores do serviço em questão. Vamos usar essa abordagem a partir daqui.
+Para ilustrar, na imagem abaixo tem um loop de consumo de uma API que retorna a devida versão da mesma. Assim, podemos acompanhar visualmente como funciona a progressão a quente para os consumidores do serviço em questão. Vamos usar essa abordagem a partir daqui.
 
 ![API Version Loop Image](https://cdn-images-1.medium.com/max/1024/1*SLN877naES-VpjuZTo3wJg.png)
 
-Após todos os steps finalizarem, teremos nossa revision:2 marcada como stable e a revision:1 descontinuada. Porém ela vai ficar ali podendo ser reativada num possível rollback. Trataremos disso mais pra frente.
+Após todos os steps finalizarem, teremos nossa `revision:2` marcada como `stable` e a `revision:1` descontinuada. Porém, ela vai ficar ali, podendo ser reativada num possível rollback. Trataremos disso mais pra frente.
 
 ![Revision Update Image](https://cdn-images-1.medium.com/max/1024/1*u5b1Lc6AlPtr4VzpsswUVw.png)
 
@@ -250,7 +250,7 @@ Visualmente, durante nossas interações com as requisições que retornam a ver
 
 #### “Eu preciso que meu canário progrida sozinho até 80%, porém eu gostaria de promover ou abortar o restante manualmente”
 
-Um outro tipo de cenário de uso é uma progressão gradual controlada, porém que seja necessária uma intervenção humana para progressão da release em si. Nesse cenário hipotético, vamos imaginar que eu gostaria que a progressão funcione como o primeiro exemplo, de x em x tempo, porém pare em 80%. E a partir daí, alguém aprova ou aborta a mudança de versão.
+Um outro tipo de cenário de uso é uma progressão gradual controlada, porém que seja necessária uma intervenção humana para a progressão da release em si. Nesse cenário hipotético, vamos imaginar que eu gostaria que a progressão funcione como o primeiro exemplo, de x em x tempo, porém pare em 80%. E a partir daí, alguém aprova ou aborta a mudança de versão.
 
 
 ```yaml
@@ -278,13 +278,13 @@ spec:
 ```
 
 
-Nesse caso, temos a opção de colocar uma instrução de pause sem uma duração definida, e nosso rollout entrará num status de Paused indefinidademente quando chegar no step. Nesse caso em especifico, precisaremos dar uma instrução para o argo manualmente continuar o rollout, ou abortá-lo e retornar a versão anterior.
+Nesse caso, temos a opção de colocar uma instrução de pause sem uma duração definida, e nosso rollout entrará num status de Paused indefinidamente quando chegar no step. Nesse caso em específico, precisaremos dar uma instrução para o argo continuar manualmente o rollout, ou abortá-lo e retornar a versão anterior.
 
 ![Imagem do Argo Rollouts](https://cdn-images-1.medium.com/max/1024/1*LkFudHsvWPSvLOzw95TRdA.png)
 
 Essas instruções são os comandos `promote` e `abort` também vindos do plugin do Argo Rollouts. O `promote` irá progredir o step atual, o `abort` irá cancelar o rollout e retornar todos os pods da aplicação para a versão anterior.
 
-Um adendo ao abort é que ele pode ser executado em qualquer momento do ciclo de vida do rollout.
+Um adendo ao `abort` é que ele pode ser executado em qualquer momento do ciclo de vida do rollout.
 
 ```bash
 kubectl argo rollouts promote chip -n chip
@@ -298,7 +298,7 @@ kubectl argo rollouts abort chip -n chip
 
 #### “Eu preciso que meu canário progrida até 20%, depois necessite de uma intervenção manual para continuar o rollout”
 
-Esse processo é exatamente igual ao anterior, porém vamos pensar num case onde eu queria ser um pouco mais conservador e chato quanto ao meu rollout, e queria promover uma pequena porcentagem para o meu canary, olhar minha observability, acompanhar com mais calma antes de prosseguir com o rollout automatizado. Nesse caso somente precisamos adicionar o step pause depois de promover a primeira porcentagem. Assim precisaremos dar o `promote` para prosseguir, ou o `abort` logo de começo.
+Esse processo é exatamente igual ao anterior, porém vamos pensar num case onde eu queria ser um pouco mais conservador e chato quanto ao meu rollout, e queria promover uma pequena porcentagem para o meu canary, olhar minha observability, acompanhar com mais calma antes de prosseguir com o rollout automatizado. Nesse caso, somente precisamos adicionar o step pause depois de promover a primeira porcentagem. Assim, precisaremos dar o `promote` para prosseguir, ou o `abort` logo de começo.
 
  ```yaml
 ---
@@ -345,19 +345,19 @@ Uma abordagem que deriva dessa é fazer o inverso, promover automaticamente até
 
 Pra uma abordagem mais conservadora e crítica, é possível que os rollouts aconteçam de forma contínua com baixa progressão de volume, em que cada step seja promovido manualmente.
 
-Esse cenário é interessante pra produtos que sejam extremamente sensíveis a falhas com volumes altos de clientes e que possam gerar prejuízos grandes em casos de erro. Em todo caso, uma abordagem mais cuidadosa.
+Esse cenário é interessante pra produtos que sejam extremamente sensíveis a falhas, com volumes altos de clientes e que possam gerar prejuízos grandes em casos de erro. Em todo caso, uma abordagem mais cuidadosa.
 
-Imagine nesse cenário acima, você está trocando a API de um fornecedor, fez alguma melhoria de performance, trocou um flavor de banco, algum driver, atualizou versão de framework e etc, e gostaria que esse rollout acontecesse de forma extremamente validada.
+Imagine nesse cenário acima, você está trocando a API de um fornecedor, fez alguma melhoria de performance, trocou um flavor de banco, algum driver, atualizou a versão de framework e etc, e gostaria que esse rollout acontecesse de forma extremamente validada.
 
-Nesse caso, vamos utilizar o step pause em seguida de cada progressão de porcentagem do rollout, sem as definições de duration. Nesse sentido em cada promoção de step, o argo vai paus
+Nesse caso, vamos utilizar o step pause em seguida de cada progressão de porcentagem do rollout, sem as definições de duration. Nesse sentido, em cada promoção de step, o argo vai pausar.
 
 <br>
 
 ## Blue / Green Deployments
 
-O **Blue/Green Deployment**, é diferente do **Canary** em sua concepção, no qual cumpre o objetivo de realizar uma validação prévia do deploy. **A diferença para o canary, é que a a nova versão do aplicativo é implantada em paralelo ao ambiente de produção atual (ambiente Blue), sem afetar o tráfego do usuário da versão estável (ambiente Green)**, porém é configurada uma rota customizada para que seja possível realizar testes durante o processo de deploy antes de promover a versão nova.
+O **Blue/Green Deployment**, é diferente do **Canary** em sua concepção, no qual cumpre o objetivo de realizar uma validação prévia do deploy. **A diferença para o canary, é que a nova versão do aplicativo é implantada em paralelo ao ambiente de produção atual (ambiente Blue), sem afetar o tráfego do usuário da versão estável (ambiente Green)**, porém é configurada uma rota customizada para ser possível realizar testes durante o processo de deploy antes de promover a versão nova.
 
-A estratégia **Blue/Green Deployment** é comumente usada em ambientes de alta disponibilidade, onde interrupções ou erros no ambiente de produção podem ter um grande impacto na experiência do usuário, basicamente **é a melhor opção onde a aplicação é muito sensível a erros no geral**. Essa técnica tem muito a agregar na maior parte do tempo, porém é considerada um pouco mais cara, e não permite fazer uma validação gradual de uma feature com o cliente real, por exemplo.
+A estratégia **Blue/Green Deployment** é comumente usada em ambientes de alta disponibilidade, onde interrupções ou erros no ambiente de produção podem ter um grande impacto na experiência do usuário. Basicamente, **é a melhor opção onde a aplicação é muito sensível a erros no geral**. Essa técnica tem muito a agregar na maior parte do tempo, porém é considerada um pouco mais cara e não permite fazer uma validação gradual de uma feature com o cliente real, por exemplo.
 
 ![Blue/Green Deployment](https://cdn-images-1.medium.com/max/611/1*k0d5ugLsZ76poUtbAfoUHQ.gif)
 
@@ -450,7 +450,7 @@ spec:
 
 ### “Eu gostaria de ter a capacidade de validar minha versão Green através de uma rota específica, e promover manualmente”
 
-Escrevendo nosso rollout de **blue/green**, precisamos parametrizar inicialmente o `activeService` e o `previewService` de forma com que nosso rollout saiba quais services controlar durante as viradas de cargas e validação.
+Escrevendo nosso rollout de **blue/green**, precisamos parametrizar inicialmente o `activeService` e o `previewService` de forma que nosso rollout saiba quais services controlar durante as viradas de cargas e validação.
 
 E como a proposta desse cenário é validar e promover manualmente depois de certas validações, é importante setar o parâmetro `autoPromotionEnabled` como `false`.
 
@@ -504,15 +504,15 @@ Agora aguardaremos até a versão revision:2 estabilizar.
 
 <br>
 
-#### "Eu gostaria de que minha versão de preview recebesse alguns requests para warm up do meu runtime ou realizar testes antes de promover para a versão ativa"
+#### "Eu gostaria que minha versão de preview recebesse alguns requests para warm up do meu runtime ou realizar testes antes de promover para a versão ativa"
 
 O interessante do Blue Green é que ele trabalhe de forma com que você consiga validar o comportamento da sua versão nova manualmente, por processos automatizados, ferramentas de teste antes de promover a versão nova para o cliente final.
 
-Neste cenário irei realizar uma ferramenta de **HTTP Bench** para realizar um número considerável de requests para minha versão nova afim de simular um “**_warm up_**” do runtime. **Esse processo pode ser interessante para workloads criados em JVM que precisam de uma “esquentada” nos primeiros instantes de vida para performar da melhor forma**.
+Neste cenário, irei realizar uma ferramenta de **HTTP Bench** para realizar um número considerável de requests para minha versão nova a fim de simular um “**_warm up_**” do runtime. **Esse processo pode ser interessante para workloads criados em JVM que precisam de uma “esquentada” nos primeiros instantes de vida para performar da melhor forma**.
 
 Uma ideia interessante é utilizar seus testes de fumaça de forma containerizada, subir seu roteiro num container e executá-lo da mesma forma.
 
-Precisamos criar um AnalysisTemplate descrevendo que tipo de análise vamos realizar para dar uma flag na nossa versão. Nesse caso vou executar um container do cassowary em uma rota qualquer do meu serviço, simulando um endpoint de verdade que precise desse tipo de estratégia.
+Precisamos criar um `AnalysisTemplate` descrevendo que tipo de análise vamos realizar para dar uma flag na nossa versão. Nesse caso, vou executar um container do cassowary em uma rota qualquer do meu serviço, simulando um endpoint de verdade que precise desse tipo de estratégia.
 
 
 ```yaml
@@ -546,7 +546,7 @@ spec:
 ---
 ```
 
-Agora no nosso rollout, vamos utilizar o prePromotionAnalysis passando o nosso AnalysisTemplate criado
+Agora no nosso rollout, vamos utilizar o `prePromotionAnalysis` passando o nosso `AnalysisTemplate` criado:
 
 ```yaml
 ---
@@ -572,7 +572,7 @@ spec:
 ```
 ![Image](https://cdn-images-1.medium.com/max/1024/1*IGunLxEntRZjAf3HKM62Rw.png)
 
-Podemos validar o seguinte cenário coletando algumas métricas dos dois services. Também é uma boa prática acompanhar as duas versões em paralelo no momento de um rollout. Nesse caso, podemos ver um pico de requisições acontecendo no service preview conforme parametrizado no AnalysisTemplate.
+Podemos validar o seguinte cenário coletando algumas métricas dos dois services. Também é uma boa prática acompanhar as duas versões em paralelo no momento de um rollout. Nesse caso, podemos ver um pico de requisições acontecendo no service preview conforme parametrizado no `AnalysisTemplate`.
 
 ![Image](https://cdn-images-1.medium.com/max/1024/1*JJ7nGOb7LYlQ8X3yrUQNsQ.png)
 
@@ -590,17 +590,17 @@ kubectl argo rollouts promote chip -n chip
 
 #### “Preciso executar uma bateria de testes na minha versão de preview, e criar uma análise de métricas automatizada para validar se a versão está saudável. É possível?”
 
-Sim, assim como podemos criar um **AnalysisTemplate** pra executar os testes, podemos criar outro em seguida que a partir de métricas do Prometheus, consegue dar um sinal verde ou vermelho pra nossa aplicação finalizar o rollout. Nesse caso seria interessantes tanto o **_autoPromote: false_** como o **_autoPromote: true_** para workloads que tenham mais confiança.
+Sim, assim como podemos criar um `AnalysisTemplate` pra executar os testes, podemos criar outro em seguida que, a partir de métricas do Prometheus, consegue dar um sinal verde ou vermelho pra nossa aplicação finalizar o rollout. Nesse caso, seria interessante tanto o **_autoPromote: false_** como o **_autoPromote: true_** para workloads que tenham mais confiança.
 
-Vamos reaproveitar o **AnalysisTemplate** do exemplo anterior nesse aqui como uma continuidade.
+Vamos reaproveitar o `AnalysisTemplate` do exemplo anterior nesse aqui como uma continuidade.
 
-Além dele vamos criar um outro template onde vamos definir uma query **PromQL** que será executada em uma instância de prometheus que esteja agregando as métricas do nosso cluster.
+Além dele, vamos criar um outro template onde vamos definir uma query **PromQL** que será executada em uma instância de prometheus que esteja agregando as métricas do nosso cluster.
 
-Para isso vamos precisar configurar algumas coisas, sendo elas o provider do prometheus onde vamos informar a URL do Prometheus, nesse caso tenho uma instancia rondando no meu cluster então informarei a URL do service.
+Para isso, vamos precisar configurar algumas coisas, sendo elas o provider do prometheus onde vamos informar a URL do Prometheus. Nesse caso, tenho uma instância rodando no meu cluster então informarei a URL do service.
 
-Em seguida vamos definir qual será a query de consulta. No caso do exemplo estou fazendo um calculo de **SLO** de disponibilidade avaliando os 5 ultimos minutos.
+Em seguida, vamos definir qual será a query de consulta. No caso do exemplo, estou fazendo um cálculo de **SLO** de disponibilidade avaliando os 5 últimos minutos.
 
-Por ultimo vamos informar o successRate onde vamos colocar uma condição do teste ser aceito ou não.
+Por último, vamos informar o successRate onde vamos colocar uma condição do teste ser aceito ou não.
 
 
 ```yaml
@@ -660,11 +660,11 @@ spec:
 //...
 ```
 
-Aplicando iremos ver correr o blue/green como já estamos acostumados, porém com um adicional no qual iremos ver rodando os AnalysisTemplates, um que vai executar nossos testes / warm up e o do Prometheus que irá sumarizar as métricas do teste.
+Aplicando, iremos ver correr o blue/green como já estamos acostumados, porém, com um adicional no qual iremos ver rodando os `AnalysisTemplates`, um que vai executar nossos testes / warm up e o do Prometheus que irá sumarizar as métricas do teste.
 
 ![Image](https://cdn-images-1.medium.com/max/1024/1*7miYjtv-yKivNl7b0QUf5Q.png)
 
-Para maiores informações a respeitos das análises que fazemos através dos templates, podemos verificar os objetos AnalysisRun
+Para mais informações a respeito das análises que fazemos através dos templates, podemos verificar os objetos AnalysisRun:
 
 ```bash
 kubectl get analysisrun -n chip
@@ -680,11 +680,11 @@ kubectl describe analysisrun <id> -n chip
 
 ### Rollbacks de Versões Anteriores
 
-É uma premissa do canary que seja possível validar a nova versão aos poucos e a partir do tráfego do cliente conseguir validar o sucesso de uma implantação. Esse sucesso pode ser medido de diversas formas, a olho nú ou de formas automatizadas como pudemos ver nesse artigo.
+É uma premissa do canary que seja possível validar a nova versão aos poucos e, a partir do tráfego do cliente, conseguir validar o sucesso de uma implantação. Esse sucesso pode ser medido de diversas formas, a olho nu ou de formas automatizadas, como pudemos ver nesse artigo.
 
-Mas independente do modelo de deployment aplicado no no produto, é muito importante que existam ferramentas que possibilitem alternativas de rollback de forma rápida. Repetindo mais uma vez: **_"Melhor que entregar rápido, é voltar rápido"_**
+Mas independente do modelo de deployment aplicado no produto, é muito importante que existam ferramentas que possibilitem alternativas de rollback de forma rápida. Repetindo mais uma vez: **_"Melhor que entregar rápido, é voltar rápido"_**
 
-Vamos imaginar um cenário hipotético em que uma release de canário começou a ser promovida e durante os steps, podemos identificar que uma taxa de erros incomum começou a subir junto a progressão dos steps.
+Vamos imaginar um cenário hipotético em que uma release de canário começou a ser promovida e, durante os steps, podemos identificar que uma taxa de erros incomum começou a subir junto a progressão dos steps.
 
 ![Image](https://cdn-images-1.medium.com/max/1024/1*l8Y9zbrzrTU85IFnlRQ8uw.png)
 
@@ -708,14 +708,13 @@ O comando de abort pode ser executado em qualquer momento do ciclo de vida de im
 
 Depois de uma implantação finalizada, é necessário o rollout de uma versão anterior do zero, nesse caso iremos utilizar o comando… pasmem, chamado rollback.
 
-Após o inicio do rollback será realizado um rollout novo, promovendo a versão anterior.
+Após o início do rollback será realizado um rollout novo, promovendo a versão anterior.
 
 ```bash
 kubectl argo rollouts rollback chip -n chip;
 ```
 
-
-Tanto no caso anterior do abort quando nessa do rollback o resultado final de uma implantação que teve um plano de retorno deverá ser parecida com a abaixo, onde a taxa de erro anômala identificada retorna aos níveis normais da aplicação.
+Tanto no caso anterior do abort quanto nesse do rollback o resultado final de uma implantação que teve um plano de retorno deverá ser parecido com a abaixo, onde a taxa de erro anômala identificada retorna aos níveis normais da aplicação.
 
 ![Image](https://cdn-images-1.medium.com/max/1024/1*hRJMhCSA6LOBOeChbf7oHw.png)
 
@@ -723,7 +722,7 @@ Tanto no caso anterior do abort quando nessa do rollback o resultado final de um
 
 ### Horizontal Pod Autoscaler / Vertical Pod Autoscaler
 
-Agora vamos para algumas dicas úteis pra resolver alguns problemas que você venha a encontrar durante seus testes e migração do Argo. Caso você esteja utilizando **HPA/VPA** em seu workload, será necessário fazer algumas modificações no objeto do **HorizontalPodAutoscaler** e **VerticalPodAutoscaler** alterando o **scaleTargetRef** trocando o apiVersion de apps/v1 para [argoproj.io/v1alpha1](<http://argoproj.io/v1alpha1>) e o Kind de Deployment para Rollout , assim conseguimos acertar as referencias.
+Agora vamos para algumas dicas úteis pra resolver alguns problemas que você venha a encontrar durante seus testes e migração do Argo. Caso você esteja utilizando **HPA/VPA** em seu workload, será necessário fazer algumas modificações no objeto do **HorizontalPodAutoscaler** e **VerticalPodAutoscaler** alterando o **scaleTargetRef** trocando o apiVersion de `apps/v1` para [argoproj.io/v1alpha1](<http://argoproj.io/v1alpha1>) e o Kind de Deployment para Rollout , assim conseguimos acertar as referências.
 
 ```yaml
 ---
@@ -749,7 +748,7 @@ spec:
 ---
 ```
 
-Para isso
+Para isso:
 
 ```yaml
 ---
