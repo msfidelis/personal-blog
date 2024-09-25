@@ -16,9 +16,9 @@ Neste capítulo da nossa série de System Design, vamos explorar os conceitos de
 
 Imagine as **chaves do seu carro ou da sua casa**. Agora, imagine que **exista apenas uma cópia delas e que você as carregue o dia todo**, acompanhando você na academia, supermercado, trabalho, restaurantes, aniversários, festas, cinema e outros lugares. Agora, **imagine que, infelizmente, você tenha perdido essas chaves em algum desses lugares e só percebeu quando precisou delas**. O que aconteceria? **Você ficaria trancado fora do carro ou de casa, causando um grande problema**. Quando pensamos em replicação de dados, é exatamente esse tipo de problema que queremos evitar. Agora, **imagine que você tenha cópias de reserva distribuídas com diferentes pessoas, como parceiro(a), pai, mãe ou amigos próximos**, ou até mesmo escondidas em **locais estratégicos, como debaixo do tapete da garagem ou dentro de um vaso de plantas**. Essa é uma analogia para o tipo de estratégia que usamos para lidar com replicação.
 
-Na engenharia de software, replicação refere-se ao ato de **criar uma ou mais cópias do mesmo dado em locais diferentes**. Essa é uma prática altamente recomendada, especialmente em sistemas distribuídos, onde consistência, disponibilidade e tolerância a falhas são requisitos mandatórios para garantir a operabilidade do sistema.
+Nas disciplinas que compõe a engenharia de software, a replicação se refere ao ato de **criar uma ou mais cópias do mesmo dado em locais diferentes**. Essa é uma prática recomendada especialmente em sistemas onde a consistência, disponibilidade e tolerância a falhas são requisitos mandatórios para o ciclo de vida do produto.
 
-Essas réplicas **podem estar localizadas em servidores distintos, datacenters separados geograficamente ou até mesmo em diferentes regiões de nuvens públicas**. O objetivo principal da replicação é **garantir que os dados estejam disponíveis em vários locais**, o que é essencial para sistemas que exigem alta disponibilidade e continuidade dos negócios. Quando falamos de [Bancos de Dados](/teorema-cap/), **a replicação permite que, mesmo em caso de falhas críticas de hardware ou problemas de rede, os dados continuem acessíveis em outros locais**. Ela também garante que o sistema se tornará consistente em algum momento, dependendo apenas do tempo necessário para que uma réplica se torne a nova fonte principal de dados.
+Essas réplicas **podem estar localizadas em servidores ou nós distintos, datacenters separados geograficamente ou até mesmo em diferentes regiões de nuvens públicas**. O objetivo principal da replicação é **garantir que os dados estejam disponíveis em vários locais**, o que é essencial para sistemas que exigem alta disponibilidade. Quando falamos de [Bancos de Dados](/teorema-cap/), **a replicação permite que, mesmo em caso de falhas críticas de hardware ou problemas de rede, os dados continuem acessíveis em outros locais**. Ela também garante que o sistema se tornará consistente em algum momento, dependendo apenas do tempo necessário para que uma réplica se torne a nova fonte principal de dados.
 
 Em resumo, o objetivo das estratégias de replicação é garantir que os mesmos dados estejam disponíveis em vários locais, permitindo que o sistema continue operando mesmo que uma parte dele falhe.
 
@@ -31,9 +31,9 @@ Antes de abordarmos as estratégias de replicação, é importante entender algu
 
 ## Replicação Primary-Replica
 
-Na Replicação Primary-Replica, **existe um nó primário que recebe todas as operações de escrita e, em seguida, replica essas operações para um ou mais nós secundários, chamados de réplicas**. **As réplicas geralmente são usadas apenas para leitura**, enquanto **todas as operações de escrita são gerenciadas exclusivamente pelo nó primário**. Essa arquitetura é **útil quando se deseja escalar as leituras em um sistema**, distribuindo-as entre as réplicas, mas mantendo a simplicidade no gerenciamento das escritas.
+Na Replicação Primary-Replica, é proposto que **um nó primário receba todas as operações de escrita e, em seguida, replica essas operações para um ou mais nós secundários.** Esses nós são as denominadas réplicas. **As réplicas geralmente são usadas apenas para leitura**, enquanto **todas as operações de escrita são gerenciadas exclusivamente pelo nó primário** desse sistema. Essa arquitetura é **útil quando fazemos uso de leituras intensivas**, por nos permite criar uma [distribuição de carga](/load-balancing/) entre as réplicas, mas mantendo a simplicidade nas escritas.
 
-**O nó primário é responsável por garantir a consistência dos dados em todas as réplicas**. Essa abordagem é eficiente em cenários de alta demanda de leitura ou em sistemas que utilizam intensivamente [CQRS](/cqrs/), mas **cria um ponto único de falha no nó primário**. Se o nó primário falhar, **uma das réplicas precisará ser promovida a novo nó primário**, o que pode causar um tempo de inatividade até que esse processo seja concluído.
+Em resumo, nesse tipo de modelo, **o nó primário é responsável por garantir a consistência dos dados em todas as réplicas**. Essa abordagem é muito bem aceita em cenários de leitura intensiva ou em sistemas que utilizam intensivamente [CQRS](/cqrs/) para criar modelos de leitura otimizados, mas em contrapartida **cria um ponto único de falha a partir do nó primário**. Se esse componente primário falhar, **uma das réplicas precisará ser promovida a novo nó primário**, o que pode causar um tempo de inatividade e erros até que esse processo seja concluído por completo. O tempo para conclusão varia de acordo com a implementação utilizada, e de muitas formas pode existir muita engenharia manual. 
 
 ## Replicação Primary-Primary - Multi-Master
 
@@ -48,23 +48,23 @@ Esse modelo **elimina o ponto único de falha presente na replicação Primary-R
 
 # Estratégias de Replicação
 
-Nas disciplinas de engenharia, encontramos várias estratégias de replicação, tanto para dados — que geralmente são o foco dessas abordagens devido à sua importância e complexidade — quanto para outras áreas menos convencionais, como replicação de cargas de trabalho completas, domínios de software em cache, entre outros. O objetivo deste capítulo é exemplificar alguns dos modelos de replicação mais utilizados e explicar suas diferenças, vantagens e desvantagens.
+Nas disciplinas de engenharia que vimos até agora, não somente nesse texto, encontramos várias estratégias onde a replicação pode auxiliar em conjunto com outras abordagens, principalmente quando estamos olhando para dados — que geralmente são o foco dessas abordagens devido à sua importância e complexidade — quanto para outras áreas menos convencionais, como replicação de cargas de trabalho completas, domínios de software em cache, entre outros. O objetivo deste capítulo é exemplificar alguns dos modelos de replicação mais utilizados e explicar suas diferenças, vantagens e desvantagens para que fique claro a aplicabilidade de cada cenário, e auxilie nas decisões de arquitetura e engenharia.
 
 
 ## Replicação Total e Parcial
 
-A **Replicação Total refere-se à prática de replicar todos os dados em todos os nós de um sistema**. Isso significa que **cada nó possui uma cópia completa dos dados**. A vantagem dessa abordagem é que ela maximiza a disponibilidade e a resiliência, permitindo que **qualquer nó atenda a uma solicitação do cliente, desde que as operações de escrita sejam amplamente permitidas**. No entanto, como trade-off, essa estratégia pode **aumentar os custos de armazenamento e a latência das escritas**, já que cada nova informação precisa ser replicada e confirmada em todos os nós que compõem o cluster. Esse modelo também é conhecido como **Full-Table Replication**. 
+A **Replicação Total se refere à prática de replicar todos os dados em todos os nós de um sistema**. Isso significa que **cada nó possui uma cópia completa de todos os dados**. A vantagem dessa abordagem é que ela adiciona váris níveis de disponibilidade, permitindo que **qualquer nó atenda a uma solicitação do cliente a qualquer momento**, desde que as **operações de escrita sejam deliberadamente permitidas**. No entanto, como contraponto, essa estratégia pode **aumentar os custos de armazenamento e a latência das escritas**, já que cada novo registro ou versão do dado precisa ser replicado e confirmado em todos os nós que compõem o cluster do sistema em questão. Esse modelo também é conhecido como **Full-Table Replication** em abordagens acadêmicas. 
 
 Por outro lado, a **Replicação Parcial distribui apenas uma parte dos dados para cada nó**. Assim, **cada nó contém apenas uma fração dos dados totais**. Esse modelo é **mais eficiente em termos de armazenamento e reduz a latência nas operações de escrita**, mas **aumenta a complexidade nas leituras**, pois os dados solicitados podem não estar disponíveis localmente e podem exigir comunicação entre nós. Isso pode fazer com que o cliente precise consultar vários nós, ou que o sistema de consultas abstraia essa complexidade. Para localizar os dados entre os nós, é comum implementar algoritmos de [Sharding](/sharding/), como o **Hashing Consistente**.
 
 
 ## Replicação Síncrona
 
-Na Replicação Síncrona, **todas as alterações nos dados devem ser replicadas em todos os nós antes que a operação seja considerada bem-sucedida**. Isso **garante consistência forte entre os nós**, pois uma valor escrito ou atualizado só estará disponível para leitura após todos os nós confirmarem a escrita, ou seja, todos eles responderão com os mesmos dados em qualquer momento.
+Na Replicação Síncrona, presume-se que **todas as alterações nos dados devem ser replicadas em todos os nós antes que a operação seja considerada concluída para o solicitante**. Isso **garante consistência forte entre os nós**, pois uma valor escrito ou atualizado só estará disponível para leitura após todos os nós confirmarem que escreveram o mesmo com sucesso, ou seja, todos eles responderão com os mesmos dados em qualquer momento, independente de qual deles receber a solicitação de leitura.  
 
 ![Replicação Síncrona](/assets/images/system-design/replicacao-sincrona.png)
 
-Em um cenário onde um cliente precisa salvar uma informação em um cluster que, por exemplo, oferece funcionalidades de cache, ele envia o dado, em formato de chave e valor, para o endpoint primário do cluster de cache. **Esse endpoint é responsável por distribuir o dado entre todos os nós do cluster**. A solicitação **só é finalizada e confirmada ao cliente quando essa operação é concluída por completo**. Uma técnica comum para implementação de replicação síncrona é o [two-phase commit](https://martinfowler.com/articles/patterns-of-distributed-systems/two-phase-commit.html).
+Em um cenário onde um cliente precisa salvar uma informação em um cluster que, por exemplo, oferece funcionalidades de cache, ele envia o dado, em formato de chave e valor, para o endpoint primário do cluster como de costume. **Esse endpoint é responsável por distribuir o dado entre todos os nós do cluster**. A solicitação **só é finalizada e confirmada ao cliente quando essa operação é concluída por completo**, ou seja, todos os nós responderam "ok" para a solicitação de salvar o dado. Uma técnica comum para implementação de replicação síncrona é o [two-phase commit](https://martinfowler.com/articles/patterns-of-distributed-systems/two-phase-commit.html).
 
 A replicação síncrona tem **vantagens em cenários onde a consistência é crítica**, como em sistemas de pagamento ou bancos de dados financeiros, onde **qualquer discrepância entre os nós pode causar grandes problemas**. No entanto, essa abordagem **pode aumentar a latência**, especialmente quando os nós estão distribuídos geograficamente ou em grande quantidade.
 
@@ -150,7 +150,16 @@ Além disso, os CRDTs **garantem consistência eventual**, ou seja, todos os nó
 
 ### Revisores
 
-* [Tarsila, o amor da minha vida](https://twitter.com/tarsilabianca_c)
+* [Tarsila, o amor da minha vida](https://bsky.app/profile/tarsilabcarvalho.bsky.social)
+
+* [Klecianny Melo](https://bsky.app/profile/kecbm.bsky.social)
+
+* [Luiz Aoqui – (@ luiz_aoqui)](https://bsky.app/profile/luiz.aoqui.dev)
+
+* [Mario Amaral](https://bsky.app/profile/mariofts.bsky.social)
+
+* [Clayton Cavaleiro](https://bsky.app/profile/claytoncavaleiro.bsky.social)
+
 
 <br>
 
@@ -163,6 +172,8 @@ Além disso, os CRDTs **garantem consistência eventual**, ou seja, todos os nó
 [O que é Change Data Capture](https://triggo.ai/blog/o-que-e-change-data-capture/)
 
 [SQL-Server: O que é a CDA (captura de dados de alterações)?](https://learn.microsoft.com/pt-br/sql/relational-databases/track-changes/about-change-data-capture-sql-server?view=sql-server-ver16)
+
+[Two-Phase Commit](https://martinfowler.com/articles/patterns-of-distributed-systems/two-phase-commit.html)
 
 [Event-Carried State Transfer Pattern](https://rivery.io/data-learning-center/data-replication/)
 
