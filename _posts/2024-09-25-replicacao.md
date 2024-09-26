@@ -71,7 +71,7 @@ A replicação síncrona tem **vantagens em cenários onde a consistência é cr
 
 ## Replicação Assíncrona
 
-Na Replicação Assíncrona, **as alterações de dados são enviadas a um dos nós de um cluster e replicadas para os outros nós de forma eventual**, o que **significa que a operação pode ser considerada bem-sucedida sem que todas as réplicas tenham sido atualizadas**. Isso resulta em **maior desempenho nas operações de escrita**, pois **o sistema não precisa esperar pelas confirmações de todos os nós**. No entanto, pode ocorrer uma **inconsistência eventual** em consultas subsequentes, já que **os dados podem não ter sido totalmente replicados nos demais nós**, podendo existir diferentes versões do dado até que a replicação seja concluída.
+Na Replicação Assíncrona, **as alterações de dados são enviadas a um dos nós de um cluster e replicadas para os outros nós de forma eventual**, o que **significa que a operação pode ser considerada bem-sucedida sem que todas as réplicas tenham sido atualizadas**. Isso resulta em **maior desempenho nas operações de escrita**, pois **o sistema não precisa esperar pelas confirmações de todos os nós**. No entanto, podem ocorrer períodos de inconsistência ou **consistência eventual** nas consultas subsequentes, já que **os dados podem não ter sido totalmente replicados nos demais nós**, podendo existir diferentes versões do dado até que a replicação seja concluída.
 
 ![Replicação Assíncrona](/assets/images/system-design/replicacao-assincrona.png)
 
