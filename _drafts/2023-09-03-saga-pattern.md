@@ -12,8 +12,12 @@ title: System Design - Saga Pattern
 
 Uma transação Saga é um padrão arquitetural que visa garantir a consistência dos dados em transações distribuídas, especialmente em cenários onde essas transações dependem da execução contínua da mesma em múltiplos microserviços.
 
-Dentro de uma implementação do Saga Pattern, uma Saga possui uma característica sequencial, na qual a transação depende de diversos microserviços para ser concluída, com etapas que devem ser executadas uma após a outra de forma ordenada. A implementação dessas etapas pode variar entre abordagens Coreografadas e Orquestradas, as quais serão exploradas mais adiante. Independentemente da abordagem escolhida, o objetivo principal é gerenciar transações que envolvem dados em diferentes microserviços e bancos de dados, ou que são de longa duração, e garantir que todos os passos sejam executados sem perder a consistência e controle. 
+O termo Saga vem do sentido literal de Saga, que o conceito remete a uma aventura, uma história, uma jornada do herói, jornada na qual a mesma remonta vários capítulos onde o mesmo precisa cumprir objetivos, enfrentar desafios, superar seus limites e concluir um objetivo predestinado. Dentro de uma implementação do Saga Pattern, uma Saga possui uma característica sequencial, na qual a transação depende de diversos microserviços para ser concluída, com etapas que devem ser executadas uma após a outra de forma ordenada e distribuída. 
 
+A implementação dessas etapas pode variar entre abordagens Coreografadas e Orquestradas, as quais serão exploradas mais adiante. Independentemente da abordagem escolhida, o objetivo principal é gerenciar transações que envolvem dados em diferentes microserviços e bancos de dados, ou que são de longa duração, e garantir que todos os passos sejam executados sem perder a consistência e controle. 
+
+
+<br>
 
 # O problema de lidar com transações distribuídas
 
@@ -29,8 +33,17 @@ Imagine que, durante a execução dessas etapas, um dos serviços falhe por algu
 
 Esse cenário representa um grave problema de consistência distribuída. Sem mecanismos adequados, o sistema pode acabar em um estado inconsistente, onde o pagamento foi efetuado, mas o pedido não foi concluído. O **Saga Pattern** é uma solução que tenta solucionar exatamente esse tipo de problema, garantindo que, mesmo em caso de falhas, o sistema mantenha a integridade dos dados e retorne a um estado consistente em todos os serviços que compõe a transação.
 
+<br>
 
 # O problema de lidar com transações longas
+
+Em vários cenários podemos nos deparar com processos sistemicos que exijam um período um pouco mais longo para serem concluídos. Em alguns cenários, uma solicitação dentro de um sistema que precisa passar por vários steps de execução pode demorar desde milissegundos, segundos, minutos, horas, dias, semanas e até meses para ser concluído em sua totalidade. 
+
+O tempo de espera entre a execução de microserviço até o serviço subsequente pode intencionalmente variar, pois podem ser sujeitos a agendamentos, estimulos externos, agrupamento de períodos e afins. Como por exemplo um controle de cobrança de parcelamento, um agendamento financeiro, uma consolidação de uma franquia de uso de produtos digitais, agrupamento de solicitações para processamento em batch, fechamento de faturas, controle de uso de clientes e afins. 
+
+A capacidade de gestão do ciclo de vida dessas transações a longo prazo pode ser um desafio arquitetutural a nível de consistência e gestão de conclusão. Criar mecanismos que permitam gerenciar sistemicamente uma transação fim a afim nesses cenários longos e te permitir rastrear todos os steps pela qual a transação passou e definir seu estado, e gerenciar a transação desse estado de forma transparente pode ser um dos problemas resolvidos por transações SAGA. 
+
+<br>
 
 # A Proposta de Transações Saga
 
