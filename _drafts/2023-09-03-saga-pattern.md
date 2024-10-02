@@ -37,21 +37,40 @@ Esse cenário representa um grave problema de consistência distribuída. Sem me
 
 # O problema de lidar com transações longas
 
-Em vários cenários podemos nos deparar com processos sistemicos que exijam um período um pouco mais longo para serem concluídos. Em alguns cenários, uma solicitação dentro de um sistema que precisa passar por vários steps de execução pode demorar desde milissegundos, segundos, minutos, horas, dias, semanas e até meses para ser concluído em sua totalidade. 
+Em diversos cenários, processos complexos exigem um período um pouco mais longo para serem concluídos. Por exemplo, uma solicitação dentro de um sistema que precisa passar por várias etapas de execução pode levar desde milissegundos até semanas ou meses para ser finalizada completamente.
 
-O tempo de espera entre a execução de microserviço até o serviço subsequente pode intencionalmente variar, pois podem ser sujeitos a agendamentos, estimulos externos, agrupamento de períodos e afins. Como por exemplo um controle de cobrança de parcelamento, um agendamento financeiro, uma consolidação de uma franquia de uso de produtos digitais, agrupamento de solicitações para processamento em batch, fechamento de faturas, controle de uso de clientes e afins. 
+O tempo de espera entre a execução de um microserviço e o serviço subsequente pode variar intencionalmente devido a fatores como agendamentos, estímulos externos, agrupamento de períodos e outros. Exemplos disso incluem controle de cobrança de parcelamento, agendamento financeiro, consolidação de franquias de uso de produtos digitais, agrupamento de solicitações para processamento em batch, fechamento de faturas e controle de uso de clientes.
 
-A capacidade de gestão do ciclo de vida dessas transações a longo prazo pode ser um desafio arquitetutural a nível de consistência e gestão de conclusão. Criar mecanismos que permitam gerenciar sistemicamente uma transação fim a afim nesses cenários longos e te permitir rastrear todos os steps pela qual a transação passou e definir seu estado, e gerenciar a transação desse estado de forma transparente pode ser um dos problemas resolvidos por transações SAGA. 
+Gerenciar o ciclo de vida dessas transações de longo prazo representa um desafio arquitetural significativo, especialmente em termos de consistência e conclusão. É necessário criar mecanismos que permitam controlar transações de ponta a ponta em cenários complexos, monitorar todas as etapas pelas quais a transação passou e determinar e gerenciar o estado atual da transação de forma transparente. O **Saga Pattern** resolve esses problemas ao decompor transações longas em uma série de transações menores e independentes, cada uma gerenciada por um microserviço específico. Isso facilita a garantia de consistência, a recuperação de falhas no quesito de resiliência operacional.
 
 <br>
 
 # A Proposta de Transações Saga
 
-# Principais Modelos de Saga
+Concluindo o que foi abordado anteriormente na explicação da problemática, o Saga Pattern é um padrão arquitetural projetado para lidar com transações distribuídas e dependentes da consistência eventual de em multiplos microserviços. 
+
+A proposta da aplicabilidade do Saga Pattern é decompor uma transação longa e complexa em uma sequência de transações menores e coordenadas, chamadas **sagas**, que são gerenciadas de algumas maneiras para garantir a consistência e sucesso da execução, e principalmente garantir a consistência dos dados em diferentes serviços que sigam o modelo "One Database Per Service". 
+
+Cada Saga corresponde a uma transação pseudo-atômica dentro do sistema, onde cada solicitação corresponde a execução de uma saga isolada. Cada Saga consiste em um agrupamento de operacões menores que acontecem localmente em cada microserviço da saga. Além de proporcionar meios de garantir que todas as etapas sejam concluídas, caso uma das operações da saga falhe, o Saga Pattern define **transações compensatórias** para desfazer as operações já executadas, assegurando que o sistema se mantenha consistênte até mesmo durante uma falha. 
+
+A proposta da Saga [quando aplicado em abordagens assincronas](/mensageria-eventos-streaming/) elimina a necessidade de bloqueios síncronos e prolongados, como o caso do **Two-Phase Commit (2PC)** que são computacionalmente caros e podem se tornar gargalos de desempenho em ambientes distribuídos. 
+
+Existem dois modelos principais para implementar o Saga Pattern, o **Modelo Orquestrado** e o **Modelo Coreografado**. Cada um deles possui características de coordenação e comunicação das transações Saga diferentes em termos arquiteturais. A escolha entre os modelos depende das necessidades específicas de como o sistema foi projetado, e principalmente deve levar em conta a complexidade das transações.
+
 
 ## Modelo Orquestrado
 
+No **Modelo Orquestrado**, propõe a existência de um componente centralizado de **Orquestração** que gerencia a execução das sagas. O Orquestrador é responsável por iniciar a saga, coordenar a sequência de transações e gerenciar o fluxo de compensação em caso de falhas. Ele atua como um control plane que envia comandos para os microserviços participantes e espera pelas respostas para decidir os próximos passos da saga.
+
+Então a função do orquestrador é basicamente montar um "mapa da saga", com todas as etapas que precisam ser concluídas para a finalização da mesma, enviar mensagens e eventos para os respectivos microserviços e a partir de suas respostas, resumir e estimular o próximo passo da Saga. 
+
+![Orquestrador](/assets/images/system-design/saga-orquestrado-circulo.png)
+
+
+
 ## Modelo Coreografado
+
+
 
 # Adoções Arquiteturais
 
@@ -80,6 +99,8 @@ A capacidade de gestão do ciclo de vida dessas transações a longo prazo pode 
 [Pattern: SAGA](https://microservices.io/patterns/data/saga.html))
 
 [Model: 8 types of sagas](https://tjenwellens.eu/everblog/ec936db8-ba4c-430b-aeb4-15d9c50c0f8c/)
+
+[Saga Pattern in Microservices](https://www.baeldung.com/cs/saga-pattern-microservices)
 
 [SAGA Pattern para microservices](https://dev.to/thiagosilva95/saga-pattern-para-microservices-2pb6)
 
