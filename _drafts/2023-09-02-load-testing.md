@@ -12,6 +12,8 @@ title: System Design - Testes de Carga e Estresse
 
 # Introdução 
 
+Testes de performance são processos extremamente importantes em sistemas de larga e escala e que precisem garantir o bom funcionamento de forma responsável. O objetivo desse texto complementar é ressaltar os tipos de teste e principalmente como elaborar um roteiro que faça sentido não só para o time técnico, mas que também gere insumos significativos para o produto como um todo. 
+
 
 ##  A importância dos testes de performance 
 
@@ -43,6 +45,8 @@ Nisso podemos desenhar testes específicos pra esse tipo de jornada, moldando as
 
 Esse tipo de teste pode ser realizado em diversos estágios do ciclo de vida de um software. Para exemplificar, iremos separar em dois grandes marcos genéricos, na fase de Build que corresponde a construção inicial e primeiros estágios do software em seu MVP ou Pós MVP, e no Run onde constantemente revisitamos a capacidade atual e desejada para garantir que os requisitos não foram muito alterados e deteriorados conforme a evolução do sistema. Os testes de performance na fase de Run ocorrem em ambientes mais realistas, como pré-produção ou até mesmo produção em diversos casos, podendo ou não concorrer com o cliente final. O objetivo fazer com que o sistema seja submetido a cenários que simulam cargas reais ou extremas. O objetivo de um teste agressivo nesse sentido é testar de maneira controlada sistemas que já existem e estão consolidados em determinados cenários para chegar seus níveis de disponibilidade, resiliência e performance, impedindo que esses insumos cheguem de forma reativa ou em momentos de crise. 
 
+<br>
+
 # Testes de Carga e Estresse
 
 A terminologia dos testes de carga pode ser bastante confusa para definir "o que serve para quê", e até mesmo se há alguma diferença entre os termos. No entanto, essas diferenças existem e podem ser compreendidas em sua natureza, ajudando-nos a elaborar estratégias para diferentes tipos de cenários.
@@ -54,6 +58,8 @@ Por exemplo, se um produto ou funcionalidade está sendo construído para suport
 Por outro lado, um teste de estresse busca avaliar as mesmas dimensões, porém em condições adversas, como picos de acesso, cargas repentinas ou volumes muito maiores que o habitual por determinados períodos. O objetivo desse teste é encontrar gargalos e limitações do sistema sob condições não convencionais. É comum que, em um teste de estresse, seja aplicada uma carga muito superior à esperada justamente para identificar esses gargalos e limitações.
 
 Ambos os cenários nos ajudam a identificar gargalos de capacidade, oportunidades de otimização, realizar análises de recursos e simular o uso de dependências. A seguir, vamos abordar alguns tipos de testes que podem ser aplicados em ambos os cenários e que ajudam a responder perguntas específicas.
+
+<br>
 
 # Tipos de Teste 
 
@@ -187,11 +193,57 @@ Se, durante o teste, foi determinado que a disponibilidade do checkout deve ser 
 
 # Estratégias de pré-teste
 
+Antes de realizar um teste por completo, pode ser interessante avaliar a capacidade da aplicação de forma individual e isolada. Isso ajuda a dar insumos iniciais de como o teste será se comportar e o que esperar. Podemos testar um fluxo completo individualmente antes de iniciar um teste de jornada para maior seguranca. Vamos explorar algumas condições que podem ser valiosas como um exercício pré-teste.
+
+## Avaliando a capacidade individual de cada replica
+
+O objetivo da validação de capacidade de unidade é determinar quanto uma única réplica da sua aplicação consegue suportar em termos de carga. Esse teste deve ser feito antes de escalar o número de réplicas, para garantir que a aplicação tenha um comportamento previsível em cenários de múltiplas instâncias, e também servir como insumo de como definir e validar politicas de autoscaling. 
+
+Comece executando sua aplicação com apenas uma réplica e aplique uma carga incremental afim de encontrar até quando uma única replica consegue sustentar tráfego sem ofender o tempo de resposta e erros. A simulação presume executar as requisições, eventos e mensagens que o sistema normalmente processaria. O objetivo aqui é descobrir os limites de uma única instância em termos de capacidade de processamento, uso de CPU, memória e outros recursos perante aos acordos de disponibilidade. 
+
+Em um objetivo em que se deve ter 99% de disponibilidade respondendo as requisições em até 200ms, injetamos carga em uma replica até que esses limites sejam ofendidos. Em um resultado hipotético, caso a replica da aplicação consiga atender até 10 transações por segundo como limite máximo sem quebrar os SLA's, adicionamos mais uma replica e reaplicamos o teste, tentando chegar até 20 transações por segundo. Se isso se comprovar real, podemos adicionar mais uma replica e tentar mais uma vez até chegar em 30 transações por segundo. Fazemos isso algumas vezes até chegamos a prova real de que o limite de cada replica a nível computacional seria de 10 transações cada.
+
+O objetivo desse teste pode ser realizado até encontramos um limite onde o poder computacional deixa de ser o principal gargalo e o passa para uma próxima dependência.
+
+## Validação de unidade assincrona
+
+
+Em cenários assincronos que processam eventos ou mensagens, podemos explorar um passo adicional nesse pré-teste, ainda de forma unitária. O objetivo é verificar como uma única feplica da aplicação consome e processa as mensagens e qual a vazão de processamento das mesmas, mas também assegurando que elas não ultrapassem seus limites de capacidade. 
+
+Começamos represando um número muito grande de mensagens ou eventos nas filas ous tópicos da aplicação. Iniciamos uma única replica e verificamos o throughput de processamento e como ela lida sozinha com um número muito grande de eventos. O foco é observar se a aplicação sabe gerenciar a carga e evitar sobrecarga sobre si mesmo, evitando que a mesma consuma mais mensagens do que consiga realmente processar e acabe elevando seus níveis de memória, CPU, throughput e até mesmo acarretando na morte do processo. Em termos simplistas, em um lag muito alto, a aplicação deve consumir apenas apenas a vazão programada sem morrer. 
 
 <br>
 
 # Ferramental para Testes
 
+A seguir, vamos explorar um pouco do ferramental de testes de performance e estresse. Vamos abordar pontualmente as opções mais famosas atualmente. 
+
+## Grafana K6
+
+O [Grafana K6](https://github.com/grafana/k6) é uma ferramenta simples e intuitiva de teste de carga e performance voltada especialmente para reduzir carga cognitiva de desenvolvedores. Ela é projetada para testar aplicações inerentes ao protocolo HTTP. Escrito em Go, ele permite que usuários simulem diversos cenários de conexões simultâneas utilizando protocolos como HTTP, WebSocket e gRPC. K6 é amplamente utilizado em pipelines de CI/CD devido à sua fácil integração. Ele também oferece uma integração nativa com Grafana, facilitando a criação de dashboards para monitoramento em tempo real das métricas de performance, e seus testes são escritos em Javascript. 
+
+## Locust
+
+O [Locust](https://github.com/locustio/locust) é uma ferramenta usada para testar a performance e escalabilidade de aplicações web, tendo a facilidade de simular o comportamento de vários usuários virtuais. Escrito em Python, ele permite que você defina cenários de teste para protocolos como HTTP, HTTPS, e WebSocket. 
+
+## Apache JMeter 
+
+O Apache JMeter é uma das ferramentas mais conhecidas e amplamente usadas para testes de carga, performance e estresse. Ele suporta uma ampla variedade de protocolos, como HTTP, JDBC, SOAP, REST, gRPC, TCP e até serviços de mensagens como MQTT. JMeter permite simular diferentes tipos de tráfego e transações, sendo ideal para testar aplicações web, APIs e até sistemas distribuídos. A flexibilidade da ferramenta e sua extensa gama de protocolos tornam o JMeter um dos mais utilizados, principalmente por dar suporte para roteiros complexos. 
+
+## Gatling
+
+O Gatling é uma ferramenta poderosa de testes de carga, escrita em Scala, e projetada para testar sistemas distribuídos e aplicações de alta performance. Gatling oferece suporte nativo a protocolos como HTTP, WebSocket, JMS, Kafka e gRPC. Ele é amplamente utilizado para testar a escalabilidade e resiliência de diversos tipos de sistema, e permite a criação de cenários de teste detalhados e complexos, com relatórios avançados sobre o desempenho do sistema durante o teste.
+
+## Oha / Ohayou
+
+Oha, também conhecido como Ohayou, é uma ferramenta simples e leve para testes de performance de APIs e serviços web. ocada em simplicidade e velocidade, Oha utiliza principalmente o protocolo HTTP e HTTPS para simular requisições de usuários em alta velocidade, medindo o desempenho de APIs com relatórios de latência, throughput e erros. Sua leveza e interface minimalista o tornam uma escolha prática para quem deseja realizar testes rápidos e diretos sem muita complexidade.
+
+
+# Modelo de Roteiro de Teste
+
+Aqui vamos tentar compilar os principais tópicos apresentados afim de montar um documento inicial e extensível para diversos tipos de cenário. A proposta é ser intuitivo o suficiente para que você seja capaz de entender a proposta e modificá-lo para atender as dependas da sua empresa ou produto. 
+
+<br>
 
 ### Referências
 
@@ -210,3 +262,15 @@ Se, durante o teste, foi determinado que a disponibilidade do checkout deve ser 
 [Load Test Types](https://dev.to/eminetto/load-test-types-5b5m)
 
 [What is single pane of glass? ](https://www.ibm.com/topics/single-pane-of-glass)
+
+[JMeter](https://jmeter.apache.org/)
+
+[Grafana K6](https://grafana.com/docs/k6/latest/)
+
+[Gatling](https://docs.gatling.io/)
+
+[Locust Testing Tool](https://docs.locust.io/en/stable/)
+
+[Oh/Ohayou](https://github.com/hatoo/oha)
+
+[Cassowary](https://github.com/rogerwelin/cassowary)
