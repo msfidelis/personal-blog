@@ -61,61 +61,122 @@ O objetivo dessa sessão é especificar alguns dos principais tipos de teste e q
 
 ## Teste de Fumaça, Smoke Tests
 
-Os testes de fumaça, ou smoke tests, são uma forma simplista de injetar uma carga mínima e testar as principais funcionalidades de um sistema sob uma ótima de trafego de base. Normalmente a baseline de um smoke test visa garantir o mínimo necessário numa carga minimamente aceitável. Esse tipo de cenário normalmente é executado em pipelines de CI/CD fazendo parte da supply chain de qualidade da release de versões ou em automações periódicas executadas em ambientes produtivos ou pré-produtivos para garantir a funcionalidade de forma recorrente e gerar evidências de bom funcionamento. Esses testes são usados para validar se a aplicação está "pronta para ser testada" em cenários maiores. Não é o objetivo se aprofundar em uma análise de desempenho muito detalhada, e sim garantem que não há falhas graves que impediriam o funcionamento básico da aplicação.
+Os testes de fumaça, ou smoke tests, são uma forma simplificada de injetar uma carga mínima e verificar as principais funcionalidades de um sistema sob uma ótica de tráfego básico. Normalmente, a baseline de um smoke test busca garantir o funcionamento mínimo necessário com uma carga minimamente aceitável. Esse tipo de cenário é comumente executado em pipelines de CI/CD, fazendo parte da cadeia de qualidade durante o processo de release de versões, ou em automações periódicas, aplicadas em ambientes produtivos ou pré-produtivos, para garantir a funcionalidade recorrente e gerar evidências de bom funcionamento.
+
+![Smoke Test](/assets/images/system-design/load-test-smoke.drawio.png)
+
+Esses testes são usados para validar se a aplicação está "pronta para ser testada" em cenários mais complexos e intensivos. Não é objetivo do smoke test realizar uma análise detalhada de desempenho, mas sim garantir que não há falhas críticas que impediriam o funcionamento básico da aplicação. Ele serve como uma verificação inicial de que as funcionalidades principais estão operando corretamente antes de seguir para testes mais aprofundados.
 
 ## Teste de Average Load
 
-Avaliar como o sistema se comporta com a carga esperada por longos períodos de tempo
+O objetivo do Average Load é avaliar como o sistema se comporta sob a carga esperada por longos períodos, verificando se ele consegue manter a performance estabelecida. Ao contrário de testes que simulam cenários adversos ou básicos, o objetivo do average load test é garantir o bom funcionamento e o entendimento do sistema dentro dos limites esperados. Se o direcionamento do produto é, por exemplo, uma carga média hipotética de 400 transações por segundo, garantindo um tempo de resposta de até 200ms, o teste visa injetar esse volume continuamente por períodos prolongados para avaliar se surgem outliers ou comportamentos inesperados que comprometam a execução uniforme da performance.
+
+![Smoke Test](/assets/images/system-design/load-test-average.drawio.png)
+
+Os cenários ideais para a execução de Average Load são aqueles que duram dias ou semanas, permitindo um estudo aprofundado de todas as variações ocorridas durante esse período, a fim de identificar padrões e correlações. Testes desenhados nesse formato podem ser especialmente úteis para verificar a existência de problemas como memory leaks.
+
+![Smoke Test Longo](/assets/images/system-design/load-test-average-long.drawio.png)
 
 ## Testes de Estresse 
 
-Avaliar como o sistema se comporta em cargas altas e picos esperados. 
+Os testes de estresse são amplamente conhecidos e, muitas vezes, utilizados de forma genérica para se referir a outros tipos de testes de performance. No entanto, o teste de estresse tem um objetivo claro: avaliar o comportamento de um sistema quando este é submetido a condições extremas, que excedem o fluxo normal esperado.
+
+O principal objetivo desse teste é identificar gargalos, limites de capacidade e falhas de resiliência por meio da sobrecarga de uso. A aplicabilidade desse tipo de teste é relevante quando há a necessidade de descobrir como o sistema reage em cenários de sobrecarga, seja em eventos de alto tráfego, seja em picos inesperados de demanda.
+
+![Stress Test](/assets/images/system-design/load-test-stress.drawio.png)
+
+Os indicadores mais comumente avaliados durante um teste de estresse incluem métricas de capacidade, como uso de CPU, memória, rede, I/O, e o número de conexões no pool do sistema e suas dependências. Esses fatores são analisados em conjunto para determinar o ponto de saturação do sistema.
+
+As lições aprendidas com esse tipo de teste são valiosas para identificar, de forma proativa, pontos de falha e oportunidades de melhoria, evitando que esses problemas sejam descobertos apenas em cenários reais, já impactando o cliente final. Além disso, os insights obtidos podem ajudar as equipes de engenharia a identificar quais partes do sistema continuam operando durante falhas graves e se isso é mais benéfico ou prejudicial para a recuperação completa do sistema.
+
 
 ## Testes de Spike
 
-Avaliar como o sistema se comporta com alto tráfego recebido de forma repentina
+Os testes de spike podem ser considerados tanto uma variação quanto um complemento dos testes de estresse. O objetivo desse teste é simular picos repentinos de uso e fornecer dados sobre como o sistema se comporta diante desse cenário. Um teste de spike pode ser programado para ser executado durante um teste de estresse ou de breakpoint convencional, que normalmente aumenta a carga de maneira progressiva. No entanto, o teste de spike é focado em avaliar uma progressão súbita de uso, seguida de uma redução rápida.
+
+![Spike Test](/assets/images/system-design/load-test-spike.drawio.png)
+
+Esse tipo de teste é utilizado para validar a estabilidade do sistema e identificar possíveis degradações momentâneas de desempenho. Ele é especialmente valioso para sistemas que, de fato, experimentam aumentos repentinos e imprevisíveis de uso por parte de seus clientes.
+
+As lições aprendidas a partir desse teste fornecem informações sobre como a arquitetura do sistema pode ser ajustada para absorver esses aumentos repentinos de tráfego sem a necessidade de superdimensionar sua capacidade e infraestrutura. O foco é otimizar o uso dos recursos, garantindo que o sistema possa lidar eficientemente com picos inesperados, sem comprometimento significativo de desempenho.
 
 ## Testes de Breakpoint
 
-Avaliar como o sistema se comporta com tráfego progressivo por longos períodos de tempo, até encontrar o ponto limite de quebra. 
+Os testes de breakpoint são utilizados para avaliar como o sistema se comporta sob tráfego progressivo por longos períodos, com o objetivo de encontrar o ponto limite de quebra. Esses testes são projetados para identificar o momento exato em que o sistema começa a falhar à medida que a carga aumenta, detectando quando ocorrem degradações no tempo de resposta, aumento na taxa de erros, e falhas críticas nos componentes.
+
+![Breakpoint Test](/assets/images/system-design/load-test-breakpoint.drawio.png)
+
+A execução desse tipo de teste deve ser feita de maneira muito mais controlada do que outros tipos de testes, pois o objetivo aqui não é validar a performance ou capacidade para cenários específicos, mas sim levar o sistema até o seu limite real.
+
+Durante o teste de breakpoint, várias métricas precisam ser avaliadas, como a saturação de recursos, incluindo CPU, memória, latência, I/O, disco, rede, taxa de erros do serviço e todas as suas dependências. Isso permite identificar quais componentes falham primeiro e como a cascata de falhas acontece, facilitando a compreensão dos pontos fracos e das limitações do sistema. Aqui normalmente são analisados as limitações das politicas atuais de [escalabilidade horizontal]().
+
+<br>
 
 # Respondendo a Perguntas Chave
 
-O objetivo de um teste de performance ou estresse, é responder perguntas sobre o sistema avaliado. Isso significa que, somente injetar carga sem antes definir que tipo de respostas você quer obter do teste, não seja a melhor das estratégias em termos de eficiência e esforço. 
+O objetivo de um teste de performance ou estresse é responder perguntas específicas sobre o sistema avaliado. Isso significa que apenas injetar carga, sem antes definir que tipo de respostas se quer obter com o teste, não é a estratégia mais eficiente nem em termos de esforço, nem de resultado. Quando planejamos um teste, ele precisa ser executado em condições que nos permitam compreender detalhadamente, ou estimar por inferência, as capacidades do sistema ou de suas funcionalidades isoladas. Simplesmente simular carga por simular pode gerar resultados dispersos e de pouco valor para o produto.
 
-## Qual é o trafego esperado do meu sistema hoje? 
+Portanto, por mais que a fase de planejamento seja mais demorada em comparação à execução do teste, é essencial alinhar as expectativas e definir objetivos claros. Dessa forma, os resultados obtidos podem realmente auxiliar os times de negócio e engenharia na tomada de decisões técnicas e na definição de prioridades.
 
-Transações e Usuários
+### Qual é o trafego esperado do meu sistema hoje? 
 
-## Qual é o trafego esperado do meu sistema em períodos de pico? 
+Quantos usuários simultâneos o sistema suporta atualmente? Quantas transações por segundo são processadas em média? O volume de tráfego tem picos em horários específicos? Estas são as primeiras perguntas que devem ser respondidas ao iniciar o planejamento de um teste eficiente, visando estabelecer dados sobre o ciclo de vida completo do produto. Esses pontos são facilmente respondidos em casos onde o sistema já está em operação e conta com mecanismos de observabilidade, que monitoram regularmente o desempenho e fornecem métricas valiosas sobre o comportamento do sistema.
 
-## Qual é a expectativa de crescimento do meu sistema?
+Se o teste estiver sendo proposto para um sistema novo, é essencial que essas informações sejam fornecidas pelo time de produto, com base nos acordos estabelecidos com o cliente, seja ele interno ou externo. Esse processo garante que, caso o volume de tráfego ainda não seja conhecido, ele seja pesquisado e comunicado a todos os stakeholders envolvidos no desenvolvimento e operação do sistema.
 
-## Qual é o cenário mais extremo que o sistema enfrentará? 
+### Quais são meus objetivos de tempo de resposta, taxa de erros e saturação? 
+
+Sabendo o volume de uso do sistema, o próximo passo é determinar quais são os limites aceitáveis de erros nos fluxos e o tempo de resposta considerado ideal. Esse processo pode ser medido por jornadas ou ações específicas, ao invés de tratar o sistema como uma "caixa preta", onde toda a experiência é considerada em uma única média. Diferentes tipos de ações dentro de um produto geralmente possuem pesos e níveis de complexidade variados. Portanto, mapear essas jornadas é uma abordagem interessante se o objetivo for granularizar os resultados dos testes de performance.
+
+Se todas as jornadas estiverem mapeadas, pode ser valioso realizar testes de performance que simulem comportamentos heterogêneos, com vários usuários executando ações completamente diferentes no sistema. Isso cria um cenário mais próximo do real e permite uma avaliação mais precisa do desempenho. No entanto, para que esses testes sejam realmente válidos no contexto do produto, os limites aceitáveis de erros e tempos de resposta precisam ser conhecidos. Dessa forma, será possível avaliar se o sistema está atingindo ou não os objetivos propostos.
+
+
+### Qual é o trafego esperado do meu sistema em períodos de pico? 
+
+Depois de estabelecermos os baselines, é fundamental entender as variações esperadas ou estimadas no uso do sistema. Os sistemas normalmente têm fluxos de uso previsíveis, mas não uniformes. Por exemplo, um sistema de delivery de comida pode ter um uso constante ao longo do dia, com picos próximos aos horários de almoço e jantar.
+
+É importante compreender como esses picos se comportam e como podem influenciar a experiência total do cliente. Esse tipo de dado é extremamente valioso e deve ser utilizado para testes de spike ou estresse, que podem ser configurados para simular capacidades variáveis ou progressivas, sempre refletindo os momentos de maior demanda, ou "vales de acesso", no sistema.
+
+### Quais os protocolos e estímulos que minha aplicação é exposta? 
+
+Agora que temos os objetivos de uso e os limites aceitáveis de experiência, precisamos aprofundar e nível arquitetural e encontrar quais os tipos de protocolo as aplicações falam para que seja possível selecionar a ferramenta e processo ideial para os testes do mesmo. 
+
+Minha aplicação é exposta inicialmente por aplicações sincronas como HTTP, gRPC e Websockets? A aplicação produz ou consome mensagens ou eventos vindos de estímulos assincronos como AMQP, Kafka, Pooling, MQTT? O ideal é mapear os principais protocolos transacionais existentes para que seja possível estimular da forma correta pelas mesmas vias que o cliente fariam pelo fluxo normal. 
+
+### Qual é a expectativa de crescimento do meu sistema?
+
+Respondidas quais são as necessidades do sistema hoje, ou por um período definido, é importante projetar os testes de carga pra sempre olharem para um crescimento natural, para ajudar a responder "até quando meu capacity atual está condizente e quando eu precisarei revisitá-lo de forma proativa?". Esse tipo de abordagem quando alinhada as expectativas de produto são muito poderosas para projetar sistemas que tenham uma evolução saudável a longo prazo. É necessário manter uma clareza entre produto e engenharia sobre planos de expansão, metas de vendas, onboarding e afins.
+
+### Qual é o cenário mais extremo que o sistema enfrentará? 
+
+Mesmo conhecendo o comportamento natural do sistema, seus períodos de comum utilização, baixa utilização e picos de carga, ainda assim precisamos conhecer como nosso sistema se comportaria em sistemas ainda mais extremos que esse, principalmente em períodos de promoção, períodos como black friday, natal e afins, a até mesmo cenários suspresas que queremos antever. Conhecer ou estimar esse tipo de cenário tende a ser uma das partes mais importantes e divertidas de uma dinâmica como essa, e normalmente são nessa fase que encontramos os principais gargalos e pontos de melhoria de um sistema. 
 
 ## Quais são as funcionalidades principais que precisam ser testadas? 
 
-## Quais os endpoints mais utilizados? E quais os mais caros? 
+Quais são as partes mais críticas da aplicação como busca, detalhes de itens, carrinho, checkout, pagamento, consulta de dados cadastrais que precisam de maior atenção? Há funcionalidades que impactam diretamente o core do sistema e devem ser testadas com maior carga? Se sim, seria interessante desenvolver até mesmo testes isolados e direcionados pra esses cenários antes de testar uma jornada por completo. Priorizar diretivas específicas também pode ser de grande valor quando alteramos o funcionamento apenas de partes específicas e gostariamos de entender se foi criado algum comportamento ofensor ou melhoria significativa perante aquela mudança. 
 
 ## Quais são as jornadas comuns do usuário? 
 
-Cadeias de chamadas, fluxos, dependências e etc
+Talvez a melhor forma de se formular testes de carga e estresse seja a de realizar o teste dentro de uma jornada por completo, simulando uma jornada real do usuário dentro do sistema. Vamos abordar novamente o caso de um usuário dentro de um e-commerce fictício, onde em uma jornada convencional o usuário no "fluxo feliz" acessa a home, faz login, busca vários termos dentro do sistema de pesquisa, adiciona alguns ao carrinho, remove outros, inicie o checkout, realiza pagamentos e etc. Podemos dessa forma racionalizar o numero de interações proximo do realista entre as funcionalidades do sistema. 
 
-##  Quais são meus objetivos de tempo de resposta, taxa de erros e saturação? 
+![Jornadas](/assets/images/system-design/jornada.drawio.png)
 
-## Quais os protocolos e estímulos que minha aplicação é exposta? 
+Em um cenário não tão próximo de características sincronas, por exemplo, um sistema reativo de pagamentos que é estimulado por vários clientes internos com ações de cobrança e estorno, sabemos que 50% das solicitações são cobranças por cartão, 30% por pagamento instantâneo, 15% de boleto e 5% de estorno. Podemos criar mecanismos de teste que estimulem o sistema como um todo usando essas porcentagens de uso para o mesmo. 
 
-Teste Sync, Teste Async
+
+## Quais os endpoints mais utilizados? E quais os mais caros? 
+
+O objetivo de mapear as jornadas também é ajudar a mapear quais as funcionalidades mais utilizadas do sistema perantes as demais. Usando como base o exemplo acima, por exemplo entendemos que a pesquisa no site é usada muito mais vezes que o checkout, pois intuitivamente entendemos que o cliente pode procurar por várias categorias, navegar por vários produtos, adicionar ao carrinho e iniciar o processo de checkout pegamento apenas uma vez. E também podemos presumir que uma ação de pagamento seja mais custosa computacionalmente que uma pesquisa quando a mesma é otimizada da forma correta. Ter em mãos esse tipo de conhecimento pode nos ajudar a executar como e quando testar as funcionalidades de sistema da melhor forma sempre.
 
 ## Métricas em Testes de Performance
 
-Observabilidade da Jornada
+Já abordamos "o que olhar" durante a execução dos testes. Vamos tentar recapitular nesse tópico, mas sugerindo uma abordagem de aproveitar a movimentação do teste para criar dashboards, alertas, logs e tentar correlacionar todos esses pontos através de dashboards de jornadas numa abordagem de "Single Pane Of Glass" que visa dar uma observabilidade centralizada de multiplos recursos que pertencem a mesma jornada em ordem lógica para que seja possível acompanhar tanto todas os recursos, dimensões e aplicações que serão afetadas pelo teste, mas também servir para apoio no dia a dia de vôo do produto. Aproveitar grandes iniciativas para resolver mais de um problema é uma estratégia que casa perfeitamente 
+
 
 ### Service Levels como como objetivos esperados
 
-Como saber se eu "passei no teste"?  - Abordagem de SRE e North Star
+Como saber se eu "passei no teste"? Uma oportunidade adicional é fazer com que toda essa pesquisa corporativa e multidisciplinar para descobrir os requisitos e objetivos sirva para definir quais serão os service levels oficiais do processo, dando uma estrela guia para os times de engenharia, negócios e arquitetura trabalharem e se atetarem as nuáncias. Se durante o teste foi escrito que é extremamente importante que a disponibilidade do checkout seja sempre acima de 99,99% e nunca demore mais que 3 segundos para concluir uma compra, temos a oportunidade perfeita de adotar essas métricas com os SLA's padrão do serviço e dar um norte para que todos os envolvidos se guiarem também no dia a dia sobre a saúde daquela funcionalidade, e criar os alertas pertinentes para garantir que a operação seja acionada antes mesmo da quebra do contrato. 
 
-## Qual o melhor tipo de teste escolher pra responder minhas perguntas?
 
 # Ferramental para Testes
 
@@ -129,3 +190,11 @@ Como saber se eu "passei no teste"?  - Abordagem de SRE e North Star
 [How to do Load Testing? [A FULL GUIDE]](https://luxequality.com/blog/how-to-do-load-testing/)
 
 [Teste de Desempenho vs. Teste de Estresse vs. Teste de Carga](https://www.loadview-testing.com/pt-br/blog/teste-de-desempenho-vs-teste-de-estresse-vs-teste-de-carga/)
+
+[Spike Testing](https://grafana.com/blog/2024/01/30/spike-testing/)
+
+[Application Break Point Test](https://www.perfmatrix.com/application-break-point-test/)
+
+[Load Test Types](https://dev.to/eminetto/load-test-types-5b5m)
+
+[What is single pane of glass? ](https://www.ibm.com/topics/single-pane-of-glass)
