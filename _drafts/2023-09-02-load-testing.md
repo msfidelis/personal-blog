@@ -12,32 +12,32 @@ title: System Design - Testes de Carga e Estresse
 
 # Introdução 
 
-Testes de performance são processos extremamente importantes em sistemas de larga e escala e que precisem garantir o bom funcionamento de forma responsável. O objetivo desse texto complementar é ressaltar os tipos de teste e principalmente como elaborar um roteiro que faça sentido não só para o time técnico, mas que também gere insumos significativos para o produto como um todo. 
+Testes de performance **são processos extremamente importantes em sistemas de larga e escala e que precisem garantir o bom funcionamento de forma responsável**. O objetivo desse texto complementar é ressaltar os tipos de teste e principalmente como elaborar um roteiro que faça sentido não só para o time técnico, mas que também **gere insumos valiosos para o produto como um todo**. 
 
 
 ##  A importância dos testes de performance 
 
-Realizar testes de performance, embora muitas vezes não seja possível por uma quantidade significativa de fatores, deveria ser uma prática que acompanha o ciclo de vida de qualquer software produtivo, desde seus estágios de build até sua maturidade de vôo. Eles são talvez a forma mais prática e cientifica de descobrir os limites do seu sistema e também garantir que o mesmo irá cumprir com os requisitos propostos. 
+Realizar testes de performance, embora muitas vezes não seja possível por uma quantidade significativa de fatores, deveria ser uma **prática que acompanha o ciclo de vida de qualquer software produtivo, desde seus estágios de build até sua maturidade de vôo**. Eles são talvez a **forma mais prática e cientifica de descobrir os limites do seu sistema** e também garantir que o mesmo irá cumprir com os requisitos propostos. 
 
-Uma vez que os limites do software são conhecidos e impostos por produto, a tarefa dos testes de estresse, performance e carga buscam dar uma garantia pragmática de que os requisitos base de uso serão entregues e irão suprir as necessidades do cliente final. Dessa forma, na construção ou refatoração de um sistema, conseguimos oferecer alguns graus de garantia e expectativas de capacidade de curto, médio e longo prazo. Dizendo dessa forma, até parece complexo, burocrático e de algumas formas pedante. Mas ao decorrer desse texto, meu objetivo é te mostrar como arquitetar testes de forma assertiva, dinâmica e facilmente adaptável para diferentes tipos de cenário. Buscando te guiar nos primeiros, segundos e terceiros passos de como direcionar testes de performance, e principalmenete, como utilizá-los para elaborar e responder perguntas chave sobre o seu produto. 
+Uma vez que os limites do software são conhecidos e impostos por produto, a tarefa dos testes de estresse, performance e carga **buscam dar uma garantia pragmática de que os requisitos base de uso serão entregues e irão suprir as necessidades do cliente final**. Dessa forma, na construção ou refatoração de um sistema, conseguimos **oferecer alguns graus de garantia e expectativas de capacidade de curto, médio e longo prazo**. Dizendo dessa forma, até parece complexo, burocrático e de algumas formas pedante. Mas **ao decorrer desse texto, meu objetivo é te mostrar como arquitetar testes de forma assertiva, dinâmica e facilmente adaptável para diferentes tipos de cenário**. Buscando te guiar nos primeiros, segundos e terceiros passos de como direcionar testes de performance, e principalmenete, como utilizá-los para elaborar e responder perguntas chave sobre o seu produto. 
 
 <br>
 
 ##  A importância de conhecer comportamentos do sistema
 
-Quando estamos projetando sistemas do zero, ou cuidado para que o mesmo tenha um ciclo de vida saudável a longo prazo, é importante existir documentada todas as funcionalidades e lógicas do sistema. Nem sempre isso é possível, e em muitos casos tratado como "o mundo ideal" de muitos times de engenharia. Conhecer a jornada do seu cliente, como ele interage com o seu sistema, quando e com que frequência, tem um valor muito alto. Começar a tratar funcionalidades como comportamentos e jornadas, pode nos levar a mapear quais serão os maiores gargalos sistêmicos e nos fazer encontrar inumeras possibilidades de melhoria. 
+Quando estamos projetando sistemas do zero, ou cuidado para que o mesmo tenha um ciclo de vida saudável a longo prazo, é **importante existir documentada todas as funcionalidades e lógicas do sistema**. Nem sempre isso é possível, e em muitos casos tratado como "o mundo ideal" de muitos times de engenharia. **Conhecer a jornada do seu cliente, como ele interage com o seu sistema, quando e com que frequência, tem um valor muito alto**. Começar a tratar funcionalidades como comportamentos e jornadas, pode nos levar a mapear quais serão os maiores gargalos sistêmicos e nos fazer encontrar inumeras possibilidades de melhoria. 
 
-Quando estamos arquitetando um relatório gerencial de fechamento de caixa, entendemos que, por mais que seja uma tarefa intuitivamente custosa computacionalmente, presumimos também que a frequência que o mesmo é gerado é baixa, e presumimos por inferência que os períodos pelos quais os mesmos serão gerados não irão variar muito dos ultimos ou primeiros dias do mês. 
+Quando estamos arquitetando um **relatório gerencial de fechamento de caixa, entendemos que, por mais que seja uma tarefa intuitivamente custosa computacionalmente, presumimos também que a frequência que o mesmo é gerado é baixa**, e presumimos por inferência que os p**eríodos pelos quais os mesmos serão gerados não irão variar muito dos ultimos ou primeiros dias do mês**. 
 
-Quando temos uma funcionalidade que a função é registrar e concluír vendas de diversos produtos de um catálogo, podemos da mesma forma presumir que, embora esse estímulo seja muito mais frequente em termos de repetição, a demanda computacional não tende a ser um grande problema na maioria dos casos. 
+Quando temos uma **funcionalidade que a função é registrar e concluír vendas de diversos produtos de um catálogo, podemos da mesma forma presumir que, embora esse estímulo seja muito mais frequente em termos de repetição, a demanda computacional não tende a ser um grande problema na maioria dos casos**. 
 
-Isso quer dizer que, quando começamos a projetar um roteiro de testes, precismos testar em escala a carga da funcionalidade de vendas, e em estresse a função de relatórios. Não faz sentido, é claro, nesse caso em específico, estar uma grande volumetria de diversos relatórios contábeis sendo emitidos em paralelo. Assim como talvez não faça sentido testar como a performance de um sistema inteiro varia quando temos apenas uma venda sendo concluída. 
+Isso quer dizer que, quando começamos a projetar um roteiro de testes, precismos **testar em escala a carga da funcionalidade de vendas, e em estresse a função de relatório**s. Não faz sentido, é claro, nesse caso em específico, testar uma grande volumetria de diversos relatórios contábeis sendo emitidos em paralelo. Assim como talvez não faça sentido testar como a performance de um sistema inteiro varia quando temos apenas uma venda sendo concluída. 
 
-Entender a jornada comum de um cliente do nosso sistema pode nos facilitar, e muito, a elaboração de um teste que vai nos permitir entender cientificamente como nosso sistema se comporta e varia em determinadas condições. Como por exemplo, em uma jornada fictícia, podemos presumir que, um cliente médio acessa a home do nosso e-commerce, procura pela categoria que lhe convêm, realiza a busca por algum termo aleatório, acessa quatro ou cinco opções do catalogo, coloca uma ou duas no carrinho, volta para "namorar" mais um pouco de opções, volta para o carrinho, tenta aplicar algum cupom, podendo ter sucesso ou falha, dependendo do sucesso, aplicamos um desconto, ele pode proativamente ou reativamente realizar o login ou cadastro, preencher os seus dados caso não existam apenas uma vez, efetuar o pagamento e durante alguns dias visitar o site para entender o status do produto. 
+Entender a jornada comum de um cliente do nosso sistema pode nos facilitar, e muito, a **elaboração de um teste que vai nos permitir entender cientificamente como nosso sistema se comporta e varia em determinadas condições**. Como por exemplo, em uma jornada fictícia, podemos presumir que, um cliente médio acessa a home do nosso e-commerce, procura pela categoria que lhe convêm, realiza a busca por algum termo aleatório, acessa quatro ou cinco opções do catalogo, coloca uma ou duas no carrinho, volta para "namorar" mais um pouco de opções, volta para o carrinho, tenta aplicar algum cupom, podendo ter sucesso ou falha, dependendo do sucesso, aplicamos um desconto, ele pode proativamente ou reativamente realizar o login ou cadastro, preencher os seus dados caso não existam apenas uma vez, efetuar o pagamento e durante alguns dias visitar o site para entender o status do produto. 
 
 Essa é uma jornada praticamente "comum" e intuitiva de um sistema de e-commerce por exemplo. Aqui podemos tirar alguns insights que, por mais que a busca e navegação tenham sido feitas em grande quantidade, o login foi feito uma única vez no processo. Mediante a cadastro que foi executado somente uma vez, o preenchimento dos dados também ocorre muito menos vezes que as outras operações, a visita de consulta pode variar bastante em quantidade. 
 
-Nisso podemos desenhar testes específicos pra esse tipo de jornada, moldando as transações injetadas nos baseando em comportamento. Entender isso pode ser uma chave interessante pra projetar testes que agregam valor instantâneo para a engenharia. 
+Nisso **podemos desenhar testes específicos pra esse tipo de jornada, moldando as transações injetadas nos baseando em comportamento**. Entender isso pode ser uma chave interessante pra projetar testes que agregam valor instantâneo para a engenharia. 
 
 <br>
 
@@ -207,7 +207,6 @@ O objetivo desse teste pode ser realizado até encontramos um limite onde o pode
 
 ## Validação de unidade assincrona
 
-
 Em cenários assincronos que processam eventos ou mensagens, podemos explorar um passo adicional nesse pré-teste, ainda de forma unitária. O objetivo é verificar como uma única feplica da aplicação consome e processa as mensagens e qual a vazão de processamento das mesmas, mas também assegurando que elas não ultrapassem seus limites de capacidade. 
 
 Começamos represando um número muito grande de mensagens ou eventos nas filas ous tópicos da aplicação. Iniciamos uma única replica e verificamos o throughput de processamento e como ela lida sozinha com um número muito grande de eventos. O foco é observar se a aplicação sabe gerenciar a carga e evitar sobrecarga sobre si mesmo, evitando que a mesma consuma mais mensagens do que consiga realmente processar e acabe elevando seus níveis de memória, CPU, throughput e até mesmo acarretando na morte do processo. Em termos simplistas, em um lag muito alto, a aplicação deve consumir apenas apenas a vazão programada sem morrer. 
@@ -238,10 +237,165 @@ O Gatling é uma ferramenta poderosa de testes de carga, escrita em Scala, e pro
 
 Oha, também conhecido como Ohayou, é uma ferramenta simples e leve para testes de performance de APIs e serviços web. ocada em simplicidade e velocidade, Oha utiliza principalmente o protocolo HTTP e HTTPS para simular requisições de usuários em alta velocidade, medindo o desempenho de APIs com relatórios de latência, throughput e erros. Sua leveza e interface minimalista o tornam uma escolha prática para quem deseja realizar testes rápidos e diretos sem muita complexidade.
 
+<br>
 
 # Modelo de Roteiro de Teste
 
 Aqui vamos tentar compilar os principais tópicos apresentados afim de montar um documento inicial e extensível para diversos tipos de cenário. A proposta é ser intuitivo o suficiente para que você seja capaz de entender a proposta e modificá-lo para atender as dependas da sua empresa ou produto. 
+
+<br>
+
+---
+
+<br>
+
+## Relatório de Teste de Performance - Produto de Cobrança de Vendas - Time de Engenharia 
+
+--- 
+
+## 1. Visão Geral
+
+**Data**: DD/MM/AAAA  
+
+**Aplicação / Jornada**: Checkout de Cartão de Crédito
+
+**Versão**: 1.x.x  
+
+**Ambiente de Teste**: Produção / Pré-produção / Desenvolvimento  
+
+**Ferramentas Utilizadas**: Apache JMeter, Grafana K6, Locust, etc.
+
+---
+
+## 2. Objetivos do Teste
+
+**Finalidade**: Avaliar o novo microserviço de checkout para garantir os SLA's de produto e encontrar oportunidades de melhoria de gargalos.
+
+### Metas:
+
+- **Tempo de Resposta**: Manter um tempo de resposta abaixo de 800 ms para 95% das requisições.
+- **Throughput**: Garantir que o sistema processe ao menos 600 transações por segundo (TPS) com 800 usuários ativos.
+- **Taxa de Erros**: Taxa de erro inferior a 0.1% em condições normais e de pico.
+- **Escalabilidade**: Verificar as politicas de autoscaling para garanrit a capacidade transacional de escalar horizontalmente sem degradação total ou parcial.
+
+---
+
+## 3. Cenários de Teste
+
+### 3.0. Pré-teste 
+
+- **Objetivo**: Testar a capacidade de uma única réplica da aplicação de checkout.
+- **Carga Simulada**: 100 requisições/s para 1 réplica
+- **Protocolos Testados**: HTTP
+- **Duração do Teste**: 10 minutos
+
+**Expectativas**:
+- A réplica deve suportar o tráfego sem degradação.
+- Recursos como CPU e Memória devem ser utilizados dentro dos limites de 80%.
+
+**Resultados**:
+- CPU: 75% de utilização
+- Memória: 60% de utilização
+- Tempo de Resposta: 300ms
+- Taxa de Erros: 0%
+- Observações: O sistema conseguiu suportar a carga sem degradação, mantendo o uso de recursos dentro dos limites.
+
+**Evidências**:
+
+![Evidencia](/assets/images/system-design/teste-inicial.drawio.png)
+
+---
+
+### 3.1. Cenário 1: Carga Média (Average Load)
+
+- **Objetivo**: Avaliar o comportamento do sistema sob condições de carga média constante.
+- **Carga Simulada**: 500 usuários simultâneos
+- **Protocolos Testados**: HTTP e Kafka
+- **Duração do Teste**: 4 horas
+
+**Expectativas**:
+- Tempo de resposta médio < 300 ms
+- Tempo de resposta p95 < 800 ms
+- Taxa de erro <= 0.1% 
+
+**Resultados**:
+- Tempo de resposta médio: 250 ms
+- Tempo de resposta do p95: 600 ms
+- Taxa de erro: 0.0%
+- Observações: O sistema se manteve dentro dos parâmetros esperados, sem sinais de sobrecarga durante todo o tempo proposto.
+
+**Evidências**:
+
+![Evidencia](/assets/images/system-design/teste-average.drawio.png)
+
+---
+
+### 3.2. Cenário 2: Carga de Pico (Spike Test)
+
+- **Objetivo**: Simular os picos de tráfego dos principais horários de compra para identificar como o sistema reage aos aumentos repentinos.
+- **Carga Simulada**: 2000 usuários simultâneos (pico) por 15 minutos
+- **Protocolos Testados**: HTTP e Kafka
+- **Duração do Teste**: 2 testes de 15 minutos
+
+**Expectativas**:
+- Tempo de resposta médio < 400 ms
+- Tempo de resposta p95 < 800 ms
+- Taxa de erro <= 0.1% 
+
+**Resultados**:
+- Tempo de resposta médio: 400 ms
+- Tempo de resposta do p95: 700 ms
+- Taxa de erro: 0.1%
+- Observações: O sistema se aproximou do limite superior do tempo de resposta. Pequena degradação observada nos componentes de checkout e microserviços de comunicação com o parceiro.
+
+**Evidências**:
+
+![Evidencia](/assets/images/system-design/teste-spike.drawio.png)
+
+---
+
+
+### 3.3. Cenário 3: Stress Test
+
+- **Objetivo**: Simular um tráfego de estresse no sistema com carga acima do previsto.
+- **Carga Simulada**: 2000 usuários simultâneos (pico) por 1 hora
+- **Protocolos Testados**: HTTP e Kafka
+- **Duração do Teste**: 1 hora com aumento de 500 usuários a cada 15 minutos. 
+
+**Expectativas**:
+- Tempo de resposta médio < 400 ms
+- Tempo de resposta p95 < 800 ms
+- Taxa de erro <= 0.1% 
+
+**Resultados**:
+- Tempo de resposta médio: 500 ms
+- Tempo de resposta do p95: 1300 ms
+- Taxa de erro: 1%
+- Observações: O sistema ofendeu aos limites estabelecidos pelo produto em torno de 1500 usuários. Identificamos a oportunidade de otimização de 2 queries no banco de dados do serviço de checkout que validam a idempotencia da transação e manipulam o estado de conclusão do pagamento. Após analises junto ao time de DBA's podemos superar esse problema criando um indice novo. 
+
+**Evidências**:
+
+![Evidencia](/assets/images/system-design/teste-stress.drawio.png)
+
+---
+
+### 3.4. Cenário 4: Breakpoint
+
+- **Objetivo**: Encontrar em que momento de uso os limites estabelecidos começam a ser ofendidos e em que momentos as falhas começam a afetar o funcionamento a níveis críticos
+- **Carga Simulada**: de 0 até 10000 usuários simultâneos até um limite de 24 horas. 
+- **Protocolos Testados**: HTTP e Kafka
+- **Duração do Teste**: limite de 24 horas com aumento incremental de 10 usuários por minuto
+
+
+**Resultados**:
+- Após 1300 usuários ativos, os tempos de resposta da aplicação começaram a subir e atingir o p95 de 800ms. 
+- Após 1600 usuários ativos, os tempos de resposta da aplicação começaram a subir e atingir o p95 de 1500ms com 5% de taxa de erro. 
+- Após 3000 usuários os erros por timeout começaram a se tornar constantes, chegando até 10% de todo o tráfego. O p95 chegou até 30 segundos. 
+- Encontramos o limite de 3700 usuários. As aplicações começaram a falhar em cascata e os databases a travarem. 
+ 
+**Evidências**:
+
+![Evidencia](/assets/images/system-design/teste-breakpoint.drawio.png)
 
 <br>
 
