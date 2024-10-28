@@ -57,20 +57,25 @@ A proposta da Saga [quando aplicado em abordagens assincronas](/mensageria-event
 
 Existem dois modelos principais para implementar o Saga Pattern, o **Modelo Orquestrado** e o **Modelo Coreografado**. Cada um deles possui características de coordenação e comunicação das transações Saga diferentes em termos arquiteturais. A escolha entre os modelos depende das necessidades específicas de como o sistema foi projetado, e principalmente deve levar em conta a complexidade das transações.
 
+<br>
 
 ## Modelo Orquestrado
 
-No **Modelo Orquestrado**, propõe a existência de um componente centralizado de **Orquestração** que gerencia a execução das sagas. O Orquestrador é responsável por iniciar a saga, coordenar a sequência de transações e gerenciar o fluxo de compensação em caso de falhas. Ele atua como um control plane que envia comandos para os microserviços participantes e espera pelas respostas para decidir os próximos passos da saga.
-
-Então a função do orquestrador é basicamente montar um "mapa da saga", com todas as etapas que precisam ser concluídas para a finalização da mesma, enviar mensagens e eventos para os respectivos microserviços e a partir de suas respostas, resumir e estimular o próximo passo da Saga. 
+No **Modelo Orquestrado**, propõe a existência de um componente centralizado de **Orquestração** que gerencia a execução das sagas. O Orquestrador é responsável por **iniciar a saga, coordenar a sequência de transações e gerenciar o fluxo de compensação em caso de falhas**. Ele atua como um control plane que envia comandos para os microserviços participantes e espera pelas respostas para decidir os próximos passos ou resumir a saga.
 
 ![Orquestrador](/assets/images/system-design/saga-orquestrado-circulo.png)
 
+(Colocar um case)
 
+Então a função do orquestrador é basicamente montar um "mapa da saga", com todas as etapas que precisam ser concluídas para a finalização da mesma, enviar mensagens e eventos para os respectivos microserviços e a partir de suas respostas, resumir e estimular o próximo passo da Saga até que a mesma esteja totalmente completa. 
+
+O modelo orquestrado é dependente de a implementação de um pattern de Maquina de Estado, e o mesmo deve ser capaz de gerenciar o estado atual, mediante a uma resposta mudar esse estado e tomar uma ação mediante ao novo estado. Dessa forma conseguimos controlar a orquestação de forma centralizada e segura, onde a partir de uma aplicação central, podemos metrificar todos os passos, inicio e fim da execução da saga, controle de historico e alteração de estado de forma transacional e etc. 
+
+<br>
 
 ## Modelo Coreografado
 
-
+O modelo Coreografado,ao contrário do Orquestrado que propõe um componente centralizado que conhece todos os passos da saga, propõe que os microserviços devem conhecer o serviço seguinte e o anterior. Isso significa que a saga é executada em uma abordagem de malha de serviço, onde num caso complexo, um microserviço quando é chamado e termina seu processo, conhece o microserviço seguinte e o protocolo que o mesmo expõe suas funcionalidades, e o mesmo se encarrega de executar o passo e assim sucessivamente até a finalização da saga. 
 
 # Adoções Arquiteturais
 
