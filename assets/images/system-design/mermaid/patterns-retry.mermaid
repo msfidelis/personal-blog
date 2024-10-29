@@ -1,0 +1,20 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Client as Cliente
+    participant Broker as Broker de Mensagens
+    participant Worker as Processamento
+
+    Client->>Broker: Publicação do Evento/Mensagem/Comando
+
+    loop Retries Assíncronos
+        Broker->>Worker: Mensagem Disponível para Processamento
+        alt Sucesso
+            Worker-->>Broker: Confirmação (ACK)
+            Broker-->> Worker: Remove Mensagem da Fila
+            Note over Worker, Broker: Processamento Completo e Mensagem<br> Removida da Fila
+        else Falha
+            Worker-->>Broker: Falha, sem Confirmação (NACK)
+            Broker-->>Worker: Recoloca Mensagem na Fila
+            Note over Broker, Worker: Mensagem Retentada até Sucesso
+        end
+    end

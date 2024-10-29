@@ -1,0 +1,22 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant App1 as Aplicação Cliente
+    participant Server as Aplicação Server
+
+    Note over App1,Server: Início da Operação de Comunicação
+    App1->>Server: Requisição gRPC
+    Server-->>App1: Erro (ex: Unavailable)
+
+    Note right of App1: Espera de 1 segundo (Backoff Exponencial)
+    App1->>Server: Requisição gRPC (Retry 1)
+    Server-->>App1: Erro (ex: Unavailable)
+
+    Note right of App1: Espera de 2 segundos (Backoff Exponencial)
+    App1->>Server: Requisição gRPC (Retry 2)
+    Server-->>App1: Erro (ex: Unavailable)
+
+    Note right of App1: Espera de 4 segundos (Backoff Exponencial)
+    App1->>Server: Requisição gRPC (Retry 3)
+    Server-->>App1: Resposta Sucesso
+
+    Note over App1,Server: Operação Completa com Sucesso

@@ -1,0 +1,33 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Client as Cliente
+    participant Server as Servidor
+    participant Broker as Broker de Mensagens
+    participant Worker as Processo de Retry
+
+    Client->>Server: Requisição Inicial (ex: Create)
+    alt Processamento Imediato
+        Server-->>Client: 201 Created (Processo Completo)
+        Note over Client, Server: Requisição concluída com sucesso
+    else Processamento Tardio
+        Server-->>Client: 202 Accepted (Processamento Tardio)
+        Note over Client, Server: Cliente informado que a requisição será<br> processada de forma assíncrona
+
+        Server->>Broker: Envia Requisição para Fila de Processamento
+        Broker->>Worker: Pooling
+
+        loop Retries Assíncronos
+            Worker->>Server: Requisição para Processamento
+            alt Sucesso
+                Server-->>Worker: 201 Created (Processo Completo)
+                Worker-->>Broker: Confirmação (ACK)
+                Broker-->> Worker: Remove Mensagem da Fila
+                Note over Worker, Broker: Processamento Completo e Mensagem<br> Removida da Fila
+            else Falha
+                Server-->>Worker: Erro Temporário (ex: 503 Unavailable)
+                Worker-->>Broker: Falha, sem Confirmação (NACK)
+                Broker-->>Worker: Recoloca Mensagem na Fila
+                Note over Broker, Worker: Mensagem Retentada até Sucesso
+            end
+        end
+    end

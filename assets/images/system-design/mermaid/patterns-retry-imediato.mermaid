@@ -1,0 +1,17 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant App1 as Aplicação Cliente
+    participant Server as Aplicação Server
+
+    Note over App1,Server: Inicio da Operação de Comunicação
+    App1->>Server: Requisição gRPC
+    Server-->>App1: Erro (ex: Unavailable)
+    Note right of App1: Retry Imediato 1
+    App1->>Server: Requisição gRPC (Retry 1)
+    Server-->>App1: Erro (ex: Unavailable)
+    Note right of App1: Retry Imediato 2
+    App1->>Server: Requisição gRPC (Retry 2)
+    Server-->>App1: Resposta Sucesso
+    Note over App1,Server: Operação Completa com Sucesso
+
+
