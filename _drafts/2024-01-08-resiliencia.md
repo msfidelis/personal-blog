@@ -139,10 +139,26 @@ As aplicações, independentemente de seu protocolo principal, **devem expor URL
 
 Os **balanceadores também devem ser capazes de verificar essas URLs regularmente para liberar ou restringir o tráfego para as réplicas do pool**, de acordo com as respostas obtidas nos healthchecks. Ou seja, **se a réplica começar a responder com erros ou deixar de responder dentro do tempo limite, o balanceador deve identificar que essa réplica está inativa ou sem condições de receber tráfego**.
 
+Os balanceadores são responsáveis por garantir o paralismo externo de requisições sincronas, afim de dispersar o tráfego das chamadas e garantir maior aproveitamento de recursos, aumentando assim a resiliência diminuindo a chance de falhas graves decorrentes de um único host do pool se ficar indisponível indisponível. 
 
-## Idempotencia
+<br>
 
-### Chaves de Idempotencia
+## Idempotência
+
+Idempotência é, talvez, **o passo mais importante para criar sistemas resilientes em ambientes distribuídos**. A implementação de padrões de idempotência **permite que várias outras estratégias possam ser implementadas com segurança**. Como abordado anteriormente, ao detalhar as possibilidades de [comunicação síncrona, como APIs REST](/padroes-de-comunicacao-sincronos/), o conceito deve ser aplicado e **funcionar bem independentemente do modelo e do protocolo utilizado**. O objetivo é **permitir que a mesma operação seja executada várias vezes, sempre produzindo o mesmo resultado, sem gerar consequências indesejadas, como duplicidades**.
+
+Essa capacidade permite que, durante **falhas ocasionais de rede, falhas de réplicas, manutenções programadas ou intermitências inesperadas, a mesma solicitação possa ser repetida a qualquer momento** para sincronizar domínios, receber respostas que não foram retornadas, se recuperar de erros, entre outras situações.
+
+### Chaves de Idempotência
+
+O processo de idempotência precisa se **apoiar em dados específicos da requisição para garantir que a mesma não seja duplicada ou cause efeitos indesejados**. Normalmente, escolhem-se chaves de idempotência que **identifiquem a requisição, objetivo de domínio ou comando, permitindo verificar se a operação já foi realizada ou não**. Esse controle é conhecido como Chave de Idempotência.
+
+![Idempotência Fluxo](/assets/images/system-design/patterns-idempotencia.png)
+
+Vamos ilustrar um cenário com uma API de pagamentos, onde o cliente **realiza uma solicitação de cobrança através de diferentes métodos de pagamento**. Caso o cliente reenvie a solicitação devido a uma falha, seja no cliente ou no servidor, **a operação idempotente garante que o valor seja cobrado apenas uma vez**. Para identificar essa requisição, o cliente pode enviar, via headers ou parâmetros, uma chave de idempotência única que será verificada e armazenada antes de processar a solicitação. Essa chave pode ser gerada diretamente pelo cliente ou ser uma combinação de valores presentes na requisição.
+
+Esse padrão permite que a mesma solicitação seja repetida várias vezes com segurança. Sem idempotência, o cliente poderia ser cobrado várias vezes, causando inconsistências e graves falhas financeiras no processo.
+
 
 <br>
 
@@ -198,7 +214,12 @@ Essa estratégia **pode ser implementada tanto de forma síncrona quanto assínc
 
 ### Retries com Estratégias de Jitter
 
-A estratégia de retentativas de Jitter
+A estratégia de **jitter é uma alternativa avançada para retentativas com backoff exponencial**. A ideia do jitter é **introduzir intervalos de tempo aleatórios entre as retentativas, com o objetivo de dispersá-las e reduzir ainda mais o risco de gargalos e sobrecarga**. Esse método é especialmente útil em cenários com **alto volume de tráfego, onde uma grande quantidade de retentativas pode ser iniciada ao mesmo tempo** durante uma falha eventual.
+
+Há várias estratégias de jitter que podem ser aplicadas. Uma abordagem completa e radical, por exemplo, **atribui a cada retentativa um valor de espera totalmente aleatório entre 0 e o tempo máximo definido para o backoff**. Também é possível configurar intervalos de jitter que **aumentam de forma incremental a cada retentativa**. Nesse modelo de implementação, a primeira tentativa de retry pode variar entre 0 e 4 segundos, a segunda varia entre 2 e 6 segundos, a terceira entre 6 e 10 segundos, e assim por diante.
+
+Independentemente do modelo, o objetivo da estratégia de jitter é **dispersar o volume de retentativas** para evitar que elas agravem problemas que já estejam acontecendo.
+
 
 <br>
 
