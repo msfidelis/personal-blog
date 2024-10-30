@@ -167,7 +167,6 @@ As estratégias de retry, ou retentativas, como o próprio nome indica, **refere
 
 Independentemente da estratégia escolhida, os retries **devem ser implementados de forma criteriosa e responsável**, e é essencial que **os sistemas que recebem essas retentativas tenham uma consistência sólida com implementações inteligentes de idempotência**, permitindo repetir a requisição inúmeras vezes sem gerar efeitos adversos ou duplicidades.
 
-
 ### Retries Imediatos em Memória
 
 Os **retries imediatos são executados em memória, geralmente na mesma thread da tentativa original**. Esse é o tipo mais simples de retentativa, que normalmente está **presente de forma configurável em diversos clientes de requisições HTTP ou de consumo de serviços e protocolos específicos**.
@@ -219,10 +218,22 @@ Há várias estratégias de jitter que podem ser aplicadas. Uma abordagem comple
 
 Independentemente do modelo, o objetivo da estratégia de jitter é **dispersar o volume de retentativas** para evitar que elas agravem problemas que já estejam acontecendo.
 
-
 <br>
 
-## Circuit Breakers
+ ## Circuit Breakers
+
+O pattern de Circuit Breaker é uma estratégia de resiliência projetada para **proteger serviços e componentes de sobrecarga** e **evitar que problemas de indisponibilidade se agravem e provoquem falhas em cascata**.
+
+A ilustração do Circuit Breaker é similar a um **disjuntor de energia**, onde ele **interrompe a comunicação ao "desarmar" o fluxo de chamadas para determinado serviço ou componente quando identifica uma sequência elevada de falhas**, prevenindo que problemas maiores aconteçam.
+
+A implementação do Circuit Breaker normalmente utiliza três estados de comunicação: **fechado**, **aberto** e **semi-aberto**. O **estado inicial do circuito é fechado**, permitindo que **todas as requisições passem normalmente**. Nesse estado, o **circuito monitora continuamente as requisições e suas respostas**.
+
+Caso **certos limites configurados de timeout ou de erros sejam excedidos**, o circuito muda automaticamente para o estado **aberto**. Nesse estado, o **disjuntor "desarma" e todas as comunicações com o sistema ou dependência subsequente são bloqueadas** para evitar uma sobrecarga ainda maior no sistema em falha e para proteger o serviço, evitando um número excessivo de conexões abertas que poderiam esgotar seus recursos.
+
+O circuito **permanece aberto por um período configurado**, como um "tempo de resfriamento", para permitir que o **serviço tenha um tempo adequado para se recuperar**. Após esse período, o circuito passa para o estado **semi-aberto**, onde **um número limitado de requisições começa a ser direcionado de forma controlada**. Se as respostas forem positivas, o circuito retorna ao estado **fechado** e **o funcionamento normal é retomado**, permitindo o fluxo de comunicações com a dependência. Se as respostas ainda forem negativas, o circuito volta ao estado **aberto** e espera pelo próximo intervalo de checagem no estado semi-aberto.
+
+Essa estratégia é fundamental para sistemas distribuídos, pois **ajuda a manter a estabilidade do sistema ao controlar o impacto de falhas temporárias** e impedir que uma dependência instável degrade ainda mais o desempenho ou a disponibilidade do serviço.
+
 
 ## Timeouts 
 
