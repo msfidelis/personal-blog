@@ -14,36 +14,38 @@ Nesse capitulo iremos revisitar praticamente tudo que já foi visto, porém com 
 
 # Definindo Resiliência
 
-Resiliência é um termo muito comum em arquitetura e engenharia de software que normalmente refere-se à capacidade dos sistemas, processos e componentes de suportar uma maior variedade de cenários de falhas e manter sua operação, seja de forma total ou parcial. Esse conceito fala diretamente com diversas outras disciplinas e tópicos de engenharia, sempre com o objetivo de incrementar níveis adicionais de eficiência e segurança operacional das funcionalidades das aplicações e das jornadas dos clientes.
+Resiliência é um termo muito comum em arquitetura e engenharia de software que **refere-se à capacidade dos sistemas, processos e componentes de suportar uma ampla variedade de cenários de falhas e manter sua operação**, seja de forma total ou parcial. **Esse conceito está diretamente relacionado a diversas disciplinas e tópicos de engenharia**, sempre com o objetivo de elevar os níveis de eficiência e segurança operacional das funcionalidades das aplicações e das jornadas dos clientes.
 
-A preocupação com resiliência é um cenário muito comum no dia a dia dos times de desenvolvimento e operações, e o modo mais fácil de explicá-la de forma resumida, é propôr que quando algum serviço ou ponto específico do sistema falha, esse mesmo sistema teria formas de contornar a situação e minimizar o impacto no funcionamento geral. 
+A preocupação com resiliência é recorrente no dia a dia dos times de desenvolvimento e operações. A maneira mais simples de explicá-la, de forma resumida, é **propor que, quando algum serviço ou ponto específico do sistema falha, esse sistema teria mecanismos para contornar a situação e minimizar o impacto no funcionamento geral**.
+
 
 ## Resiliência e Disponibilidade
 
-Embora os termos resiliência e disponibilidade sejam muito proximos e andem juntos na maior parte do tempo, seus conceitos são um pouco diferentes em natureza e não devem ser confundidos. A disponibilidade pode ser descrita em dois cenários principais, sendo o primeiro deles metrificando o quanto das solicitações enviadas para o sistema foram realmente processadas com sucesso e o segundo metrificando o tempo que esse sistema ficou indisponível durante certos períodos de tempo. 
+Embora os termos resiliência e disponibilidade sejam muito próximos e frequentemente caminhem juntos, **seus conceitos possuem diferenças fundamentais e não devem ser confundidos**. A disponibilidade pode ser descrita em dois cenários principais: o primeiro **mede quantas das solicitações enviadas para o sistema foram realmente processadas com sucesso**, enquanto o segundo **mede o tempo em que o sistema permaneceu indisponível em determinados períodos**.
 
-A resiliência por sua vez, são o conglomerado de estratégias que usamos para manter essa disponibilidade. 
+A resiliência, por sua vez, **é o conjunto de estratégias que usamos para manter essa disponibilidade**.
 
-Resumindo, quanto maiores forem os mecanismos de resiliência, maior tolerante a falhas o sistema em si é, e por tabela maior sua disponibilidade perante ao uso dos clientes. 
+Resumindo, **quanto mais robustos forem os mecanismos de resiliência, mais tolerante a falhas será o sistema, e, consequentemente, maior será sua disponibilidade para os usuários**.
 
-Vamos abordar diversos cenários e mecanismos de resiliência durante esse capítulo, e principalmente revisitar diversos outros patterns e conceitos que já foram abordados, mas agora com foco em garantir maior resiliência e disponibilidade. 
+Neste capítulo, abordaremos diversos cenários e mecanismos de resiliência e, **principalmente, revisitaremos vários outros padrões e conceitos já discutidos, agora com foco em garantir maior resiliência e disponibilidade**.
+
 
 <br>
 
 ## Métricas de Resiliência e Disponibilidade
 
-Um número muito grande de métricas pode ser usado para avaliar a disponibilidade e resiliência de aplicações, muitas delas já apareceram por aqui em capítulos anteriores como [Performance, Capacidade e Escalabilidade](/performance-capacidade-escalabilidade/). 
+Uma grande variedade de métricas pode ser utilizada para avaliar a disponibilidade e resiliência de aplicações. Muitas delas já foram discutidas em capítulos anteriores, como em [Performance, Capacidade e Escalabilidade](/performance-capacidade-escalabilidade/).
+
 
 ### Métrica de Disponibilidade de Uso
 
-A forma mais comum de se medir a disponibilidade usando como parâmetro o a quantidade de uso de uma API é medir a taxa de erros, que se consiste basicamente em dividir dois contadores, um referente a quantidade de erros que ocorreram dentro do período e outro a soma total das requisições que ocorreram independente do resultado, somando sucesso e falha. 
+A forma mais comum de medir a disponibilidade usando a quantidade de uso de uma API ou funcionalidade como parâmetro é calcular essa **disponibilidade usando como base a taxa de erros dos mesmos**. Isso basicamente consiste em **dividir dois contadores: um referente à quantidade de erros ocorridos dentro do período e outro representando a soma total das requisições** que ocorreram, independentemente do resultado (sucesso ou falha).
 
 \begin{equation}
 \text{Taxa de Erros} = \left( \frac{\text{Número de Erros}}{\text{Número Total de Tentativas ou Eventos}} \right) \times 100
 \end{equation}
 
-Um exemplo, em uma API monitorada, podemos ver que dentro de 1 hora, tivemos um total de 1000 requisições, e 40 delas foram executadas com erros de responsabilidade do servidor. Dividimos a quantidade de erros pelo total de requisições e multiplicamos por 100 para gerar uma porcentagem mais visual. Nesse caso, tivemos 4% de erros durante o período. 
-
+Por exemplo, em uma API monitorada, podemos observar que, dentro de 1 hora, houve um total de 1000 requisições, das quais 40 resultaram em erros causados pelo servidor. Dividimos o número de erros pelo total de requisições e multiplicamos por 100 para gerar uma porcentagem mais intuitiva. Nesse caso, a taxa de erros foi de 4% durante o período.
 
 \begin{equation}
 \text{Taxa de Erros} = \left( \frac{\text{40}}{\text{1000}} \right) \times 100
@@ -53,38 +55,38 @@ Um exemplo, em uma API monitorada, podemos ver que dentro de 1 hora, tivemos um 
 \text{Taxa de Erros} = {\text{4%}}
 \end{equation}
 
-A seguir, sabendo o Error Rate, a disponibilidade pode ser calculada subtraindo o resultado dos 100% de disponibilidade. Como no exemplo chegamos a 4% de erros durante o período, nossa disponibilidade da aplicação é de 96%. 
+A partir da taxa de erros, a disponibilidade pode ser calculada subtraindo esse valor de 100%. Como no exemplo obtivemos 4% de erros, a disponibilidade da aplicação foi de 96%.
 
 \begin{equation}
-\text{Disponibilidade} = \left( \text{100}-{\text{Taxa de Erros}} \right)\
+\text{Disponibilidade} = \left( \text{100} - {\text{Taxa de Erros}} \right)
 \end{equation}
 
 \begin{equation}
-\text{Disponibilidade} = \left( \text{100}-{\text{4}} \right)\
+\text{Disponibilidade} = \left( \text{100} - {\text{4}} \right)
 \end{equation}
 
 \begin{equation}
 \text{Disponibilidade} = {\text{96%}}
 \end{equation}
 
-Esse método é utilizado para medir a disponibilidade do uso. Isso quer dizer que ele é especialmente adequado para responder o quanto das chamadas corresponderam em sucesso e falha. Esse é uma estratégia simples que faz sentido para sistemas que tem um modelo de uso inconstante ou muito variada, onde não faz muito sendo fazer essa metrificação baseada em tempo. 
+Esse método **é utilizado para medir a disponibilidade com base no uso**. Ele é **especialmente adequado para indicar quantas chamadas resultaram em sucesso ou falha**. Essa é uma estratégia simples e faz sentido para sistemas com um modelo de uso inconstante ou muito variado, onde não é prático medir a disponibilidade baseada em tempo.
 
 
 ### Métrica de Disponibilidade de Uptime
 
-O modelo mais tradicional de como a disponibilidade é medida leva em consideração o quanto tempo o sistema ficou disponível, esse modelo é conhecido como Uptime ou Tempo de Atividade. O tempo de "indisponibilidade" pode ser total ou parcial, ou durante a duração de um incidente. Baseado nisso, se o sistema em questão estiver a mercê de um alarme crítico ou incidente operacional, esse tempo até a resolução é desconsiderado do tempo de disponibilidade. 
+O modelo mais tradicional para **medir a disponibilidade considera o tempo que o sistema permaneceu disponível**, conhecido como Uptime ou Tempo de Atividade. **O tempo de "indisponibilidade" pode ser total ou parcial**, dependendo da duração de um incidente. Assim, **se o sistema estiver sujeito a um alarme crítico ou incidente operacional, esse tempo até a resolução é desconsiderado no cálculo da disponibilidade**.
 
-A equação para metrificar o uptime, ou tempo de atividade, até simples. Basta dividir tempo operacional do tempo total de atividade esperado. O tempo operacional é calculado subtraindo do tempo total de atividade, a soma de todos os períodos de downtime, incidentes e afins. 
+A equação para calcular o uptime, ou tempo de atividade, é simples: basta dividir o tempo operacional pelo tempo total de atividade esperado. O tempo operacional é calculado subtraindo o tempo total de atividade pela soma de todos os períodos de downtime, incidentes e afins.
 
 \begin{equation}
-\text{Tempo Operacional} = \left( \text{Tempo Total} - (\text{Incidente 1}+{\text{Incidente 2}}+{\text{...}})\right)\
+\text{Tempo Operacional} = \left( \text{Tempo Total} - (\text{Incidente 1} + \text{Incidente 2} + \text{...}) \right)
 \end{equation}
 
 \begin{equation}
 \text{Uptime} = \frac{\text{Tempo Operacional}}{\text{Tempo Total}} \times 100\%
 \end{equation}
 
-Vamos propor um exemplo no qual durante o mês, que tem uma média de 43.200 minutos, tivemos uma soma total de 3 horas de downtime, correspondendo a 180 minutos. Podemos subtrair o tempo de downtime do tempo total do período observado para chegar no `Tempo Operacional`, chegando no total de 43.020 minutos de tempo de atividade. 
+Por exemplo, suponha que em um mês, com uma média de 43.200 minutos, houve um total de 3 horas de downtime, correspondendo a 180 minutos. Subtraímos o tempo de downtime do tempo total do período para obter o `Tempo Operacional`, resultando em 43.020 minutos de atividade.
 
 \begin{equation}
 \text{Tempo Operacional} = \text{43.200} - \text{180}
@@ -94,7 +96,7 @@ Vamos propor um exemplo no qual durante o mês, que tem uma média de 43.200 min
 \text{Tempo Operacional} = \text{43.020}
 \end{equation}
 
-Sabendo o Tempo Operacional do meu sistema, dividimos ele pelo tempo total para chegar na porcentagem de disponibilidade do período, resultando em 99.58% de Uptime. 
+Sabendo o Tempo Operacional do sistema, dividimos esse valor pelo tempo total para obter a porcentagem de disponibilidade no período, resultando em 99,58% de Uptime.
 
 \begin{equation}
 \text{Uptime} = \frac{\text{Tempo Operacional}}{\text{Tempo Total}} \times 100\%
@@ -105,36 +107,38 @@ Sabendo o Tempo Operacional do meu sistema, dividimos ele pelo tempo total para 
 \end{equation}
 
 \begin{equation}
-\text{Uptime} = {\text{99.58%}} 
+\text{Uptime} = {\text{99,58\%}} 
 \end{equation}
 
-Essa é a abordagem mais tradicional de metrificação de Disponibilidade, ainda mais em sistemas onde não é possível metrificar diretamente pelo uso. Essa abordagem é encontrada em Status Pages de sistemas abertos, serviços de datacenters de clouds públicas e privadas e afins. 
+Essa é a abordagem mais **tradicional para metrificar a disponibilidade**, especialmente em sistemas onde não é viável medir diretamente pelo uso. Essa abordagem é comumente utilizada em Status Pages de sistemas abertos, serviços de data centers de clouds públicas e privadas, entre outros.
 
 <br>
 
 ## Blast Radius
 
-O Blast Radius é um **conceito inicialmente bélico**, que **descreve de forma estimativa as zonas afetadas pelo impacto de uma bomba hipotética em determinada região**. Esse experimento propõe estimar em mapas do mundo real, em caso de detonação de certos tipos de bombas conhecidas, quais zonas dentro do raio de detonacão seriam afetadas pelo fogo direto, quais serão afetadas pelo deslocamento de ar, radiação termica e etc. 
+O Blast Radius é um **conceito originalmente bélico**, que **descreve, de forma estimativa, as zonas afetadas pelo impacto de uma explosão em uma determinada região**. Esse experimento propõe estimar, em mapas do mundo real, quais áreas dentro do raio de detonação de certos tipos de bombas seriam afetadas pelo fogo direto, deslocamento de ar, radiação térmica, entre outros fatores.
 
 ![Blast Radius](/assets/images/system-design/blast-radius.png)
 
-Por mais que seja uma herança militar que carrega um certo peso contraditório, ele pode ser encontrado também em alguns debates de arquitetura de sistemas e engenharia de confiabilidade para **estimar o impacto da falha de algum componente de um sistema distribuído**. Esse termo é empregado para **identificar pontos de dor e oportunidades de melhoria de resiliência**, e propõe por meio de **exercícios de simulação de falhas** ou **perguntas "cretinas" em revisões arquiteturais**, estimar o tamanho dos **impactos das falhas de determinados pontos críticos do sistema**, e gerar discussões de como **minimizar as avarias desses cenários**, criando fallbacks, aplicando estratégias, implementando certos patterns de resiliência e etc. 
+Embora tenha origens militares e traga uma conotação contraditória, o conceito também é utilizado em discussões de arquitetura de sistemas e engenharia de confiabilidade para **estimar o impacto da falha de um componente em um sistema distribuído**. Esse termo é aplicado para **identificar pontos críticos e oportunidades de melhoria na resiliência**, e sugere, por meio de **exercícios de simulação de falhas** ou **"perguntas provocativas" em revisões arquiteturais**, a estimativa dos **impactos das falhas em pontos críticos do sistema**. A partir dessas estimativas, busca-se discutir como **minimizar os danos nesses cenários** através de fallbacks, aplicação de estratégias e implementação de padrões de resiliência, entre outros.
 
-Os questionamentos utilizados para estimar esses danos podem vir em formas de **"Se o componente X parar, o que acontece?"**, caminhar para **"se esse cara aqui estiver em downtime, esse outro continua funcionando?"** e ir até **"se essa API cair, o que para de funcionar? O que continua funcionando parcialmente? O que continua normalmente? Em quanto tempo eu me recupero se ela voltar? Gero inconsistência em alguma parte do meu processo?"** e evoluir pra uma infinidade de cenários. O ponto que eu gostaria de ressaltar é que **as "perguntas cretinas" devem ser realizadas sempre que possível**, e deve ser criado um ambiente de discussão seguro e aberto pra que elas sejam feitas sem complexidades e cerimônias. Considero essa prática uma das mais dinâmicas e eficiêntes para sair do zero para alguma coisa em um review arquitetural de resiliência, e indico a experimentação para todos.
+Os questionamentos utilizados para estimar esses danos podem vir na forma de **"Se o componente X parar, o que acontece?"**, avançando para **"Se este componente estiver em downtime, aquele outro continuará funcionando?"** e indo até perguntas como **"Se essa API cair, o que para de funcionar? O que continua funcionando parcialmente? O que permanece funcionando normalmente? Em quanto tempo me recupero se ela voltar? Gero inconsistências em alguma parte do meu processo?"**, evoluindo assim para uma variedade de cenários. O ponto que quero destacar é que **essas "perguntas provocativas" devem ser feitas sempre que possível**. É essencial criar um ambiente seguro e aberto para que esses questionamentos sejam feitos sem barreiras ou cerimônias. Considero essa prática uma das mais dinâmicas e eficientes para partir do zero a algo concreto em um review arquitetural de resiliência, e recomendo sua experimentação a todos.
+
 
 <br>
 
 # Estratégias e Patterns de Resiliência
 
-A seguir iremos catalogar, não todas, mas as principais estratégias e patterns de implementações de engenharia que nos ajudam a contornar falhas e adicionar vários níveis de resiliência em vários cenários conhecidos. O objetivo é aumentar nossas caixas de ferramentas com possibilidades arquiteturais inteligentes e aplicáveis. Muitas delas serão tópicos já revisitados anteriormente, a ideia é reaproveitar conceitos já apresentados e adicionar características 
+A seguir, iremos catalogar não todas, mas as principais estratégias e padrões de implementação em engenharia que ajudam a contornar falhas e adicionar vários níveis de resiliência em diferentes cenários conhecidos. O objetivo é expandir nossa "caixa de ferramentas" com opções arquiteturais inteligentes e aplicáveis. Muitos desses conceitos já foram apresentados anteriormente, e a ideia é reaproveitá-los, agora com um foco em características de resiliência e disponibilidade. 
 
 ## Replicação de Serviços, Balanceamento de Carga e Healthchecks
 
-A principal e mais simples estratégia de resiliência é revisitar os conceitos de [Distribuição e Balancemento de Carga](/load-balancing/) e [Escalabilidade Horizontal](/performance-capacidade-escalabilidade/). Escalar e distribuir carga é talvez a estratégia que mais **reflita resiliência e performance a curto prazo**. Mecanismos de balanceamento **devem andar em conjunto com os mecanismos de autoscaling, para que seja possível adicionar e remover replicas sob demanda** com a maior segurança e resiliência possível, para que as aplicações consigam se adaptar a cargas variáveis. 
+A principal e mais simples estratégia de resiliência é revisitar os conceitos de [Distribuição e Balanceamento de Carga](/load-balancing/) e [Escalabilidade Horizontal](/performance-capacidade-escalabilidade/). Escalar e distribuir a carga é, talvez, a estratégia que mais **reflete resiliência e desempenho a curto prazo**. Mecanismos de balanceamento **devem operar em conjunto com mecanismos de autoscaling, para que seja possível adicionar e remover réplicas sob demanda** com a máxima segurança e resiliência, permitindo que as aplicações se adaptem a cargas variáveis.
 
-As aplicações independente do seu protocolo principal **devem expor URL's de healthcheck que reflitam o estado da mesma**, e caso alguma dependência ou mau funcionamento ocorra, essa URL deve refletir por meio do status code que consigam ser checados de tempos em tempos. 
+As aplicações, independentemente de seu protocolo principal, **devem expor URLs de healthcheck que reflitam seu estado**, e, caso ocorra alguma falha ou mau funcionamento, essa URL deve indicar o status por meio de códigos de resposta que possam ser monitorados periodicamente.
 
-Igualmente os **balanceadores devem ser capazes de checar essas URL's de tempos em tempos para liberar ou restringir o tráfego para essas replicas do pool** mediante a respostas saudáveis ou não das URL's de healthcheck. Isso é, **caso a replica comece a responder erros, ou até mesmo não responder dentro dos tempos limites de espera, o balanceador deve entender que a replica em questão está morta ou não está saudável para receber tráfego**. 
+Os **balanceadores também devem ser capazes de verificar essas URLs regularmente para liberar ou restringir o tráfego para as réplicas do pool**, de acordo com as respostas obtidas nos healthchecks. Ou seja, **se a réplica começar a responder com erros ou deixar de responder dentro do tempo limite, o balanceador deve identificar que essa réplica está inativa ou sem condições de receber tráfego**.
+
 
 ## Idempotencia
 
@@ -144,51 +148,57 @@ Igualmente os **balanceadores devem ser capazes de checar essas URL's de tempos 
 
 ## Estratégias de Retry (Retentativas)
 
-As estratégias de retry, ou retentativas, como próprio nome diz, **refere-se ao ato de refazer a requisição mediante a uma falha de dependência**. Assim como balanceamento de carga, é uma estratégia simples e que tem seus benefícios a curto prazo. Existem alguns modelos e estratégias de retentativas, mas todas elas tem o principio de ajudar a **vencer adversidades referentes a indisponibilidades temporárias, falhas ocasionais e intermitência de dependências ou de rede**. 
+As estratégias de retry, ou retentativas, como o próprio nome indica, **referem-se ao ato de refazer a requisição diante de uma falha de dependência**. Assim como o balanceamento de carga, essa é uma estratégia simples, com benefícios no curto prazo. Existem alguns modelos e estratégias de retentativas, mas todas compartilham o princípio de ajudar a **superar indisponibilidades temporárias, falhas ocasionais e intermitências de dependências ou de rede**.
 
-Independente da estratégia escolhida, os retries **devem ser implementados de forma criteriosa e responsável**, e é inestimável que **os sistemas que estão recebendo essas retentativas tenham uma consistência sólida a implementações inteligentes de idempotencia**, para que seja possivel repetir o request inumeras vezes sem gerar efeitos adversos ou duplicidades. 
+Independentemente da estratégia escolhida, os retries **devem ser implementados de forma criteriosa e responsável**, e é essencial que **os sistemas que recebem essas retentativas tenham uma consistência sólida com implementações inteligentes de idempotência**, permitindo repetir a requisição inúmeras vezes sem gerar efeitos adversos ou duplicidades.
+
 
 ### Retries Imediatos em Memória
 
-Os **retries imediatos são executados em memória e geralmente na mesma thread que a tentativa original**. Esse é o tipo mais simples de retentiva, que normalmente está **presente de forma configurável em diversos clients de requisições HTTP ou de consumo de serviços e protocolos específicos**. 
+Os **retries imediatos são executados em memória, geralmente na mesma thread da tentativa original**. Esse é o tipo mais simples de retentativa, que normalmente está **presente de forma configurável em diversos clientes de requisições HTTP ou de consumo de serviços e protocolos específicos**.
 
-Imagine que sua aplicação tem uma dependência direta de outra aplicação e as mesmas se comuniquem por meio de requisições gRPC. Imagine que durante uma requisição entre as duas, temos algumas intermitências de disponibilidade no endpoint do server. **Podemos implementar uma lógica de retentativa que define um número máximo de tentativas sequenciais que reenvia requisição até que seja retornada uma resposta válida**. 
+Imagine que sua aplicação dependa diretamente de outra aplicação, e ambas se comuniquem por meio de requisições gRPC. Suponha que, durante uma requisição entre as duas, ocorram intermitências de disponibilidade no endpoint do servidor. **Podemos implementar uma lógica de retentativa que define um número máximo de tentativas sequenciais, reenvia a requisição até que uma resposta válida seja obtida**.
 
 ![Retry Imediato](/assets/images/system-design/patterns-retry-imediato.png)
 
-É de **extrema importância que esse número maximo de requisições seja de fato algo viável para o cenário**, pois **tentativas muito longas pode até mesmo piorar um cenário de indisponibilidade da dependência**. Nos próximos tópicos iremos abordar algumas outras estratégias derivadas que nos ajudam a contornar também esses cenários. 
+É **extremamente importante que esse número máximo de tentativas seja adequado ao cenário**, pois **tentativas excessivas podem até agravar um cenário de indisponibilidade da dependência**. Nos próximos tópicos, abordaremos algumas estratégias derivadas que ajudam a contornar esses cenários.
 
-Essa é a estratégia mais simples de implementação de retentativas sincronas. Por mais que ainda possua certas limitações, como estar em memória e em caso da finalização do runtime as tentativas não sejam completadas em sua totalidade, ou **sejam feitas de forma sequencial e imediata podendo gerar, ou agravar gargalos de capacidade do momento**, ainda assim é de extremo valor e pode ajudar e resolver a maioria dos casos.
+Essa é a estratégia mais simples de implementação de retentativas síncronas. Apesar de ter certas limitações, como estar em memória (e, caso o runtime seja finalizado, as tentativas não são completadas) ou ser executada de forma sequencial e imediata (o que pode gerar ou agravar gargalos de capacidade momentâneos), ainda assim, essa estratégia é extremamente útil e resolve a maioria dos casos.
  
 <br>
 
-### Retries Assincronos
+### Retries Assíncronos
 
-Uma das formas mais conhecidas e eficientes de implementação de retentativas são as efetuadas de forma assincrona. Essa estratégia ainda pode se encontrar em diversas variações. Por si só a **comunicação assincrona já oferece naturalmente alguns níveis de resiliência por permitirem um desacoplamento facilitado**, quando **aplicada junto a técnicas de retentativas, torna-se uma implementação poderosa e extensível**. 
+Uma das formas mais conhecidas e eficientes de implementar retentativas é por meio de processos assíncronos. Essa estratégia pode ser aplicada de várias formas e variações. A **comunicação assíncrona, por si só, já oferece naturalmente alguns níveis de resiliência ao permitir um desacoplamento facilitado**. Quando combinada com técnicas de retentativas, torna-se uma implementação poderosa e extensível.
 
-Uma dessas formas são implementações em cenários de requisições que **começam sincronas, mas terminam de forma assincrona**, podendo trocar um status code definitivo esperado por um que remeta um processamento tardio, como por exemplo de `201 Created`  para `202 Accepted`, **indicando que a solicitação não foi concluída ainda de forma imediata, mas será retantada posteriormente sem necessidade de espera do cliente**. 
+Um exemplo é o uso de retentativas em cenários onde as **requisições começam de forma síncrona, mas são concluídas de forma assíncrona**. Nesse caso, o sistema pode trocar o status code definitivo esperado por um que indique processamento tardio, como substituir `201 Created` por `202 Accepted`. Isso **indica que a solicitação não foi concluída imediatamente, mas será processada e tentada novamente sem que o cliente precise aguardar**.
 
 ![Async](/assets/images/system-design/patterns-retries-async-semi-sync.png)
 
-Quando é possível de ser implementada, **esse estratégia é uma ótima alternativa de fallback para o fluxo principal**, **podendo represar as requisições falharam durante um período de indisponibilidade para serem completadas com o tempo**. 
+Quando possível, **essa estratégia é uma ótima alternativa de fallback para o fluxo principal**, permitindo **armazenar as requisições que falharam durante um período de indisponibilidade para serem completadas posteriormente**.
 
-Outra estratégia muito mais simples, **são de processos que são naturalmente assincronos**, que **começam e terminam dentro de brokers de mensagens ou eventos**. Onde o **produtor dessa mensagem já faz essa publicação contanto que o processo já tem mecanismos de retentativas** e vai receber sua r**esposta mediante a conclusão do processamento do comando**. 
+Outra estratégia mais simples é aplicada em **processos que são naturalmente assíncronos**, os quais **começam e terminam dentro de brokers de mensagens ou eventos**. Nesse caso, o **produtor da mensagem publica a mensagem contando com mecanismos de retentativas** e recebe sua **resposta após a conclusão do processamento do comando**.
 
 ![Async](/assets/images/system-design/patterns-retries-async.png)
 
-Essa implementação pode c**olocar essa requisição em uma fila ou tópico de processamento que serão consumidas por um processo especializado** em **realizar a retentativa e retormar o processo**. Normalmente **brokers de mensagens já possuem mecanismos de retentativas de consumo das mensagens** que caso não recebam um `ack` de acordo do consumidor, colocam a mensagem de volta para ser consumida mais uma vez, se tornando um **mecanismo de retry muito poderoso apesar das suas complexidades e componentes adicionais**. 
+Essa implementação pode **enfileirar a requisição em uma fila ou tópico de processamento**, que será consumido por um processo especializado em **realizar a retentativa e retomar o fluxo**. Normalmente, **brokers de mensagens já possuem mecanismos de retentativas para o consumo de mensagens**: caso não recebam um `ack` de confirmação do consumidor, a mensagem é colocada de volta na fila para ser consumida novamente. Isso torna essa abordagem um **mecanismo de retry muito poderoso, apesar de sua complexidade e dos componentes adicionais envolvidos**.
+
 
 <br>
 
 ### Retries com Backoff Exponencial
 
-Ao invés de realizar retries consecutivos em intervalos regulares, de forma sincrona ou assincrona, existe a **estratégia do backoff exponencial, ou exponencial backoff das retentativas**. A estratégia consiste em **aumentar o tempo de espera entre as retentativas de forma exponencial** (por exemplo, 1 segundo, 2 segundos, 4 segundos, 8 segundos, 16 segundos e assim por diante). Isso ajuda a **aliviar a pressão sobre o sistema no qual a retentativa está sendo feita e reduz o risco de sobrecarga que pode ser agravado, ou até causado pelo número alto de retentativas**. 
+Em vez de realizar retries consecutivos em intervalos regulares, seja de forma síncrona ou assíncrona, existe a **estratégia de backoff exponencial, ou exponencial backoff das retentativas**. Essa abordagem consiste em **aumentar o tempo de espera entre as tentativas de forma exponencial** (por exemplo, 1 segundo, 2 segundos, 4 segundos, 8 segundos, 16 segundos e assim por diante). Isso ajuda a **aliviar a pressão sobre o sistema em que a retentativa está sendo realizada e reduz o risco de sobrecarga, que pode ser agravada, ou até mesmo causada, pelo número elevado de retentativas**.
 
 ![Exponencial Backoff](/assets/images/system-design/patterns-exponencial-backoff.png)
 
-Essa estratégia **pode acontecer tanto de forma sincrona quanto de forma assincrona**. Implementar uma lógica de backoff em clients de comunincação entre serviços é simples e pode ser **extremamente valiosa para cenários de sistemas distribuídos**. Muitos brokers de mensagens oferecem estratégias nativas ou já facilitadas para implementação de consumo de mensagens por meio de backoff exponencial. Essa é uma evolução direta de todas as estratégias de retentativas e é extremamente recomendada em todos os sentidos que as mesmas se fizerem possíveis. 
+Essa estratégia **pode ser implementada tanto de forma síncrona quanto assíncrona**. A implementação de uma lógica de backoff em clientes de comunicação entre serviços é simples e pode ser **extremamente valiosa em cenários de sistemas distribuídos**. Muitos brokers de mensagens oferecem estratégias nativas ou facilitam a implementação de consumo de mensagens com backoff exponencial. Essa é uma evolução direta das estratégias de retentativas e é altamente recomendada sempre que possível.
+
+<br>
 
 ### Retries com Estratégias de Jitter
+
+A estratégia de retentativas de Jitter
 
 <br>
 
@@ -221,8 +231,6 @@ Define um tempo limite para operações, prevenindo que o sistema fique preso em
 ## Bulkhead
 
 ## Lease Pattern
-
-## Health Check
 
 ## Graceful Degradation
 
