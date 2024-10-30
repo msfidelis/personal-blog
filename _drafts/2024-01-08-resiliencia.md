@@ -216,6 +216,8 @@ A estratégia de **jitter é uma alternativa avançada para retentativas com bac
 
 Há várias estratégias de jitter que podem ser aplicadas. Uma abordagem completa e radical, por exemplo, **atribui a cada retentativa um valor de espera totalmente aleatório entre 0 e o tempo máximo definido para o backoff**. Também é possível configurar intervalos de jitter que **aumentam de forma incremental a cada retentativa**. Nesse modelo de implementação, a primeira tentativa de retry pode variar entre 0 e 4 segundos, a segunda varia entre 2 e 6 segundos, a terceira entre 6 e 10 segundos, e assim por diante.
 
+![Jitter](/assets/images/system-design/patterns-retry-jitter.png)
+
 Independentemente do modelo, o objetivo da estratégia de jitter é **dispersar o volume de retentativas** para evitar que elas agravem problemas que já estejam acontecendo.
 
 <br>
