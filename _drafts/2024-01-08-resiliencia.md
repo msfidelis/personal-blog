@@ -159,7 +159,6 @@ Vamos ilustrar um cenário com uma API de pagamentos, onde o cliente **realiza u
 
 Esse padrão permite que a mesma solicitação seja repetida várias vezes com segurança. Sem idempotência, o cliente poderia ser cobrado várias vezes, causando inconsistências e graves falhas financeiras no processo.
 
-
 <br>
 
 ## Estratégias de Retry (Retentativas)
