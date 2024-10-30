@@ -220,7 +220,7 @@ Independentemente do modelo, o objetivo da estratégia de jitter é **dispersar 
 
 <br>
 
- ## Circuit Breakers
+## Circuit Breakers
 
 O pattern de Circuit Breaker é uma estratégia de resiliência projetada para **proteger serviços e componentes de sobrecarga** e **evitar que problemas de indisponibilidade se agravem e provoquem falhas em cascata**.
 
@@ -228,12 +228,19 @@ A ilustração do Circuit Breaker é similar a um **disjuntor de energia**, onde
 
 A implementação do Circuit Breaker normalmente utiliza três estados de comunicação: **fechado**, **aberto** e **semi-aberto**. O **estado inicial do circuito é fechado**, permitindo que **todas as requisições passem normalmente**. Nesse estado, o **circuito monitora continuamente as requisições e suas respostas**.
 
+![Closed](/assets/images/system-design/circuit-closed-1.drawio.png)
+
 Caso **certos limites configurados de timeout ou de erros sejam excedidos**, o circuito muda automaticamente para o estado **aberto**. Nesse estado, o **disjuntor "desarma" e todas as comunicações com o sistema ou dependência subsequente são bloqueadas** para evitar uma sobrecarga ainda maior no sistema em falha e para proteger o serviço, evitando um número excessivo de conexões abertas que poderiam esgotar seus recursos.
+
+![Open](/assets/images/system-design/circuit-open-2.drawio.png)
 
 O circuito **permanece aberto por um período configurado**, como um "tempo de resfriamento", para permitir que o **serviço tenha um tempo adequado para se recuperar**. Após esse período, o circuito passa para o estado **semi-aberto**, onde **um número limitado de requisições começa a ser direcionado de forma controlada**. Se as respostas forem positivas, o circuito retorna ao estado **fechado** e **o funcionamento normal é retomado**, permitindo o fluxo de comunicações com a dependência. Se as respostas ainda forem negativas, o circuito volta ao estado **aberto** e espera pelo próximo intervalo de checagem no estado semi-aberto.
 
-Essa estratégia é fundamental para sistemas distribuídos, pois **ajuda a manter a estabilidade do sistema ao controlar o impacto de falhas temporárias** e impedir que uma dependência instável degrade ainda mais o desempenho ou a disponibilidade do serviço.
+![Half-Open](/assets/images/system-design/circuit-half-open-3.drawio.png)
 
+Essa estratégia é fundamental para sistemas distribuídos, pois **ajuda a manter a estabilidade do sistema ao controlar o impacto de falhas temporárias** e impedir que uma dependência instável degrade ainda mais o desempenho ou a disponibilidade do serviço. Existem algumas opiniões contraditóras a respeito de circuit breakers em termos de resiliência. Algumas pessoas podem entender que os circuitos servem para *"dar erro mais rápido"*, porém podemos **implementar a checagem desses estados proativamente para acionar fallbacks diretamente sem lidar com exceptions** a todo momento para **enviar as solicitações para fluxos alternativos**. Isso faz com que seja possível **extender os circuit breakers para ativar fallbacks, e não apenas permitir ou negar a comunicação com a dependência principal**. Essa é uma estratégia avançada para esse pattern que pode complementar a solução arquitetural de forma impressionante. 
+
+<br>
 
 ## Timeouts 
 
@@ -294,3 +301,7 @@ Define um tempo limite para operações, prevenindo que o sistema fique preso em
 [Guidance for Cell-Based Architecture on AWS](https://aws.amazon.com/pt/solutions/guidance/cell-based-architecture-on-aws/?did=sl_card&trk=sl_card)
 
 [Terraform Module Blast Radius: Methods for Resilient IaC in Platform Engineering](https://www.firefly.ai/blog/terraform-module-blast-radius-methods-for-resilient-iac-in-platform-engineering)
+
+[Circuit Breaker](https://martinfowler.com/bliki/CircuitBreaker.html)
+
+[Pattern: Circuit Breaker](https://microservices.io/patterns/reliability/circuit-breaker.html)
