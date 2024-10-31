@@ -270,11 +270,13 @@ Essas técnicas **podem ser aplicadas individualmente ou em conjunto para garant
 
 ## Padrões de Fallback
 
-### Fallbacks Estáticos
+Os Fallbacks são **padrões diversificados de resiliência** que buscam **fazer com que em cenários de falhas as aplicações consigam continuar a funcionar totalmente, parcialmente ou de forma degradada, porém controlada**. A ideia dos fallbacks é **apresentar fluxos alternativos para cumprir o mesmo resultado**, mesmo que esses **sacrifiquem alguns níveis de performance, tempo de processamento, consistência ou funcionalidades restringidas**. 
 
-### Fallbacks Dinâmicos
+Praticamente todos os conceitos desse capitulos de alguma forma podem ser utilizados para acionar, ou atuar como fallback. 
 
 ## Resiliência na Camadas de Dados
+
+### Read-Write Splitting
 
 ### Caching em Resiliência 
 
@@ -288,9 +290,6 @@ Essas técnicas **podem ser aplicadas individualmente ou em conjunto para garant
 
 ## Graceful Degradation
 
-## Estratégias de Caching
-
-## Read-Write Splitting
 
 ## Sharding - Não sei se vale um texto só pra isso 
 
