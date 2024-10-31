@@ -246,7 +246,16 @@ Essa estratégia é fundamental para sistemas distribuídos, pois **ajuda a mant
 
 ## Timeouts 
 
-Define um tempo limite para operações, prevenindo que o sistema fique preso em chamadas de longa duração.
+Timeouts **definem um tempo limite para certas operações**, atuando como um **método preventivo para evitar que o sistema fique preso em chamadas de longa duração**. Eles podem **interromper operações tanto do lado do cliente quanto do servidor**. Os timeouts **permitem que os sistemas interpretem e contornem erros de forma rápida e dinâmica**, impedindo que, durante uma falha relacionada à performance de dependências, **várias conexões permaneçam abertas e fiquem em espera, o que poderia levar o sistema a falhas em cascata devido à sobrecarga de capacidade**.
+
+Ao arquitetar sistemas resilientes a falhas, **é ideal que sejam performáticos, consigam lidar com erros de forma eficiente e acionem mecanismos de fallback o mais rapidamente possível** em caso de falhas. Quando configurados de forma inteligente e adequada ao ambiente, os timeouts tornam tudo isso possível, sendo geralmente aplicados por meio de parametrizações simples em bibliotecas e componentes.
+
+Um exemplo importante é o Connection Timeout, que define o tempo limite para estabelecer uma conexão entre cliente e servidor, independentemente do protocolo. Esse timeout é utilizado para **evitar que o cliente fique indefinidamente aguardando por uma conexão que pode nunca se estabelecer**. Esse problema é comum ao tentar conexões TCP com bancos de dados sobrecarregados ou indisponíveis, ou com servidores HTTP degradados, por exemplo.
+
+Outro timeout comum é o Read e o Write Timeout, que define limites de espera para receber ou enviar dados a um serviço específico. Esse timeout ocorre quando a conexão é estabelecida com sucesso, mas o sistema **encontra um tempo de espera excessivo para obter uma resposta** de alguma operação solicitada.
+
+Além disso, há o Idle Timeout, que define o tempo máximo que uma conexão pode permanecer aberta, mas ociosa. Esse timeout é útil para **evitar que conexões previamente estabelecidas por clientes que mantêm conexões de longa duração ocupem recursos do sistema sem necessidade**, liberando essas conexões quando inativas.
+
 
 ## Throttling
 
