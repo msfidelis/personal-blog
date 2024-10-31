@@ -161,6 +161,20 @@ Esse padrão permite que a mesma solicitação seja repetida várias vezes com s
 
 <br>
 
+## Timeouts 
+
+Timeouts **definem um tempo limite para certas operações**, atuando como um **método preventivo para evitar que o sistema fique preso em chamadas de longa duração**. Eles podem **interromper operações tanto do lado do cliente quanto do servidor**. Os timeouts **permitem que os sistemas interpretem e contornem erros de forma rápida e dinâmica**, impedindo que, durante uma falha relacionada à performance de dependências, **várias conexões permaneçam abertas e fiquem em espera, o que poderia levar o sistema a falhas em cascata devido à sobrecarga de capacidade**.
+
+Ao arquitetar sistemas resilientes a falhas, **é ideal que sejam performáticos, consigam lidar com erros de forma eficiente e acionem mecanismos de fallback o mais rapidamente possível** em caso de falhas. Quando configurados de forma inteligente e adequada ao ambiente, os timeouts tornam tudo isso possível, sendo geralmente aplicados por meio de parametrizações simples em bibliotecas e componentes.
+
+Um exemplo importante é o Connection Timeout, que define o tempo limite para estabelecer uma conexão entre cliente e servidor, independentemente do protocolo. Esse timeout é utilizado para **evitar que o cliente fique indefinidamente aguardando por uma conexão que pode nunca se estabelecer**. Esse problema é comum ao tentar conexões TCP com bancos de dados sobrecarregados ou indisponíveis, ou com servidores HTTP degradados, por exemplo.
+
+Outro timeout comum é o Read e o Write Timeout, que define limites de espera para receber ou enviar dados a um serviço específico. Esse timeout ocorre quando a conexão é estabelecida com sucesso, mas o sistema **encontra um tempo de espera excessivo para obter uma resposta** de alguma operação solicitada.
+
+Além disso, há o Idle Timeout, que define o tempo máximo que uma conexão pode permanecer aberta, mas ociosa. Esse timeout é útil para **evitar que conexões previamente estabelecidas por clientes que mantêm conexões de longa duração ocupem recursos do sistema sem necessidade**, liberando essas conexões quando inativas.
+
+<br>
+
 ## Estratégias de Retry (Retentativas)
 
 As estratégias de retry, ou retentativas, como o próprio nome indica, **referem-se ao ato de refazer a requisição diante de uma falha de dependência**. Assim como o balanceamento de carga, essa é uma estratégia simples, com benefícios no curto prazo. Existem alguns modelos e estratégias de retentativas, mas todas compartilham o princípio de ajudar a **superar indisponibilidades temporárias, falhas ocasionais e intermitências de dependências ou de rede**.
@@ -241,20 +255,6 @@ O circuito **permanece aberto por um período configurado**, como um "tempo de r
 ![Half-Open](/assets/images/system-design/circuit-half-open-3.drawio.png)
 
 Essa estratégia é fundamental para sistemas distribuídos, pois **ajuda a manter a estabilidade do sistema ao controlar o impacto de falhas temporárias** e impedir que uma dependência instável degrade ainda mais o desempenho ou a disponibilidade do serviço. Existem algumas opiniões contraditóras a respeito de circuit breakers em termos de resiliência. Algumas pessoas podem entender que os circuitos servem para *"dar erro mais rápido"*, porém podemos **implementar a checagem desses estados proativamente para acionar fallbacks diretamente sem lidar com exceptions** a todo momento para **enviar as solicitações para fluxos alternativos**. Isso faz com que seja possível **extender os circuit breakers para ativar fallbacks, e não apenas permitir ou negar a comunicação com a dependência principal**. Essa é uma estratégia avançada para esse pattern que pode complementar a solução arquitetural de forma impressionante. 
-
-<br>
-
-## Timeouts 
-
-Timeouts **definem um tempo limite para certas operações**, atuando como um **método preventivo para evitar que o sistema fique preso em chamadas de longa duração**. Eles podem **interromper operações tanto do lado do cliente quanto do servidor**. Os timeouts **permitem que os sistemas interpretem e contornem erros de forma rápida e dinâmica**, impedindo que, durante uma falha relacionada à performance de dependências, **várias conexões permaneçam abertas e fiquem em espera, o que poderia levar o sistema a falhas em cascata devido à sobrecarga de capacidade**.
-
-Ao arquitetar sistemas resilientes a falhas, **é ideal que sejam performáticos, consigam lidar com erros de forma eficiente e acionem mecanismos de fallback o mais rapidamente possível** em caso de falhas. Quando configurados de forma inteligente e adequada ao ambiente, os timeouts tornam tudo isso possível, sendo geralmente aplicados por meio de parametrizações simples em bibliotecas e componentes.
-
-Um exemplo importante é o Connection Timeout, que define o tempo limite para estabelecer uma conexão entre cliente e servidor, independentemente do protocolo. Esse timeout é utilizado para **evitar que o cliente fique indefinidamente aguardando por uma conexão que pode nunca se estabelecer**. Esse problema é comum ao tentar conexões TCP com bancos de dados sobrecarregados ou indisponíveis, ou com servidores HTTP degradados, por exemplo.
-
-Outro timeout comum é o Read e o Write Timeout, que define limites de espera para receber ou enviar dados a um serviço específico. Esse timeout ocorre quando a conexão é estabelecida com sucesso, mas o sistema **encontra um tempo de espera excessivo para obter uma resposta** de alguma operação solicitada.
-
-Além disso, há o Idle Timeout, que define o tempo máximo que uma conexão pode permanecer aberta, mas ociosa. Esse timeout é útil para **evitar que conexões previamente estabelecidas por clientes que mantêm conexões de longa duração ocupem recursos do sistema sem necessidade**, liberando essas conexões quando inativas.
 
 <br>
 
