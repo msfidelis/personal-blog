@@ -256,12 +256,17 @@ Outro timeout comum é o Read e o Write Timeout, que define limites de espera pa
 
 Além disso, há o Idle Timeout, que define o tempo máximo que uma conexão pode permanecer aberta, mas ociosa. Esse timeout é útil para **evitar que conexões previamente estabelecidas por clientes que mantêm conexões de longa duração ocupem recursos do sistema sem necessidade**, liberando essas conexões quando inativas.
 
+<br>
 
-## Throttling
+## Throttling e Rate Limiting
 
-## Rate Limiting
+Os conceitos de throttling e rate limiting são técnicas discutidas em maior profundidade no [Capítulo de API Gateways](/api-gateway/). Quando aplicados sob a ótica da resiliência, ambos **podem ser usados para controlar o fluxo de requisições e o uso de recursos em um sistema**, seja em API Gateways ou em outros componentes. O objetivo é **evitar sobrecarga e garantir que a infraestrutura suporte as requisições sem comprometer o desempenho geral**.
 
-### Idempotencia
+O **rate limiting define um número máximo de requisições permitidas em um intervalo de tempo específico**, como **100 requisições por minuto, 10 transações por segundo, ou 1 milhão de transações por mês**. Quando o cliente ultrapassa esse limite, as operações de throttling entram em ação, e **as requisições adicionais são rejeitadas ou atrasadas, com uma resposta indicando que o limite foi atingido**.
+
+Essas técnicas **podem ser aplicadas individualmente ou em conjunto para garantir que os limites conhecidos dos sistemas não sejam ultrapassados**, evitando problemas maiores. Uma boa implementação desses patterns **exige que os times de engenharia compreendam bem os pontos de limitação dos sistemas envolvidos**. Normalmente, esses limites são definidos com base em estudos práticos e [testes de carga e estresse](/load-testing/).
+
+<br>
 
 ## Padrões de Fallback
 
