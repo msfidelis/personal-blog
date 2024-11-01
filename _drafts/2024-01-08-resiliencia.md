@@ -270,9 +270,52 @@ Essas técnicas **podem ser aplicadas individualmente ou em conjunto para garant
 
 ## Padrões de Fallback
 
-Os Fallbacks são **padrões diversificados de resiliência** que buscam **fazer com que em cenários de falhas as aplicações consigam continuar a funcionar totalmente, parcialmente ou de forma degradada, porém controlada**. A ideia dos fallbacks é **apresentar fluxos alternativos para cumprir o mesmo resultado**, mesmo que esses **sacrifiquem alguns níveis de performance, tempo de processamento, consistência ou funcionalidades restringidas**. 
+Os Fallbacks são **padrões diversificados de resiliência** que buscam **fazer com que, em cenários de falhas, as aplicações consigam continuar funcionando totalmente, parcialmente ou de forma degradada**. A ideia dos fallbacks é **apresentar fluxos alternativos para cumprir o mesmo resultado**, mesmo que esses processos  alternativos **sacrifiquem alguns níveis de performance, tempo de processamento, consistência, custos ou possuam funcionalidades restringidas**. 
 
-Praticamente todos os conceitos desse capitulos de alguma forma podem ser utilizados para acionar, ou atuar como fallback. 
+Praticamente todos os conceitos desse capitulos de alguma forma podem ser utilizados para acionar, ou atuar como fallback, mas vamos ilustrar alguns cenários para entendermos algumas possibilidades que serão detalhadas mais a frente. O importante é não se limitar os exemplos abaixo para entender como construir fluxos de fallback. 
+
+### Exemplo: Fallback sistêmico de redundância
+
+Os fallbacks sistêmicos são o tipo "comum" de fallback. Basicamente criar um fallback sistemico se consiste em acionar um fluxo secundário a partir de uma falha do primário pragmaticamente. 
+
+Vamos apresentar o primeiro e mais simples cenário para representar um fallback, onde temos diversas formas de realizar o mesmo processo. 
+
+![Fallback Gateway Pagamento](/assets/images/system-design/fallback-pagamentos-simples.png)
+
+Vamos propor um sistema hipotético de pagamento de um e-commerce que se comunica com gateways de pagamento para cobrar suas compras. Temos sempre nossa opção principal, o que podemos fazer para adiconar mais resiliência é ter um segundo gateway sempre a disposição que possa ser acionado mediante a falhas do componente principal. Em caso de downtime ocasional ou programado do primeiro método, podemos acionar sistemicamente o direcionamento de pagamentos para o segundo até que o principal seja reestabelecido. 
+
+Embora simples, esse cenário ilustra fielmente o que é um mecanismo de fallback. Tendo isso compreendido, o restante desse capitulo será uma brincadeira de lego, onde as diversas possibilidades vão permitir construir soluções de alta disponibilidade de forma instigante. 
+
+### Exemplo: Fallback Com Snapshot de Dados
+
+Teremos um tópico específico para explorar mais ainda as estratégias de fallbacks para a camada de dados nesse capítulo, mas para ilustrar a proposta vamos imaginar o cenário onde temos a necessidade de consultar um dado que precisa estar atualizado próximo de tempo real, como por exemplo do limite de cartão de crédito fornecido por uma instituição financeira. Tanto operacões de saldo quanto de crédito precisam estar sempre o mais atualizadas possível para não permitir compras sem dinheiro na conta em débito ou aprovar compras em crédito sem limites. Porém mediante a cenários de falha, institucionalmente podemos tomar a decisão entre aprovar compras, deixando passar com risco de negativação pontual ou negar todas as compras e transações dos clientes até os serviços serem reestabelecidos. 
+
+Para ilustração, vamos abordar a solução para o primeiro cenário, onde mediante a indisponibilidade do dado quente, temos snapshots atualizados de tempos em tempos em cache ou em outra database mais barata que permite checagens e guard-rails simples. 
+
+![Fallback Snapshot](/assets/images/system-design/fallback-snapshot.png)
+
+Se nossa aplicação usa [databases transacionais](/teorema-cap/), e a mesma se encontra indisponível por algum cenário, podemos criar uma camada de snapshot atualizada de tempos em tempos e realizar checagens mais simples, sacrificando a consistência forte por uma eventual, mas ainda assim evitando compras que excedam -muito- os limites em casos que poderiam acontecer no momento de indisponibilidade. Nesse cenário, aceitamos certos riscos de aprovar compras além do permitido em troca de continuar operando. 
+
+
+### Exemplo: Fallback com fluxos assincronos
+
+Podemos por exemplo também colocar um **fallback de mensageria como alternativa a um fluxo principal que necessite de resposta imediata** a solicitação do cliente, um fallback que troca a c**onsistência forte por eventual mediante a uma falha ou período de indisponibilidade**. Esse tipo de alternativa é **extremamente bem vinda em cenários onde a consistência e confirmação de operações imediatas é de extrema importância, mas possui alguma flexibilidade nesse sentido**, a ideia principal é ter a capacidade de tornar fluxos sincronos em fluxos assincronos quando necessário. 
+
+![Fallback Async](/assets/images/system-design/fallback-pagamentos-async.png)
+> Fallback Sync/Async
+
+Imagine um cenário onde temos uma API interna que serve para estimular diversos tipos de serviços de notificação como e-mails ao cliente. As notificações devem, pelo menos na maior parte do tempo, ser executadas de forma sequencial, porém eventuais atrasos não é um grande problema de se lidar quando acontece temporariamente. Mediante a falhas de componentes como bancos de dados, servidores SMTP do e-email, ao invés de retornar um erro para o cliente da API, o fluxo secundário é acionado colocando aquela solicitação de e-mail em uma fila de mensagens que é re-executado diversas vezes até que o seja completamente concluída mediante a reestablização dos serviço. 
+
+
+### Exemplo: Fallback Contratual
+
+Imagine que na sua solução hipotética, você tenha um sistema parceiro que você paga por uso, no qual é possível consultar um endereço ou CEP e o mesmo me calcula diversas opções de frete, estimativas de entrega com diversas transportadoras e etc. Imagine que você tenha um acordo com esse parceiro no qual ele te garante um preço diferenciado para cada vez que você aciona esse serviço de entregas por API, e ele te cobra R$ 0.03 por consulta. Esse é o seu fluxo principal, e ele deve ser sempre sua primeira opção pois apresenta a melhor solução financeira e de performance, porém você possui um segundo parceiro que fornece as mesmas funcionalidades porém com algumas capacidades reduzidas, ou te cobra um pouco mais caro por consulta, cerca de R$ 0.10. 
+
+![Fallback Contratual](/assets/images/system-design/fallback-contratual.png)
+
+Esse segundo parceiro contratado, embora não seja a opção mais viável, representa um fluxo de fallback válido contratual, no qual em caso de falhas do sistema principal, a integração pode ser redirecionada temporariamente para a segunda opção, que por mais que seja mais cara quando ativada. 
+
+### Fallback proativo
 
 ## Resiliência na Camadas de Dados
 
