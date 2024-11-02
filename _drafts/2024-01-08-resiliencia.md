@@ -12,12 +12,13 @@ title: System Design - Resiliência
 
 Nesse capitulo iremos revisitar praticamente tudo que já foi visto, porém com algumas óticas adicionais. 
 
+<br>
+
 # Definindo Resiliência
 
 Resiliência é um termo muito comum em arquitetura e engenharia de software que **refere-se à capacidade dos sistemas, processos e componentes de suportar uma ampla variedade de cenários de falhas e manter sua operação**, seja de forma total ou parcial. **Esse conceito está diretamente relacionado a diversas disciplinas e tópicos de engenharia**, sempre com o objetivo de elevar os níveis de eficiência e segurança operacional das funcionalidades das aplicações e das jornadas dos clientes.
 
 A preocupação com resiliência é recorrente no dia a dia dos times de desenvolvimento e operações. A maneira mais simples de explicá-la, de forma resumida, é **propor que, quando algum serviço ou ponto específico do sistema falha, esse sistema teria mecanismos para contornar a situação e minimizar o impacto no funcionamento geral**.
-
 
 ## Resiliência e Disponibilidade
 
@@ -45,7 +46,7 @@ A forma mais comum de medir a disponibilidade usando a quantidade de uso de uma 
 \text{Taxa de Erros} = \left( \frac{\text{Número de Erros}}{\text{Número Total de Tentativas ou Eventos}} \right) \times 100
 \end{equation}
 
-Por exemplo, em uma API monitorada, podemos observar que, dentro de 1 hora, houve um total de 1000 requisições, das quais 40 resultaram em erros causados pelo servidor. Dividimos o número de erros pelo total de requisições e multiplicamos por 100 para gerar uma porcentagem mais intuitiva. Nesse caso, a taxa de erros foi de 4% durante o período.
+Por exemplo, em uma API monitorada, podemos observar que, **dentro de 1 hora, houve um total de 1000 requisições**, das quais **40 resultaram em erros causados pelo servidor**. Dividimos o número de erros pelo total de requisições e multiplicamos por 100 para gerar uma porcentagem mais intuitiva. Nesse caso, a taxa de erros foi de 4% durante o período.
 
 \begin{equation}
 \text{Taxa de Erros} = \left( \frac{\text{40}}{\text{1000}} \right) \times 100
@@ -76,7 +77,7 @@ Esse método **é utilizado para medir a disponibilidade com base no uso**. Ele 
 
 O modelo mais tradicional para **medir a disponibilidade considera o tempo que o sistema permaneceu disponível**, conhecido como Uptime ou Tempo de Atividade. **O tempo de "indisponibilidade" pode ser total ou parcial**, dependendo da duração de um incidente. Assim, **se o sistema estiver sujeito a um alarme crítico ou incidente operacional, esse tempo até a resolução é desconsiderado no cálculo da disponibilidade**.
 
-A equação para calcular o uptime, ou tempo de atividade, é simples: basta dividir o tempo operacional pelo tempo total de atividade esperado. O tempo operacional é calculado subtraindo o tempo total de atividade pela soma de todos os períodos de downtime, incidentes e afins.
+A equação para calcular o uptime, ou tempo de atividade, é simples: **basta dividir o tempo operacional pelo tempo total de atividade esperado**. O tempo operacional é calculado subtraindo o tempo total de atividade pela soma de todos os períodos de downtime, incidentes e afins.
 
 \begin{equation}
 \text{Tempo Operacional} = \left( \text{Tempo Total} - (\text{Incidente 1} + \text{Incidente 2} + \text{...}) \right)
@@ -107,7 +108,7 @@ Sabendo o Tempo Operacional do sistema, dividimos esse valor pelo tempo total pa
 \end{equation}
 
 \begin{equation}
-\text{Uptime} = {\text{99,58\%}} 
+\text{Uptime} = {\text{99,58%}} 
 \end{equation}
 
 Essa é a abordagem mais **tradicional para metrificar a disponibilidade**, especialmente em sistemas onde não é viável medir diretamente pelo uso. Essa abordagem é comumente utilizada em Status Pages de sistemas abertos, serviços de data centers de clouds públicas e privadas, entre outros.
@@ -304,33 +305,72 @@ Um fallback pode também incluir uma **alternativa de mensageria para fluxos que
 ![Fallback Async](/assets/images/system-design/fallback-pagamentos-async.png)
 > Fallback Sync/Async
 
-Por exemplo, considere uma API interna que ativa vários tipos de serviços de notificação, como envio de e-mails aos clientes. Embora as notificações devam, na maior parte do tempo, ser executadas de forma sequencial, atrasos ocasionais não representam um problema significativo quando ocorrem temporariamente. Em caso de falhas de componentes, como bancos de dados ou servidores SMTP, em vez de retornar um erro para o cliente da API, o fluxo secundário é ativado, enviando a solicitação de e-mail para uma fila de mensagens. Essa mensagem será reprocessada diversas vezes até que o serviço seja completamente restabelecido, permitindo que as operações sejam concluídas assim que a disponibilidade for retomada.
+Por exemplo, **considere uma API interna que ativa vários tipos de serviços de notificação, como envio de e-mails aos clientes**. Embora as notificações devam, na maior parte do tempo, **ser executadas de forma sequencial, atrasos ocasionais não representam um problema significativo quando ocorrem temporariamente**. Em caso de falhas de componentes, como bancos de dados ou servidores SMTP, em vez de retornar um erro para o cliente da API, **o fluxo secundário é ativado, enviando a solicitação de e-mail para uma fila de mensageria**. Essa mensagem será **reprocessada diversas vezes até que o serviço seja completamente restabelecido**, permitindo que as **operações sejam concluídas assim que a disponibilidade for retomada**.
 
 
 ### Exemplo: Fallback Contratual
 
-Imagine que, em sua solução hipotética, você tenha um sistema parceiro que oferece serviços de consulta de endereço ou CEP, calculando diversas opções de frete e estimativas de entrega com várias transportadoras. Este parceiro cobra R$ 0,03 por consulta e oferece um preço diferenciado por contrato, sendo a sua primeira opção devido ao melhor custo-benefício e desempenho. No entanto, você possui um segundo parceiro que fornece as mesmas funcionalidades, mas com algumas limitações e a um custo mais elevado, cerca de R$ 0,10 por consulta.
+Imagine que, em sua solução hipotética, você tenha um sistema parceiro que oferece serviços de consulta de endereço ou CEP, calculando diversas opções de frete e estimativas de entrega com várias transportadoras. Este parceiro cobra R$ 0,03 por consulta e oferece um preço diferenciado por contrato, sendo a sua primeira opção devido ao melhor custo-benefício e desempenho. No entanto, v**ocê possui um segundo parceiro que fornece as mesmas funcionalidades**, mas com algumas limitações e a um custo mais elevado, cerca de R$ 0,10 por consulta.
 
 ![Fallback Contratual](/assets/images/system-design/fallback-contratual.png)
 
-Esse segundo parceiro, embora não seja a opção mais viável financeiramente, representa um fallback contratual válido. Em caso de falha no sistema principal, a integração pode ser redirecionada temporariamente para essa segunda opção. Ainda que seja uma alternativa mais cara, ela garante que o serviço continue disponível até que a funcionalidade principal seja restabelecida.
+Esse segundo parceiro, **embora não seja a opção mais viável financeiramente**, representa um **fallback contratual válido**. Em caso de **falha no sistema principal, a integração pode ser redirecionada temporariamente para essa segunda opção**. Ainda que seja uma alternativa mais cara, ela garante que o serviço continue disponível até que a funcionalidade principal seja restabelecida.
 
+<br>
 
-### Fallback proativo
+### Acionamento de Fallback Proativo
+
+A estratégia de acionar um fallback de forma reativa, em resposta a erros e indisponibilidades, já é bastante valiosa para sistemas que precisam ser tolerantes a falhas. No entanto, **podemos dar um passo adiante para garantir que a qualidade e a estabilidade do próprio fallback sejam validadas regularmente**, e não apenas durante cenários adversos no fluxo principal.
 
 ![Fallback Proativo](/assets/images/system-design/fallback-proativo.png)
 
-## Resiliência na Camadas de Dados
+Não é incomum que **fallbacks acionados com pouca frequência também se tornem pontos de falha quando ativados de forma repentina**. Para mitigar esse risco, podemos **acionar proativamente os fluxos alternativos, direcionando uma porcentagem mínima de tráfego para eles** — seja por meio de injeção de falhas, seja intencionalmente, conforme definido pelo próprio algoritmo. Dessa forma, **garantimos que nossos fallbacks estejam saudáveis e prontos para funcionar quando necessário**.
+ 
+<br>
+
+## Resiliência na Camada de Dados
+
+Quando falamos de dados, **estamos lidando com a camada mais complexa de escalar e desenvolver mecanismos de tolerância a falhas**. Projetar **estratégias que garantam resiliência na camada de dados torna a aplicação dos outros patterns consideravelmente mais simples**. Nesta seção, assim como nas demais, vamos compilar muitos cenários já abordados anteriormente, pois esse assunto tem sido talvez o maior foco de estudo deste livro.
 
 ### Read-Write Splitting
 
-### Caching em Resiliência 
+Realizar o Read-Write Splitting, ou seja, **segregar as operações de escrita e leitura em instâncias diferentes de bancos de dados** oferece, além de um ganho significativo de performance, alguns mecanismos ocasionais de fallback.
 
-### CQRS em Resiliência
+![Replicas](/assets/images/system-design/db-read-replicas.drawio.png)
 
-### Replicas de Leitura
+O conceito de utilizar [réplicas de leitura]() é amplamente adotado na indústria de desenvolvimento de software. **O impacto direto dessa prática está na performance**, pois permite que **as operações de escrita sejam realizadas em uma instância** enquanto **as consultas, relatórios e acessos a dados básicos são direcionados para uma infraestrutura segregada, distribuindo o gargalo de I/O**.
 
-## Bulkhead
+![Horizontal](/assets/images/system-design/db-scale-balancers.drawio.png)
+
+Esse tipo de arquitetura, especialmente em clouds públicas, permite **[escalar horizontalmente](/performance-capacidade-escalabilidade/) o número de réplicas de leitura** para atender demandas específicas ou para facilitar a recuperação em caso de falha de alguma delas. O mecanismo de **fallback entre réplicas de leitura é amplamente conhecido e implementado**, diferentemente das instâncias responsáveis por escrita, que geralmente são pontos únicos de contato para inserções e atualizações de dados.
+
+![Promote](/assets/images/system-design/db-scale-promote.drawio.png)
+
+Um recurso interessante de fallback é que **é possível promover réplicas de leitura para instâncias principais de escrita em muitas implementações**. Em caso de falha da instância principal que recebe os comandos de escrita, alguma réplica de leitura, ou uma instância de stand-by, pode ser automaticamente promovida ao endpoint principal. Essa prática é altamente recomendada em arquiteturas resilientes e representa um importante passo para aumentar a tolerância a falhas na camada de dados.
+
+
+### Caching de Dados como Resiliência
+
+Os padrões de caching são muito versáteis e podem ser empregados para gerar uma ampla gama de benefícios para arquiteturas de solução. Estratégias de caching **buscam criar cópias mais performáticas e econômicas de dados**, sejam eles de backend, dependências externas, bancos de dados transacionais, não transacionais ou até dados estáticos de páginas frontend.
+
+Como o **conceito de cache se baseia em criar versões do mesmo dado em locais com acesso mais rápido e barato**, esses dados podem ser usados para **criar um mecanismo de resiliência para a fonte original**.
+
+![Cache OK](/assets/images/system-design/cache-ok.drawio.png)
+
+Ao acessar dados diretamente no cache, **o número de consultas ao backend ou ao banco de dados é significativamente reduzido**, o que, além de **aumentar a performance**, **diminui a carga sobre a origem dos dados**. Esse impacto é especialmente valioso em momentos de alta demanda, prevenindo que a camada de dados atinja seu limite e falhe. Além disso, é possível projetar mecanismos para que o cache suporte uma eventual falha total da camada de dados.
+
+Recomendo fortemente a leitura do capítulo sobre estratégias de cacheamento, revisitando conceitos como **Write-Behind, Write-Through, Lazy Load e Cache Distribuído**, agora com essa perspectiva de resiliência.
+
+Quando **mecanismos mantêm a fonte original e o cache sincronizados com as mesmas versões, essas camadas tornam-se altamente redundantes**.
+
+![Cache Error](/assets/images/system-design/cache-error.drawio.png)
+
+Por exemplo, uma **CDN bem atualizada pode ser suficiente para sustentar uma longa indisponibilidade dos servidores de origem em frontends**, enquanto **caches inteligentes de dados de um banco de dados podem permitir que o sistema continue funcionando total, parcial ou razoavelmente**, conforme as necessidades e os critérios de operação definidos.
+
+
+<br>
+
+## Bulkhead Pattern
 
 ## Lease Pattern
 
@@ -366,3 +406,9 @@ Esse segundo parceiro, embora não seja a opção mais viável financeiramente, 
 [Circuit Breaker](https://martinfowler.com/bliki/CircuitBreaker.html)
 
 [Pattern: Circuit Breaker](https://microservices.io/patterns/reliability/circuit-breaker.html)
+
+[What is Fallback?](https://botpenguin.com/glossary/fallback)
+
+[Bulkhead Pattern — Distributed Design Pattern](https://medium.com/nerd-for-tech/bulkhead-pattern-distributed-design-pattern-c673d5e81523)
+
+[Bulkhead pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/bulkhead)
