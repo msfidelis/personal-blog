@@ -10,7 +10,7 @@ title: System Design - Resiliência
 
 {% include latex.html %}
 
-Nesse capitulo iremos revisitar praticamente tudo que já foi visto, porém com algumas óticas adicionais. 
+Nesse capitulo iremos revisitar praticamente tudo que já foi visto, porém com algumas óticas adicionais. A maioria, beirando todos os tópicos já forma tratados em capítulos anteriores. Então caso tenha sentido falta de uma maior profundidade conceitual, recomendo fortemente voltar alguns passos atrás e ler sobre nos materiais. 
 
 <br>
 
@@ -370,14 +370,32 @@ Por exemplo, uma **CDN bem atualizada pode ser suficiente para sustentar uma lon
 
 <br>
 
+## Sharding e Particionamento de Clientes em Resiliência
+
+**Não colocar todos os ovos na mesma cesta** é a analogia perfeita para explicar como funciona a implementação de [sharding](/sharding/). O capítulo onde detalhamos sharding, particionamento e distribuição por hashing é, talvez, um dos meus favoritos nesta coleção de textos, e foi ao qual dediquei mais atenção para reunir referências e escrever a revisão bibliográfica das implementações arquiteturais sobre o tema.
+
+O objetivo de segregar um grande conjunto de dados em conjuntos menores é, por si só, muito intuitivo quando o assunto é resiliência. Dividir contextos, inclusive os já fragmentados em domínios de microserviços, é um caminho evolutivo interessante em cenários de alta demanda e missão crítica.
+
+A estratégia de **direcionar o particionamento tanto de dados quanto de workloads completos** — *(veremos uma implementação mais detalhada no tópico a seguir sobre Bulkheads)* — em **dimensões significativas**, como tenants, clientes, lojas e afins, de forma a possibilitar a segregação total da operação dessas dimensões dentro de um único shard, é essencial. Embora essa abordagem possa gerar hot partitions ocasionais, ela permite que experimentemos novas features com controle mais granular, sem propagá-las completamente para todos os clientes. Além disso, esse particionamento **ajuda a dispersar um eventual blast radius** de componentes do shard, isolando possíveis impactos e aumentando a resiliência do sistema.
+
+<br>
+
 ## Bulkhead Pattern
+
+O Bulkhead é um pattern que se conversa diretamente com diversos outros conceitos, como **sharding**, **hashing consistente**, **arquitetura celular** e **estabilidade estática**. Faz sentido quando revisitamos a origem do termo, que vem do transporte fluvial, onde os **compartimento dos navios são isolados o suficiente de forma com que se houver dano em uma sessão ou compartimento de carregamento do mesmo, esse dano não afete as outras sessões** e inudem o navio por completo por uma reação em cadeia de falhas sucessivas. 
+
+Um Bulkhead é talvez, uma evolução de como implementar shardings. Um conceito que é extremamente extensível com os shards, normalmente é associado diretamente a dados, os bulkheads talvez seja uma forma de dar um nome de uma implementação mais complexa de particionamento além da simples camada de dados, e extendendo para segregação total ou parcial de mais componentes de infraestrutura. 
+
+Olhando para particionamento de bulkheads, entendemos que se tivermos uma distribuição uniforme e controlada de clientes entre os mesmos, o Blast Radius pode ser calculado de forma simples. Se tivermos todos os clientes distribuídos em 10 shards, entendemos que em uma ocasional falha em algum desses shards isolados, temos apenas 10% dos clientes impactados. Se tivermos 100 shards, na falha de 1, temos 1% de clientes impactados. 1000 shards, 0.1% de impacto, e assim por diante. 
+
+Uma implementação mais radical dos bulkheads seria segregar todas as dependências de uma solução ou domínio em shards completos e isolados, não importanto a quantidade de microserviços, databases, caches, files dos mesmos. Isolando completamente toda interdependência entre os mesmos. Esse tipo de estratégia, por mais impraticável que pareça, é encontrado em várias soluções multi-tenant com algum tipo de federação. 
+
+Por exemplo, 
 
 ## Lease Pattern
 
 ## Graceful Degradation
 
-
-## Sharding - Não sei se vale um texto só pra isso 
 
 ## Event Sourcing - Não sei se vale um texto só pra isso 
 
@@ -411,4 +429,10 @@ Por exemplo, uma **CDN bem atualizada pode ser suficiente para sustentar uma lon
 
 [Bulkhead Pattern — Distributed Design Pattern](https://medium.com/nerd-for-tech/bulkhead-pattern-distributed-design-pattern-c673d5e81523)
 
+[Bulkhead Pattern](https://www.geeksforgeeks.org/bulkhead-pattern/)
+
 [Bulkhead pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/bulkhead)
+
+[Como a estabilidade estática aumenta a resiliência da sua aplicação](https://medium.com/@robisson/como-a-estabilidade-est%C3%A1tica-aumenta-a-resili%C3%AAncia-da-sua-aplica%C3%A7%C3%A3o-2558247f27fa)
+
+[Microservices - Resilience](https://badia-kharroubi.gitbooks.io/microservices-architecture/content/patterns/communication-patterns/bulkhead-pattern.html)
