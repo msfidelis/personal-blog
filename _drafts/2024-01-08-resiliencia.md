@@ -390,6 +390,8 @@ Por exemplo, uma **CDN bem atualizada pode ser suficiente para sustentar uma lon
 
 O objetivo de segregar um grande conjunto de dados em conjuntos menores é, por si só, muito intuitivo quando o assunto é resiliência. Dividir contextos, inclusive os já fragmentados em domínios de microserviços, é um caminho evolutivo interessante em cenários de alta demanda e missão crítica.
 
+![Sharding](/assets/images/system-design/sharding.drawio.png)
+
 A estratégia de **direcionar o particionamento tanto de dados quanto de workloads completos** — *(veremos uma implementação mais detalhada no tópico a seguir sobre Bulkheads)* — em **dimensões significativas**, como tenants, clientes, lojas e afins, de forma a possibilitar a segregação total da operação dessas dimensões dentro de um único shard, é essencial. Embora essa abordagem possa gerar hot partitions ocasionais, ela permite que experimentemos novas features com controle mais granular, sem propagá-las completamente para todos os clientes. Além disso, esse particionamento **ajuda a dispersar um eventual blast radius** de componentes do shard, isolando possíveis impactos e aumentando a resiliência do sistema.
 
 <br>
