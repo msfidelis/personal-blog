@@ -404,9 +404,13 @@ A estratégia de **direcionar o particionamento tanto de dados quanto de workloa
 
 O Bulkhead é um pattern que se conecta diretamente com vários outros conceitos, como **sharding**, **hashing consistente**, **arquitetura celular** e **estabilidade estática**. A origem do termo vem do transporte marítimo, onde os **compartimentos dos navios são isolados de modo que, caso haja dano em uma seção ou compartimento, esse dano não afete as outras seções**, prevenindo que o navio todo se inunde por uma reação em cadeia de falhas sucessivas.
 
+![Bulkhead Primeiro Exemplo](/assets/images/system-design/bulkhead.drawio.png)
+
 O Bulkhead é, talvez, uma **evolução na implementação de sharding**. Enquanto o sharding é comumente associado a dados, o Bulkhead leva o conceito de particionamento a um nível mais complexo, estendendo a segregação para componentes adicionais de infraestrutura, e não apenas para a camada de dados.
 
 O objetivo dos Bulkheads é **isolar infraestruturas específicas para determinados tipos de funcionalidades**, como **pools de conexões, bancos de dados, balanceadores de carga, versões de uma mesma aplicação, separação por prioridades de requisições, segmentação de clientes, entre outros**.
+
+![Bulkhead Sharding](/assets/images/system-design/bulkhead-shard.png)
 
 Com o particionamento em bulkheads, **se tivermos uma distribuição uniforme e controlada de clientes entre esses compartimentos, o Blast Radius pode ser facilmente calculado**. Por exemplo, se distribuirmos todos os clientes em 10 shards, uma eventual falha em um desses shards isolados impactará apenas 10% dos clientes. Com 100 shards, o impacto de uma falha em um único shard é reduzido a 1% dos clientes; com 1000 shards, o impacto é de apenas 0,1%, e assim por diante.
 
