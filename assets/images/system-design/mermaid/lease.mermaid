@@ -1,0 +1,22 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Cliente
+    participant Servidor
+    participant Recurso
+
+    Cliente->>Servidor: Solicita Lease para o Recurso
+    Servidor->>Recurso: Reserva o recurso para o cliente
+    Servidor->>Cliente: Concede Lease com tempo de expiração
+
+    Cliente->>Recurso: Utiliza o Recurso
+    Note over Cliente,Servidor: Lease ativo
+
+    Cliente->>Servidor: Renova Lease antes do vencimento
+    Servidor->>Recurso: Extende a reserva para o cliente
+    Servidor->>Cliente: Lease renovado com novo tempo de expiração
+
+    Cliente->>Servidor: Não renova Lease antes do vencimento
+    Note over Cliente,Servidor: Lease expirado
+
+    Servidor->>Recurso: Libera o recurso
+    Recurso->>Servidor: Recurso disponível para outros clientes

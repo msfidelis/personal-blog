@@ -138,6 +138,8 @@ A principal e mais simples estratégia de resiliência é revisitar os conceitos
 
 As aplicações, independentemente de seu protocolo principal, **devem expor URLs de healthcheck que reflitam seu estado**, e, caso ocorra alguma falha ou mau funcionamento, essa URL deve indicar o status por meio de códigos de resposta que possam ser monitorados periodicamente.
 
+![Healthcheck](/assets/images/system-design/healthcheck.drawio.png)
+
 Os **balanceadores também devem ser capazes de verificar essas URLs regularmente para liberar ou restringir o tráfego para as réplicas do pool**, de acordo com as respostas obtidas nos healthchecks. Ou seja, **se a réplica começar a responder com erros ou deixar de responder dentro do tempo limite, o balanceador deve identificar que essa réplica está inativa ou sem condições de receber tráfego**.
 
 Os balanceadores são responsáveis por garantir o paralismo externo de requisições sincronas, afim de dispersar o tráfego das chamadas e garantir maior aproveitamento de recursos, aumentando assim a resiliência diminuindo a chance de falhas graves decorrentes de um único host do pool se ficar indisponível indisponível. 
@@ -277,25 +279,24 @@ Praticamente todos os conceitos discutidos neste capítulo podem ser utilizados 
 
 ### Exemplo: Fallback Sistêmico de Redundância
 
-Os fallbacks sistêmicos são o tipo "comum" de fallback. Essencialmente, criar um fallback sistêmico consiste em acionar um fluxo secundário de forma pragmática quando o fluxo principal falha.
+Os fallbacks sistêmicos são o tipo "comum" de fallback. Essencialmente, **criar um fallback sistêmico consiste em acionar um fluxo secundário de forma pragmática quando o fluxo principal falha**.
 
-Para ilustrar esse conceito, vamos examinar um cenário simples de fallback em um sistema de pagamento. Imagine um e-commerce que se conecta a gateways de pagamento para processar compras. Temos sempre uma opção primária de gateway, mas, para adicionar mais resiliência, mantemos um segundo gateway pronto para ser acionado em caso de falha do principal. Em situações de downtime ocasional ou programado do primeiro gateway, podemos redirecionar os pagamentos para o segundo até que o principal seja restabelecido.
+Para ilustrar esse conceito, vamos examinar um cenário simples de fallback em um sistema de pagamento. Imagine um e-commerce que se conecta a gateways de pagamento para processar compras. Temos sempre uma opção primária de gateway, mas, **para adicionar mais resiliência, mantemos um segundo gateway pronto para ser acionado em caso de falha do principal**. Em situações de downtime ocasional ou programado do primeiro gateway, podemos redirecionar os pagamentos para o segundo até que o principal seja restabelecido.
 
 ![Fallback Gateway Pagamento](/assets/images/system-design/fallback-pagamentos-simples.png)
 
-Embora simples, esse exemplo ilustra bem o funcionamento de um mecanismo de fallback. Com essa compreensão, o restante deste capítulo será como um "lego", onde as diversas combinações possibilitam construir soluções de alta disponibilidade de forma instigante e eficaz.
+Embora simples, **esse exemplo ilustra bem o funcionamento de um mecanismo de fallback**. Com essa compreensão, o restante deste capítulo será como um "lego", onde as diversas combinações possibilitam construir soluções de alta disponibilidade de forma instigante e eficaz.
 
 
 ### Exemplo: Fallback com Snapshot de Dados
 
 Teremos um tópico específico para explorar estratégias de fallbacks na camada de dados neste capítulo, mas para ilustrar o conceito, vamos imaginar um cenário onde é necessário consultar um dado próximo de tempo real, como o limite de crédito de um cartão fornecido por uma instituição financeira. Tanto as operações de saldo quanto as de crédito precisam estar sempre atualizadas para evitar permitir compras sem saldo suficiente em débito ou aprovar compras em crédito sem limites. Diante de falhas, a instituição pode decidir entre aprovar compras com o risco de alguma negativação pontual ou bloquear todas as transações até que o serviço seja restabelecido.
 
-Para fins de ilustração, abordaremos a solução para o primeiro cenário, onde, diante da indisponibilidade do dado "quente", podemos usar snapshots atualizados periodicamente em cache ou em uma base de dados mais acessível que permita verificações básicas.
+Para fins de ilustração, abordaremos a solução para o primeiro cenário, onde, **diante da indisponibilidade do dado "quente", podemos usar snapshots atualizados periodicamente em cache ou em uma base de dados mais acessível que permita verificações básicas**.
 
 ![Fallback Snapshot](/assets/images/system-design/fallback-snapshot.png)
 
-Se nossa aplicação utiliza [databases transacionais](/teorema-cap/) e o serviço estiver indisponível, podemos criar uma camada de snapshot que é atualizada periodicamente e realizar checagens mais simples, sacrificando a consistência forte por uma consistência eventual, mas ainda assim evitando que compras ultrapassem -muito- os limites durante o período de indisponibilidade. Nesse cenário, aceitamos um risco calculado de aprovar algumas transações além do permitido em troca de manter o sistema operacional.
-
+Se nossa aplicação utiliza [databases transacionais](/teorema-cap/) e o serviço estiver indisponível, podemos **criar uma camada de snapshot que é atualizada periodicamente e realizar checagens mais simples**, **sacrificando a consistência forte por uma consistência eventual**, mas ainda assim evitando que compras ultrapassem -muito- os limites durante o período de indisponibilidade. Nesse cenário, **aceitamos um risco calculado de aprovar algumas transações além do permitido em troca de manter o sistema operacional**.
 
 
 ### Exemplo: Fallback com Fluxos Assíncronos
@@ -306,7 +307,6 @@ Um fallback pode também incluir uma **alternativa de mensageria para fluxos que
 > Fallback Sync/Async
 
 Por exemplo, **considere uma API interna que ativa vários tipos de serviços de notificação, como envio de e-mails aos clientes**. Embora as notificações devam, na maior parte do tempo, **ser executadas de forma sequencial, atrasos ocasionais não representam um problema significativo quando ocorrem temporariamente**. Em caso de falhas de componentes, como bancos de dados ou servidores SMTP, em vez de retornar um erro para o cliente da API, **o fluxo secundário é ativado, enviando a solicitação de e-mail para uma fila de mensageria**. Essa mensagem será **reprocessada diversas vezes até que o serviço seja completamente restabelecido**, permitindo que as **operações sejam concluídas assim que a disponibilidade for retomada**.
-
 
 ### Exemplo: Fallback Contratual
 
@@ -326,6 +326,20 @@ A estratégia de acionar um fallback de forma reativa, em resposta a erros e ind
 
 Não é incomum que **fallbacks acionados com pouca frequência também se tornem pontos de falha quando ativados de forma repentina**. Para mitigar esse risco, podemos **acionar proativamente os fluxos alternativos, direcionando uma porcentagem mínima de tráfego para eles** — seja por meio de injeção de falhas, seja intencionalmente, conforme definido pelo próprio algoritmo. Dessa forma, **garantimos que nossos fallbacks estejam saudáveis e prontos para funcionar quando necessário**.
  
+<br>
+
+## Graceful Degradation
+
+Graceful Degradation refere-se à **capacidade de um sistema de continuar operando com funcionalidades essenciais de forma preventiva**, mesmo quando partes significativas do sistema estejam degradadas, sob alta carga ou indisponíveis. Embora esse conceito esteja diretamente relacionado ao de Fallback, **o Graceful Degradation pode ser ativado de forma pragmática ou por meio de toggles**.
+
+Em outras palavras, diante de um pico de tráfego, **o sistema consegue priorizar suas funcionalidades principais, desativando as demais e operando apenas com o necessário**. Isso pode ocorrer automaticamente ou ser ativado manualmente para ajudar a lidar com sobrecarga ou outras adversidades.
+
+Diferentemente dos fallbacks, que permitem que o sistema opere parcialmente em condições adversas mediante falhas já ocorridas, **o conceito de Graceful Degradation permite acioná-lo de forma preventiva e intencional**. Isso ocorre quando o sistema detecta, por si só, condições adversas, como falhas em um serviço externo com acoplamento forte, um microserviço crítico, sobrecarga de tráfego ou falhas de componentes essenciais, e **reduz automaticamente sua funcionalidade para um nível que ainda permita uma operação mínima e apenas com os fluxos prioritários**.
+
+![Graceful](/assets/images/system-design/graceful.drawio.png)
+
+Para ilustrar, considere um sistema que funciona como um gateway de pagamento, oferecendo opções de **crédito, débito, boletos, PIX e uma funcionalidade de consulta**. Embora todas as opções sejam importantes, o time de negócios define que **as opções prioritárias são sempre PIX e crédito**, pois representam o maior volume de uso dos clientes. Com estratégias de Graceful Degradation, em momentos de alta demanda, as opções de boleto, débito e consultas **podem ser temporariamente desativadas, permitindo que o sistema direcione mais recursos para os métodos de pagamento de maior prioridade**.
+
 <br>
 
 ## Resiliência na Camada de Dados
@@ -382,20 +396,35 @@ A estratégia de **direcionar o particionamento tanto de dados quanto de workloa
 
 ## Bulkhead Pattern
 
-O Bulkhead é um pattern que se conversa diretamente com diversos outros conceitos, como **sharding**, **hashing consistente**, **arquitetura celular** e **estabilidade estática**. Faz sentido quando revisitamos a origem do termo, que vem do transporte fluvial, onde os **compartimento dos navios são isolados o suficiente de forma com que se houver dano em uma sessão ou compartimento de carregamento do mesmo, esse dano não afete as outras sessões** e inudem o navio por completo por uma reação em cadeia de falhas sucessivas. 
+O Bulkhead é um pattern que se conecta diretamente com vários outros conceitos, como **sharding**, **hashing consistente**, **arquitetura celular** e **estabilidade estática**. A origem do termo vem do transporte marítimo, onde os **compartimentos dos navios são isolados de modo que, caso haja dano em uma seção ou compartimento, esse dano não afete as outras seções**, prevenindo que o navio todo se inunde por uma reação em cadeia de falhas sucessivas.
 
-Um Bulkhead é talvez, uma evolução de como implementar shardings. Um conceito que é extremamente extensível com os shards, normalmente é associado diretamente a dados, os bulkheads talvez seja uma forma de dar um nome de uma implementação mais complexa de particionamento além da simples camada de dados, e extendendo para segregação total ou parcial de mais componentes de infraestrutura. 
+O Bulkhead é, talvez, uma **evolução na implementação de sharding**. Enquanto o sharding é comumente associado a dados, o Bulkhead leva o conceito de particionamento a um nível mais complexo, estendendo a segregação para componentes adicionais de infraestrutura, e não apenas para a camada de dados.
 
-Olhando para particionamento de bulkheads, entendemos que se tivermos uma distribuição uniforme e controlada de clientes entre os mesmos, o Blast Radius pode ser calculado de forma simples. Se tivermos todos os clientes distribuídos em 10 shards, entendemos que em uma ocasional falha em algum desses shards isolados, temos apenas 10% dos clientes impactados. Se tivermos 100 shards, na falha de 1, temos 1% de clientes impactados. 1000 shards, 0.1% de impacto, e assim por diante. 
+O objetivo dos Bulkheads é **isolar infraestruturas específicas para determinados tipos de funcionalidades**, como **pools de conexões, bancos de dados, balanceadores de carga, versões de uma mesma aplicação, separação por prioridades de requisições, segmentação de clientes, entre outros**.
 
-Uma implementação mais radical dos bulkheads seria segregar todas as dependências de uma solução ou domínio em shards completos e isolados, não importanto a quantidade de microserviços, databases, caches, files dos mesmos. Isolando completamente toda interdependência entre os mesmos. Esse tipo de estratégia, por mais impraticável que pareça, é encontrado em várias soluções multi-tenant com algum tipo de federação. 
+Com o particionamento em bulkheads, **se tivermos uma distribuição uniforme e controlada de clientes entre esses compartimentos, o Blast Radius pode ser facilmente calculado**. Por exemplo, se distribuirmos todos os clientes em 10 shards, uma eventual falha em um desses shards isolados impactará apenas 10% dos clientes. Com 100 shards, o impacto de uma falha em um único shard é reduzido a 1% dos clientes; com 1000 shards, o impacto é de apenas 0,1%, e assim por diante.
 
-Por exemplo, 
+Uma implementação mais radical dos bulkheads consistiria em **isolar todas as dependências de uma solução ou domínio em shards completos e independentes**, incluindo microserviços, bancos de dados, caches, e até arquivos. Esse tipo de estratégia, embora pareça impraticável, é utilizado em várias soluções multi-tenant que adotam algum nível de federação ou implementações de arquiteturas celulares.
+
+<br>
 
 ## Lease Pattern
 
-## Graceful Degradation
+O Lease Pattern, ou "Arrendamento", é um pattern presente em sistemas distribuídos que busca **definir concessões temporárias ou tempos de validade para o uso ou alocação de um recurso**. Esses recursos podem incluir **pools de conexões, tokens de acesso, alocação de consumo de mensagens, conexões persistentes entre clientes e servidores, entre outros**.
 
+A implementação do Lease Pattern **ajuda a evitar que sistemas com um grande volume de acessos fiquem sobrecarregados por conexões ociosas**, impedindo que operações com propósito ativo sejam bloqueadas por recursos inativos.
+
+![Leasing](/assets/images/system-design/leasing.png)
+
+O leasing geralmente ocorre quando **um recurso inicia uma conexão com uma dependência**, como, por exemplo, um **consumidor se conectando a uma partição Kafka**, uma **conexão persistente a um banco de dados** ou uma **conexão gRPC em um ambiente com um número limitado de conexões simultâneas**. O servidor **concede essa conexão com um prazo de validade ou tempo máximo de inatividade, durante o qual o cliente precisa renovar o acesso para indicar que ainda está ativo**.
+
+Caso essa renovação não seja realizada pelo cliente, o recurso é automaticamente liberado para ser assumido por outro processo.
+
+Em pools de conexão de banco de dados, **cada cliente ou thread recebe um lease para uma conexão ou um número solicitado de conexões**. Se o cliente **não enviar um heartbeat ou não liberar a conexão ao final do uso, o lease expira** e a conexão é automaticamente **disponibilizada para novos clientes que precisem se conectar ao banco de dados**, evitando que conexões fiquem presas ou monopolizadas por clientes inativos. Bancos de dados são um exemplo claro de leasing, pois, na maioria dos bancos transacionais, o número máximo de conexões simultâneas é limitado, e quando o limite é excedido, ocorre uma rejeição automática da solicitação impedindo que ela mesmo se inicie.
+
+<br>
+
+## Shuffle Sharding
 
 ## Event Sourcing - Não sei se vale um texto só pra isso 
 
@@ -436,3 +465,11 @@ Por exemplo,
 [Como a estabilidade estática aumenta a resiliência da sua aplicação](https://medium.com/@robisson/como-a-estabilidade-est%C3%A1tica-aumenta-a-resili%C3%AAncia-da-sua-aplica%C3%A7%C3%A3o-2558247f27fa)
 
 [Microservices - Resilience](https://badia-kharroubi.gitbooks.io/microservices-architecture/content/patterns/communication-patterns/bulkhead-pattern.html)
+
+[Efficient Scalability and Concurrency implementing the Lease Management as a Locking Pattern](https://adria-arquimbau.medium.com/efficient-scalability-and-concurrency-implementing-the-lease-pattern-with-azure-storage-accounts-698dfe56458a)
+
+[Leasing - Prashant Jain & Michael Kircher](https://hillside.net/plop/plop2k/proceedings/Jain-Kircher/Jain-Kircher.pdf)
+
+[Conversation Patterns](https://www.enterpriseintegrationpatterns.com/patterns/conversation/Lease.html)
+
+[graceful degradation](https://www.techtarget.com/searchnetworking/definition/graceful-degradation)
