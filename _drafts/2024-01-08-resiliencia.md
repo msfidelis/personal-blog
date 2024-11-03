@@ -10,7 +10,11 @@ title: System Design - Resiliência
 
 {% include latex.html %}
 
-Nesse capitulo iremos revisitar praticamente tudo que já foi visto, porém com algumas óticas adicionais. A maioria, beirando todos os tópicos já forma tratados em capítulos anteriores. Então caso tenha sentido falta de uma maior profundidade conceitual, recomendo fortemente voltar alguns passos atrás e ler sobre nos materiais. 
+Nesse capitulo iremos **revisitar praticamente tudo que já foi visto, e dar pequenos spoilers de capítulos que ainda vão vir, porém com algumas óticas adicionais**. A maioria, beirando **todos os tópicos já forma tratados em capítulos anteriores**. Então caso tenha sentido falta de uma maior profundidade conceitual, **recomendo fortemente voltar alguns passos atrás e ler sobre nos materiais**. 
+
+Esse material talvez seja **um dos mais importantes dessa série**, porque além de tratar de um dos tópicos mais importantes de sistemas distribuídos, encaminha a minha proposta principal que é **entender conceitualmente algo, e conseguir remoldar esse algo para diferentes pontos de vista**. Veremos que por mais que, a partir dessa linha, **tudo que veremos será abordado com tons de resiliência, mas mesmo assim não irão perder em nada seus propósitos originais de implementação**. 
+
+Essa talvez seja a lição mais valiosa pelo qual estou me esforçando para passar nesse livro. Um grande exercício para mim como escritor, e para você como leitor. 
 
 <br>
 
