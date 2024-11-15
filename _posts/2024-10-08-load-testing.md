@@ -12,30 +12,30 @@ title: System Design - Testes de Carga e Estresse
 
 # Introdução 
 
-Testes de performance **são processos extremamente importantes em sistemas de larga e escala e que precisem garantir o bom funcionamento de forma responsável**. O objetivo desse texto complementar é ressaltar os tipos de teste e principalmente como elaborar um roteiro que faça sentido não só para o time técnico, mas que também **gere insumos valiosos para o produto como um todo**. 
+Testes de performance **são processos extremamente importantes em sistemas de larga escala e que precisem garantir o bom funcionamento de forma responsável**. O objetivo desse texto complementar é ressaltar os tipos de teste e principalmente como elaborar um roteiro que faça sentido não só para o time técnico, mas que também **gere insumos valiosos para o produto como um todo**. 
 
 
 ##  A importância dos testes de performance 
 
-Realizar testes de performance, embora muitas vezes não seja possível por uma quantidade significativa de fatores, deveria ser uma **prática que acompanha o ciclo de vida de qualquer software produtivo, desde seus estágios de build até sua maturidade de vôo**. Eles são talvez a **forma mais prática e cientifica de descobrir os limites do seu sistema** e também garantir que o mesmo irá cumprir com os requisitos propostos. 
+Realizar testes de performance, embora muitas vezes não seja possível por uma quantidade significativa de fatores, deveria ser uma **prática que acompanha o ciclo de vida de qualquer software produtivo, desde seus estágios de build até sua maturidade de voo**. Eles são talvez a **forma mais prática e científica de descobrir os limites do seu sistema** e também garantir que o mesmo irá cumprir com os requisitos propostos. 
 
-Uma vez que os limites do software são conhecidos e impostos por produto, a tarefa dos testes de estresse, performance e carga **buscam dar uma garantia pragmática de que os requisitos base de uso serão entregues e irão suprir as necessidades do cliente final**. Dessa forma, na construção ou refatoração de um sistema, conseguimos **oferecer alguns graus de garantia e expectativas de capacidade de curto, médio e longo prazo**. Dizendo dessa forma, até parece complexo, burocrático e de algumas formas pedante. Mas **ao decorrer desse texto, meu objetivo é te mostrar como arquitetar testes de forma assertiva, dinâmica e facilmente adaptável para diferentes tipos de cenário**. Buscando te guiar nos primeiros, segundos e terceiros passos de como direcionar testes de performance, e principalmenete, como utilizá-los para elaborar e responder perguntas chave sobre o seu produto. 
+Uma vez que os limites do software são conhecidos e impostos por produto, a tarefa dos testes de estresse, performance e carga **buscam dar uma garantia pragmática de que os requisitos-base de uso serão entregues e irão suprir as necessidades do cliente final**. Dessa forma, na construção ou refatoração de um sistema, conseguimos **oferecer alguns graus de garantia e expectativas de capacidade de curto, médio e longo prazo**. Dizendo dessa forma, até parece complexo, burocrático e de algumas formas pedante. Mas, **ao decorrer desse texto, meu objetivo é te mostrar como arquitetar testes de forma assertiva, dinâmica e facilmente adaptável para diferentes tipos de cenário**. Buscando te guiar nos primeiros, segundos e terceiros passos de como direcionar testes de performance, e principalmente, como utilizá-los para elaborar e responder perguntas-chave sobre o seu produto.
 
 <br>
 
 ##  A importância de conhecer comportamentos do sistema
 
-Quando estamos projetando sistemas do zero, ou cuidado para que o mesmo tenha um ciclo de vida saudável a longo prazo, é **importante existir documentada todas as funcionalidades e lógicas do sistema**. Nem sempre isso é possível, e em muitos casos tratado como "o mundo ideal" de muitos times de engenharia. **Conhecer a jornada do seu cliente, como ele interage com o seu sistema, quando e com que frequência, tem um valor muito alto**. Começar a tratar funcionalidades como comportamentos e jornadas, pode nos levar a mapear quais serão os maiores gargalos sistêmicos e nos fazer encontrar inumeras possibilidades de melhoria. 
+Quando estamos projetando sistemas do zero, ou cuidado para que o mesmo tenha um ciclo de vida saudável a longo prazo, é **importante existir documentada todas as funcionalidades e lógicas do sistema**. Nem sempre isso é possível, e em muitos casos tratado como "o mundo ideal" de muitos times de engenharia. **Conhecer a jornada do seu cliente, como ele interage com o seu sistema, quando e com que frequência, tem um valor muito alto**. Começar a tratar funcionalidades como comportamentos e jornadas pode nos levar a mapear quais serão os maiores gargalos sistêmicos e nos fazer encontrar inúmeras possibilidades de melhoria. 
 
-Quando estamos arquitetando um **relatório gerencial de fechamento de caixa, entendemos que, por mais que seja uma tarefa intuitivamente custosa computacionalmente, presumimos também que a frequência que o mesmo é gerado é baixa**, e presumimos por inferência que os p**eríodos pelos quais os mesmos serão gerados não irão variar muito dos ultimos ou primeiros dias do mês**. 
+Quando estamos arquitetando um **relatório gerencial de fechamento de caixa, entendemos que, por mais que seja uma tarefa intuitivamente custosa computacionalmente, presumimos também que a frequência que o mesmo é gerado é baixa**, e presumimos por inferência que os **períodos pelos quais os mesmos serão gerados não irão variar muito dos últimos ou primeiros dias do mês**. 
 
-Quando temos uma **funcionalidade que a função é registrar e concluír vendas de diversos produtos de um catálogo, podemos da mesma forma presumir que, embora esse estímulo seja muito mais frequente em termos de repetição, a demanda computacional não tende a ser um grande problema na maioria dos casos**. 
+Quando temos uma **funcionalidade que a função é registrar e concluir vendas de diversos produtos de um catálogo, podemos da mesma forma presumir que, embora esse estímulo seja muito mais frequente em termos de repetição, a demanda computacional não tende a ser um grande problema na maioria dos casos**. 
 
-Isso quer dizer que, quando começamos a projetar um roteiro de testes, precismos **testar em escala a carga da funcionalidade de vendas, e em estresse a função de relatório**s. Não faz sentido, é claro, nesse caso em específico, testar uma grande volumetria de diversos relatórios contábeis sendo emitidos em paralelo. Assim como talvez não faça sentido testar como a performance de um sistema inteiro varia quando temos apenas uma venda sendo concluída. 
+Isso quer dizer que, quando começamos a projetar um roteiro de testes, precisamos **testar em escala a carga da funcionalidade de vendas e em estresse a função de relatórios**. Não faz sentido, é claro, nesse caso em específico, testar uma grande volumetria de diversos relatórios contábeis sendo emitidos em paralelo. Assim como talvez não faça sentido testar como a performance de um sistema inteiro varia quando temos apenas uma venda sendo concluída. 
 
-Entender a jornada comum de um cliente do nosso sistema pode nos facilitar, e muito, a **elaboração de um teste que vai nos permitir entender cientificamente como nosso sistema se comporta e varia em determinadas condições**. Como por exemplo, em uma jornada fictícia, podemos presumir que, um cliente médio acessa a home do nosso e-commerce, procura pela categoria que lhe convêm, realiza a busca por algum termo aleatório, acessa quatro ou cinco opções do catalogo, coloca uma ou duas no carrinho, volta para "namorar" mais um pouco de opções, volta para o carrinho, tenta aplicar algum cupom, podendo ter sucesso ou falha, dependendo do sucesso, aplicamos um desconto, ele pode proativamente ou reativamente realizar o login ou cadastro, preencher os seus dados caso não existam apenas uma vez, efetuar o pagamento e durante alguns dias visitar o site para entender o status do produto. 
+Entender a jornada comum de um cliente do nosso sistema pode nos facilitar, e muito, a **elaboração de um teste que vai nos permitir entender cientificamente como nosso sistema se comporta e varia em determinadas condições**. Como, por exemplo, em uma jornada fictícia, podemos presumir que, um cliente médio acessa a home do nosso e-commerce, procura pela categoria que lhe convêm, realiza a busca por algum termo aleatório, acessa quatro ou cinco opções do catálogo, coloca uma ou duas no carrinho, volta para "namorar" mais um pouco de opções, volta para o carrinho, tenta aplicar algum cupom, podendo ter sucesso ou falha, dependendo do sucesso, aplicamos um desconto, ele pode proativamente ou realizar reativamente o login, ou cadastro, preencher os seus dados caso não existam apenas uma vez, efetuar o pagamento e durante alguns dias visitar o site para entender o status do produto. 
 
-Essa é uma jornada praticamente "comum" e intuitiva de um sistema de e-commerce por exemplo. Aqui podemos tirar alguns insights que, por mais que a busca e navegação tenham sido feitas em grande quantidade, o login foi feito uma única vez no processo. Mediante a cadastro que foi executado somente uma vez, o preenchimento dos dados também ocorre muito menos vezes que as outras operações, a visita de consulta pode variar bastante em quantidade. 
+Essa é uma jornada praticamente "comum" e intuitiva de um sistema de e-commerce, por exemplo. Aqui podemos tirar alguns insights que, por mais que a busca e navegação tenham sido feitas em grande quantidade, o login foi feito uma única vez no processo. Mediante o cadastro que foi executado somente uma vez, o preenchimento dos dados também ocorre muito menos vezes que as outras operações. A visita de consulta pode variar bastante em quantidade. 
 
 Nisso **podemos desenhar testes específicos pra esse tipo de jornada, moldando as transações injetadas nos baseando em comportamento**. Entender isso pode ser uma chave interessante pra projetar testes que agregam valor instantâneo para a engenharia. 
 
@@ -43,7 +43,7 @@ Nisso **podemos desenhar testes específicos pra esse tipo de jornada, moldando 
 
 ## Testes de Performance em Build e Run
 
-Esse tipo de teste **pode ser realizado em diversos estágios do ciclo de vida de um software**. Para exemplificar, iremos separar em dois grandes marcos genéricos, na fase de Build que corresponde a **construção inicial e primeiros estágios do software** em seu MVP ou Pós MVP, e no Run onde **constantemente revisitamos a capacidade atual e desejada para garantir que os requisitos não foram muito alterados e deteriorados** conforme a evolução do sistema. Os testes de performance na fase de Run ocorrem em ambientes mais realistas, como pré-produção ou até mesmo produção em diversos casos, podendo ou não concorrer com o cliente final. O objetivo **fazer com que o sistema seja submetido a cenários que simulam cargas reais ou extremas. O objetivo de um teste agressivo nesse sentido é testar de maneira controlada** sistemas que já existem e estão consolidados em determinados cenários para chegar seus níveis de disponibilidade, resiliência e performance, **impedindo que esses insumos cheguem de forma reativa ou em momentos de crise**. 
+Esse tipo de teste **pode ser realizado em diversos estágios do ciclo de vida de um software**. Para exemplificar, iremos separar em dois grandes marcos genéricos, na fase de Build que corresponde a **construção inicial e primeiros estágios do software** em seu MVP ou Pós-MVP, e no Run onde **constantemente revisitamos a capacidade atual e desejada para garantir que os requisitos não foram muito alterados e deteriorados** conforme a evolução do sistema. Os testes de performance na fase de Run ocorrem em ambientes mais realistas, como pré-produção ou até mesmo produção em diversos casos, podendo ou não concorrer com o cliente final. O objetivo **é fazer com que o sistema seja submetido a cenários que simulam cargas reais ou extremas. O objetivo de um teste agressivo nesse sentido é testar de maneira controlada** sistemas que já existem e estão consolidados em determinados cenários para chegar seus níveis de disponibilidade, resiliência e performance, **impedindo que esses insumos cheguem de forma reativa ou em momentos de crise**. 
 
 <br>
 
@@ -51,7 +51,7 @@ Esse tipo de teste **pode ser realizado em diversos estágios do ciclo de vida d
 
 A terminologia dos testes de carga pode ser bastante confusa para definir **"o que serve para quê"**, e até mesmo se há alguma diferença entre os termos. No entanto, **essas diferenças existem e podem ser compreendidas em sua natureza, ajudando-nos a elaborar estratégias para diferentes tipos de cenários**.
 
-O **objetivo de um teste de carga é avaliar como o sistema se comporta sob cargas reais e esperadas**. Normalmente, **esse teste serve para garantir que as estimativas e expectativas do produto sejam atendidas**. Um teste de carga busca g**arantir as "baselines" que os times de engenharia recebem quando há alguma expectativa de onboarding de clientes**, **transações esperadas**, **contratos de disponibilidade**, tempos de resposta, entre outros fatores.
+O **objetivo de um teste de carga é avaliar como o sistema se comporta sob cargas reais e esperadas**. Normalmente, **esse teste serve para garantir que as estimativas e expectativas do produto sejam atendidas**. Um teste de carga busca **garantir as "baselines" que os times de engenharia recebem quando há alguma expectativa de onboarding de clientes**, **transações esperadas**, **contratos de disponibilidade**, tempos de resposta, entre outros fatores.
 
 Por exemplo, se um **produto ou funcionalidade estão sendo construídos para suportar um cliente que necessita realizar 300 transações por segundo**, com o **tempo de resposta de cada transação abaixo de 400ms**, o teste de carga **nos permite injetar a carga de tráfego esperada e verificar se o sistema está cumprindo esses requisitos**. Se o **sistema estiver sendo desenvolvido também levando em consideração o onboarding de novos clientes ao longo do tempo, ou se há uma estimativa de crescimento de X% em determinado período, os testes devem ser desenhados para garantir que o sistema acompanhe esse crescimento gradual**. Assim, será possível identificar **até que ponto o sistema atenderá aos processos esperados antes de atingir um limite que comprometa essas expectativas**.
 
@@ -67,7 +67,7 @@ O objetivo dessa sessão é especificar alguns dos principais tipos de teste e q
 
 ## Teste de Fumaça, Smoke Tests
 
-Os testes de fumaça, ou smoke tests, **são uma forma simplificada de injetar uma carga mínima e verificar as principais funcionalidades de um sistema sob uma ótica de tráfego básico**. Normalmente, a baseline de um smoke test busca **garantir o funcionamento mínimo necessário com uma carga minimamente aceitável**. Esse tipo de cenário é comumente **executado em pipelines de CI/CD**, fazendo parte da c**adeia de qualidade durante o processo de release de versões, ou em automações periódicas, aplicadas em ambientes produtivos ou pré-produtivos**, para garantir a funcionalidade recorrente e **gerar evidências de bom funcionamento**.
+Os testes de fumaça, ou smoke tests, **são uma forma simplificada de injetar uma carga mínima e verificar as principais funcionalidades de um sistema sob uma ótica de tráfego básico**. Normalmente, a baseline de um smoke test busca **garantir o funcionamento mínimo necessário com uma carga minimamente aceitável**. Esse tipo de cenário é comumente **executado em pipelines de CI/CD**, fazendo parte da **cadeia de qualidade durante o processo de release de versões, ou em automações periódicas, aplicadas em ambientes produtivos ou pré-produtivos**, para garantir a funcionalidade recorrente e **gerar evidências de bom funcionamento**.
 
 ![Smoke Test](/assets/images/system-design/load-test-smoke.drawio.png)
 
@@ -93,7 +93,7 @@ O principal objetivo desse teste é **identificar gargalos, limites de capacidad
 
 Os indicadores comumente avaliados durante um teste de estresse incluem **métricas de capacidade, como uso de CPU, memória, rede, I/O, e o número de conexões no pool do sistema e suas dependências**. Esses fatores são analisados em conjunto para determinar o ponto de saturação do sistema.
 
-As lições aprendidas com esse tipo de teste são valiosas para identificar, de forma proativa, p**ontos de falha e oportunidades de melhoria, evitando que esses problemas sejam descobertos apenas em cenários reais, já impactando o cliente final**. Além disso, os **insights obtidos podem ajudar as equipes de engenharia a identificar quais partes do sistema continuam operando durante falhas graves e se isso é mais benéfico ou prejudicial para a recuperação completa do sistema**.
+As lições aprendidas com esse tipo de teste são valiosas para identificar, de forma proativa, **pontos de falha e oportunidades de melhoria, evitando que esses problemas sejam descobertos apenas em cenários reais, já impactando o cliente final**. Além disso, os **insights obtidos podem ajudar as equipes de engenharia a identificar quais partes do sistema continuam operando durante falhas graves e se isso é mais benéfico ou prejudicial para a recuperação completa do sistema**.
 
 
 ## Testes de Spike
@@ -114,13 +114,13 @@ Os testes de breakpoint são utilizados para **avaliar como o sistema se comport
 
 A execução desse tipo de teste **deve ser feita de maneira muito mais controlada do que outros tipos de testes**, pois o objetivo aqui **não é validar a performance ou capacidade para cenários específicos, mas sim levar o sistema até o seu limite real**.
 
-Durante o teste de breakpoint, várias métricas precisam ser avaliadas, como a **saturação de recursos, incluindo CPU, memória, latência, I/O, disco, rede, taxa de erros do serviço e todas as suas dependências**. Isso permite identificar quais componentes falham primeiro e como a cascata de falhas acontece, **facilitando a compreensão dos pontos fracos e das limitações do sistema**. Aqui normalmente são analisados as limitações das politicas atuais de [escalabilidade horizontal]().
+Durante o teste de breakpoint, várias métricas precisam ser avaliadas, como a **saturação de recursos, incluindo CPU, memória, latência, I/O, disco, rede, taxa de erros do serviço e todas as suas dependências**. Isso permite identificar quais componentes falham primeiro e como a cascata de falhas acontece, **facilitando a compreensão dos pontos fracos e das limitações do sistema**. Aqui normalmente são analisadas as limitações das políticas atuais de [escalabilidade horizontal]().
 
 <br>
 
 # Respondendo a Perguntas Chave
 
-O objetivo de um teste de performance ou estresse é **responder perguntas específicas sobre o sistema avaliado**. Isso significa que **apenas injetar carga, sem antes definir que tipo de respostas se quer obter com o teste, não é a estratégia mais eficiente nem em termos de esforço, nem de resultado**. Quando planejamos um teste, **ele precisa ser executado em condições que nos permitam compreender detalhadamente, ou estimar por inferência, as capacidades do sistema ou de suas funcionalidades isoladas**. Simplesmente simular carga por simular pode gerar resultados dispersos e de pouco valor para o produto.
+O objetivo de um teste de performance ou estresse é **responder perguntas específicas sobre o sistema avaliado**. Isso significa que **apenas injetar carga, sem antes definir que tipo de respostas se quer obter com o teste, não é a estratégia mais eficiente nem em termos de esforço, nem de resultado**. Quando planejamos um teste, **ele precisa ser executado em condições que nos permitam compreender detalhadamente, ou estimar, por inferência, as capacidades do sistema ou de suas funcionalidades isoladas**. Simplesmente simular carga por simular pode gerar resultados dispersos e de pouco valor para o produto.
 
 Portanto, por mais que a fase de planejamento seja mais demorada em comparação à execução do teste, é essencial **alinhar as expectativas e definir objetivos claros**. Dessa forma, os resultados obtidos podem realmente auxiliar os times de negócio e engenharia na tomada de decisões técnicas e na definição de prioridades.
 
@@ -183,7 +183,7 @@ Mapear as jornadas de uso do sistema também tem como objetivo **identificar qua
 Já discutimos "o que observar" durante a execução dos testes de performance. Agora, vamos recapitular esses pontos, mas **sugerindo uma abordagem para aproveitar ao máximo a movimentação gerada pelos testes**. É possível **criar dashboards, configurar alertas, gerar logs e correlacionar todas essas informações através de um único painel de controle**, numa **abordagem de "Single Pane of Glass"**. Essa estratégia visa fornecer uma **observabilidade centralizada, onde múltiplos recursos pertencentes à mesma jornada podem ser monitorados em uma ordem lógica**. Esse padrão facilita o acompanhamento de recursos, dimensões e aplicações que são afetadas durante o teste, e também serve como **suporte contínuo para o monitoramento da saúde do produto em operação**. A ideia é usar grandes iniciativas, como a criação de testes de performance, para resolver múltiplos problemas de uma vez. Essa estratégia **permite otimizar o monitoramento do produto de forma proativa e integrada, gerando valor tanto para a fase de testes quanto para a operação diária do sistema**.
 
 
-### Service Levels como como objetivos esperados
+### Service Levels como objetivos esperados
 
 **Como saber se eu "passei no teste"?** Uma oportunidade adicional é **transformar toda essa pesquisa corporativa e multidisciplinar, feita para descobrir os requisitos e objetivos, em Service Levels oficiais do processo**. Isso oferece uma estrela guia para que os times de engenharia, negócios e arquitetura trabalhem com foco e atenção às nuances críticas.
 
@@ -195,21 +195,21 @@ Se, durante o teste, foi determinado que a disponibilidade do checkout deve ser 
 
 Antes de realizar um teste por completo, pode ser interessante avaliar a capacidade da aplicação de forma individual e isolada. Isso ajuda a dar **insumos iniciais de como o teste será se comportar e o que esperar**. Podemos testar um fluxo **completo individualmente antes de iniciar um teste de jornada para maior segurança**. Vamos explorar algumas condições que podem ser valiosas como um exercício pré-teste.
 
-## Avaliando a capacidade individual de cada replica
+## Avaliando a capacidade individual de cada réplica
 
-O objetivo da validação de capacidade de unidade é determinar quanto uma única réplica da sua aplicação consegue suportar em termos de carga. Esse **teste deve ser feito antes de escalar o número de réplicas, para garantir que a aplicação tenha um comportamento previsível em cenários de múltiplas instâncias, e também servir como insumo de como definir e validar politicas de autoscaling**. 
+O objetivo da validação de capacidade de unidade é determinar quanto uma única réplica da sua aplicação consegue suportar em termos de carga. Esse **teste deve ser feito antes de escalar o número de réplicas, para garantir que a aplicação tenha um comportamento previsível em cenários de múltiplas instâncias, e também servir como insumo de como definir e validar políticas de autoscaling**. 
 
-Comece executando sua aplicação com apenas uma réplica e **aplique uma carga incremental afim de encontrar até quando uma única replica consegue sustentar tráfego sem ofender o tempo de resposta e erros**. A simulação presume **executar as requisições, eventos e mensagens que o sistema normalmente processaria**. O objetivo aqui é **descobrir os limites de uma única instância em termos de capacidade de processamento**, uso de CPU, memória e outros recursos perante aos acordos de disponibilidade. 
+Comece executando sua aplicação com apenas uma réplica e **aplique uma carga incremental a fim de encontrar até quando uma única réplica consegue sustentar tráfego sem ofender o tempo de resposta e erros**. A simulação presume **executar as requisições, eventos e mensagens que o sistema normalmente processaria**. O objetivo aqui é **descobrir os limites de uma única instância em termos de capacidade de processamento**, uso de CPU, memória e outros recursos perante aos acordos de disponibilidade. 
 
-Em um objetivo em que se deve ter 99% de disponibilidade respondendo as requisições em até 200ms, i**njetamos carga em uma replica até que esses limites sejam ofendidos**. Em um resultado hipotético, caso a replica da aplicação consiga atender até 10 transações por segundo como limite máximo sem quebrar os SLA's, **adicionamos mais uma replica e reaplicamos o teste, tentando chegar até 20 transações por segundo**. Se isso se comprovar real, **podemos adicionar mais uma replica e tentar mais uma vez até chegar em 30 transações por segundo**. Fazemos isso algumas vezes até chegamos a prova real de que o limite de cada replica a nível computacional seria de 10 transações cada.
+Em um objetivo em que se deve ter 99% de disponibilidade respondendo às requisições em até 200ms, **injetamos carga em uma réplica até que esses limites sejam ofendidos**. Em um resultado hipotético, caso a réplica da aplicação consiga atender até 10 transações por segundo como limite máximo sem quebrar os SLA's, **adicionamos mais uma réplica e reaplicamos o teste, tentando chegar até 20 transações por segundo**. Se isso se comprovar real, **podemos adicionar mais uma réplica e tentar mais uma vez até chegar a 30 transações por segundo**. Fazemos isso algumas vezes até chegarmos à prova real de que o limite de cada réplica a nível computacional seria de 10 transações cada.
 
-O objetivo desse teste pode ser realizado até **encontramos um limite onde o poder computacional deixa de ser o principal gargalo e o passa para uma próxima dependência**.
+O objetivo desse teste pode ser realizado até **encontramos um limite onde o poder computacional deixa de ser o principal gargalo e passa para uma próxima dependência**.
 
-## Validação de unidade assincrona
+## Validação de unidade assíncrona
 
-Em cenários assincronos que processam eventos ou mensagens, podemos explorar um passo adicional nesse pré-teste, ainda de forma unitária. O objetivo é **verificar como uma única feplica da aplicação consome e processa as mensagens e qual a vazão de processamento das mesmas**, mas também assegurando que elas não ultrapassem seus limites de capacidade. 
+Em cenários assíncronos que processam eventos ou mensagens, podemos explorar um passo adicional nesse pré-teste, ainda de forma unitária. O objetivo é **verificar como uma única réplica da aplicação consome e processa as mensagens e qual a vazão de processamento das mesmas**, mas também assegurando que elas não ultrapassem seus limites de capacidade. 
 
-Começamos represando um número muito grande de mensagens ou eventos nas filas ous tópicos da aplicação. Iniciamos uma **única replica e verificamos o throughput de processamento e como ela lida sozinha com um número muito grande de eventos**. O foco é **observar se a aplicação sabe gerenciar a carga e evitar sobrecarga sobre si mesmo**, evitando que a mesma consuma mais mensagens do que consiga realmente processar e acabe elevando seus **níveis de memória, CPU, throughput e até mesmo acarretando na morte do processo**. Em termos simplistas, em um lag muito alto, a aplicação deve consumir apenas apenas a vazão programada sem morrer. 
+Começamos represando um número muito grande de mensagens ou eventos nas filas, ou tópicos da aplicação. Iniciamos uma **única réplica e verificamos o throughput de processamento e como ela lida sozinha com um número muito grande de eventos**. O foco é **observar se a aplicação sabe gerenciar a carga e evitar sobrecarga sobre si mesmo**, evitando que a mesma consuma mais mensagens do que consiga realmente processar e acabe elevando seus **níveis de memória, CPU, throughput e até mesmo acarretando na morte do processo**. Em termos simplistas, em um lag muito alto, a aplicação deve consumir apenas a vazão programada sem morrer. 
 
 <br>
 
@@ -235,13 +235,13 @@ O Gatling é uma ferramenta poderosa de testes de carga, escrita em Scala, e pro
 
 ## Oha / Ohayou
 
-Oha, também conhecido como Ohayou, é uma ferramenta simples e leve para testes de performance de APIs e serviços web. ocada em simplicidade e velocidade, Oha utiliza principalmente o protocolo HTTP e HTTPS para simular requisições de usuários em alta velocidade, medindo o desempenho de APIs com relatórios de latência, throughput e erros. Sua leveza e interface minimalista o tornam uma escolha prática para quem deseja realizar testes rápidos e diretos sem muita complexidade.
+Oha, também conhecido como Ohayou, é uma ferramenta simples e leve para testes de performance de APIs e serviços web. Focada em simplicidade e velocidade, Oha utiliza principalmente o protocolo HTTP e HTTPS para simular requisições de usuários em alta velocidade, medindo o desempenho de APIs com relatórios de latência, throughput e erros. Sua leveza e interface minimalista o tornam uma escolha prática para quem deseja realizar testes rápidos e diretos sem muita complexidade.
 
 <br>
 
 # Modelo de Roteiro de Teste
 
-Aqui vamos tentar compilar os principais tópicos apresentados afim de montar um documento inicial e extensível para diversos tipos de cenário. A proposta é ser intuitivo o suficiente para que você seja capaz de entender a proposta e modificá-lo para atender as dependas da sua empresa ou produto. 
+Aqui vamos tentar compilar os principais tópicos apresentados a fim de montar um documento inicial e extensível para diversos tipos de cenário. A proposta é ser intuitivo o suficiente para que você seja capaz de entender a proposta e modificá-la para atender as necessidades da sua empresa ou produto. 
 
 <br>
 
@@ -255,13 +255,13 @@ Aqui vamos tentar compilar os principais tópicos apresentados afim de montar um
 
 ## 1. Visão Geral
 
-**Data**: DD/MM/AAAA  
+**Data**: DD/MM/AAAA  
 
 **Aplicação / Jornada**: Checkout de Cartão de Crédito
 
-**Versão**: 1.x.x  
+**Versão**: 1.x.x  
 
-**Ambiente de Teste**: Produção / Pré-produção / Desenvolvimento  
+**Ambiente de Teste**: Produção / Pré-produção / Desenvolvimento  
 
 **Ferramentas Utilizadas**: Apache JMeter, Grafana K6, Locust, etc.
 
@@ -269,14 +269,14 @@ Aqui vamos tentar compilar os principais tópicos apresentados afim de montar um
 
 ## 2. Objetivos do Teste
 
-**Finalidade**: Avaliar o novo microserviço de checkout para garantir os SLA's de produto e encontrar oportunidades de melhoria de gargalos.
+**Finalidade**: Avaliar o novo microsserviço de checkout para garantir os SLA's de produto e encontrar oportunidades de melhoria de gargalos.
 
 ### Metas:
 
 - **Tempo de Resposta**: Manter um tempo de resposta abaixo de 800 ms para 95% das requisições.
 - **Throughput**: Garantir que o sistema processe ao menos 600 transações por segundo (TPS) com 800 usuários ativos.
 - **Taxa de Erros**: Taxa de erro inferior a 0.1% em condições normais e de pico.
-- **Escalabilidade**: Verificar as politicas de autoscaling para garanrit a capacidade transacional de escalar horizontalmente sem degradação total ou parcial.
+- **Escalabilidade**: Verificar as políticas de autoscaling para garantir a capacidade transacional de escalar horizontalmente sem degradação total ou parcial.
 
 ---
 
@@ -346,7 +346,7 @@ Aqui vamos tentar compilar os principais tópicos apresentados afim de montar um
 - Tempo de resposta médio: 400 ms
 - Tempo de resposta do p95: 700 ms
 - Taxa de erro: 0.1%
-- Observações: O sistema se aproximou do limite superior do tempo de resposta. Pequena degradação observada nos componentes de checkout e microserviços de comunicação com o parceiro.
+- Observações: O sistema se aproximou do limite superior do tempo de resposta. Pequena degradação observada nos componentes de checkout e microsserviços de comunicação com o parceiro.
 
 **Evidências**:
 
@@ -371,7 +371,7 @@ Aqui vamos tentar compilar os principais tópicos apresentados afim de montar um
 - Tempo de resposta médio: 500 ms
 - Tempo de resposta do p95: 1300 ms
 - Taxa de erro: 1%
-- Observações: O sistema ofendeu aos limites estabelecidos pelo produto em torno de 1500 usuários. Identificamos a oportunidade de otimização de 2 queries no banco de dados do serviço de checkout que validam a idempotencia da transação e manipulam o estado de conclusão do pagamento. Após analises junto ao time de DBA's podemos superar esse problema criando um indice novo. 
+- Observações: O sistema ofendeu aos limites estabelecidos pelo produto em torno de 1500 usuários. Identificamos a oportunidade de otimização de 2 queries no banco de dados do serviço de checkout que validam a idempotencia da transação e manipulam o estado de conclusão do pagamento. Após análises junto ao time de DBA's podemos superar esse problema criando um índice novo. 
 
 **Evidências**:
 
@@ -390,9 +390,9 @@ Aqui vamos tentar compilar os principais tópicos apresentados afim de montar um
 **Resultados**:
 - Após 1300 usuários ativos, os tempos de resposta da aplicação começaram a subir e atingir o p95 de 800ms. 
 - Após 1600 usuários ativos, os tempos de resposta da aplicação começaram a subir e atingir o p95 de 1500ms com 5% de taxa de erro. 
-- Após 3000 usuários os erros por timeout começaram a se tornar constantes, chegando até 10% de todo o tráfego. O p95 chegou até 30 segundos. 
+- Após 3000 usuários, os erros por timeout começaram a se tornar constantes, chegando até 10% de todo o tráfego. O p95 chegou até 30 segundos. 
 - Encontramos o limite de 3700 usuários. As aplicações começaram a falhar em cascata e os databases a travarem. 
- 
+ 
 **Evidências**:
 
 ![Evidencia](/assets/images/system-design/teste-breakpoint.drawio.png)
