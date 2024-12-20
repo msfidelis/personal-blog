@@ -78,27 +78,57 @@ O modelo Coreografado, ao contrário do Orquestrado que **propõe um componente 
 
 A mesma lógica é aplicada para seu modelo de compensação e rollback, onde o serviço que falhou é obrigado a notificar o anterior ou acione um "botão do pânico" em que toda a malha anterior regrida com os passos já confirmados. 
 
+<br>
+
 # Adoções Arquiteturais
 
 ## Maquinas de Estado no Modelo Saga
 
 Em arquiteturas distribuídas, **manter o estado de todos os passos que uma saga deve efetuar até ser considerada concluída é talvez a preocupação de maior criticidade**. Esse tipo de controle nos permite **identificar quais sagas ainda estão pendentes ou falharam e em que passo isso aconteceu**, permitindo criar mecanismos de monitoramento, retentativas, resumos de saga e compensação em caso de erros e etc.
 
-Uma Maquina de Estado, ou State Machine, tem a função de lidar com o **estados**, **eventos**, **transições** e **ações**. E dentro de um modelo saga, entendemos que o **estado corresponde a saga em si** e **eventos são as entradas e saídas dos microserviços e passos que são chamados**. Uma maquina de estado precisa ser capaz de guardar o estado atual, e mediante a um evento de mudança que ela recebe de alguma forma, determinar se existirá uma nova transição de estado, e se sim, qual ação ele deve tomar com relação a isso. 
+### Transições de Estados da Saga
 
-A explicação pode ser confusa, mas vamos imaginar nosso cenário de pagamentos de e-commerce. Imagine que a saga é estimulada, criando um **registro novo na maquina de estado que inicia uma saga de fechamento de pedido**. O estado em teoria, poderia ser considerado `NOVO`. Dentro do mapeamento da saga, entedemos que quando o estado está como `NOVO`, ele **deve garantir que o domínio de pedidos deve ter conseguido gravar todos os dados referentes a essa solicitação** para fins analiticos. Assim que o serviço de pedidos respondesse com a gravação do registro, o estado seguinte poderia se tornar `RESERVANDO`, onde o proximo **passo da saga se encarregaria de reservar o item em estoque**. Uma vez tendo a resposta, esse estado se tornaria `RESERVADO`, e que iniciaria o processo de cobrança mudando seu estado para `COBRANDO`, **notificando o sistema de pagamentos que por sua vez poderia demorar um certo tempo para responder se conseguiu ou não efetuar o pagamento**. Em caso de sucesso, o estado se tornaria `COBRADO`, onde o sistema de entregas seria notificado com os itens que deveriam ser entregues e em qual endereço, alterando o estado para `INICIAR_ENTREGA`. Aqui poderiamos pensar em diversos estados intermediários que poderiamos tomar certas ações como notificações de e-mail e etc, como `SEPARACAO`, `SEPARADO`, `DESPACHADO`, `EM_ROTA`, `ENTREGUE` e etc, até que a saga tivesse em seu estado finalizador, ou `FINALIZADO`e a mesma pudesse ser considerada concluída em sua totalidade. 
+Uma Maquina de Estado, ou State Machine, tem a função de lidar com o **estados**, **eventos**, **transições** e **ações**. 
 
-Em caso por exemplo do sistema de pagamento se mover de um estado `COBRANDO` para um estado de falha como `PAGAMENTO_NEGADO`, ou `NAO_PAGO`, a saga **deveria conseguir notificar o sistema de reservas para liberar os itens para serem comprados novamente e informar o estado analitivo do sistema de pedidos**. 
+Os **Estados representam o estado atual da maquina**. Esse estado corresponde descritivamente ao status da transação, literalmente como `Iniciado`, `Agendado`, `Pagamento Concluido`, `Entrega Programada`, `Finalizado` e etc. **Os Eventos correspondem a notificações relevantes do processo que podem ou não alterar o estado da maquina**. Por exemplo, algum dos passos pode enviar os eventos `Pagamento Aprovado` ou `Item não disponível no estoque`, que são eventos que podem alterar o curso planejado da saga. **Esses eventos podem ou não gerar uma Transição**. **As Transições correspondem a mudança de um estado válido para outro estado válido decorrente de um evento recebido.** Por exemplo, se o estado de um registro for `Estoque Reservado` e o sistema de pagamentos enviar o evento de `Pagamento Concluído`, isso pode notificar a maquina e transicionar o estado para `Agendar Entrega`, caso o evento emitido for `Pagamento Recusado`, o estado da maquina pode ser transicionado para `Pedido Cancelado` por exemplo. 
 
-No geral, a maquina de estado precisa seguir uma lógica de:
+![Transicoes](/assets/images/system-design/saga-transicoes.png)
 
-* **Qual o evento que acabei de receber?** -> `COBRADO COM SUCESSO`
-* **Qual é o meu estado atual?** -> `COBRANDO`
-* **Se meu estado for `COBRANDO` e eu receber um `COBRADO COM SUCESSO`, qual dever ser a transição do estado?** -> `INICIAR_ENTREGA`
-* **Qual a ação que eu tenho que tomar quando entre no estado de `INICIAR_ENTREGA`?** -> Notificar o sistema de entregas
+E dentro de um modelo saga, entendemos que o **estado corresponde a saga em si** e **eventos são as entradas e saídas dos microserviços e passos que são chamados**. Uma maquina de estado precisa ser capaz de guardar o estado atual, e mediante a um evento de mudança que ela recebe de alguma forma, determinar se existirá uma nova transição de estado, e se sim, qual ação ele deve tomar com relação a isso. 
+
+### Ciclo de Vida da Saga
 
 
-## Logs de Saga
+Imagine que a saga seja iniciada, criando um **novo registro na máquina de estado que representa o início de uma saga de fechamento de pedido**. Esse estado inicial poderia ser considerado `NOVO`. Dentro do mapeamento da saga, entendemos que, quando o estado é `NOVO`, **é necessário garantir que o domínio de pedidos tenha gravado todos os dados referentes à solicitação** para fins analíticos.
+
+![Transicoes](/assets/images/system-design/saga-transicao.png)
+
+> Exemplo do Fluxo de Transição e Ações da Saga
+
+Assim que o serviço de pedidos confirmar a gravação do registro, o estado pode transicionar para `RESERVANDO`, onde o **próximo passo da saga se encarregará de reservar o item em estoque**. Após receber a confirmação dessa reserva, o estado se tornará `RESERVADO`, iniciando em seguida o processo de cobrança, alterando o estado para `COBRANDO`. Nesse momento, o sistema de pagamentos será notificado e poderá levar algum tempo para responder, informando se o pagamento foi efetivado ou não.
+
+Em caso de sucesso, o estado mudará para `COBRADO`, e o sistema de entregas será notificado sobre quais itens devem ser entregues, bem como o endereço de destino. Assim, o estado transiciona para `INICIAR_ENTREGA`. A partir daí, poderíamos ter diversos estados intermediários, nos quais ações adicionais, como o envio de notificações por e-mail, seriam realizadas. Exemplos incluem `SEPARACAO`, `SEPARADO`, `DESPACHADO`, `EM_ROTA` e `ENTREGUE`. Finalmente, a saga atinge o estado `FINALIZADO`, sendo considerada concluída em sua totalidade.
+
+Por outro lado, se o sistema de pagamentos, partindo do estado `COBRANDO`, mudar para um estado de falha como `PAGAMENTO_NEGADO` ou `NAO_PAGO`, a saga **deverá notificar o sistema de reservas para liberar os itens, possibilitando que sejam novamente disponibilizados para compra, além de atualizar o estado analítico do sistema de pedidos**.
+
+De modo geral, a máquina de estado segue uma lógica semelhante a:
+
+* **Qual evento acabei de receber?** → `COBRADO COM SUCESSO`
+* **Qual é o meu estado atual?** → `COBRANDO`
+* **Se meu estado é `COBRANDO` e eu recebo `COBRADO COM SUCESSO`, para qual estado devo ir?** → `INICIAR_ENTREGA`
+* **Qual ação devo tomar ao entrar no estado `INICIAR_ENTREGA`?** → Notificar o sistema de entregas.
+
+Basicamente, o controle funciona questionando: **"Que evento é esse?"**, **"Onde estou agora?"**, **"Para onde vou agora?"** e, finalmente, **"O que devo fazer aqui?"**.
+
+
+## Logs de Saga e Rastreabilidade da Transação
+
+
+![Saga Log](/assets/images/system-design/saga-log.drawio.png)
+
+![Saga Log - Error](/assets/images/system-design/saga-log-error-2.drawio.png)
+
+
 
 ## Modelos de Ação e Compensação
 
