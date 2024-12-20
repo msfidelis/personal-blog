@@ -123,8 +123,13 @@ Basicamente, o controle funciona questionando: **"Que evento é esse?"**, **"Ond
 
 ## Logs de Saga e Rastreabilidade da Transação
 
+Manter registros de todos os passos da transação pode ser extremamente vantajoso, tanto em sagas mais simples quanto, principalmente, nas mais complexas. A principal vantagem de manter uma coordenação de estados é possibilitar a rastreabilidade de todas as sagas: as concluídas, as que estão em andamento ou as que foram finalizadas com erro.
+
+Podemos considerar estruturas e modelagens de dados que permitam gerar uma rastreabilidade completa de todos os passos iniciados e finalizados. Dessa forma, o componente centralizado — no caso dos modelos orquestrados — registra e mantém documentados os passos executados, bem como as respectivas respostas, facilitando o controle pragmático ou manual.
 
 ![Saga Log](/assets/images/system-design/saga-log.drawio.png)
+
+Com isso, é possível verificar de maneira simples quais sagas apresentaram erros, mantendo esses registros na camada de dados. Esses recursos fornecem insumos para criar mecanismos de resiliência inteligentes o suficiente para retomar, reiniciar ou tentar novamente os passos que falharam, além de auxiliar na construção de uma visão analítica da execução da jornada de serviço.
 
 ![Saga Log - Error](/assets/images/system-design/saga-log-error-2.drawio.png)
 
