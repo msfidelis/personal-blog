@@ -129,7 +129,7 @@ Podemos considerar estruturas e modelagens de dados que permitam gerar uma rastr
 
 ![Saga Log](/assets/images/system-design/saga-log.drawio.png)
 
-Com isso, é possível verificar de maneira simples quais sagas apresentaram erros, mantendo esses registros na camada de dados. Esses recursos fornecem insumos para criar mecanismos de resiliência inteligentes o suficiente para retomar, reiniciar ou tentar novamente os passos que falharam, além de auxiliar na construção de uma visão analítica da execução da jornada de serviço.
+Com isso, é possível verificar de maneira simples quais sagas apresentaram erros, mantendo esses registros na camada de dados. Esses recursos fornecem insumos para criar mecanismos de resiliência inteligentes o suficiente para monitorar, retomar, reiniciar ou tentar novamente os passos que falharam, além de auxiliar na construção de uma visão analítica da execução da jornada de serviço.
 
 ![Saga Log - Error](/assets/images/system-design/saga-log-error-2.drawio.png)
 
