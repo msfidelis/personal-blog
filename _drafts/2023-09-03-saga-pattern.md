@@ -133,9 +133,15 @@ Com isso, é possível verificar de maneira simples quais sagas apresentaram err
 
 ![Saga Log - Error](/assets/images/system-design/saga-log-error-2.drawio.png)
 
-
+<br>
 
 ## Modelos de Ação e Compensação
+
+![Ação](/assets/images/system-design/saga-acao.drawio.png)
+
+![Compensação](/assets/images/system-design/saga-compensacao.drawio.png)
+
+![Funcionalidades](/assets/images/system-design/saga-funcionalidade.drawio.png)
 
 ## Dual Write em Transações Saga
 
