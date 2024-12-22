@@ -135,13 +135,25 @@ Com isso, é possível verificar de maneira simples quais sagas apresentaram err
 
 <br>
 
-## Modelos de Ação e Compensação
+## Modelos de Ação e Compensação no Saga Pattern
+
+Projetar sistemas distribuídos é **assumir um compromisso no qual reconhecemos** que lutaremos constantemente contra problemas de consistência de dados. Os patterns de compensação dentro das transações Saga **garantem que todos os passos, executados de forma sequencial, possam ser revertidos em caso de falha**.
+
+Assim como o **modelo Saga é criado para garantir que todas as transações saudáveis sejam executadas com sucesso**, o modelo de compensação assegura que, em caso de falha sistêmica — seja por dados inválidos, problemas de disponibilidade irrecuperáveis dentro do SLA da Saga, problemas de saldo, pagamentos, limites de crédito, disponibilidade de estoque ou dados de entrada inválidos — as ações sejam completamente revertidas, permitindo que o sistema retorne a um estado consistente e evitando que apenas parte da transação seja confirmada enquanto o restante falha.
+
+![Funcionalidades](/assets/images/system-design/saga-funcionalidade.drawio.png)
+
+Uma forma eficiente de projetar handlers que recebem estímulos e executam algum passo da saga, seja por meio de [endpoints de API]() ou de [listeners de eventos ou mensagens](), é **expor esses handlers junto aos métodos de reversão**. Assim, sempre haverá um handler que execute a ação e outro que desfaça essas ações. Por exemplo, `reservaPassagens()` e `liberaPassagens()`, `cobrarPedido()` e `estornarCobranca()`, ou `incrementarUso()` e `decrementarUso()`.
 
 ![Ação](/assets/images/system-design/saga-acao.drawio.png)
 
+Uma vez que dispomos das ferramentas necessárias para que o modelo de orquestração escolhido possa acionar os microserviços responsáveis pelas ações solicitadas, podemos assegurar o chamado "caminho feliz" da saga.
+
 ![Compensação](/assets/images/system-design/saga-compensacao.drawio.png)
 
-![Funcionalidades](/assets/images/system-design/saga-funcionalidade.drawio.png)
+Com o modelo de Ação e Compensação implementado, o orquestrador da saga também pode “apertar o botão do pânico” quando necessário, notificando todos os microserviços participantes para desfazerem as ações que foram confirmadas. Em uma arquitetura orientada a eventos ou mensageria que ofereça suporte a esse tipo de transação, podemos criar um tópico de compensação da saga com múltiplos *consumer groups*, de modo que cada um receba a mesma mensagem e execute a compensação se a transação já tiver sido confirmada no serviço em questão.
+
+<br>
 
 ## Dual Write em Transações Saga
 
@@ -172,3 +184,5 @@ Com isso, é possível verificar de maneira simples quais sagas apresentaram err
 [Try-Confirm-Cancel (TCC) Protocol](https://blog.sofwancoder.com/try-confirm-cancel-tcc-protocol)
 
 [Microservices Patterns: The Saga Pattern](https://medium.com/cloud-native-daily/microservices-patterns-part-04-saga-pattern-a7f85d8d4aa3)
+
+[Compensating Actions, Part of a Complete Breakfast with Sagas](https://temporal.io/blog/compensating-actions-part-of-a-complete-breakfast-with-sagas)
