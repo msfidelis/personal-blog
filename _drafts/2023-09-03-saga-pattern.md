@@ -120,6 +120,7 @@ De modo geral, a máquina de estado segue uma lógica semelhante a:
 
 Basicamente, o controle funciona questionando: **"Que evento é esse?"**, **"Onde estou agora?"**, **"Para onde vou agora?"** e, finalmente, **"O que devo fazer aqui?"**.
 
+<br>
 
 ## Logs de Saga e Rastreabilidade da Transação
 
@@ -157,9 +158,30 @@ Com o modelo de Ação e Compensação implementado, o orquestrador da saga tamb
 
 ## Dual Write em Transações Saga
 
-## Two-Phase Commit em Transações Saga
+O **Dual Write** é um problema clássico em arquiteturas distribuídas. Ele ocorre com frequência em cenários onde determinadas operações precisam gravar dados em **dois locais diferentes** — seja em um banco de dados e em um cache, em um banco de dados e em uma API externa, em duas APIs distintas ou em um banco de dados e em uma fila ou tópico. Em essência, sempre que for necessário garantir a escrita de forma atômica em múltiplos pontos, estaremos diante desse tipo de desafio.
 
-## Try-Confirm-Cancel (TCC) Protocol
+Para ilustrar o problema na prática em uma aplicação que utiliza o **Saga Pattern**, consideremos um exemplo em que seja preciso confirmar a operação em um local, mas o outro esteja indisponível. Nesse caso, a confirmação não será atômica, pois as duas escritas deveriam ser consideradas juntas para manter a consistência dos dados.
+
+![Dual Write](/assets/images/system-design/saga-dual-write-ok.drawio.png)
+> **Modelo Coreografado** - Exemplo de dual write
+
+No **modelo coreografado**, para que uma operação seja concluída em sua totalidade, cada microserviço executa localmente as ações em seu banco de dados e em seguida **publica um evento** no broker para o próximo serviço dar continuidade ao fluxo. Esse seria o “caminho feliz” da saga, sem problemas de consistência até aqui.
+
+![Dual Write - Error](/assets/images/system-design/saga-dual-write-error.drawio.png)
+
+Os problemas de consistência aparecem, por exemplo, quando o dado não é salvo no banco de dados, mas **o evento é emitido** em sequência; ou quando o dado é salvo corretamente, porém, por indisponibilidade do broker de mensagens, **o evento não é emitido**. Em ambos os casos, o sistema pode se encontrar em um estado inconsistente.
+
+![Dual Write - Orquestrado Dual Write](/assets/images/system-design/saga-dual-write-orquestrado.drawio-foi.png)
+
+No **modelo orquestrado**, o mesmo problema pode ocorrer, ainda que de forma ligeiramente diferente. Em um cenário de **comando e resposta** entre orquestrador e microserviços, se um deles falha ao tentar garantir a escrita dupla (entre suas dependências e o canal de resposta), poderemos ter uma **saga perdida**, em que etapas intermediárias não são confirmadas e ficam “presas” no meio do processo por falta de resposta ou confirmação.
+
+**Garantir que todos os passos sejam executados com a devida atomicidade** é, talvez, a **maior complexidade na implementação de um modelo Saga**. Os mecanismos de controle precisam dispor de recursos sistêmicos suficientes para lidar com problemas de falhas, adotando retentativas, processos de supervisão de sagas e formas de identificar aquelas que foram iniciadas há muito tempo e ainda não foram concluídas ou estão em um estado inconsistente.
+
+### Outbox Pattern em Transações Saga 
+
+### Two-Phase Commit em Transações Saga
+
+### Try-Confirm-Cancel (TCC) Protocol
 
 ## Mecanismos de Resumo de Saga
 
@@ -186,3 +208,7 @@ Com o modelo de Ação e Compensação implementado, o orquestrador da saga tamb
 [Microservices Patterns: The Saga Pattern](https://medium.com/cloud-native-daily/microservices-patterns-part-04-saga-pattern-a7f85d8d4aa3)
 
 [Compensating Actions, Part of a Complete Breakfast with Sagas](https://temporal.io/blog/compensating-actions-part-of-a-complete-breakfast-with-sagas)
+
+[Microserviços e o problema do Dual Write](https://arthurgregorio.eti.br/posts/dual-write-microservicos/)
+
+[Solving the Dual-Write Problem: Effective Strategies for Atomic Updates Across Systems](https://www.confluent.io/blog/dual-write-problem/)
