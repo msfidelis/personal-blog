@@ -8,6 +8,10 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Saga Pattern
 ---
 
+O ano de publicação desse texto foi marcado por interessantes experiências profissionais nas quais eu pude resolver problemas muito complexos de sistemas distribuídos utilizando o modelo Saga. Logo, por mais que tenha sido sencional poder compilar todas as referências bibliográficas e materiais que consumi por todo esse período aqui, também foi extremamente desafiador remover as "exclusividades" que foram trabalhadas e deixas as sugestões dem um excesso de particularidades dos meus cenários. 
+
+É sempre maravilhoso poder contemplar um material finalizado sobre o tema de microserviços, arquitetura e sistemas distribuídos, mas esse capítulo em questão foi entregue com extrema felicidade. Espero que seja de bom proveito para todos que estão buscando por referências e experiências com esse tipo de implementação. 
+
 # O que é o modelo SAGA?
 
 Uma transação Saga **é um padrão arquitetural que visa garantir a consistência dos dados em transações distribuídas**, especialmente em cenários onde essas **transações dependem da execução contínua da mesma em múltiplos microserviços** ou **possuam uma longa duração até serem completamente finalizadas**. 
@@ -64,7 +68,7 @@ No **Modelo Orquestrado**, propõe a existência de um **componente centralizado
 
 ![Orquestrador](/assets/images/system-design/saga-orquestrado-circulo.png)
 
-(Colocar um case)
+Considere que para concluir uma transação de um pedido de compra, você precisa estimular e esperar a resposta de confirmação de uma série de domínios como **pagamentos**, **estoques**, **notificações** e **entregas**. **São muitos componentes distribuidos, com suas próprias limitações, capacidades de escala, modos de uso, que possuem seus próprios contratos e precisam ser acionados de forma sequencial e lógica para que a transação seja concluída.** Assumindo uma abordagem assincrona, um orquestrador utiliza-se do pattern de [command / response](/) para acionar esses microserviços, e mediante a resposta de cada um deles **acionar o próximo da saga ou concluir e encerrá-la** se for conveniente. Um orquestrador também pode trabalhar de forma sincrona se necessário sem nenhuma restrição, porém mecanismos de resiliência que já são "nativos" de mensageria, como backoff, retries e DLQ's devem ser implementados manualmente para garantir uma resiliência saudável da execução da saga.
 
 Então **a função do orquestrador é basicamente montar um "mapa da saga"**, com **todas as etapas que precisam ser concluídas para a finalização da mesma**, enviar **mensagens e eventos para os respectivos microserviços** e a partir de suas respostas, **resumir e estimular o próximo passo da Saga até que a mesma esteja totalmente completa**. 
 
@@ -81,6 +85,8 @@ A mesma lógica é aplicada para seu modelo de compensação e rollback, onde o 
 <br>
 
 # Adoções Arquiteturais
+
+As abordagens Saga podem variar e se extender para diversos patterns arquiteturais. Nessa sessão vamos abordar alguns dos padrões e abordagens que eu considerei mais importantes e relevantes para serem considerados quando avaliamos uma arquitetura Saga para algum projeto. 
 
 ## Maquinas de Estado no Modelo Saga
 
@@ -156,11 +162,11 @@ Com o modelo de Ação e Compensação implementado, o orquestrador da saga tamb
 
 <br>
 
-## Dual Write em Transações Saga
+## Problemas de Dual Write em Transações Saga
 
 O **Dual Write** é um problema clássico em arquiteturas distribuídas. Ele ocorre com frequência em cenários onde determinadas operações precisam gravar dados em **dois locais diferentes** — seja em um banco de dados e em um cache, em um banco de dados e em uma API externa, em duas APIs distintas ou em um banco de dados e em uma fila ou tópico. Em essência, sempre que for necessário garantir a escrita de forma atômica em múltiplos pontos, estaremos diante desse tipo de desafio.
 
-Para ilustrar o problema na prática em uma aplicação que utiliza o **Saga Pattern**, consideremos um exemplo em que seja preciso confirmar a operação em um local, mas o outro esteja indisponível. Nesse caso, a confirmação não será atômica, pois as duas escritas deveriam ser consideradas juntas para manter a consistência dos dados.
+Para ilustrar o problema na prática em uma aplicação que utiliza o **Saga Pattern**, consideremos um exemplo em que **seja preciso confirmar a operação em um local, mas o outro esteja indisponível**. Nesse caso, a confirmação não será atômica, pois as duas escritas deveriam ser consideradas juntas para manter a consistência dos dados.
 
 ![Dual Write](/assets/images/system-design/saga-dual-write-ok.drawio.png)
 > **Modelo Coreografado** - Exemplo de dual write
@@ -168,16 +174,22 @@ Para ilustrar o problema na prática em uma aplicação que utiliza o **Saga Pat
 No **modelo coreografado**, para que uma operação seja concluída em sua totalidade, cada microserviço executa localmente as ações em seu banco de dados e em seguida **publica um evento** no broker para o próximo serviço dar continuidade ao fluxo. Esse seria o “caminho feliz” da saga, sem problemas de consistência até aqui.
 
 ![Dual Write - Error](/assets/images/system-design/saga-dual-write-error.drawio.png)
+> **Modelo Coreografado** - Exemplo de falha de dual write
 
 Os problemas de consistência aparecem, por exemplo, quando o dado não é salvo no banco de dados, mas **o evento é emitido** em sequência; ou quando o dado é salvo corretamente, porém, por indisponibilidade do broker de mensagens, **o evento não é emitido**. Em ambos os casos, o sistema pode se encontrar em um estado inconsistente.
 
 ![Dual Write - Orquestrado Dual Write](/assets/images/system-design/saga-dual-write-orquestrado.drawio-foi.png)
+> **Modelo Orquestrado** - Exemplo de falha de dual write
 
 No **modelo orquestrado**, o mesmo problema pode ocorrer, ainda que de forma ligeiramente diferente. Em um cenário de **comando e resposta** entre orquestrador e microserviços, se um deles falha ao tentar garantir a escrita dupla (entre suas dependências e o canal de resposta), poderemos ter uma **saga perdida**, em que etapas intermediárias não são confirmadas e ficam “presas” no meio do processo por falta de resposta ou confirmação.
 
 **Garantir que todos os passos sejam executados com a devida atomicidade** é, talvez, a **maior complexidade na implementação de um modelo Saga**. Os mecanismos de controle precisam dispor de recursos sistêmicos suficientes para lidar com problemas de falhas, adotando retentativas, processos de supervisão de sagas e formas de identificar aquelas que foram iniciadas há muito tempo e ainda não foram concluídas ou estão em um estado inconsistente.
 
 ### Outbox Pattern em Transações Saga 
+
+O Outbox Pattern já foi mencionado anteriormente algumas vezes, todas as vezes aplicando o mesmo conceitos porém resolvendo problemas diferentes. Nesse caso, podemos utilizá-lo para atribuir uma característica transacional a execução e controle de steps da saga. Onde temos um processo de relay adicional em um orquestrador no modelo orquestrado que através de uma fila sincrona do banco, consegue verificar quais steps de quais sagas estão pendentes e somente removê-los dessa "fila" no banco quando todos os processos de execução do step forem devidamente executados. 
+
+Essa é uma abordagem interessante para se blindar contra os problemas de Dual Write e ajudar a aplicação a se garantir em questão de resiliência em períodos de indisponibilidades totais e parciais de suas dependências. 
 
 ### Two-Phase Commit em Transações Saga
 
@@ -193,7 +205,11 @@ No **modelo orquestrado**, o mesmo problema pode ocorrer, ainda que de forma lig
 
 [Saga distributed transactions pattern](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga)
 
-[Pattern: SAGA](https://microservices.io/patterns/data/saga.html))
+[Pattern: SAGA](https://microservices.io/patterns/data/saga.html)
+
+[The Saga Pattern in a Reactive Microservices Environmen](https://www.scitepress.org/Papers/2019/79187/79187.pdf)
+
+[Enhancing Saga Pattern for Distributed Transactions within a Microservices Architecture](https://www.mdpi.com/2076-3417/12/12/6242)
 
 [Model: 8 types of sagas](https://tjenwellens.eu/everblog/ec936db8-ba4c-430b-aeb4-15d9c50c0f8c/)
 
@@ -212,3 +228,5 @@ No **modelo orquestrado**, o mesmo problema pode ocorrer, ainda que de forma lig
 [Microserviços e o problema do Dual Write](https://arthurgregorio.eti.br/posts/dual-write-microservicos/)
 
 [Solving the Dual-Write Problem: Effective Strategies for Atomic Updates Across Systems](https://www.confluent.io/blog/dual-write-problem/)
+
+[Outbox Pattern(Saga): Transações distribuídas com microservices](https://medium.com/tonaserasa/outbox-pattern-saga-transa%C3%A7%C3%B5es-distribu%C3%ADdas-com-microservices-c9c294b7a045)
