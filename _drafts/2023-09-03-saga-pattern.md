@@ -187,9 +187,11 @@ No **modelo orquestrado**, o mesmo problema pode ocorrer, ainda que de forma lig
 
 ### Outbox Pattern em Transações Saga 
 
-O Outbox Pattern já foi mencionado anteriormente algumas vezes, todas as vezes aplicando o mesmo conceitos porém resolvendo problemas diferentes. Nesse caso, podemos utilizá-lo para atribuir uma característica transacional a execução e controle de steps da saga. Onde temos um processo de relay adicional em um orquestrador no modelo orquestrado que através de uma fila sincrona do banco, consegue verificar quais steps de quais sagas estão pendentes e somente removê-los dessa "fila" no banco quando todos os processos de execução do step forem devidamente executados. 
+O Outbox Pattern já foi mencionado anteriormente algumas vezes, porém resolvendo problemas diferentes. Nesse caso, podemos utilizá-lo para **atribuir uma característica transacional a execução e controle de steps da saga**. Onde temos um **processo de relay adicional em um modelo orquestrado que através de uma fila sincrona do banco,** consegue verificar quais steps de quais sagas estão pendentes e **somente removê-los dessa "fila" no banco quando todos os processos de execução do step forem devidamente executados**. 
 
 Essa é uma abordagem interessante para se blindar contra os problemas de Dual Write e ajudar a aplicação a se garantir em questão de resiliência em períodos de indisponibilidades totais e parciais de suas dependências. 
+
+### Outbox Pattern e Change-Data-Capture 
 
 ### Two-Phase Commit em Transações Saga
 
@@ -230,3 +232,5 @@ Essa é uma abordagem interessante para se blindar contra os problemas de Dual W
 [Solving the Dual-Write Problem: Effective Strategies for Atomic Updates Across Systems](https://www.confluent.io/blog/dual-write-problem/)
 
 [Outbox Pattern(Saga): Transações distribuídas com microservices](https://medium.com/tonaserasa/outbox-pattern-saga-transa%C3%A7%C3%B5es-distribu%C3%ADdas-com-microservices-c9c294b7a045)
+
+[Saga Orchestration for Microservices Using the Outbox Pattern](https://www.infoq.com/articles/saga-orchestration-outbox/)
