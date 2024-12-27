@@ -164,7 +164,7 @@ Com o modelo de Ação e Compensação implementado, o orquestrador da saga tamb
 
 ## Problemas de Dual Write em Transações Saga
 
-O **Dual Write** é um problema clássico em arquiteturas distribuídas. Ele ocorre com frequência em cenários onde determinadas operações precisam gravar dados em **dois locais diferentes** — seja em um banco de dados e em um cache, em um banco de dados e em uma API externa, em duas APIs distintas ou em um banco de dados e em uma fila ou tópico. Em essência, sempre que for necessário garantir a escrita de forma atômica em múltiplos pontos, estaremos diante desse tipo de desafio.
+O **Dual Write** é conhecido tanto como um problema quanto como um pattern clássico em arquiteturas distribuídas. Ele ocorre com frequência em cenários onde determinadas operações precisam gravar dados em **dois locais diferentes** — seja em um banco de dados e em um cache, em um banco de dados e em uma API externa, em duas APIs distintas ou em um banco de dados e em uma fila ou tópico. Em essência, sempre que for necessário garantir a escrita de forma atômica em múltiplos pontos, estaremos diante desse tipo de desafio.
 
 Para ilustrar o problema na prática em uma aplicação que utiliza o **Saga Pattern**, consideremos um exemplo em que **seja preciso confirmar a operação em um local, mas o outro esteja indisponível**. Nesse caso, a confirmação não será atômica, pois as duas escritas deveriam ser consideradas juntas para manter a consistência dos dados.
 
@@ -183,17 +183,37 @@ Os problemas de consistência aparecem, por exemplo, quando o dado não é salvo
 
 No **modelo orquestrado**, o mesmo problema pode ocorrer, ainda que de forma ligeiramente diferente. Em um cenário de **comando e resposta** entre orquestrador e microserviços, se um deles falha ao tentar garantir a escrita dupla (entre suas dependências e o canal de resposta), poderemos ter uma **saga perdida**, em que etapas intermediárias não são confirmadas e ficam “presas” no meio do processo por falta de resposta ou confirmação.
 
-**Garantir que todos os passos sejam executados com a devida atomicidade** é, talvez, a **maior complexidade na implementação de um modelo Saga**. Os mecanismos de controle precisam dispor de recursos sistêmicos suficientes para lidar com problemas de falhas, adotando retentativas, processos de supervisão de sagas e formas de identificar aquelas que foram iniciadas há muito tempo e ainda não foram concluídas ou estão em um estado inconsistente.
+**Garantir que todos os passos sejam executados com a devida atomicidade** é, talvez, a **maior complexidade na implementação de um modelo Saga**. Os mecanismos de controle precisam **dispor de recursos sistêmicos suficientes para lidar com problemas de falhas**, adotando retentativas, processos de supervisão de sagas e formas de identificar aquelas que foram iniciadas há muito tempo e ainda não foram concluídas ou estão em um estado inconsistente. A alternativa mais eficiente dentro de databases ACID por exemplo, é executar a publicação do evento dentro de uma [transaction](/teorema-cap/) no banco de dados, e só commitar a modificação dos dados quando os processos de comunicação estarem concluídos, garantindo todos os processos, ou nenhum é efetuado. 
 
-### Outbox Pattern em Transações Saga 
+### Outbox Pattern e Change Data Capture em Transações Saga 
 
-O Outbox Pattern já foi mencionado anteriormente algumas vezes, porém resolvendo problemas diferentes. Nesse caso, podemos utilizá-lo para **atribuir uma característica transacional a execução e controle de steps da saga**. Onde temos um **processo de relay adicional em um modelo orquestrado que através de uma fila sincrona do banco,** consegue verificar quais steps de quais sagas estão pendentes e **somente removê-los dessa "fila" no banco quando todos os processos de execução do step forem devidamente executados**. 
+O [Outbox Pattern](/cqrs) já foi mencionado anteriormente algumas vezes, porém resolvendo problemas diferentes. Nesse caso, podemos utilizá-lo para **atribuir uma característica transacional a execução e controle de steps da saga**. Onde temos um **processo de relay adicional em um modelo orquestrado que através de uma fila sincrona do banco,** consegue verificar quais steps de quais sagas estão pendentes e **somente removê-los dessa "fila" no banco quando todos os processos de execução do step forem devidamente executados**. 
 
 Essa é uma abordagem interessante para se blindar contra os problemas de Dual Write e ajudar a aplicação a se garantir em questão de resiliência em períodos de indisponibilidades totais e parciais de suas dependências. 
 
-### Outbox Pattern e Change-Data-Capture 
+![Change Data Capture](/assets/images/system-design/saga-outbox.drawio.png)
+
+Mecanismos de **[Change Data Capture](/replicacao/) podem ser empregados para lidar com o transporte do dado para o sistema subsequente.** Essa abordagem pode ser implementada em ambas alternativas arquiteturais do Saga Pattern, **embora lidar com as transações de forma pragmática, controlando manualmente a execução, os fallbacks e as lógicas de negócio referentes aos steps da saga seja o mais indicado no padrão orquestrado** pelo próprio objetivo do orquestrador. 
+
 
 ### Two-Phase Commit em Transações Saga
+
+Embora os exemplos deste capítulo tenham adotado uma **característica de orquestração assíncrona** para detalhar as implementações de Saga, é possível explorar tópicos que nos ajudem a **manter certos níveis de consistência** em um contexto **síncrono**, típico de uma abordagem cliente/servidor (request/reply).
+
+O **Two-Phase Commit (2PC)** é um padrão bastante conhecido para tratar **sistemas distribuídos**. Ele propõe que, em uma transação com vários participantes, exista um **coordenador** capaz de garantir que todos estejam “pré-confirmados” (prontos para gravar a transação) antes de **efetivamente** aplicar as mudanças em seus respectivos estados, realizando, portanto, a confirmação em **duas fases**. Caso algum dos passos não confirme que esté pronto para consistir o estado, nenhum deles recebe o comando de **commit**. Além de implementações de microserviços, esse pattern é muito bem empregado em **[estratégias de replicação](/replicacao/)**.
+
+![Saga - 2PC](/assets/images/system-design/saga-2pc.png)
+> Two-Phase Commit executado com sucesso
+
+Esse protocolo **2PC** traz a sensação de **atomicidade** para serviços distribuídos que compõem uma transação, pois o coordenador envia solicitações de confirmação a cada participante antes de efetivar o commit. Tal abordagem pode ser de grande valor em **transações Saga** que exijam a validação de todos os passos antes da conclusão total — principalmente em cenários síncronos, nos quais o cliente aguarda uma **resposta imediata** e, muitas vezes, a operação pode ser abortada repentinamente, sem a possibilidade de compensar etapas já executadas.
+
+![Saga - 2PC ERRO](/assets/images/system-design/saga-2pc-erro.png)
+> Two-Phase Commit executado com erro
+
+Caso algum dos serviços não responsa com sucesso, ou em tempo hábil para o mecanismo de coordenação da transação, o mesmo **envia sinal de rollback da transação para que todos os participantes não considerem as transações pendentes**. 
+
+Esse pattern, por mais que seja muito útil, também **pode se tornar um gargalo de performance em ambientes de alta demanda, por precisar gerenciar multiplas conexões abertas** a todo momento em diferentes contextos. Uma forma de otimizar esse tipo de abordagem é adotar protocolos de comunicação que **[facilite a gestão de long-live-connections como o gRPC](/padroes-de-comunicacao-sincronos/)** que pode manter conexões bidirecionais e reaproveitar a conexão para diversas requisições.
+
 
 ### Try-Confirm-Cancel (TCC) Protocol
 
@@ -234,3 +254,7 @@ Essa é uma abordagem interessante para se blindar contra os problemas de Dual W
 [Outbox Pattern(Saga): Transações distribuídas com microservices](https://medium.com/tonaserasa/outbox-pattern-saga-transa%C3%A7%C3%B5es-distribu%C3%ADdas-com-microservices-c9c294b7a045)
 
 [Saga Orchestration for Microservices Using the Outbox Pattern](https://www.infoq.com/articles/saga-orchestration-outbox/)
+
+[Martin Kleppmann - Distributed Systems 7.1: Two-phase commit](https://www.youtube.com/watch?v=-_rdWB9hN1c)
+
+[Distributed Transactions & Two-phase Commit](https://medium.com/geekculture/distributed-transactions-two-phase-commit-c82752d69324)
