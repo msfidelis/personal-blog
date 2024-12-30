@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/escalabilidade-capa.png
+image: assets/images/system-design/saga-logo.png
 author: matheus
 featured: false
 published: true
@@ -8,9 +8,11 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Saga Pattern
 ---
 
-O ano de publicação desse texto foi marcado por interessantes experiências profissionais nas quais eu pude resolver problemas muito complexos de sistemas distribuídos utilizando o modelo Saga. Logo, por mais que tenha sido sencional poder compilar todas as referências bibliográficas e materiais que consumi por todo esse período aqui, também foi extremamente desafiador remover as "exclusividades" que foram trabalhadas e deixas as sugestões dem um excesso de particularidades dos meus cenários. 
+O ano de publicação desse texto **foi marcado por interessantes experiências profissionais nas quais eu pude resolver problemas muito complexos de sistemas distribuídos utilizando o modelo Saga**. Logo, por mais que tenha sido sencional poder compilar todas as referências bibliográficas e materiais que consumi por todo esse período aqui, também foi extremamente desafiador remover as "exclusividades" que foram trabalhadas e deixas as sugestões dem um excesso de particularidades dos meus cenários. 
 
 É sempre maravilhoso poder contemplar um material finalizado sobre o tema de microserviços, arquitetura e sistemas distribuídos, mas esse capítulo em questão foi entregue com extrema felicidade. Espero que seja de bom proveito para todos que estão buscando por referências e experiências com esse tipo de implementação. 
+
+<br>
 
 # O que é o modelo SAGA?
 
@@ -19,6 +21,20 @@ Uma transação Saga **é um padrão arquitetural que visa garantir a consistên
 O termo Saga vem do sentido literal de Saga, que o conceito **remete a uma aventura, uma história, uma jornada do herói**, jornada na qual a mesma remonta vários capítulos onde o "herói" precisa cumprir objetivos, enfrentar desafios, superar seus limites e concluir um objetivo predestinado. Dentro de uma implementação do Saga Pattern, uma Saga **possui uma característica sequencial, na qual a transação depende de diversos microserviços para ser concluída**, com etapas que devem ser executadas uma após a outra de forma ordenada e distribuída. 
 
 A implementação dessas etapas pode variar entre abordagens **Coreografadas e Orquestradas**, as quais serão exploradas mais adiante. Independentemente da abordagem escolhida, **o objetivo principal é gerenciar transações que envolvem dados em diferentes microserviços e bancos de dados**, ou que são de longa duração, e **garantir que todos os passos sejam executados sem perder a consistência e controle**, e em caso de falha de algum dos componentes por erros sistemicos ou por entradas de dados inválidas ter a capacidade de notificar **todos os participantes da saga a compensarem a transação executando um rollback de todos os passos já executados**. 
+
+Lembrando que a principal proposta do modelo Saga é garantir confiabilidade e consistência, não parformance. Inclusive, suas maiores nuâncias pagam o preço de performance para atingir esses objetivos. 
+
+## A Origem Histórica do Saga Pattern
+
+Não é costume desta série de textos aprofundar demasiadamente os detalhes acadêmicos e históricos dos tópicos abordados. Porém, vale destacar **as origens do Saga Pattern** e o problema que ele foi originalmente concebido para resolver.
+
+![Artigo Saga](/assets/images/system-design/saga-artigo.png)
+
+O **Saga Pattern** foi publicado pela primeira vez por **Hector Garcia-Molina** e **Kenneth Salem**, em **1987**, em um artigo para o **Departamento de Ciências da Computação da Universidade de Princeton**, intitulado **"[SAGAS](https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf)"**. O objetivo do artigo era enfrentar a **problemática das Long Live Transactions (LLTs)** nos computadores da época, quando já se buscava uma forma de lidar com processos que **demandavam mais tempo que as operações tradicionais** e não podiam simplesmente **bloquear os recursos computacionais** até sua conclusão.
+
+Como mencionado, o termo “Saga” faz alusão a **histórias que se desenrolam em capítulos menores**, ou seja, a proposta era **quebrar** uma **Transação de Longa Duração** em **várias transações menores**, cada uma podendo ser **confirmada** ou **desfeita** de forma independente. Isso transformava uma operação atômica extensa em **pequenas transações atômicas**, com um nível de supervisão pragmática.
+
+Portanto, embora o **Modelo Saga** não tenha sido inicialmente projetado para gerenciar **consistência em microserviços**, e sim para tratar **processos computacionais em bancos de dados**, ele foi **revisitado** ao longo do tempo. À medida que **microserviços** e **sistemas distribuídos** se tornaram mais comuns no ambiente corporativo, os princípios do Saga Pattern **provarem-se úteis** para lidar com falhas e garantir a consistência nessas arquiteturas modernas.
 
 <br>
 
@@ -29,10 +45,12 @@ Uma transação distribuida é aquela que precisa acontecer em multiplos sistema
 Vamos imaginar o sistema de pedidos de um grande e-commerce. A funcionalidade principal desse sistema é receber uma solicitação de pedido e executar todas as ações necessárias para garantir a efetivação completa desse pedido, desde a solicitação até a entrega. Para isso, é preciso interagir com diversos microserviços pertinentes a esse fluxo hipotético, como **Serviço de Pedidos**,  **Serviço de Pagamentos**, **Serviço de Estoque**, **Serviço de Entregas** e um **Serviço de Notificações** que notifica o cliente de todas as etapas do pedido. 
 
 ![Saga Problema](/assets/images/system-design/saga-problema-distribuido-1.drawio.png)
+> Exemplo de um processo distribuido inicial
 
 Em uma arquitetura complexa com múltiplos serviços interligados, **cada domínio isolado precisa garantir uma parte da sequência da execução para que o pedido seja concluído com sucesso**. À medida que o **número de componentes aumenta, a complexidade também cresce**, **aumentando a probabilidade de falhas e inconsistências**.
 
 ![Saga Error](/assets/images/system-design/saga-distribuido-error.drawio.png)
+> Exemplo de um erro em uma transação distribuída
 
 Imagine que, durante a execução dessas etapas, **um dos serviços falhe por algum motivo não sistêmico em termos de resiliência**, como a **falta de um item no estoque** ou a **recepção de informações inválidas** pelo serviço de estoque. Nessas situações, **pode ser impossível continuar as chamadas para os serviços subsequentes**, como o serviço de entregas, mesmo que etapas críticas, como o processamento do pagamento, já tenham sido concluídas com sucesso. Nesse caso, **conhecer e desfazer os passos anteriores pode se tornar um problema complicado**. 
 
@@ -69,6 +87,7 @@ Existem dois modelos principais para implementar o Saga Pattern, o **Modelo Orqu
 No **Modelo Orquestrado**, propõe a existência de um **componente centralizado de orquestração** que gerencia a execução das sagas. O Orquestrador é responsável por **iniciar a saga, coordenar a sequência de transações, monitorar as respostas e gerenciar o fluxo de compensação em caso de falhas**. Ele atua como um **control plane** que envia comandos para os microserviços participantes e espera pelas respostas para **decidir os próximos passos ou resumir a saga**.
 
 ![Orquestrador](/assets/images/system-design/saga-orquestrado-circulo.png)
+> Exemplificação do Modelo Orquestrado
 
 Considere que para concluir uma transação de um pedido de compra, você precisa estimular e esperar a resposta de confirmação de uma série de domínios como **pagamentos**, **estoques**, **notificações** e **entregas**. **São muitos componentes distribuidos, com suas próprias limitações, capacidades de escala, modos de uso, que possuem seus próprios contratos e precisam ser acionados de forma sequencial e lógica para que a transação seja concluída.** Assumindo uma abordagem assincrona, um orquestrador utiliza-se do pattern de [command / response](/) para acionar esses microserviços, e mediante a resposta de cada um deles **acionar o próximo da saga ou concluir e encerrá-la** se for conveniente. Um orquestrador também pode trabalhar de forma sincrona se necessário sem nenhuma restrição, porém mecanismos de resiliência que já são "nativos" de mensageria, como backoff, retries e DLQ's devem ser implementados manualmente para garantir uma resiliência saudável da execução da saga.
 
@@ -76,13 +95,28 @@ Então **a função do orquestrador é basicamente montar um "mapa da saga"**, c
 
 O modelo orquestrado é dependente de a **implementação de um pattern de Maquina de Estado**, e o mesmo **deve ser capaz de gerenciar o estado atual, mediante a uma resposta mudar esse estado e tomar uma ação mediante ao novo estado**. Dessa forma conseguimos controlar a orquestação de forma centralizada e segura, onde a partir de uma aplicação central, podemos metrificar todos os passos, inicio e fim da execução da saga, controle de historico e alteração de estado de forma transacional e etc. 
 
+### Modelo de Comando / Resposta em Transações Saga
+
+Em implementações modernas de Saga Pattern, principalmente no modelo orquestrado, muitas das interações entre os participantes da Saga ocorrem de forma assincrona e reativa. Nessa abordagem, o **orquestrador da saga** (ou um serviço solicitante, fora do saga pattern) envia um **comando** para outro microserviço realizar uma ação, e **aguarda** a resposta de forma **bloqueante** ou **semi-bloqueante** antes de prosseguir para o próximo passo da Saga. 
+
+![Comando e Resposta](/assets/images/system-design/saga-command-response.drawio.png)
+> Modelo de Comando e Resposta de Fluxos Assincronos
+
+Isso presume que os serviços expostos precisam expor um tópico de ação, e outro para resposta daquela ação em questão, para que o orquestrador ou serviço solicitante saiba onde enviar o comando e onde aguardar pela exposta de conclusão com sucesso ou falha do mesmo. 
+
 <br>
 
 ## Modelo Coreografado
 
 O modelo Coreografado, ao contrário do Orquestrado que **propõe um componente centralizado que conhece todos os passos da saga, propõe que os microserviços devem conhecer o serviço seguinte e o anterior**. Isso significa que **a saga é executada em uma abordagem de malha de serviço, onde num caso complexo, um microserviço quando é chamado e termina seu processo**, conhece o microserviço seguinte e o protocolo que o mesmo expõe suas funcionalidades, e o mesmo se encarrega de executar o passo e assim sucessivamente até a finalização da saga. 
 
+![Saga Coreografado](/assets/images/system-design/saga-coreografado.drawio.png)
+
 A mesma lógica é aplicada para seu modelo de compensação e rollback, onde o serviço que falhou é obrigado a notificar o anterior ou acione um "botão do pânico" em que toda a malha anterior regrida com os passos já confirmados. 
+
+![Saga Coreografado - Compensacao](/assets/images/system-design/saga-coreografado-compensacao.drawio.png)
+
+O modelo coreografado, por mais que seja mais simples e com menos garantias que o orquestrado de primeiro momento, também funciona como um viabilizador de fluxos sincronos para arquiteturas sagas. 
 
 <br>
 
@@ -217,15 +251,14 @@ Caso algum dos serviços não responsa com sucesso, ou em tempo hábil para o me
 Esse pattern, por mais que seja muito útil, também **pode se tornar um gargalo de performance em ambientes de alta demanda, por precisar gerenciar multiplas conexões abertas** a todo momento em diferentes contextos. Uma forma de otimizar esse tipo de abordagem é adotar protocolos de comunicação que **[facilite a gestão de long-live-connections como o gRPC](/padroes-de-comunicacao-sincronos/)** que pode manter conexões bidirecionais e reaproveitar a conexão para diversas requisições.
 
 
-### Try-Confirm-Cancel (TCC) Protocol em Transações SAGA
-
 ## Mecanismos de Resumo de Saga
 
-Ainda que os mecanismos de coordenação implementados no Saga Pattern sirvam para **garantir uma série de "guard rails" para a execução da transação**, imprevistos sistemicos **podem ocorrer e refletir em inconsistências de estados entre os microserviços**. Uma decisão de negócio precisa ser tomada nesse tipo de situação, onde mediante a uma eventual **falha significativa entre os participantes da saga**, será necessário **decidir se serão aplicadas estratégias de compensação em massa, ou uma estratégia de resumo de saga**. No caso da segunda opção, precisamos preparar para que todos os microserviços tenham seus devidos controles de idempotencia, para receber o mesmo comando diversas vezes sem gerar erros arbitrários. 
+Ainda que os mecanismos de coordenação do **Saga Pattern** forneçam diversos **“guard rails”** para a execução de transações, **imprevistos sistêmicos** podem ocorrer, resultando em inconsistências de estado entre os microserviços. Nesse cenário, é preciso tomar **decisões de negócio** sobre como lidar com falhas significativas entre os participantes da saga: optar por **compensações em massa** ou por alguma **estratégia de resumo de saga**.
 
-Em exemplo, "se um serviço de reserva de quartos de hotel receber a mesma transação para reservar o mesmo quarto, para o mesmo usuário, ele deve acatar sem alterar ou sobrescrever esse estado, e dando a devida resposta de sucesso". Isso facilita processos que refazem a sincronia de estado. 
+No caso de um **resumo de saga**, é essencial que todos os microserviços implementem **controles de idempotência**, de forma a receber o mesmo comando múltiplas vezes sem gerar erros inesperados. Por exemplo, se um serviço de **reserva de quartos de hotel** receber repetidamente a mesma solicitação de reserva para o mesmo quarto e para o mesmo usuário, deve **aceitar** a operação sem sobrescrever ou alterar o estado, enviando a devida resposta de sucesso. Isso **facilita processos de ressincronização** do estado.
 
-No caso, nosso processo de coordenação, sendo orquestrado ou coreografado, podemos projetá-los para caso sejam estimulados para iniciar uma nova saga identificadas com identificadores únicos ou chaves de idempotência que já existem, consigam reiniciar a saga por completo, ou verificar os steps incompletos e resumir os mesmos a partir dos steps que ficaram sem a devida resposta. 
+Quando o processo de coordenação (seja orquestrado ou coreografado) recebe estímulos para iniciar uma nova saga com **identificadores únicos** ou **chaves de idempotência** já existentes para outra saga já existente e iniciada, ele pode **reiniciar** a saga por completo ou **verificar** quais etapas ficaram incompletas, de modo a **resumi-las a partir do ponto em que não houve resposta**, garantindo assim a consistência das transações.
+
 
 
 
