@@ -24,7 +24,9 @@ A implementação dessas etapas pode variar entre abordagens **Coreografadas e O
 
 # O problema de lidar com transações distribuídas
 
-Vamos imaginar o sistema de pedidos de um grande e-commerce. A funcionalidade principal desse sistema é receber uma solicitação de pedido e executar todas as ações necessárias para garantir a efetivação completa desse pedido, desde a solicitação até a entrega. Para isso, é preciso interagir com diversos microserviços pertinentes a esse fluxo, como **Serviço de Pedidos**,  **Serviço de Pagamentos**, **Serviço de Estoque**, **Serviço de Entregas** e um **Serviço de Notificações** que notifica o cliente de todas as etapas do pedido. 
+Uma transação distribuida é aquela que precisa acontecer em multiplos sistemas e bancos de dados simultaneamente para ser concluída. Por definição entendemos que ela precisa de multiplos participantes escrevendo e commitando seus dados para que ela seja bem sucedida, e reportando o status de escrita para quem está coordenando esse tipo de transação. 
+
+Vamos imaginar o sistema de pedidos de um grande e-commerce. A funcionalidade principal desse sistema é receber uma solicitação de pedido e executar todas as ações necessárias para garantir a efetivação completa desse pedido, desde a solicitação até a entrega. Para isso, é preciso interagir com diversos microserviços pertinentes a esse fluxo hipotético, como **Serviço de Pedidos**,  **Serviço de Pagamentos**, **Serviço de Estoque**, **Serviço de Entregas** e um **Serviço de Notificações** que notifica o cliente de todas as etapas do pedido. 
 
 ![Saga Problema](/assets/images/system-design/saga-problema-distribuido-1.drawio.png)
 
@@ -130,13 +132,13 @@ Basicamente, o controle funciona questionando: **"Que evento é esse?"**, **"Ond
 
 ## Logs de Saga e Rastreabilidade da Transação
 
-Manter registros de todos os passos da transação pode ser extremamente vantajoso, tanto em sagas mais simples quanto, principalmente, nas mais complexas. A principal vantagem de manter uma coordenação de estados é possibilitar a rastreabilidade de todas as sagas: as concluídas, as que estão em andamento ou as que foram finalizadas com erro.
+**Manter registros de todos os passos da transação pode ser extremamente vantajoso,** tanto em sagas mais simples quanto, principalmente, nas mais complexas, **porém pode se tornar custoso se mantido por longo prazo**. A principal vantagem de **manter uma coordenação de estados é possibilitar a rastreabilidade de todas as sagas**: as concluídas, as que estão em andamento ou as que foram finalizadas com erro.
 
-Podemos considerar estruturas e modelagens de dados que permitam gerar uma rastreabilidade completa de todos os passos iniciados e finalizados. Dessa forma, o componente centralizado — no caso dos modelos orquestrados — registra e mantém documentados os passos executados, bem como as respectivas respostas, facilitando o controle pragmático ou manual.
+Podemos considerar **estruturas e modelagens de dados que permitam gerar uma rastreabilidade completa de todos os passos iniciados e finalizados**. Dessa forma, o componente centralizado — no caso dos modelos orquestrados — registra e mantém documentados os passos executados, bem como as respectivas respostas, facilitando o controle pragmático ou manual.
 
 ![Saga Log](/assets/images/system-design/saga-log.drawio.png)
 
-Com isso, é possível verificar de maneira simples quais sagas apresentaram erros, mantendo esses registros na camada de dados. Esses recursos fornecem insumos para criar mecanismos de resiliência inteligentes o suficiente para monitorar, retomar, reiniciar ou tentar novamente os passos que falharam, além de auxiliar na construção de uma visão analítica da execução da jornada de serviço.
+Com isso, é possível **verificar de maneira simples quais sagas apresentaram erros, mantendo esses registros na camada de dados**. Esses recursos fornecem insumos para **criar mecanismos de resiliência inteligentes** o suficiente para monitorar, retomar, reiniciar ou tentar novamente os passos que falharam, além de auxiliar na construção de uma visão analítica da execução da jornada de serviço.
 
 ![Saga Log - Error](/assets/images/system-design/saga-log-error-2.drawio.png)
 
@@ -215,9 +217,16 @@ Caso algum dos serviços não responsa com sucesso, ou em tempo hábil para o me
 Esse pattern, por mais que seja muito útil, também **pode se tornar um gargalo de performance em ambientes de alta demanda, por precisar gerenciar multiplas conexões abertas** a todo momento em diferentes contextos. Uma forma de otimizar esse tipo de abordagem é adotar protocolos de comunicação que **[facilite a gestão de long-live-connections como o gRPC](/padroes-de-comunicacao-sincronos/)** que pode manter conexões bidirecionais e reaproveitar a conexão para diversas requisições.
 
 
-### Try-Confirm-Cancel (TCC) Protocol
+### Try-Confirm-Cancel (TCC) Protocol em Transações SAGA
 
 ## Mecanismos de Resumo de Saga
+
+Ainda que os mecanismos de coordenação implementados no Saga Pattern sirvam para **garantir uma série de "guard rails" para a execução da transação**, imprevistos sistemicos **podem ocorrer e refletir em inconsistências de estados entre os microserviços**. Uma decisão de negócio precisa ser tomada nesse tipo de situação, onde mediante a uma eventual **falha significativa entre os participantes da saga**, será necessário **decidir se serão aplicadas estratégias de compensação em massa, ou uma estratégia de resumo de saga**. No caso da segunda opção, precisamos preparar para que todos os microserviços tenham seus devidos controles de idempotencia, para receber o mesmo comando diversas vezes sem gerar erros arbitrários. 
+
+Em exemplo, "se um serviço de reserva de quartos de hotel receber a mesma transação para reservar o mesmo quarto, para o mesmo usuário, ele deve acatar sem alterar ou sobrescrever esse estado, e dando a devida resposta de sucesso". Isso facilita processos que refazem a sincronia de estado. 
+
+No caso, nosso processo de coordenação, sendo orquestrado ou coreografado, podemos projetá-los para caso sejam estimulados para iniciar uma nova saga identificadas com identificadores únicos ou chaves de idempotência que já existem, consigam reiniciar a saga por completo, ou verificar os steps incompletos e resumir os mesmos a partir dos steps que ficaram sem a devida resposta. 
+
 
 
 
@@ -258,3 +267,5 @@ Esse pattern, por mais que seja muito útil, também **pode se tornar um gargalo
 [Martin Kleppmann - Distributed Systems 7.1: Two-phase commit](https://www.youtube.com/watch?v=-_rdWB9hN1c)
 
 [Distributed Transactions & Two-phase Commit](https://medium.com/geekculture/distributed-transactions-two-phase-commit-c82752d69324)
+
+[Try-Confirm-Cancel (TCC) Protocol](https://blog.sofwancoder.com/try-confirm-cancel-tcc-protocol)
