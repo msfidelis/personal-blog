@@ -34,7 +34,6 @@ Resumindo, **quanto mais robustos forem os mecanismos de resiliência, mais tole
 
 Neste capítulo, abordaremos diversos cenários e mecanismos de resiliência e, **principalmente, revisitaremos vários outros padrões e conceitos já discutidos, agora com foco em garantir maior resiliência e disponibilidade**.
 
-
 <br>
 
 ## Métricas de Resiliência e Disponibilidade

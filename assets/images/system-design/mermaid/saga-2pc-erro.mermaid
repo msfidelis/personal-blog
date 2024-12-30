@@ -1,0 +1,25 @@
+%%{init: {'theme':'neutral'}}%%
+sequenceDiagram
+    participant Cliente
+    participant ServerOrquestrador as Orquestrador
+    participant BackendA as Aplicação 01
+    participant BackendB as Aplicação 02
+
+    Cliente->>ServerOrquestrador: Inicia Transação (2PC)
+    note right of Cliente: Requisição síncrona
+
+    ServerOrquestrador->>BackendA: Fase 1 - Prepare
+    BackendA-->>ServerOrquestrador: OK
+    
+    ServerOrquestrador->>BackendB: Fase 1 - Prepare
+    BackendB-->>ServerOrquestrador: ERRO 
+
+    alt Erro
+        ServerOrquestrador->>BackendA: ABORT
+        BackendA-->>ServerOrquestrador: ABORT_OK
+
+        ServerOrquestrador->>BackendB: ABORT
+        BackendB-->>ServerOrquestrador: ABORT_OK
+
+        ServerOrquestrador-->>Cliente: Falha na Transação
+    end
