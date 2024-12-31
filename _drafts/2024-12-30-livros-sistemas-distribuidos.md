@@ -56,7 +56,18 @@ Todos os livros e artigos aqui foram lidos por mim. Por isso, há uma curadoria 
 
 ![Domain Driven Design](/assets/images/livros/ddd.png)
 
+Começando por um livro que na minha visão deveria estar na lista de "feijão com arroz" dos livros de engenharia. Um dos maiores desafios de se implementar microserviços feitos para reúso, é aprender a identificar domínios de forma efetiva e definir responsabilidades e escopos fechados, e posteriormente lidar com isso na forma de contratos de entrada e saída. 
+
+O Domain Driven Design, por mais que seja de primeiro momento facilmente atrelado a codificação e construção de blocos, não é. Ele te ensina como funciona o particionamento de modelos, definição de escopos, responsabilidades e recursos compartilhados entre esses domínios. 
+
+Pouquíssimo importa a quantidade de patterns e tecnologias que você conhece para a construção de sistemas distribuídos se a funcionalidade desses sistemas tenham responsabilidades compartilhadas, vazadas e fora de escopo sendo efetuadas entre os domínios. 
+
+Por isso considero esse livro do Eric Evans como um dos pontos mais importantes para começar a plantar a semente de como construir sistemas em grande escala pensando em microserviços e com patterns mais avançados. A definição de limites claros é a "chave dos grandes mistérios" dos sistemas distribuídos, embora não se limite a esse tema, claro...
+
 https://amzn.to/4gQzC6o
+
+
+<br>
 
 ----
 
@@ -73,19 +84,36 @@ Recomendo muito que ele seja o primeiro livro a respeito do tema, caso não tenh
 
 https://amzn.to/4fKdtG2
 
+<br>
+
 ----
 
 # Migrando Sistemas Monolíticos Para Microsserviços: Padrões Evolutivos Para Transformar seu Sistema Monolítico 
 
+![Migrando Sistemas Monolíticos Para Microsserviços](/assets/images/livros/migracao-monolito-microservicos.png)
 
+Este livro, escrito por **Sam Newman em 2020**, é um guia prático e aprofundado sobre como evoluir uma aplicação monolítica — **geralmente robusta, complexa e estável em muitos aspectos** — para uma arquitetura de microsserviços. Aprender a decompor serviços e entender como subdividir domínios é talvez a tarefa mais importante na hora de realizar uma migração para microserviços em ambientes evolutivos. E executar a migração de forma responsável e gradual tende a ser um exercício complexo de muitas áreas corporativas. 
+
+**Saber decompor fronteiras é uma tarefa do livro Domain Driven Design**, mas esse livro vai reforçar esses conceitos e te aproximar da parte técnica da tarefa te dando **ferramental de migração e evolução**.
+
+Eu sinceramente não sentei para ler esse livro do tipo *"olha, vamos passar algumas horas aqui lendo esse cara nesse domingo maravilhoso"*, mas tratei ele como um livro de cabeceira, onde procurei os capítulos pontualmente conforme tinha dúvidas e precisei de um direcionamento a respeito. Depois de 2 anos acabei que li ele por completo. 
+
+Nem todo mundo tem a oportunidade de passar por um processo de decomposição de algo maior para vários outros "algos" menores. Muitos já entram em ambientes monolíticos estáveis e outros já entram em ambientes já decompostos de alguma forma, e em muitos locais o pulo de monolitos para microserviços nem faz sentido e nem é tratado como uma forma evolutiva. Mas ter uma ordem lógica de raciocinio a respeito pode ajudar em ambos os cenários. 
 
 https://amzn.to/4gRUASz
+
+
+<br>
 
 ---- 
 
 # Arquitetura de Software: as Partes Difíceis: Análises Modernas de Trade-off Para Arquiteturas Distribuídas
 
 ![Arquitetura de Software](/assets/images/livros/arquitetura-partes-dificeis.png)
+
+Arquitetura de Software: As partes difíceis é um livro bem importante na minha carreira, pois aborda e detalha muitos tópicos que consideram uma transição real de um sistema monolitico para um distribuído, abordando uma série muito grande de disciplinas, desde modelagem de dados, modularização, cuidados com a codebase e seus times responsáveis até patterns como Saga, tipos de banco de dados, CAP, comunicação entre microserviços e cuidados com resiliência. 
+
+Esse **livro ganhou uma tradução em PT-BR agora em 2024**. Tenho as duas na minha estante, recomendo qualquer que seja. E**scrito por Neal Ford, Mark Richards, Pramod Sadalage e Zhamak Dehghani, ele aborda com um pouco mais de detalhes** o tipo de ferramental que você precisa ter para entender sistemas distribuídos complexos com excelência. Muito mais portas abertas pra você aqui. 
 
 https://amzn.to/3Dy3C8O
 
@@ -95,6 +123,14 @@ https://amzn.to/3Dy3C8O
 
 ![Engenharia de Confiabilidade](/assets/images/livros/engenharia-confiabilidade-google.png)
 
+O **Google criou o conceito de Site Reliability Engineering ao fundir tarefas tradicionais de operação e infraestrutura com a mentalidade de desenvolvimento de software**, e os passos iniciais abordados por produtos que necessitavam de engenharia de confiabilidade está compilada nesse primeiro livro sobre o tema. 
+
+Chuto que esse é **o livro mais importante da minha carreira**, em termos de ser um divisor de águas sobre como modernizar e focar meu conhecimento. **Lidar com sistemas complexos, é por definição, complexo...** E entender a fundo as disciplinas de **confiabilidade, resiliência, projetar fallbacks e acompanhar a saúde de serviços avaliando sempre oportunidades de melhoria e excelência operacional é a chave para construir e manter uma vida saudável em microserviços e sistemas distribuídos**. 
+
+Creio que o que o SRE significa hoje para o mercado, é a porta e também a chave de todos os temas complexos que um engenheiro precisa conhecer. É importante você conhecer o segundo passo após construir coisas, que é mantê-las no ar performando da melhor forma possível com resiliência e tolerância a falhas. 
+
+**Difícil não é fazer. Difícil é manter no ar depois de feito.** Aqui você será apresentado para conceitos extremamente importantes como tolerância a falhas, resiliência como cultura organizacional, Service Levels, Error Budgets e etc. Praticamente o mundo corporativo de larga escala bebe dessa fonte. 
+
 https://amzn.to/4a0Z8DL
 
 ----
@@ -102,6 +138,14 @@ https://amzn.to/4a0Z8DL
 # Antifrágil: Coisas que se beneficiam com o caos
 
 ![Antifrágil](/assets/images/livros/antifragil.png)
+
+**É praticamente impossível você ter saído pra beber comigo e não ter me ouvido falar sobre antifragilidade em tecnologia**. Eu faço essa associação sobre SRE, confiabilidade com antifrágilidade desde 2017, no mínimo. A primeira vez que li associei diretamente o tema pra coisas que eu fazia no dia a dia que visavam garantir performance, resiliência e excelência operacional, e fez mais sentido ainda quando entrei de cabeça no setor bancário em times de tecnologia de missão crítica. 
+
+Sim, esse é um dos livros citados no começo do texto que não são de tecnologia e nem sequer citam qualquer coisa do tipo. **Escrito em 2012 por Nassim Nicholas Taleb**, um matemático analista de riscos do setor financeiro, ele tenta descrever "**o contrário de frágil",** algo que como uma taça de cristal, se quebra e não consegue mais retornar ao seu estágio original, propondo o inverso como sendo um paralelo a **Hidra de Lerna, que conforme sofre danos e sofre certas adversidades, ganha mais cabeças e fica mais forte** ao invés de algo que recebe danos constantes e não muda, como um diamante. 
+
+Ele propõe também os **"fenômenos dos cisnes negros"**, inclusive tem um livro que fala só disso, caso tenha interesse. Que são fenômenos aleatórios e adversos que mudam completamente a realidade ao redor, e tem uma característica muito engraçada que é a sensação de serem facilmente previsíveis, depois que ninguém previu...
+
+Esse tipo de literatura externa a tecnologia tem muito a agregar no dia a dia se interpretado com certos olhos. Esse livro mudou a forma como eu trabalho, e indico pra todo mundo que já tenha uma certa kilometragem rodada propondo essa associação que fiz. 
 
 https://amzn.to/3W0LlYf
 
