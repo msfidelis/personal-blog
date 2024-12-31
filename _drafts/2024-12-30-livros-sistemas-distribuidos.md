@@ -8,7 +8,7 @@ categories: [ system-design, engineering, cloud ]
 title: Guia de Literatura de Sistemas Distribuídos (e o porquê eu não quero que você o siga)
 ---
 
-Esse não é um artigo comum aqui do blog. Na verdade, é o tipo de material que eu sou mais relutante em produzir: uma recomendação. Não gosto de dar recomendações gerais porque isso presume muita coisa sobre muitas pessoas ao mesmo tempo, ignorando peculiaridades, nuances e momentos distintos de cada um que pode ler e interpretar algo de formas diferentes. Na verdade, esse receio molda a maneira como prefiro acompanhar a carreira das pessoas no dia a dia e conduzir mentorias: de forma pontual, direta e olhando para a pessoa que está à minha frente, sem presumir nenhum molde genérico do tipo “faça assim que vai dar certo pra você”. A coisa menos genérica que existe é gente... Gosto de olhar cada pessoa individualmente, caso a caso. Por isso, já desisti várias vezes de escrever um post assim, mas aqui está...
+Esse não é um artigo comum aqui do blog. Na verdade, é o tipo de material que eu sou mais relutante em produzir: uma recomendação. Não gosto de dar recomendações gerais porque isso presume muita coisa sobre muitas pessoas ao mesmo tempo, ignorando peculiaridades, nuances e momentos distintos de cada um que pode ler e interpretar algo de formas diferentes. Na verdade, esse receio molda a maneira como prefiro acompanhar a carreira das pessoas no dia a dia e conduzir mentorias: de forma pontual, direta e olhando para a pessoa que está à minha frente, sem presumir nenhum molde genérico do tipo “faça assim que vai dar certo pra você”. A coisa menos genérica que existe é gente... Gosto de olhar cada pessoa individualmente, caso a caso. Por isso, já desisti várias vezes de escrever um post assim, mas aqui está... Inclusive grande parte do material daqui, pra não dizer ele inteiro, são as principais referências para a **[série de System Design](/categories#system-design)** que estamos desenvolvendo neste blog. 
 
 <br>
 
@@ -154,6 +154,11 @@ https://amzn.to/3W0LlYf
 
 # Criando Microsserviços: Projetando sistemas com componentes menores e mais especializados 
 
+O segundo livro de Sam Newman dessa lista. Lançado em 2022, ele compartilha as experiências e práticas que aprendeu ao longo dos anos ajudando empresas a migrar de sistemas monolíticos para arquiteturas distribuídas, compostas por serviços menores e mais especializados. Um sucessor natural do livro **Migrando Sistemas Monolíticos Para Microsserviços**, aqui vamos ver alguns pontos adicionais de segurança, zero-trust, modelos de monolitos, modelos de microserviços, e é claro, uma modernização da visão do autor entre a publicação dos dois livros. 
+
+*"Mas eu posso ler só esse e pular o primeiro que você citou?"* - Poder, você pode. Como comentei, não quero que você siga minha lista. Eu não pularia.
+
+
 ![Criando Microsserviços](/assets/images/livros/criando-microservicos.png)
 
 https://amzn.to/3VZ62no
@@ -164,6 +169,12 @@ https://amzn.to/3VZ62no
 
 ![Release-it](/assets/images/livros/release-it.png)
 
+Ganhei de presente esse livro do meu amigo Carlos Panato, uma das minhas maiores referências do mercado. E vou guardá-lo para sempre, pois aumentou muito meu repertório pra certos assuntos. 
+
+Aqui, **não iremos abordar de fato apenas construção de software**, e sim muitos dos processos que permeiam esse assunto, **engordando um pouco mais o que entedemos como engenharia**, como Patterns de Resiliência, Post Mortens, Escalabilidade, Networking, Capacity e etc. 
+
+A versão que eu tenho é de 2012. Surgiram novas versões, eu sinceramente não as li. Mantenho minha cópia do coração com muita suficiência e felicidade. E**scrito por Michael T. Nygard**, recomendo demais, por mais que até o momento da escrita desse artigo não exista uma versão em português ainda, é talvez uma das obras mais importantes que você vai encontrar nessa lista. 
+
 https://amzn.to/3PjqlrO
 
 ----
@@ -171,6 +182,12 @@ https://amzn.to/3PjqlrO
 # Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems
 
 ![Data Intensive](/assets/images/livros/data-intensive.png)
+
+Aqui já **passamos uma risca de livros complexos**. Com certeza meu atual livro que eu mais consulto no dia a dia. Li ele pela primeira vez em 2022, depois 2023 e revisitei diversos capítulos dele em 2024. Desde que encontrei minha jornada atual, no meu emprego atual,aprender a lidar com aplicações com uso intensivo de dados, ou aplicações realmente alto throughput foi o desafio mais legal que já tive até o momento. E posso dizer que a jornada ainda está em andamento, estou naquela constante sensação gostosa de aprender uma coisa e de quebra descobrir mais umas 4 que eu não sei na sequencia. 
+
+**Tanto esse livro quanto o blog do Martin Kleppmann são incríveis e super recomendados pra qualquer um que queira mergulhar em assuntos complexos** de arquitetura e engenharia de software. Aqui vamos ver design de databases, replicação, particionamento, SSTables, LSM-Trees, B-Trees, Compressão, formatos e protocolos de comunicação. 
+
+Um dos meus livros preferidos dessa lista. E está no final por um motivo. Não dê o passo maior que a perna aqui. 
 
 https://amzn.to/3Phc7Ic
 
@@ -180,6 +197,14 @@ https://amzn.to/3Phc7Ic
 
 ![Event Driven](/assets/images/livros/event-driven.png)
 
+Segundo passo relacionado a temas mais complexos. 
+
+Na jornada até aqui, **você já chegou além dos modelos sincronos**, por conta da literatura proposta ou não, você já tem ferramental o suficiente para avaliar, sugerir e implementar coisas envolvendo mensageria e eventos. O Building Event-Driven Microservices, **escrito por Adam Bellemare** é um guia prático e estratégico sobre como projetar e implementar sistemas baseados em eventos de uma forma mais estruturada e com várias dicas e experiências valisas demais, que **são muito dificeis de se encontrar longe de um bate papo informal com que já passou por algo do tipo.** 
+
+Arquiteturas Event-Driven são as que viabilizam grande parte das propostas e estratégias de larga escala para sistemas distribuídos. Adicionar esse tipo de compreensão e experiência no seu ferramental vai agregar demais em projetar arquiteturas corporativas complexas, levando em consideração tudo que pode dar certo, e principalmente errado em ambientes orientados a eventos. 
+
+Aqui teremos dicas de como lidar com práticas DevOps, Pipelines de Dados e fluxos de negócio orientados a eventos e como realizar tratativas de erros e compensações. **Uma leitura bem madura e que precisa ser revisitada algumas vezes**. 
+
 https://amzn.to/41TYQN2
 
 ----
@@ -187,6 +212,12 @@ https://amzn.to/41TYQN2
 # The Site Reliability Workbook: Practical Ways to Implement SRE
 
 ![The Site Reliability Workbook](/assets/images/livros/sre-workbook.png)
+
+Dando o próximp passo em relação a literatura mais complexa, estamos aqui dando um passo em relação ao que foi visto sobre Engenharia de Confiabilidade de sistemas complexos. 
+
+O livro Site Reliability Workbook foi escrito e organizado pelos mesmos editores e autores do "Engenharia de Confiabilidade do Google" — entre eles **Betsy Beyer, Niall Richard Murphy, David K. Rensin, Kent Kawahara e Stephen Thorne** —, este livro foca em orientações mais práticas e exemplos mais próximos do real de como aplicar os princípios de SRE no dia a dia dos times de engenharia. Se o primeiro livro introduz a filosofia e os pilares do Site Reliability Engineering, o Workbook assume uma postura mais “mão na massa” da proposta, dando uma incrementada mais prática na jornada.
+
+*"Posso ler só esse e pular o Engenharia de Confiabilidade do Google"*- Dessa vez é não. Definitivamente, não... 
 
 https://amzn.to/400lDUK
 
@@ -197,6 +228,12 @@ https://amzn.to/400lDUK
 
 ![Building Secure and Reliable Systems](/assets/images/livros/secure-reliable-systems.png)
 
+O livro que mais baseou a pegada da série de System Design, e futuro livro meu sobre o tema. Building Secure and Reliable Systems é o livro mais importante dessa lista e precisa ser respeitado em ordem, pois considero ele a ponta final, onde amarreremos tudo que vimos até agora. Ele não é o lixo MAIS COMPLEXO da lista, mas a visão que ele vai te passar precisa de uma certa base funcional para ser compreendida em sua totalidade. 
+
+Geralmente, segurança, devops e confiabilidade são tratados como áreas separadas na maioria das organizações grandes e como "a mesma coisa" em empresas de pequeno e médio porte. Neste livro, os autores mostram como essas visões se complementam ao longo de todo o processo de desenvolvimento e operação, reforçando que não há sistema realmente confiável se não for também seguro, e vice-versa, e como lidar com isso da melhor forma possível de forma incremental e com aprendizado contínuo. 
+
+Ele também foi publicado por profissionais do Google, como  Heather Adkins, Betsy Beyer, Paul Blankinship, Piotr Lewandowski, Ana Oprea e Adam Stubblefield e dos três livros, é o mais maduro e sênior, voltado tanto para operações quanto para cargos estratégicos Staff+.
+
 https://amzn.to/3BSu78D
 
 ----
@@ -204,5 +241,14 @@ https://amzn.to/3BSu78D
 # Ludwig Von Bertalanffy - Teoria Geral dos Sistemas
 
 ![Teoria Geral dos Sistemas](/assets/images/livros/teoria-geral-dos-sistemas.png)
+
+Ao observar organismos vivos, Ludwig Von Bertalanffy percebeu que o todo não pode ser compreendido apenas pela soma das partes. Fatores como feedback e adaptação mostram que a organização global de um sistema influencia diretamente seus componentes. O nome disso em nomes populares hoje em dia é **visão holistica**. 
+
+Tive contato com esse RARO livro durante meu MBA de Data Science e Analytics, na disciplina de Pesquisa Operacional. Ele forneceu uma **forma complexa e completa de avaliar qualquer sistema, seja ele tecnologico ou o sistema de trânsito de grandes centros. Tudo no mundo é um sistema**. 
+
+Esse livro é o mais raro, e MUITO dificil de se encontrar. Encontrei minha edição num Sebo Digital, a edição é mais velha que eu. A Segunda Edição do livro de 1975. 
+
+
+**Recomendo como forma de entender tanto sistemas complexos, quanto a própria organização onde você está inserido, sem falar um "a" sobre tecnologia.**
 
 https://sebociadosaber.com.br/produtos/ludwig-von-bertalanffy-teoria-geral-dos-sistemas/?variant=1067981702&pf=mc&srsltid=AfmBOopaxgIf_X8Ai6zIViQ8tbrb5MxPBkbao2geuh5pE3Lj1xAwiH-L0n8
