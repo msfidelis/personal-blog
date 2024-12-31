@@ -8,44 +8,47 @@ categories: [ system-design, engineering, cloud ]
 title: Guia de Literatura de Sistemas Distribuídos (e o porquê eu não quero que você o siga)
 ---
 
-Esse não é um artigo comum aqui do blog. Na verdade, é o tipo de material que eu sou mais relutante em produzir: uma recomendação. Não gosto de dar recomendações gerais porque isso presume muita coisa sobre muitas pessoas ao mesmo tempo, ignorando peculiaridades, nuances e momentos distintos de cada um que pode ler e interpretar algo de formas diferentes. Na verdade, esse receio molda a maneira como prefiro acompanhar a carreira das pessoas no dia a dia e conduzir mentorias: de forma pontual, direta e olhando para a pessoa que está à minha frente, sem presumir nenhum molde genérico do tipo “faça assim que vai dar certo pra você”. A coisa menos genérica que existe é gente... Gosto de olhar cada pessoa individualmente, caso a caso. Por isso, já desisti várias vezes de escrever um post assim, mas aqui está... Inclusive grande parte do material daqui, pra não dizer ele inteiro, são as principais referências para a **[série de System Design](/categories#system-design)** que estamos desenvolvendo neste blog. 
+**Esse não é um artigo comum aqui do blog****. Na verdade, é o tipo de material que eu sou mais relutante em produzir:** uma recomendação. Não gosto de dar recomendações gerais porque isso presume muitas coisas sobre muitas pessoas ao mesmo tempo, ignorando peculiaridades, nuances e momentos distintos de cada indivíduo, que pode ler e interpretar algo de formas diferentes. Na verdade, esse receio molda a maneira como prefiro acompanhar a carreira das pessoas no dia a dia e conduzir mentorias: de forma pontual, direta e olhando para a pessoa que está à minha frente, sem presumir nenhum molde genérico do tipo *“faça assim que vai dar certo pra você”*. **A coisa menos genérica que existe é gente**... Gosto de olhar cada pessoa individualmente, caso a caso. Por isso, já desisti várias vezes de escrever um post assim, mas aqui está... Inclusive, grande parte do material que trago aqui (para não dizer que é inteiro) representa as principais referências para a **[série de System Design](/categories#system-design)** que estamos desenvolvendo neste blog.
+
 
 <br>
 
-# Porquê você não deveria seguir esse roteiro
+# Por que você não deveria seguir este roteiro
 
-Recentemente, fiz um exercício típico de fim de ano — com a mente vazia —, imaginando uma mentoria comigo mesmo há 6 ou 7 anos do jeito que eu mais gosto. Uma mesa de boteco sem crachás. Olhei para minha prateleira de livros, para o meu histórico no Kindle e montei um roteiro de Matheus para Fidelis.
+Recentemente, fiz um exercício típico de fim de ano — com a mente vazia —, imaginando uma mentoria comigo mesmo há 6 ou 7 anos, do jeito que mais gosto: uma mesa de boteco sem crachás. Olhei para minha prateleira de livros, para o meu histórico no Kindle e montei um roteiro de Matheus para Fidelis.
 
-E esse é o motivo pelo qual eu não quero que você siga esse roteiro ao pé da letra. Porém, fique à vontade para, daqui em diante, usar como recomendação o que lhe agradar aos olhos e adaptar à sua realidade, já que não terei a oportunidade de ajudá-lo(a) tão de perto.
+Esse é o motivo pelo qual não quero que você siga esse roteiro ao pé da letra. Porém, fique à vontade para, daqui em diante, usá-lo como recomendação do que lhe agradar aos olhos e adaptá-lo à sua realidade, já que não terei a oportunidade de ajudá-lo(a) tão de perto.
 
-> Muito importante ressaltar: Todos os links que direcionam para a Amazon são de afiliado. Mas você pode buscar o recurso onde achar melhor. 
+> **Muito importante ressaltar**: Todos os links que direcionam para a Amazon são links de afiliados, mas você pode buscar o recurso onde achar melhor.
 
-Autocrítica é muito legal. Não faço questão de ser um cristal perfeito em pessoa — mesmo sendo movido por um desejo constante de autoaperfeiçoamento —, acho que isso só é possível porque assumo que tenho muito a melhorar o tempo todo. Tenho muitas dificuldades, até mesmo em áreas nas quais me considero bom. Uma delas é justamente não saber ensinar conteúdo introdutório. Reconheço que é uma falha minha; muita gente faz isso extraordinariamente bem, e admiro essas pessoas por esse e outros motivos. É a minha kryptonita. Por isso, vou partir do pressuposto de que você não seja um iniciante.
+Autocrítica é muito legal. Não faço questão de ser um cristal perfeito em pessoa — mesmo sendo movido por um desejo constante de autoaperfeiçoamento —, e acho que isso só é possível porque assumo que tenho muito a melhorar o tempo todo. Tenho muitas dificuldades, até mesmo em áreas nas quais me considero bom. Uma delas é justamente não saber ensinar conteúdo introdutório. Reconheço que é uma falha minha; muita gente faz isso extraordinariamente bem, e admiro essas pessoas por esse e outros motivos. É a minha kryptonita. Por isso, vou partir do pressuposto de que você não seja um iniciante.
 
-Presumo, então, que você já tenha uma boa quilometragem em empresas e projetos de software. Que já tenha feito **algumas** coisas que deram certo, e **muitas que deram errado**.
+Presumo, então, que você já tenha uma boa quilometragem em empresas e projetos de software, e que já tenha feito **algumas** coisas que deram certo, e **muitas que deram errado**.
 
 Em termos de conteúdo técnico, parto do princípio de que você já esteja familiarizado(a) com:
 
-* Containers e Orquestração, mesmo que básica
-* Vivência em alguma cloud, qualquer que seja
-* Alguma linguagem de programação (em nível pleno ou sênior+)
-* A “literatura feijão com arroz” (Clean Code, Clean Architecture, Pragmatic Programmer, etc.)
-* Algumas boas horas de voo com software em produção
-* Algumas boas horas em War Rooms resolvendo problemas que outras pessoas — e você também, principalmente — causaram.
+- Containers e orquestração, mesmo que básica
+- Vivência em alguma cloud, qualquer que seja
+- Alguma linguagem de programação (em nível pleno ou sênior+)
+- A “literatura feijão com arroz” (Clean Code, Clean Architecture, Pragmatic Programmer, etc.)
+- Algumas boas horas de voo com software em produção
+- Algumas boas horas em War Rooms resolvendo problemas que outras pessoas — e você também, principalmente — causaram
 
-Caso falte algo disso na sua maleta de experiências, recomendo que não siga a partir daqui, e espero que esse texto, ou algo muito melhor, chegue novamente até você daqui um tempo - ou siga, se você quiser...
+Caso falte algo disso na sua bagagem de experiências, recomendo que não siga a partir daqui. Espero que este texto, ou algo ainda melhor, chegue novamente até você daqui a um tempo — ou siga, se preferir...
+
 
 <br>
 
 # O que esperar a partir daqui?
 
-Diante disso, o que recomendo que você (ou eu) leia? Segue uma lista — em ordem — de livros que considero importantes para entender mais sobre tópicos avançados de software e sistemas distribuídos em diferentes escalas. A sequência vai desde o *“não entendo nada sobre isso, preciso de um direcionamento básico”* até os conteúdos mais densos, com maior profundidade teórica e prática.
+Diante disso, o que recomendo que você (ou eu) leia? Segue uma lista — em ordem — de livros que considero importantes para entender mais sobre tópicos avançados de software e sistemas distribuídos em diferentes escalas. A sequência começa no *“não entendo nada sobre isso, preciso de um direcionamento básico”* e vai até conteúdos mais densos, com maior profundidade teórica e prática.
 
-Nada aqui é focado em alguma linguagem ou tecnologia específica, pois o objetivo é apresentar conceitos arquiteturais e teóricos que podem ser absorvidos após certa reflexão. Esses conteúdos devem ser mastigados por você e depois aplicados ao seu próprio mundo, ao lado das suas experiências pessoais.
+Nada aqui é focado em alguma linguagem ou tecnologia específica, pois o objetivo é apresentar conceitos arquiteturais e teóricos que podem ser absorvidos após certa reflexão. Esses conteúdos devem ser “mastigados” por você e depois aplicados ao seu próprio mundo, lado a lado com suas experiências pessoais.
 
 Alguns desses livros nem são técnicos e sequer mencionam tecnologia diretamente, mas fazem sentido dentro do todo. Talvez sejam até os que mais vão agregar à sua formação. Nem todos possuem tradução para o português até o momento, mas, como mencionei, não são recomendados para iniciantes. Ainda que este material possa servir como um mapa, quem vai dar os pulos é você.
 
-Todos os livros e artigos aqui foram lidos por mim. Por isso, há uma curadoria e um cuidado bem grande na seleção. Então, não está `faltando` nada — a menos que eu leia algo novo e decida inserir aqui. É pessoal.
+Todos os livros e artigos aqui foram lidos por mim. Por isso, há uma curadoria e um cuidado bem grande na seleção. Então, não está “faltando” nada — a menos que eu leia algo novo e decida inserir aqui. É pessoal.
+
 
 
 <br>
@@ -56,15 +59,16 @@ Todos os livros e artigos aqui foram lidos por mim. Por isso, há uma curadoria 
 
 ![Domain Driven Design](/assets/images/livros/ddd.png)
 
-Começando por um livro que na minha visão deveria estar na lista de "feijão com arroz" dos livros de engenharia. Um dos maiores desafios de se implementar microserviços feitos para reúso, é aprender a identificar domínios de forma efetiva e definir responsabilidades e escopos fechados, e posteriormente lidar com isso na forma de contratos de entrada e saída. 
+Começo por um livro que, na minha visão, deveria estar na lista de “feijão com arroz” da engenharia de software. Um dos maiores desafios ao implementar microserviços voltados ao reúso é aprender a identificar domínios de forma efetiva, definir responsabilidades, delimitar escopos e depois lidar com isso na forma de contratos de entrada e saída.
 
-O Domain Driven Design, por mais que seja de primeiro momento facilmente atrelado a codificação e construção de blocos, não é. Ele te ensina como funciona o particionamento de modelos, definição de escopos, responsabilidades e recursos compartilhados entre esses domínios. 
+O Domain-Driven Design, **por mais que, em um primeiro momento, seja facilmente associado à codificação e construção de blocos, não é bem assim**. Ele ensina como funciona o particionamento de modelos, a definição de escopos, responsabilidades e recursos compartilhados entre esses domínios.
 
-Pouquíssimo importa a quantidade de patterns e tecnologias que você conhece para a construção de sistemas distribuídos se a funcionalidade desses sistemas tenham responsabilidades compartilhadas, vazadas e fora de escopo sendo efetuadas entre os domínios. 
+Pouco importa quantos patterns e tecnologias você conheça para construir sistemas distribuídos se a funcionalidade desses sistemas tiver responsabilidades compartilhadas, fora de escopo ou “vazadas” entre os domínios.
 
-Por isso considero esse livro do Eric Evans como um dos pontos mais importantes para começar a plantar a semente de como construir sistemas em grande escala pensando em microserviços e com patterns mais avançados. A definição de limites claros é a "chave dos grandes mistérios" dos sistemas distribuídos, embora não se limite a esse tema, claro...
+Por isso, considero este **livro de Eric Evans** um dos pontos mais importantes para começar a plantar a semente de como construir sistemas em grande escala, pensando em microserviços e padrões mais avançados. A definição de limites claros é a *“chave dos grandes mistérios”* dos sistemas distribuídos — embora o conceito não se limite apenas a esse tema, é claro...
 
-https://amzn.to/4gQzC6o
+
+**[Link do Livro:  Domain-Driven Design: Atacando as Complexidades no Coração do Software - Amazon](https://amzn.to/4gQzC6o)**
 
 
 <br>
@@ -75,14 +79,15 @@ https://amzn.to/4gQzC6o
 
 ![Livros](/assets/images/livros/microservicos-prontos-para-producao.png)
 
-Estamos aqui com o primeiro livro literalmente sobre o tema. Esse livro dormiu no meu kindle por meses depois de comprado, pois adquiri ele depois de já algum tempo de vivência em ambientes distribuidos de larga escala. Voltei a atenção pra ele depois que precisei fazer uma lista de recomendação pra um mentorado, e queria garantir que ele estaria lendo algo que realmente fizesse sentido ao nível de conhecimento que ele estava. 
+Estamos aqui com o primeiro livro literalmente sobre o tema. Esse livro ficou no meu Kindle por meses após a compra, pois o adquiri depois de já ter certa vivência em ambientes distribuídos de larga escala. Voltei minha atenção para ele quando precisei montar uma lista de recomendações para um mentorado e queria garantir que ele leria algo que realmente fizesse sentido para o nível de conhecimento em que se encontrava.
 
-Casou que ele tem um excelente potencial introdutório para a prática. Vai abordar, mas não aprofundar, em tópicos como observabilidade, tracing, comunicação entre serviços, tolerância a falhas, escalabilidade teórica, como inferir esse tipo de prática no ciclo de desenvolvimento e em práticas DevOps e **como encontrar a Lei de Conway de fato e como isso reflete na padronização de arquitetura**. Você não vai ter um material prático aqui, mas vai te mostrar a porta de muitos tópicos que você usar pra se aprofundar depois. 
+Acontece que ele tem um excelente potencial introdutório para a prática. Ele aborda — mas não aprofunda — tópicos como observabilidade, tracing, comunicação entre serviços, tolerância a falhas, escalabilidade teórica, como inserir esse tipo de prática no ciclo de desenvolvimento e em práticas DevOps e **como descobrir a Lei de Conway na prática e entender como isso reflete na padronização de arquitetura**. Você não terá um material extremamente prático aqui, mas terá a porta de entrada para muitos assuntos que podem ser explorados em maior profundidade depois.
 
-Recomendo muito que ele seja o primeiro livro a respeito do tema, caso não tenha nenhum tipo de background sobre. Ele é feito pra isso. **O livro é de 2017 e a autora é Susan Rigetti**, que teve uma excelente passagem pela Uber e diversas outras empresas. Hoje ela tem um trabalho muito mais voltado a escrita do que técnico em si. Não sei se foi o famoso surto de tecnologia que te faz largar tudo e "criar patos" numa fazenda, mas se foi, tem meu respeito. 
+Recomendo bastante que seja o primeiro livro sobre o tema, caso você não tenha nenhum tipo de conhecimento prévio. Ele foi escrito exatamente para isso. **O livro é de 2017 e a autora é Susan Rigetti**, que teve uma excelente passagem pela Uber e diversas outras empresas. Hoje, ela trabalha muito mais com escrita do que com a parte técnica em si. Não sei se foi o famoso “surto de tecnologia” que faz a pessoa largar tudo e “criar patos” numa fazenda, mas, se foi, tem meu respeito.
 
 
-https://amzn.to/4fKdtG2
+
+**[Link do Livro:  Microsserviços Prontos Para a Produção - Amazon](https://amzn.to/4fKdtG2)**
 
 <br>
 
@@ -92,30 +97,19 @@ https://amzn.to/4fKdtG2
 
 ![Migrando Sistemas Monolíticos Para Microsserviços](/assets/images/livros/migracao-monolito-microservicos.png)
 
-Este livro, escrito por **Sam Newman em 2020**, é um guia prático e aprofundado sobre como evoluir uma aplicação monolítica — **geralmente robusta, complexa e estável em muitos aspectos** — para uma arquitetura de microsserviços. Aprender a decompor serviços e entender como subdividir domínios é talvez a tarefa mais importante na hora de realizar uma migração para microserviços em ambientes evolutivos. E executar a migração de forma responsável e gradual tende a ser um exercício complexo de muitas áreas corporativas. 
+Este livro, escrito por **Sam Newman em 2020**, é um guia prático e aprofundado sobre como evoluir uma aplicação monolítica — **geralmente robusta e complexa, e estável em muitos aspectos** — para uma arquitetura de microsserviços. Aprender a decompor serviços e entender como subdividir domínios é, talvez, a tarefa mais importante na hora de realizar uma migração para microsserviços em ambientes evolutivos. E executar essa migração de forma responsável e gradual costuma ser um exercício complexo que envolve várias áreas corporativas.
 
-**Saber decompor fronteiras é uma tarefa do livro Domain Driven Design**, mas esse livro vai reforçar esses conceitos e te aproximar da parte técnica da tarefa te dando **ferramental de migração e evolução**.
+**Saber decompor fronteiras é tema central em Domain-Driven Design**, mas este livro reforça esses conceitos e aproxima você da parte técnica dessa tarefa, **oferecendo ferramentas de migração e evolução**.
 
-Eu sinceramente não sentei para ler esse livro do tipo *"olha, vamos passar algumas horas aqui lendo esse cara nesse domingo maravilhoso"*, mas tratei ele como um livro de cabeceira, onde procurei os capítulos pontualmente conforme tinha dúvidas e precisei de um direcionamento a respeito. Depois de 2 anos acabei que li ele por completo. 
+Sinceramente, não cheguei a sentar e ler este livro pensando *“vou passar algumas horas aqui lendo esse cara neste domingo maravilhoso”*. Em vez disso, tratei-o como um livro de cabeceira, recorrendo a capítulos específicos sempre que surgiam dúvidas e eu precisava de um direcionamento. Depois de 2 anos, acabei lendo-o por completo.
 
-Nem todo mundo tem a oportunidade de passar por um processo de decomposição de algo maior para vários outros "algos" menores. Muitos já entram em ambientes monolíticos estáveis e outros já entram em ambientes já decompostos de alguma forma, e em muitos locais o pulo de monolitos para microserviços nem faz sentido e nem é tratado como uma forma evolutiva. Mas ter uma ordem lógica de raciocinio a respeito pode ajudar em ambos os cenários. 
+Nem todo mundo tem a oportunidade de participar de um processo de decomposição em que algo grande é dividido em várias partes menores. Muitos profissionais já chegam a ambientes monolíticos estáveis, enquanto outros entram em cenários já decompostos de alguma forma. Em muitos lugares, a transição de monólitos para microserviços nem faz sentido ou não é tratada como um caminho evolutivo. Mas ter uma ordem lógica de raciocínio a respeito pode ajudar em ambos os cenários.
 
-https://amzn.to/4gRUASz
+**[Link do Livro: Migrando Sistemas Monolíticos Para Microsserviços - Amazon ](https://amzn.to/4gRUASz)**
 
 
 <br>
 
----- 
-
-# Arquitetura de Software: as Partes Difíceis: Análises Modernas de Trade-off Para Arquiteturas Distribuídas
-
-![Arquitetura de Software](/assets/images/livros/arquitetura-partes-dificeis.png)
-
-Arquitetura de Software: As partes difíceis é um livro bem importante na minha carreira, pois aborda e detalha muitos tópicos que consideram uma transição real de um sistema monolitico para um distribuído, abordando uma série muito grande de disciplinas, desde modelagem de dados, modularização, cuidados com a codebase e seus times responsáveis até patterns como Saga, tipos de banco de dados, CAP, comunicação entre microserviços e cuidados com resiliência. 
-
-Esse **livro ganhou uma tradução em PT-BR agora em 2024**. Tenho as duas na minha estante, recomendo qualquer que seja. E**scrito por Neal Ford, Mark Richards, Pramod Sadalage e Zhamak Dehghani, ele aborda com um pouco mais de detalhes** o tipo de ferramental que você precisa ter para entender sistemas distribuídos complexos com excelência. Muito mais portas abertas pra você aqui. 
-
-https://amzn.to/3Dy3C8O
 
 ----
 
@@ -123,15 +117,29 @@ https://amzn.to/3Dy3C8O
 
 ![Engenharia de Confiabilidade](/assets/images/livros/engenharia-confiabilidade-google.png)
 
-O **Google criou o conceito de Site Reliability Engineering ao fundir tarefas tradicionais de operação e infraestrutura com a mentalidade de desenvolvimento de software**, e os passos iniciais abordados por produtos que necessitavam de engenharia de confiabilidade está compilada nesse primeiro livro sobre o tema. 
+O **Google criou o conceito de Site Reliability Engineering (SRE) ao fundir tarefas tradicionais de operação e infraestrutura com a mentalidade de desenvolvimento de software**, e os passos iniciais adotados por produtos que exigiam engenharia de confiabilidade estão compilados neste primeiro livro sobre o tema.
 
-Chuto que esse é **o livro mais importante da minha carreira**, em termos de ser um divisor de águas sobre como modernizar e focar meu conhecimento. **Lidar com sistemas complexos, é por definição, complexo...** E entender a fundo as disciplinas de **confiabilidade, resiliência, projetar fallbacks e acompanhar a saúde de serviços avaliando sempre oportunidades de melhoria e excelência operacional é a chave para construir e manter uma vida saudável em microserviços e sistemas distribuídos**. 
+Arrisco dizer que este é **o livro mais importante da minha carreira**, por representar um divisor de águas na forma de modernizar e direcionar meu conhecimento. **Lidar com sistemas complexos é, por definição, algo complexo...** E compreender a fundo as disciplinas de **confiabilidade, resiliência, projeto de fallbacks e acompanhamento da saúde de serviços, sempre avaliando oportunidades de melhoria e excelência operacional, é a chave para construir e manter uma vida saudável em microserviços e sistemas distribuídos**.
 
-Creio que o que o SRE significa hoje para o mercado, é a porta e também a chave de todos os temas complexos que um engenheiro precisa conhecer. É importante você conhecer o segundo passo após construir coisas, que é mantê-las no ar performando da melhor forma possível com resiliência e tolerância a falhas. 
+Acredito que o significado de SRE para o mercado hoje é tanto a porta de entrada quanto a chave para todos os temas complexos que um(a) engenheiro(a) precisa conhecer. É fundamental entender o segundo passo após construir algo: **mantê-lo no ar**, em alto desempenho, com resiliência e tolerância a falhas.
 
-**Difícil não é fazer. Difícil é manter no ar depois de feito.** Aqui você será apresentado para conceitos extremamente importantes como tolerância a falhas, resiliência como cultura organizacional, Service Levels, Error Budgets e etc. Praticamente o mundo corporativo de larga escala bebe dessa fonte. 
+**Difícil não é fazer. Difícil é manter no ar depois de feito.** Aqui, você será apresentado a conceitos extremamente importantes, como tolerância a falhas, resiliência como cultura organizacional, Service Levels, Error Budgets etc. Praticamente todo o mercado corporativo de larga escala bebe dessa fonte.
 
-https://amzn.to/4a0Z8DL
+**[Link do Livro:  Engenharia de Confiabilidade do Google - Amazon](https://amzn.to/4a0Z8DL)**
+
+
+----
+
+# Criando Microsserviços: Projetando sistemas com componentes menores e mais especializados
+
+![Criando Microsserviços](/assets/images/livros/criando-microservicos.png)
+
+O segundo livro de Sam Newman nesta lista, lançado em 2022, compartilha as experiências e práticas que o autor acumulou ao longo dos anos ajudando empresas a migrar de sistemas monolíticos para arquiteturas distribuídas, compostas por serviços menores e mais especializados. Como um sucessor natural do livro **Migrando Sistemas Monolíticos Para Microsserviços**, aqui encontramos pontos adicionais sobre segurança, zero-trust, modelos de monólitos, modelos de microserviços e, é claro, uma atualização da visão do autor em relação ao primeiro livro.
+
+*"Mas eu posso ler só este e pular o primeiro que você citou?"* — Poder, você pode. Mas, como comentei, não quero que você siga minha lista à risca. Eu, particularmente, não pularia.
+
+
+**[Link do Livro:  Criando Microsserviços - Amazon](https://amzn.to/3VZ62no)**
 
 ----
 
@@ -139,29 +147,29 @@ https://amzn.to/4a0Z8DL
 
 ![Antifrágil](/assets/images/livros/antifragil.png)
 
-**É praticamente impossível você ter saído pra beber comigo e não ter me ouvido falar sobre antifragilidade em tecnologia**. Eu faço essa associação sobre SRE, confiabilidade com antifrágilidade desde 2017, no mínimo. A primeira vez que li associei diretamente o tema pra coisas que eu fazia no dia a dia que visavam garantir performance, resiliência e excelência operacional, e fez mais sentido ainda quando entrei de cabeça no setor bancário em times de tecnologia de missão crítica. 
+**É praticamente impossível você ter saído para beber comigo e não ter me ouvido falar sobre antifragilidade em tecnologia**. Desde, no mínimo, 2017, faço essa associação entre SRE, confiabilidade e antifragilidade. Na primeira vez em que li o livro, associei o tema diretamente às atividades que eu exercia no dia a dia para garantir performance, resiliência e excelência operacional. A correlação se tornou ainda mais forte quando entrei de cabeça no setor bancário, em times de tecnologia de missão crítica.
 
-Sim, esse é um dos livros citados no começo do texto que não são de tecnologia e nem sequer citam qualquer coisa do tipo. **Escrito em 2012 por Nassim Nicholas Taleb**, um matemático analista de riscos do setor financeiro, ele tenta descrever "**o contrário de frágil",** algo que como uma taça de cristal, se quebra e não consegue mais retornar ao seu estágio original, propondo o inverso como sendo um paralelo a **Hidra de Lerna, que conforme sofre danos e sofre certas adversidades, ganha mais cabeças e fica mais forte** ao invés de algo que recebe danos constantes e não muda, como um diamante. 
+Sim, este é um dos livros que citei no começo do texto como não tendo relação direta com tecnologia — sequer menciona qualquer aspecto técnico. **Escrito em 2012 por Nassim Nicholas Taleb**, um matemático analista de riscos do setor financeiro, o autor tenta descrever **“o contrário de frágil”**. Algo que, tal qual uma taça de cristal, quando frágil, se quebra e não volta ao estado original. Já o **oposto** seria comparado à **Hidra de Lerna**, que, ao sofrer danos e adversidades, ganha mais cabeças e fica ainda mais forte — em contraste com algo que sofre danos constantes, como um diamante, mas não se transforma.
 
-Ele propõe também os **"fenômenos dos cisnes negros"**, inclusive tem um livro que fala só disso, caso tenha interesse. Que são fenômenos aleatórios e adversos que mudam completamente a realidade ao redor, e tem uma característica muito engraçada que é a sensação de serem facilmente previsíveis, depois que ninguém previu...
+Taleb também propõe os **“fenômenos dos cisnes negros”** (ele tem um livro inteiro dedicado só a isso, caso tenha interesse). São fenômenos aleatórios e adversos que mudam completamente a realidade ao redor, e têm a peculiaridade de parecerem “facilmente previsíveis” depois que ninguém os previu de fato...
 
-Esse tipo de literatura externa a tecnologia tem muito a agregar no dia a dia se interpretado com certos olhos. Esse livro mudou a forma como eu trabalho, e indico pra todo mundo que já tenha uma certa kilometragem rodada propondo essa associação que fiz. 
+Esse tipo de literatura, que não é voltada especificamente à tecnologia, agrega muito ao nosso dia a dia se interpretado com certos olhos. Esse livro mudou a forma como eu trabalho, e indico a todos que já tenham uma certa quilometragem percorrida, propondo a mesma associação que fiz.
 
-https://amzn.to/3W0LlYf
-
-
-----
-
-# Criando Microsserviços: Projetando sistemas com componentes menores e mais especializados 
-
-O segundo livro de Sam Newman dessa lista. Lançado em 2022, ele compartilha as experiências e práticas que aprendeu ao longo dos anos ajudando empresas a migrar de sistemas monolíticos para arquiteturas distribuídas, compostas por serviços menores e mais especializados. Um sucessor natural do livro **Migrando Sistemas Monolíticos Para Microsserviços**, aqui vamos ver alguns pontos adicionais de segurança, zero-trust, modelos de monolitos, modelos de microserviços, e é claro, uma modernização da visão do autor entre a publicação dos dois livros. 
-
-*"Mas eu posso ler só esse e pular o primeiro que você citou?"* - Poder, você pode. Como comentei, não quero que você siga minha lista. Eu não pularia.
+**[Link do Livro:  Antifrágil: Coisas que se beneficiam com o caos - Amazon](https://amzn.to/3W0LlYf)**
 
 
-![Criando Microsserviços](/assets/images/livros/criando-microservicos.png)
+---- 
 
-https://amzn.to/3VZ62no
+# Arquitetura de Software: As Partes Difíceis — Análises Modernas de Trade-off Para Arquiteturas Distribuídas
+
+![Arquitetura de Software](/assets/images/livros/arquitetura-partes-dificeis.png)
+
+**Arquitetura de Software: As Partes Difíceis** é um livro extremamente importante na minha carreira, pois aborda e detalha muitos aspectos que envolvem uma transição real de um sistema monolítico para um ambiente distribuído. Ele cobre uma ampla variedade de disciplinas, desde modelagem de dados, modularização e cuidados com a base de código e os times responsáveis, até padrões como Saga, diferentes tipos de banco de dados, o teorema CAP, comunicação entre microserviços e cuidados relacionados à resiliência.
+
+Este **livro ganhou uma tradução para o português do Brasil agora, em 2024**. Tenho as duas versões na minha estante e recomendo qualquer uma delas. **Escrito por Neal Ford, Mark Richards, Pramod Sadalage e Zhamak Dehghani**, ele aprofunda o tipo de ferramenta de que você precisa para entender sistemas distribuídos complexos com excelência. Aqui, você encontrará ainda mais “portas abertas” para explorar.
+
+**[Link do Livro:  Arquitetura de Software: As Partes Difíceis - Amazon](https://amzn.to/3Dy3C8O)**
+
 
 ----
 
@@ -169,13 +177,14 @@ https://amzn.to/3VZ62no
 
 ![Release-it](/assets/images/livros/release-it.png)
 
-Ganhei de presente esse livro do meu amigo Carlos Panato, uma das minhas maiores referências do mercado. E vou guardá-lo para sempre, pois aumentou muito meu repertório pra certos assuntos. 
+Ganhei este livro de presente do meu amigo Carlos Panato, uma das minhas maiores referências no mercado. E vou guardá-lo para sempre, pois expandiu muito meu repertório em determinados assuntos.
 
-Aqui, **não iremos abordar de fato apenas construção de software**, e sim muitos dos processos que permeiam esse assunto, **engordando um pouco mais o que entedemos como engenharia**, como Patterns de Resiliência, Post Mortens, Escalabilidade, Networking, Capacity e etc. 
+Aqui, **não falamos apenas sobre construção de software**, mas também de diversos processos que permeiam esse tema, **aumentando o que entendemos como engenharia**, incluindo padrões de resiliência, postmortems, escalabilidade, redes (networking), gestão de capacidade (capacity) etc.
 
-A versão que eu tenho é de 2012. Surgiram novas versões, eu sinceramente não as li. Mantenho minha cópia do coração com muita suficiência e felicidade. E**scrito por Michael T. Nygard**, recomendo demais, por mais que até o momento da escrita desse artigo não exista uma versão em português ainda, é talvez uma das obras mais importantes que você vai encontrar nessa lista. 
+A versão que possuo é de 2012. Novas edições foram lançadas, mas, sinceramente, não as li. Continuo com a minha cópia do coração, que ainda me satisfaz plenamente. **Escrito por Michael T. Nygard**, recomendo fortemente esse livro, apesar de não existir uma versão em português até o momento em que escrevo este artigo. É, talvez, uma das obras mais importantes que você encontrará nesta lista.
 
-https://amzn.to/3PjqlrO
+**[Link do Livro:  Release It!: Design and Deploy Production-Ready Software - Amazon](https://amzn.to/3PjqlrO)**
+
 
 ----
 
@@ -183,13 +192,14 @@ https://amzn.to/3PjqlrO
 
 ![Data Intensive](/assets/images/livros/data-intensive.png)
 
-Aqui já **passamos uma risca de livros complexos**. Com certeza meu atual livro que eu mais consulto no dia a dia. Li ele pela primeira vez em 2022, depois 2023 e revisitei diversos capítulos dele em 2024. Desde que encontrei minha jornada atual, no meu emprego atual,aprender a lidar com aplicações com uso intensivo de dados, ou aplicações realmente alto throughput foi o desafio mais legal que já tive até o momento. E posso dizer que a jornada ainda está em andamento, estou naquela constante sensação gostosa de aprender uma coisa e de quebra descobrir mais umas 4 que eu não sei na sequencia. 
+Aqui, **entramos definitivamente em uma lista de livros mais complexos**. Este é, sem dúvidas, o livro que mais consulto no meu dia a dia atualmente. Li esse cara pela primeira vez em 2022, depois em 2023, e revisitei vários de seus capítulos em 2024. Desde que encontrei meu caminho na jornada atual — no meu emprego atual —, aprender a lidar com aplicações de uso intensivo de dados ou que realmente exigem alto throughput tem sido o desafio mais instigante que já vivenciei. E posso dizer que essa jornada ainda está em andamento: estou naquela sensação constante e empolgante de aprender algo novo e, de quebra, descobrir mais umas quatro coisas que ainda desconheço na sequência.
 
-**Tanto esse livro quanto o blog do Martin Kleppmann são incríveis e super recomendados pra qualquer um que queira mergulhar em assuntos complexos** de arquitetura e engenharia de software. Aqui vamos ver design de databases, replicação, particionamento, SSTables, LSM-Trees, B-Trees, Compressão, formatos e protocolos de comunicação. 
+**Tanto este livro quanto o blog do Martin Kleppmann são incríveis e super recomendados para qualquer pessoa que queira se aprofundar em assuntos complexos** de arquitetura e engenharia de software. Aqui, abordamos design de databases, replicação, particionamento, SSTables, LSM Trees, B-Trees, compressão, além de formatos e protocolos de comunicação.
 
-Um dos meus livros preferidos dessa lista. E está no final por um motivo. Não dê o passo maior que a perna aqui. 
+É um dos meus livros preferidos desta lista. E ele está no final por um motivo: não dê um passo maior que a perna.
 
-https://amzn.to/3Phc7Ic
+**[Link do Livro: Designing Data-Intensive Applications - Amazon](https://amzn.to/3Phc7Ic)**
+
 
 ----
 
@@ -197,15 +207,17 @@ https://amzn.to/3Phc7Ic
 
 ![Event Driven](/assets/images/livros/event-driven.png)
 
-Segundo passo relacionado a temas mais complexos. 
+Segundo passo relacionado a temas mais complexos.
 
-Na jornada até aqui, **você já chegou além dos modelos sincronos**, por conta da literatura proposta ou não, você já tem ferramental o suficiente para avaliar, sugerir e implementar coisas envolvendo mensageria e eventos. O Building Event-Driven Microservices, **escrito por Adam Bellemare** é um guia prático e estratégico sobre como projetar e implementar sistemas baseados em eventos de uma forma mais estruturada e com várias dicas e experiências valisas demais, que **são muito dificeis de se encontrar longe de um bate papo informal com que já passou por algo do tipo.** 
+Na jornada até aqui, **você já chegou além dos modelos síncronos**. Seja por conta da literatura proposta ou não, você já tem **ferramental suficiente** para avaliar, sugerir e implementar soluções envolvendo mensageria e eventos. O *Building Event-Driven Microservices*, **escrito por Adam Bellemare**, é um guia prático e estratégico sobre como projetar e implementar sistemas baseados em eventos de forma mais estruturada, com várias dicas e experiências **valiosas demais** — algo **muito difícil** de se encontrar fora de um bate-papo informal com quem já passou por algo parecido.
 
-Arquiteturas Event-Driven são as que viabilizam grande parte das propostas e estratégias de larga escala para sistemas distribuídos. Adicionar esse tipo de compreensão e experiência no seu ferramental vai agregar demais em projetar arquiteturas corporativas complexas, levando em consideração tudo que pode dar certo, e principalmente errado em ambientes orientados a eventos. 
+Arquiteturas event-driven viabilizam grande parte das propostas e estratégias de larga escala para sistemas distribuídos. Adicionar esse tipo de compreensão e experiência ao seu “arsenal” agregará muito no momento de projetar arquiteturas corporativas complexas, levando em conta tudo que pode dar certo e, principalmente, o que pode dar errado em ambientes orientados a eventos.
 
-Aqui teremos dicas de como lidar com práticas DevOps, Pipelines de Dados e fluxos de negócio orientados a eventos e como realizar tratativas de erros e compensações. **Uma leitura bem madura e que precisa ser revisitada algumas vezes**. 
+Aqui, você encontrará dicas de como lidar com práticas DevOps, pipelines de dados e fluxos de negócio orientados a eventos, além de como realizar tratativas de erros e compensações. **É uma leitura bem madura, que provavelmente precisará ser revisitada algumas vezes.**
 
-https://amzn.to/41TYQN2
+**[Link do Livro:  Building Event-Driven Microservices - Amazon](https://amzn.to/41TYQN2)**
+
+
 
 ----
 
@@ -213,13 +225,15 @@ https://amzn.to/41TYQN2
 
 ![The Site Reliability Workbook](/assets/images/livros/sre-workbook.png)
 
-Dando o próximp passo em relação a literatura mais complexa, estamos aqui dando um passo em relação ao que foi visto sobre Engenharia de Confiabilidade de sistemas complexos. 
+Dando o próximo passo em relação à literatura mais complexa, aqui avançamos no que foi visto sobre Engenharia de Confiabilidade de sistemas complexos.
 
-O livro Site Reliability Workbook foi escrito e organizado pelos mesmos editores e autores do "Engenharia de Confiabilidade do Google" — entre eles **Betsy Beyer, Niall Richard Murphy, David K. Rensin, Kent Kawahara e Stephen Thorne** —, este livro foca em orientações mais práticas e exemplos mais próximos do real de como aplicar os princípios de SRE no dia a dia dos times de engenharia. Se o primeiro livro introduz a filosofia e os pilares do Site Reliability Engineering, o Workbook assume uma postura mais “mão na massa” da proposta, dando uma incrementada mais prática na jornada.
+O *Site Reliability Workbook* foi escrito e organizado pelos mesmos editores e autores de **Engenharia de Confiabilidade do Google** — entre eles **Betsy Beyer, Niall Richard Murphy, David K. Rensin, Kent Kawahara e Stephen Thorne**. Este livro foca em orientações mais práticas e exemplos mais próximos da realidade de como aplicar os princípios de SRE no dia a dia das equipes de engenharia. Se o primeiro livro introduz a filosofia e os pilares do *Site Reliability Engineering*, o *Workbook* adota uma postura mais “mão na massa”, oferecendo uma abordagem ainda mais prática na jornada.
 
-*"Posso ler só esse e pular o Engenharia de Confiabilidade do Google"*- Dessa vez é não. Definitivamente, não... 
+*"Posso ler só este e pular o Engenharia de Confiabilidade do Google?"* — Desta vez, não. Definitivamente, não...
 
-https://amzn.to/400lDUK
+**[Link do Livro: The Site Reliability Workbook - Amazon](https://amzn.to/400lDUK)**
+
+
 
 
 ----
@@ -228,27 +242,30 @@ https://amzn.to/400lDUK
 
 ![Building Secure and Reliable Systems](/assets/images/livros/secure-reliable-systems.png)
 
-O livro que mais baseou a pegada da série de System Design, e futuro livro meu sobre o tema. Building Secure and Reliable Systems é o livro mais importante dessa lista e precisa ser respeitado em ordem, pois considero ele a ponta final, onde amarreremos tudo que vimos até agora. Ele não é o lixo MAIS COMPLEXO da lista, mas a visão que ele vai te passar precisa de uma certa base funcional para ser compreendida em sua totalidade. 
+Este **livro serviu como a maior base para a série de System Design** e também embasa o futuro livro que planejo escrever sobre o tema. **Building Secure and Reliable Systems** é o mais importante desta lista e **precisa ser respeitado na ordem**, pois o considero o ponto de chegada, onde amarraremos tudo o que vimos até agora. **Ele não é o mais complexo**, mas a visão que apresenta exige uma certa base funcional para ser plenamente compreendida.
 
-Geralmente, segurança, devops e confiabilidade são tratados como áreas separadas na maioria das organizações grandes e como "a mesma coisa" em empresas de pequeno e médio porte. Neste livro, os autores mostram como essas visões se complementam ao longo de todo o processo de desenvolvimento e operação, reforçando que não há sistema realmente confiável se não for também seguro, e vice-versa, e como lidar com isso da melhor forma possível de forma incremental e com aprendizado contínuo. 
+Em geral, segurança, DevOps e confiabilidade costumam ser tratadas como áreas distintas em grandes organizações — ou como “tudo igual” em empresas de pequeno e médio porte. Neste livro, **os autores mostram como essas perspectivas se complementam ao longo de todo o processo de desenvolvimento e operação**, reforçando que não existe sistema realmente confiável se não for também seguro, e vice-versa — e explicando como lidar com isso de forma incremental e com aprendizado contínuo.
 
-Ele também foi publicado por profissionais do Google, como  Heather Adkins, Betsy Beyer, Paul Blankinship, Piotr Lewandowski, Ana Oprea e Adam Stubblefield e dos três livros, é o mais maduro e sênior, voltado tanto para operações quanto para cargos estratégicos Staff+.
+Também foi publicado por profissionais do Google, como **Heather Adkins, Betsy Beyer, Paul Blankinship, Piotr Lewandowski, Ana Oprea e Adam Stubblefield**. Dos três livros que discutem temas similares, este é o mais maduro e sênior, voltado tanto para operações **quanto para cargos estratégicos Staff+**.
 
-https://amzn.to/3BSu78D
+**[Link do Livro: Building Secure and Reliable Systems - Amazon](https://amzn.to/3BSu78D)**
+
+
 
 ----
 
-# Ludwig Von Bertalanffy - Teoria Geral dos Sistemas
+# Ludwig Von Bertalanffy – Teoria Geral dos Sistemas
 
 ![Teoria Geral dos Sistemas](/assets/images/livros/teoria-geral-dos-sistemas.png)
 
-Ao observar organismos vivos, Ludwig Von Bertalanffy percebeu que o todo não pode ser compreendido apenas pela soma das partes. Fatores como feedback e adaptação mostram que a organização global de um sistema influencia diretamente seus componentes. O nome disso em nomes populares hoje em dia é **visão holistica**. 
+Ao observar organismos vivos, Ludwig Von Bertalanffy percebeu que o todo não pode ser compreendido apenas pela soma das partes. Fatores como feedback e adaptação mostram que a organização global de um sistema influencia diretamente seus componentes. É o que, hoje em dia, chamamos popularmente de **visão holística**.
 
-Tive contato com esse RARO livro durante meu MBA de Data Science e Analytics, na disciplina de Pesquisa Operacional. Ele forneceu uma **forma complexa e completa de avaliar qualquer sistema, seja ele tecnologico ou o sistema de trânsito de grandes centros. Tudo no mundo é um sistema**. 
+Tive contato com este **raro** livro durante meu MBA de Data Science e Analytics, na disciplina de Pesquisa Operacional. Ele forneceu uma **forma complexa e completa de avaliar qualquer sistema**, seja ele tecnológico ou o sistema de trânsito de grandes centros. Afinal, **tudo no mundo é um sistema**.
 
-Esse livro é o mais raro, e MUITO dificil de se encontrar. Encontrei minha edição num Sebo Digital, a edição é mais velha que eu. A Segunda Edição do livro de 1975. 
+Este livro é realmente raro e **muito difícil** de encontrar. Achei minha edição em um sebo digital; ela é mais velha do que eu — a segunda edição, de 1975.
+
+**Recomendo-o como uma maneira de entender tanto sistemas complexos quanto a própria organização em que você está inserido, sem mencionar uma única palavra sobre tecnologia.**
 
 
-**Recomendo como forma de entender tanto sistemas complexos, quanto a própria organização onde você está inserido, sem falar um "a" sobre tecnologia.**
+**[Link do Livro: Ludwig Von Bertalanffy - CIA do Saber](https://sebociadosaber.com.br/produtos/ludwig-von-bertalanffy-teoria-geral-dos-sistemas/?variant=1067981702&pf=mc&srsltid=AfmBOopaxgIf_X8Ai6zIViQ8tbrb5MxPBkbao2geuh5pE3Lj1xAwiH-L0n8)**
 
-https://sebociadosaber.com.br/produtos/ludwig-von-bertalanffy-teoria-geral-dos-sistemas/?variant=1067981702&pf=mc&srsltid=AfmBOopaxgIf_X8Ai6zIViQ8tbrb5MxPBkbao2geuh5pE3Lj1xAwiH-L0n8
