@@ -15,13 +15,13 @@ title: Guia de Literatura de Sistemas Distribuídos (e o porquê eu não quero q
 
 # Por que você não deveria seguir este roteiro
 
-Recentemente, fiz um exercício típico de fim de ano — com a mente vazia —, imaginando uma mentoria comigo mesmo há 6 ou 7 anos, do jeito que mais gosto: uma mesa de boteco sem crachás. Olhei para minha prateleira de livros, para o meu histórico no Kindle e montei um roteiro de Matheus para Fidelis.
+Recentemente, fiz um exercício típico de fim de ano — *com a mente vazia* —, imaginando uma mentoria comigo mesmo há 6 ou 7 anos, do jeito que mais gosto: **uma mesa de boteco sem crachás**. Olhei para minha prateleira de livros, para o meu histórico no Kindle e montei um roteiro de Matheus para Fidelis.
 
-Esse é o motivo pelo qual não quero que você siga esse roteiro ao pé da letra. Porém, fique à vontade para, daqui em diante, usá-lo como recomendação do que lhe agradar aos olhos e adaptá-lo à sua realidade, já que não terei a oportunidade de ajudá-lo(a) tão de perto.
+**Esse é o motivo pelo qual não quero que você siga esse roteiro ao pé da letra**. Porém, fique à vontade para, daqui em diante, usá-lo como recomendação do que lhe agradar aos olhos e adaptá-lo à sua realidade, já que não terei a oportunidade de ajudá-lo(a) tão de perto.
 
 > **Muito importante ressaltar**: Todos os links que direcionam para a Amazon são links de afiliados, mas você pode buscar o recurso onde achar melhor.
 
-Autocrítica é muito legal. Não faço questão de ser um cristal perfeito em pessoa — mesmo sendo movido por um desejo constante de autoaperfeiçoamento —, e acho que isso só é possível porque assumo que tenho muito a melhorar o tempo todo. Tenho muitas dificuldades, até mesmo em áreas nas quais me considero bom. Uma delas é justamente não saber ensinar conteúdo introdutório. Reconheço que é uma falha minha; muita gente faz isso extraordinariamente bem, e admiro essas pessoas por esse e outros motivos. É a minha kryptonita. Por isso, vou partir do pressuposto de que você não seja um iniciante.
+Autocrítica é muito legal. Não faço questão de ser um cristal perfeito em pessoa — mesmo sendo movido por um senso constante de autoaperfeiçoamento meio estranho —, e acho que **isso só é possível porque assumo que tenho muito a melhorar o tempo todo**. Tenho muitas dificuldades, até mesmo em áreas nas quais me considero bom. Uma delas é justamente **não saber ensinar conteúdo introdutório**. Reconheço que é uma falha minha; muita gente faz isso extraordinariamente bem, e admiro essas pessoas por esse e outros motivos. É a minha kryptonita. Por isso, vou partir do pressuposto de que você não seja um iniciante.
 
 Presumo, então, que você já tenha uma boa quilometragem em empresas e projetos de software, e que já tenha feito **algumas** coisas que deram certo, e **muitas que deram errado**.
 
@@ -55,7 +55,7 @@ Todos os livros e artigos aqui foram lidos por mim. Por isso, há uma curadoria 
 
 ----
 
-# Domain-Driven Design: Atacando as Complexidades no Coração do Software
+# 1. Domain-Driven Design: Atacando as Complexidades no Coração do Software
 
 ![Domain Driven Design](/assets/images/livros/ddd.png)
 
@@ -75,7 +75,7 @@ Por isso, considero este **livro de Eric Evans** um dos pontos mais importantes 
 
 ----
 
-# Microsserviços Prontos Para a Produção: Construindo Sistemas Padronizados em uma Organização de Engenharia de Software
+# 2. Microsserviços Prontos Para a Produção: Construindo Sistemas Padronizados em uma Organização de Engenharia de Software
 
 ![Livros](/assets/images/livros/microservicos-prontos-para-producao.png)
 
@@ -93,7 +93,7 @@ Recomendo bastante que seja o primeiro livro sobre o tema, caso você não tenha
 
 ----
 
-# Migrando Sistemas Monolíticos Para Microsserviços: Padrões Evolutivos Para Transformar seu Sistema Monolítico 
+# 3. Migrando Sistemas Monolíticos Para Microsserviços: Padrões Evolutivos Para Transformar seu Sistema Monolítico 
 
 ![Migrando Sistemas Monolíticos Para Microsserviços](/assets/images/livros/migracao-monolito-microservicos.png)
 
@@ -113,7 +113,7 @@ Nem todo mundo tem a oportunidade de participar de um processo de decomposição
 
 ----
 
-# Engenharia de Confiabilidade do Google: Como o Google Administra Seus Sistemas de Produção
+# 4. Engenharia de Confiabilidade do Google: Como o Google Administra Seus Sistemas de Produção
 
 ![Engenharia de Confiabilidade](/assets/images/livros/engenharia-confiabilidade-google.png)
 
@@ -130,7 +130,7 @@ Acredito que o significado de SRE para o mercado hoje é tanto a porta de entrad
 
 ----
 
-# Criando Microsserviços: Projetando sistemas com componentes menores e mais especializados
+# 5. Criando Microsserviços: Projetando sistemas com componentes menores e mais especializados
 
 ![Criando Microsserviços](/assets/images/livros/criando-microservicos.png)
 
@@ -143,7 +143,7 @@ O segundo livro de Sam Newman nesta lista, lançado em 2022, compartilha as expe
 
 ----
 
-# Antifrágil: Coisas que se beneficiam com o caos
+# 6. Antifrágil: Coisas que se beneficiam com o caos
 
 ![Antifrágil](/assets/images/livros/antifragil.png)
 
@@ -160,7 +160,7 @@ Esse tipo de literatura, que não é voltada especificamente à tecnologia, agre
 
 ---- 
 
-# Arquitetura de Software: As Partes Difíceis — Análises Modernas de Trade-off Para Arquiteturas Distribuídas
+# 7. Arquitetura de Software: As Partes Difíceis — Análises Modernas de Trade-off Para Arquiteturas Distribuídas
 
 ![Arquitetura de Software](/assets/images/livros/arquitetura-partes-dificeis.png)
 
@@ -173,7 +173,7 @@ Este **livro ganhou uma tradução para o português do Brasil agora, em 2024**.
 
 ----
 
-# Release It!: Design and Deploy Production-Ready Software
+# 8. Release It!: Design and Deploy Production-Ready Software
 
 ![Release-it](/assets/images/livros/release-it.png)
 
@@ -188,7 +188,7 @@ A versão que possuo é de 2012. Novas edições foram lançadas, mas, sincerame
 
 ----
 
-# Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems
+# 9. Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems
 
 ![Data Intensive](/assets/images/livros/data-intensive.png)
 
@@ -203,7 +203,7 @@ Aqui, **entramos definitivamente em uma lista de livros mais complexos**. Este �
 
 ----
 
-# Building Event-Driven Microservices: Leveraging Organizational Data at Scale
+# 10. Building Event-Driven Microservices: Leveraging Organizational Data at Scale
 
 ![Event Driven](/assets/images/livros/event-driven.png)
 
@@ -221,7 +221,7 @@ Aqui, você encontrará dicas de como lidar com práticas DevOps, pipelines de d
 
 ----
 
-# The Site Reliability Workbook: Practical Ways to Implement SRE
+# 11. The Site Reliability Workbook: Practical Ways to Implement SRE
 
 ![The Site Reliability Workbook](/assets/images/livros/sre-workbook.png)
 
@@ -238,7 +238,7 @@ O *Site Reliability Workbook* foi escrito e organizado pelos mesmos editores e a
 
 ----
 
-# Building Secure and Reliable Systems: Best Practices for Designing, Implementing, and Maintaining Systems
+# 12. Building Secure and Reliable Systems: Best Practices for Designing, Implementing, and Maintaining Systems
 
 ![Building Secure and Reliable Systems](/assets/images/livros/secure-reliable-systems.png)
 
@@ -254,7 +254,7 @@ Também foi publicado por profissionais do Google, como **Heather Adkins, Betsy 
 
 ----
 
-# Ludwig Von Bertalanffy – Teoria Geral dos Sistemas
+# 13. Ludwig Von Bertalanffy – Teoria Geral dos Sistemas (Bônus)
 
 ![Teoria Geral dos Sistemas](/assets/images/livros/teoria-geral-dos-sistemas.png)
 
@@ -269,3 +269,6 @@ Este livro é realmente raro e **muito difícil** de encontrar. Achei minha edi�
 
 **[Link do Livro: Ludwig Von Bertalanffy - CIA do Saber](https://sebociadosaber.com.br/produtos/ludwig-von-bertalanffy-teoria-geral-dos-sistemas/?variant=1067981702&pf=mc&srsltid=AfmBOopaxgIf_X8Ai6zIViQ8tbrb5MxPBkbao2geuh5pE3Lj1xAwiH-L0n8)**
 
+---- 
+
+Por enquanto, é isso! 
