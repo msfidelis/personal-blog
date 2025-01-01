@@ -20,7 +20,7 @@ authors:
     email: matheus@nanoshots.com.br
     web: https://msfidelis.github.io/
     twitter: https://bsky.app/profile/fidelissauro.bsky.social
-    description: "Staff Engineer, Lifelong Learner, Site Reliability Engineer, Cloud and Containers Wizard, Software Alchemist and Home Bartender"
+    description: "Principal Engineer, Lifelong Learner, Site Reliability Engineer, Cloud and Containers Wizard, Software Alchemist and Home Bartender"
 
 # Plugins
 plugins:
@@ -31,6 +31,7 @@ plugins:
   - jekyll-archives
   - jekyll-gist
   - jekyll-embed-urls
+  - jekyll-linkpreview
   # - jekyll-compress-images
 
 # compress_images:
