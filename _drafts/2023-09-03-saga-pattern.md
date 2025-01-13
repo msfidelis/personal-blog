@@ -260,7 +260,11 @@ No caso de uma **reinicialização de saga**, é essencial que todos os microser
 Quando o processo de coordenação (seja orquestrado ou coreografado) recebe estímulos para iniciar uma nova saga com **identificadores únicos** ou **chaves de idempotência** já existentes para outra saga, ele pode **reiniciar** a saga por completo ou **verificar** quais etapas ficaram incompletas, de modo a **reinicializa-las a partir do ponto em que não houve resposta**, garantindo assim a consistência das transações.
 
 
+#### Obrigado aos Revisores
 
+* [Tarsila, amor da minha vida](https://twitter.com/tarsilabianca_c/)
+
+- [Luiz Aoqui – (@ luiz_aoqui)](https://twitter.com/luiz_aoqui)
 
 
 ### Referências 
