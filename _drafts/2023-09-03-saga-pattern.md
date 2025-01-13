@@ -143,7 +143,7 @@ E dentro de um modelo saga, entendemos que o **estado atual corresponde a saga e
 
 Imagine que a saga seja iniciada, criando um **novo registro na máquina de estado que representa o início de uma saga de fechamento de pedido**. Esse estado inicial poderia ser considerado `NOVO`. Dentro do mapeamento da saga, entendemos que, quando o estado é `NOVO`, **é necessário garantir que o domínio de pedidos tenha gravado todos os dados referentes à solicitação** para fins analíticos.
 
-![Transicoes](/assets/images/system-design/saga-transicao.png)
+![Transicoes](/assets/images/system-design/Scale-Saga_ transicoes.drawio.png)
 
 > Exemplo do Fluxo de Transição e Ações da Saga
 
