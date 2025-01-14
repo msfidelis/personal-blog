@@ -262,10 +262,23 @@ Quando o processo de coordenação (seja orquestrado ou coreografado) recebe est
 
 #### Obrigado aos Revisores
 
-* [Tarsila, amor da minha vida](https://twitter.com/tarsilabianca_c/)
+- [Tarsila, amor da minha vida](https://twitter.com/tarsilabianca_c/)
 
-- [Luiz Aoqui – (@ luiz_aoqui)](https://twitter.com/luiz_aoqui)
+- [Luiz Aoqui – (@ luiz_aoqui)](https://bsky.app/profile/luiz.aoqui.dev)
 
+- [Bruno Padilha](https://bsky.app/profile/bruno.padz.dev)
+
+- [Gerson Carneiro]()
+
+- [Leonardo Lourenço]()
+
+- [Vinicius Santana da Silva](https://bsky.app/profile/bl4cktux89.bsky.social)
+
+- [Gabriel Souza]()
+
+- [Bernardo Lopes](https://bsky.app/profile/bernardolopes.com)
+
+- [Leandro Proença](https://bsky.app/profile/leandronsp.com)
 
 ### Referências 
 
