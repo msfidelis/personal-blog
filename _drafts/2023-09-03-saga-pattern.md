@@ -18,11 +18,11 @@ O ano de publicação desse texto **foi marcado por interessantes experiências 
 
 Uma transação Saga **é um padrão arquitetural que visa garantir a consistência dos dados em transações distribuídas**, especialmente em cenários onde essas **transações dependem de execução contínua em múltiplos microserviços** ou **possuam uma longa duração até serem completamente finalizadas**, e onde **qualquer execução parcial é indesejável**. 
 
-O termo Saga vem do sentido literal de Saga, que o conceito **remete a uma aventura, uma história, uma jornada do herói**, jornada na qual a mesma remonta vários capítulos onde o "herói" precisa cumprir objetivos, enfrentar desafios, superar seus limites e concluir um objetivo predestinado. Dentro de uma implementação do Saga Pattern, uma Saga **possui uma característica sequencial, na qual a transação depende de diversos microserviços para ser concluída**, com etapas que devem ser executadas uma após a outra de forma ordenada e distribuída. 
+O termo Saga vem do sentido literal de Saga, que o conceito **remete a uma aventura, uma história, uma jornada do herói**, jornada na qual a mesma remonta vários capítulos onde o "herói" precisa cumprir objetivos, enfrentar desafios, superar certos limites e concluir um objetivo predestinado. Dentro de uma implementação do Saga Pattern, uma Saga **possui uma característica sequencial, na qual a transação depende de diversos microserviços para ser concluída**, com etapas que devem ser executadas uma após a outra de forma ordenada e distribuída. 
 
 A implementação dessas etapas pode variar entre abordagens **Coreografadas e Orquestradas**, as quais serão exploradas mais adiante. Independentemente da abordagem escolhida, **o objetivo principal é gerenciar transações que envolvem dados em diferentes microserviços e bancos de dados**, ou que são de longa duração, e **garantir que todos os passos sejam executados sem perder a consistência e controle**, e em caso de falha de algum dos componentes por erros sistemicos ou por entradas de dados inválidas ter a capacidade de notificar **todos os participantes da saga a compensarem a transação executando um rollback de todos os passos já executados**. 
 
-Lembrando que a principal proposta do modelo Saga é garantir confiabilidade e consistência, não parformance. Inclusive, suas maiores nuâncias pagam o preço de performance para atingir esses objetivos. 
+Lembrando que a principal proposta do modelo Saga é garantir confiabilidade e consistência, não performance. Inclusive, suas maiores nuâncias pagam o preço de performance para atingir esses objetivos. 
 
 ## A Origem Histórica do Saga Pattern
 
