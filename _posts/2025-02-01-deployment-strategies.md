@@ -7,23 +7,75 @@ categories: [ system-design, engineering, cloud ]
 title: System Design -  Deployment
 ---
 
+O objetivo desse texto é abordar conceitualmente os principais termos que estão ao redor das técnicas de deployment e entrega de software. O objetivo não é apenas dizer "o que é" cada um dos termos e os modelos de deployment que eu considerei mais importantes, mas explicar o "por que" deles existirem e quais os reais benefícios da adoção dos mesmos. 
+
+<br>
+
 # Definindo um Deployment
 
 O termo "deployment" vem de uma origem militar, onde os mesmos usavam para descrever o ato de disponibilizar tropas, recursos e equipamentos em locais estratégicos antes de iniciar as devidas operações. Dentro da engenharia de software o Deployment, ou implantação é um termo usado para designar o ato de disponibilizar uma versão de uma aplicação em um ambiente predefinido para ser testado, avaliado ou disponibilizado para os clientes utilizarem.
 
-O deployment pode ser realizado com em diversos contextos e recursos, sendo para distribuir itens de infraestrutura, configurações e versões de aplicações novas ou já existentes. 
+O deployment pode ser realizado com em diversos contextos e recursos, sendo para distribuir itens de infraestrutura, configurações e versões de aplicações novas ou já existentes. O deployment, quando realizado de forma moderna, é estruturado em dois momentos que podem coexistir por meio de pontes, que são o CI, Continuous Integration, ou Integração Contínua e o CD, Continuous Deployment, ou Deploy Contínuo. Vamos abordar cada um deles antes de prosseguir para os modos de deployment de fato. 
+
+<br>
 
 ## Continuous Integration (Integração Contínua)
 
+A Integração Contínua, ou Continuous Integration é a forma como empresas que trabalham seus projetos de software organizam e facilitam o trabalho em conjunto de seus desenvolvedores e demais profissionais de tecnologia. A ideia do CI, é prover uma série de processos e ferramentais que garantam que novas modificações na base de código sejam integradas de forma responsável e com a devida qualidade combinada. 
+
+Cada vez que uma interação na base de código é feita,  essa modificação deve ser automaticamente testada e verificada em diversas dimensões, e caso esteja de fato funcionando e passe por todos os padrões combinados, consiga ser finalmente integrada a base oficial de código, garantindo que o que foi alterado não afeta fluxos e comportamentos que já existiam de forma prévia. Caso essa modificação quebre algum teste ou processo, o desenvolvedor responsáel precisa ser notificado de qual comportamento foi alterado sem intenção e de que forma isso ocorreu. Para isso existem alguns processos mais conhecidos que podemos categorizar para definirmos conceitualmente. 
+
+
+### Testes de Unidade
+
+Os testes de unidade, ou também popularmente conhecidos como Testes Unitários, são responsáveis por garantir comportamento de pequenas partes do código como funções, métodos e interfaces, inicialmente especificando suas entradas e testando suas saídas para garantir que tudo está sendo executado como o planejado. o executar esses testes a cada mudança, é possível identificar e corrigir problemas de forma rápida, evitando que erros simples se propaguem para áreas maiores do sistema.  
+
+
+### Testes de Integração
+
+Ao contrário dos testes unitários que buscam testar componentes de forma mais isolada possível, os testes integrados verificam como o sistema se comporta analisando componentes que se interagem entre si. Por exemplo, testar o request para um endpoint e testar seu retorno. Testar um client para algum serviço externo, realizando ou não o mock do mesmo e etc. Esse tipo de prática é um pouco mais custosa e demorada que os testes de unidade, mas tende a dar respostas bem importantes a respeito da mudança realizada, garantindo que nada parou de funcionar ou teve ser comportamento alterado de forma arbitrária. 
+
+### Linters e Checagem de Sintaxe
+
+Os linters são ferramentas que analisam o código gerado comparando o mesmo com uma série de padrões pré-definidos. Ao executar esse tipo de teste, garantimos que a nova modificação está aderente aos padrões de qualidade e estilo de codificação acordado na empresa, time ou contexto específico. Esse tipo de estratégia visa uma maior qualidade no ciclo de vida do produto, garantindo que todos os responsáveis pela alteração do código estão seguindo os mesmos padrões, mantendo o mesmo padronizado e legível.
+
+### Análise Estática de Código
+
+Diferente de testes que de alguma forma executam o código, o ferramental de análise estática examina a base sem executá-la, com o intuito de encontrar vulnerabilidade de código, problemas de performance, complexidade desnecessária e más práticas de implementação. A análise estática também pode ser extendida para análise de dependências, realizando as mesmas checagens nas bibliotecas e módulos utilizados, afim de encontrar os mesmos problemas e vulnerabilidades nelas. Esse tipo de prática é extremamente recomendada para evitar que versões comprometidas as nível de segurança sejam integradas ao ambiente de produção comprometendo o usuário final.
+
+![CI](/assets/images/system-design/ci.drawio.png)
+
+Dentro de um fluxo de trabalho realizado por meio do Git, entendemos que, num fluxo simplificado e ilustrativo, temos o desenvolvedor integrando uma nova feature a um sistema já existente. Esse desenvolvedor commita suas alterações em uma branch destinada a centralizar o trabalho realizado nessa nova funcionalidade, e a partir dos fluxos de Continuous integration nossas automações determinam se aquelas novas modificações estão aptas ou não a serem integradas na branch principal do projeto e posteriormente ser direcionada para o processo de release, ou Entrega Contínua. 
+
+Fluxos de integração contínua mais modernos podem considerar realizar a construção dos artefatos a cada vez que branchs estratégias são modificadas. Além dos testes e validações, a aplicação construída e disponibilizada em algum local em espera para ser levada para a produção de forma mais fácil quando fizer sentido.  
+
+<br>
+
 ## Continuous Deployment (Entrega Contínua)
 
+O Continuous Deploy ou Entrega Contínua é o próximo passo após o processo de integração contínua. Após os testes serem executados e todo o fluxo básico de qualidade ser garantido, podemos considerar a nova versão do software integrado a algum ambiente, preferencialmente em produção. 
+
+O CD busca reunir um ferramental capaz de realizar a construção dos artefatos, binários, executáveis e demais recursos e levá-los para algum ambiente no qual possa ser testado, validado ou utilizado de fato para os clientes da aplicação. Em processos de CI/CD modernos, o CD pode pular a fase de construção da aplicação quando esse passo é realizado com antecedência pelo fluxo de integração contínua e disponibilizado em registries de imagens, binários e afins. 
+
+Dentro do processo de deployment contínuo **precisamos adicionar capacidades que permitam realizar validações de segurança, capacidade e detectar se aquela alteração gerou algum malefício arbitrário**. É nesse passo que aplicamos os modelos de deployment e de rollback nos quais vamos discorrer a frente. 
+
 ## Rollbacks de Versões
+
+Muito mais importante que entregar rápido, é voltar a versão rápida em caso de detectarmos algum comportamento inesperado. O processo de rollback ocorre quando precisamos mediante a processos automatizados ou manuais, cancelar um deployment que ocorreu de alguma versão e retornar a uma versão antiga. São várias estratégias que podemos adotar para garantir uma excelência operacional que nos permita validar, promover ou retornar versões. A maturidade dos processos de rollback são inestimáveis para sistemas críticos, e devem estar atrelados a todos os tipos de modelos de deployment. 
 
 <br>
 
 # Estratégias de Deployments
 
+Após explicar conceitualmente os principais componentes de um fluxo de integração e entrega contínua, podemos dar um passo a diante e explicar os principais modelos de deployment abstraídos de ferramentais, afim de não só explicar o "como" eles devem ser executados mas principalmente deixar claro o motivo pelos quais eles existem e que tipo de problemas cada um deles resolve, para que seja clara a análise de necessidades de cada especificidade de produto, e que os times de engenharia tenham a base sólida para decidir o melhor modelo para cada tipo de cenário.
+
 ## Rolling Updates
+
+Os Rolling Updates são talvez o tipo mais comum de deployment. O modelo promove uma atualização gradual da versão de um mesmo serviço, subindo replicas e assim que estiverem estáveis matando sua versão anterior. Essa abordagem permite que o sistema continue operando, com parte das instâncias ainda rodando a versão antiga, enquanto outras já passam a utilizar a nova versão. 
+
+Se uma aplicação possui 10 replicas, podemos configurar rolling updates que atualizem de uma em uma, duas em duas e etc. Assim que a nova replica estiver ativa e no ar, o fluxo de progressão continua e vai em diante até atingir 100% das replicas do sistema. 
+
+Por mais que os Rolling Updates promovam um atualização escalonada, não ocorrem validações intermediárias entre as interações. Ou seja, o maximo de validação que ocorre de fato, é se as aplicações estão rodando e passaram em algum tipo de healthcheck. Não temos porcentagens controladas de direcionamento e nem temos formas de validar a versão nova de forma prévia. Esse tipo de problema requer abordagens com um pouco mais de estratégia e tecnologia envolvida. 
 
 ## Big Bang Deployments
 
@@ -52,6 +104,14 @@ O Canary release busca ir incrementando porcentagens seguras de tráfego para os
 Mais importante do que progredir a porcentagem do canary rápido, é poder realizar o rollback rápido. Durante o período em que o Canary Release está em operação, métricas importantes podem ser monitoradas para verificar se está tudo ocorrendo bem, como latência, taxa de erros, métricas customizadas que reflitam a operação do produto e etc. A importância dessas métricas como indicadores facilitam que a progressão e o rollback do canary seja realizada de forma automática.
 
 ## Migrations e Versionamento de Schemas
+
+As **Data e Schema Migrations** são estratégias utilizadas para gerenciar mudanças em bancos de dados de forma segura, controlada e com o mínimo de impacto possível em aplicações em produção.
+
+Elas são particularmente importantes em ambientes **cloud-native** e **distribuídos**, onde a atualização de dados e esquemas precisa ser feita de maneira gradual e resiliente.
+
+Refere-se à alteração da estrutura do banco de dados, como adicionar, modificar ou remover tabelas, colunas, índices ou chaves.
+
+Pode gerenciar à alteração dos próprios dados armazenados no banco de dados, como transformar, mover ou limpar registros.
 
 ## Shadow Deployment e Mirror Traffic
 
