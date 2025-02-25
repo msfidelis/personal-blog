@@ -136,13 +136,15 @@ Pode gerenciar à alteração dos próprios dados armazenados no banco de dados,
 
 ## Shadow Deployment e Mirror Traffic
 
-O Shadow Traffic é uma estratégia moderna de validação de novas versões, onde a ideia se consiste em enviar a cópia de uma porcentagem do tráfego para uma nova versão temporária e limitada para testar o comportamento dessa aplicação ou infraestrutura.
+O Shadow Deploy, ou Versão de Sombra, Mirror Traffic ou Shadow Traffic **é uma estratégia avançada de validação de novas versões**, onde a ideia se consiste em enviar a **cópia de uma porcentagem do tráfego para uma nova versão temporária e limitada para testar o comportamento dessa aplicação ou infraestrutura**.
 
 ![Shadow Traffic](/assets/images/system-design/Scale-Shadow.drawio.png)
 
-Esse tráfego por sua vez é processado inteiramente pela nova aplicação, porém sua resposta não é enviada para o cliente. Tudo que for espelhado, não deve afetar de nenhuma forma a experiência do cliente. No Traffic Mirroring, a duplicação de tráfego ocorre em tempo real e normalmente é configurada em níveis mais baixos, como no proxys reversos, sidecars ou service meshes que atuam adiconando comportamentos direto na camada de rede.
+Esse tráfego por sua vez é processado inteiramente pela nova aplicação, p**orém sua resposta não é enviada para o cliente**. **Tudo que for espelhado, não deve afetar de nenhuma forma a experiência do cliente**. No Traffic Mirroring, **a duplicação de tráfego ocorre em tempo real e normalmente é configurada em níveis mais baixos, como no proxys reversos, sidecars ou service meshes** que atuam adicionando  comportamentos direto na camada de rede.
 
-Esse modelo casa perfeitamente em aplicações que não escrevem dados de fato, pois espelhar o tráfego por si só acarretaria em duplicar registros e ocasionar inconsistências na camada de dados. Uma solução pra isso é o ambiente shadow rodar em modelo de “dry-run", onde por certas implementações, todo o fluxo é executado, porém nada é de fato commitado e confirmado dentro das transações. Isso permite validar uma grande parte da experiência da aplicação, sem gerar efeitos adversos.
+Nesse processo, **uma parte do tráfego real é duplicada e enviada para uma versão alternativa do sistema, que processa as requisições de forma paralela, mas sem retornar os resultados para os clientes**. Importante ressaltar como esse tráfego é **duplicado** e não **dividido**, o valor se consiste em direcionar cópias das requisições numa versão prévia que pode ser analisada antes de iniciar a progreção de fato para outras estratégias de deployment como o Canary e o Blue/Green, atuando como um passo anterior ao inicio do deployment de fato, podendo variar entre todas as estratégias já abordadas.
+
+Esse modelo casa perfeitamente em aplicações que não escrevem dados de fato, pois espelhar o tráfego por si só acarretaria em duplicar registros e ocasionar inconsistências na camada de dados. **Uma solução pra isso é o ambiente shadow rodar em modelo de “dry-run", onde por certas implementações, todo o fluxo é executado, porém nada é de fato commitado e confirmado dentro das transações**. Isso permite validar uma grande parte da experiência da aplicação, sem gerar efeitos adversos.
 
 ```go
 if os.Getenv("ENVIRONMENT") == "shadow" {
@@ -152,48 +154,37 @@ if os.Getenv("ENVIRONMENT") == "shadow" {
 }
 ```
 
-Essa deployment limitado pode ser analisado por meio de métricas logs antes do time tomar alguma decisão de progredir o deployment. A grande vantagem é que essa estratégia pode ser combinada tanto para Blue/Green quanto para Canary Releases.
+Essa deployment limitado pode ser **analisado por meio de métricas logs antes do time tomar alguma decisão de progredir o deployment**. A grande vantagem é que essa estratégia pode ser combinada tanto para Blue/Green quanto para Canary Releases.
 
 Um shadow deployment com mirror traffic pode iniciar antes do Canary Release ou do Blue/Green tendo uma pré-validação antes de promover qualquer versão para o cliente ou provisionamento mais brusco de infraestrutura.
 
+
+Outro importante ponto de atenção é a **idempotencia dentro e fora da capacidade de dry-run e da versão de sombra** para evitar duplicidades ou acarretar em operações adicionais arbitrárias. 
+
+
 ## Feature Flags
 
-As Feature Flags ou Feature Toggles são técnicas que permitem realizar o rollout de novas features de forma controlada, permitindo dinamicamente ativar ou desativar certas funcionalidades sem a necessidade de alterar o código fonte e realizar novos deployments. Para criar a funcionalidade, é necessários sim um deployment, mas a disponibilização dessa funcionalidade é entregue com a flag desligada. Conforme são levantados os clientes elegíveis a experimentarem certos tipos de flags, a determinada funcionalidade é habilitada de forma controlada.
+As Feature Flags ou Feature Toggles são **técnicas que permitem realizar o rollout de novas features de forma controlada, permitindo dinamicamente ativar ou desativar certas funcionalidades sem a necessidade de alterar o código fonte e realizar novos deployments**. Para criar a funcionalidade, é necessários sim um deployment, mas a d**isponibilização dessa funcionalidade é entregue com a flag desligada**. Conforme são levantados os clientes elegíveis a experimentarem certos tipos de flags, a determinada funcionalidade é habilitada de forma controlada.
 
-Elas são utilizadas para durante gestão de lançamentos, controle de funcionalidades em produção e experimentação controlada, como por exemplo habilitar uma nova versão da tela de um sistema apenas para uma pequena porcentagem de usuários, enquanto monitora feedback dos mesmos e compara as métricas com usuários que utilizam a versão antigas.
+Elas são utilizadas para **durante gestão de lançamentos, controle de funcionalidades em produção e experimentação controlada**, como por exemplo habilitar uma nova versão da tela de um sistema apenas para uma pequena porcentagem de usuários, enquanto monitora feedback dos mesmos e compara as métricas com usuários que utilizam a versão antigas.
 
 ![Feature Flags](/assets/images/system-design/feature-flags.drawio.png)
 
-Feature Flags precisam de componentes centralizados que controlem a distribuição das features, podendo ser ferramentas conhecidas de mercado como backoffices administrativos que alteram flags em determinadas bases de dados e etc .
+Feature Flags **precisam de componentes centralizados que controlem a distribuição das features, podendo ser ferramentas conhecidas de mercado como backoffices administrativos** que alteram flags em determinadas bases de dados e etc.
 
 Sistemas que consigam agrupar clientes por segmentos, como por exemplo segregar grupos de clientes que são Pessoa Física e de Pessoa Jurídica, ou de segmentos que são do Varejo, Agropecuária, Mídia, Assinaturas, Serviços podem ser mapeados e segregados sistemicamente, e por meio das feature flags experimentar funcionalidades de forma controlada entre eles.
 
 O uso das feature flags podem ser estendidos para times de negócio e produto, que podem controlar a validação com seus clientes sem o envolvimento dos times de engenharia diretamente.
 
+### Clustering e Segregação de Segmentos
+
+
+
 ## Sharding deployment
 
-O tema de [Shardings e Particionamentos]() já foram abordados anteriormente em perspectivas de dados, computação e segregação de clientes, e aqui, segue os mesmos princípios. Uma vez que por meio de **chaves de pertições** estruturadas e bem definidas **consigamos subdividir nossas infraestruturas de forma isolada e segregar o direcionamento de clientes para esses shards de forma consistente, conseguimos extender as capacidades de deployment de aplicações para shards menos prioritários, ou de pilotos e testes e validá-lo de forma parcial somente com certas parcelas de usuários e clientes**. Esse tipo de abordagem é muito comum em segregações **multi-tennant** e nos permite propagar versões novas de forma controlada para parcelas e amostras de clientes e não para a população total, tornando possível que uma eventual falha não se propague para todo o conjunto.
+O tema de [Shardings e Particionamentos](/sharding/) já foram abordados anteriormente em perspectivas de dados, computação e segregação de clientes, e aqui, segue os mesmos princípios. Uma vez que por meio de **chaves de pertições** estruturadas e bem definidas **consigamos subdividir nossas infraestruturas de forma isolada e segregar o direcionamento de clientes para esses shards de forma consistente, conseguimos extender as capacidades de deployment de aplicações para shards menos prioritários, ou de pilotos e testes e validá-lo de forma parcial somente com certas parcelas de usuários e clientes**. Esse tipo de abordagem é muito comum em segregações **multi-tennant** e nos permite propagar versões novas de forma controlada para parcelas e amostras de clientes e não para a população total, tornando possível que uma eventual falha não se propague para todo o conjunto.
 
 Esse tipo de abordagem é extremamente avançado e requer um planejamento alto de capacidade e custos, pois tente a elevar os custos financeiros/operacionais por conta de replicar componentes básicos de infraestrutura para isolar as cargas de forma correta. 
-
-## Shadow Deploy e Mirror Traffic
-
-O Shadow Deploy, ou Versão de Sombra, Mirror Traffic ou Shadow Traffic é uma abordagem que se consiste em direcionar cópia das requisições para versões de validação de uma aplicação afim de testar o comportamento das mesmas em um ambiente controlado. 
-
-Nesse processo, uma parte do tráfego real é duplicada e enviada para uma versão alternativa do sistema, que processa as requisições de forma paralela, mas sem retornar os resultados para os clientes. Importante ressaltar como esse tráfego é **duplicado** e não **dividido**, o valor se consiste em direcionar cópias das requisições numa versão prévia que pode ser analisada antes de iniciar a progreção de fato para outras estratégias de deployment como o Canary e o Blue/Green, atuando como um passo anterior ao inicio do deployment de fato, podendo variar entre todas as estratégias já abordadas. 
-
-Esse processo requer uma série de pontos de atenção para que seja executado de forma responsável, o primeiro e principal deles é que independente da saúde e da resposta do serviço de sombra, essa pequena porcentagem direcionada para a validação não pode ser retornada de forma alguma para o cliente final. O request padrão é realizado para o endpoint do serviço principal, e um componente intermediário tem a responsabilidade de interceptar, encaminhar para o destino principal e também duplicar essa requisição para a versão de sombra, mas somente voltar no request o resultado da fonte principal. 
-
-Outro importante ponto de atenção é a idempotencia ou capacidade de dry-run da versão de sombra. Afim de não duplicar dados nem gerar efeitos adversos, a versão deve entender que ela é uma versão de sombra, seja por alguma propriedade, variável de ambiente ou feature toggle, e não deve commitar nem escrever os dados em fontes principais, executando rollbacks e apagando todos os dados que foram gerados durante a execução de validação. Resumidamente, a requisição deve ser capaz de passar por todos, ou grande parte do fluxo original para validar o maximo de pontos possível, mas nunca persistir nenhuma infomação. 
-
-
-```go
-if os.Getenv("ENVIRONMENT") == "shadow" {
-    tx.Rollback()
-} else {
-    tx.Commit()
-}
-```
 
 
 <br>
