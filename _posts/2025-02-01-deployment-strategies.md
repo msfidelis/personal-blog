@@ -138,7 +138,11 @@ Pode gerenciar à alteração dos próprios dados armazenados no banco de dados,
 
 O Shadow Traffic é uma estratégia moderna de validação de novas versões, onde a ideia se consiste em enviar a cópia de uma porcentagem do tráfego para uma nova versão temporária e limitada para testar o comportamento dessa aplicação ou infraestrutura.
 
+![Shadow Traffic](/assets/images/system-design/Scale-Shadow.drawio.png)
+
 Esse tráfego por sua vez é processado inteiramente pela nova aplicação, porém sua resposta não é enviada para o cliente. Tudo que for espelhado, não deve afetar de nenhuma forma a experiência do cliente. No Traffic Mirroring, a duplicação de tráfego ocorre em tempo real e normalmente é configurada em níveis mais baixos, como no proxys reversos, sidecars ou service meshes que atuam adiconando comportamentos direto na camada de rede.
+
+Esse modelo casa perfeitamente em aplicações que não escrevem dados de fato, pois espelhar o tráfego por si só acarretaria em duplicar registros e ocasionar inconsistências na camada de dados. Uma solução pra isso é o ambiente shadow rodar em modelo de “dry-run", onde por certas implementações, todo o fluxo é executado, porém nada é de fato commitado e confirmado dentro das transações. Isso permite validar uma grande parte da experiência da aplicação, sem gerar efeitos adversos.
 
 ```go
 if os.Getenv("ENVIRONMENT") == "shadow" {
@@ -147,8 +151,6 @@ if os.Getenv("ENVIRONMENT") == "shadow" {
     tx.Commit()
 }
 ```
-
-Esse modelo casa perfeitamente em aplicações que não escrevem dados de fato, pois espelhar o tráfego por si só acarretaria em duplicar registros e ocasionar inconsistências na camada de dados. Uma solução pra isso é o ambiente shadow rodar em modelo de “dry-run", onde por certas implementações, todo o fluxo é executado, porém nada é de fato commitado e confirmado dentro das transações. Isso permite validar uma grande parte da experiência da aplicação, sem gerar efeitos adversos.
 
 Essa deployment limitado pode ser analisado por meio de métricas logs antes do time tomar alguma decisão de progredir o deployment. A grande vantagem é que essa estratégia pode ser combinada tanto para Blue/Green quanto para Canary Releases.
 
@@ -159,6 +161,8 @@ Um shadow deployment com mirror traffic pode iniciar antes do Canary Release ou 
 As Feature Flags ou Feature Toggles são técnicas que permitem realizar o rollout de novas features de forma controlada, permitindo dinamicamente ativar ou desativar certas funcionalidades sem a necessidade de alterar o código fonte e realizar novos deployments. Para criar a funcionalidade, é necessários sim um deployment, mas a disponibilização dessa funcionalidade é entregue com a flag desligada. Conforme são levantados os clientes elegíveis a experimentarem certos tipos de flags, a determinada funcionalidade é habilitada de forma controlada.
 
 Elas são utilizadas para durante gestão de lançamentos, controle de funcionalidades em produção e experimentação controlada, como por exemplo habilitar uma nova versão da tela de um sistema apenas para uma pequena porcentagem de usuários, enquanto monitora feedback dos mesmos e compara as métricas com usuários que utilizam a versão antigas.
+
+![Feature Flags](/assets/images/system-design/feature-flags.drawio.png)
 
 Feature Flags precisam de componentes centralizados que controlem a distribuição das features, podendo ser ferramentas conhecidas de mercado como backoffices administrativos que alteram flags em determinadas bases de dados e etc .
 
@@ -212,6 +216,8 @@ if os.Getenv("ENVIRONMENT") == "shadow" {
 [What is blue green deployment?](https://www.redhat.com/en/topics/devops/what-is-blue-green-deployment)
 
 [What Is Blue/Green Deployment and Automating Blue/Green in Kubernetes](https://codefresh.io/learn/software-deployment/what-is-blue-green-deployment/)
+
+[Advanced Traffic-shadowing Patterns for Microservices With Istio Service Mesh](https://blog.christianposta.com/microservices/advanced-traffic-shadowing-patterns-for-microservices-with-istio-service-mesh/)
 
 [Glossary CNCF - Blue Green Deployment](https://glossary.cncf.io/pt-br/blue-green-deployment/)
 
