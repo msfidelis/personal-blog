@@ -200,6 +200,10 @@ O uso de Feature Flags **pode ser estendido para times de negócio e produto**, 
 
 
 
+![Kmeans - Clustering](/assets/images/system-design/kmeans-cluster.png)
+
+
+
 ## Sharding deployment
 
 O tema de [Sharding e Particionamento](/sharding/) já foi abordado anteriormente sob as perspectivas de dados, computação e segregação de clientes. Aqui, seguimos os mesmos princípios. Utilizando **chaves de partição** bem estruturadas e definidas, **podemos subdividir nossas infraestruturas de forma isolada e direcionar os clientes para esses shards de maneira consistente**. Isso permite **expandir as capacidades de deployment para shards menos prioritários, ambientes de teste ou pilotos, validando novas versões de forma parcial com apenas uma fração dos usuários e clientes**.
