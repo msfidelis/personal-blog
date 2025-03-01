@@ -199,9 +199,11 @@ O uso de Feature Flags **pode ser estendido para times de negócio e produto**, 
 ### Clustering e Segregação de Segmentos
 
 
+Uma técnica interessante que viabiliza a segregação de clientes por meio de características conhecidas é aplicar uma estratégia de algoritmo de clustering. Conhecendo uma base de dados prévia de características dos clientes, como segmento, volume, região, faturamento, períodos de uso, podemos agrupar essas informações aplicar algoritmos como o **k-means** nessas variáveis e criar clusters de assimilacão, facilitando as técnicas de **feature flags** e **sharding**, agrupando em bases cadastrais lógicas os clientes e usuários que mais se parecem entre si. 
 
 ![Kmeans - Clustering](/assets/images/system-design/kmeans-cluster.png)
 
+Aplicar estratégias de clustering na prática, perme alocar esforço operacional e realizar o deployment de versões de forma segmentada, minimizando riscos, podendo ser feita em clusters menos críticos e habilitando a liberação de funcionalidades de acordo com o perfil do cliente, melhorando a experiência de testes e pilotos. 
 
 
 ## Sharding deployment
