@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/saga-logo.png
+image: assets/images/system-design/capa-saga.png
 author: matheus
 featured: false
 published: true

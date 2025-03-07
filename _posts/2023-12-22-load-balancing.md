@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/balance-1.png
+image: assets/images/system-design/capa-load-balancer.png
 author: matheus
 featured: false
 published: true

@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/cap-logo.png
+image: assets/images/system-design/capa-cap.png
 author: matheus
 featured: false
 published: true

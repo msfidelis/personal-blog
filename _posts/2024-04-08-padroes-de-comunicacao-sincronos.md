@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/sincrono.png
+image: assets/images/system-design/capa-sincronos.png
 author: matheus
 featured: false
 published: true

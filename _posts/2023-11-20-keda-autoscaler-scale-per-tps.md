@@ -1,7 +1,6 @@
 ---
 layout: post
-image: assets/images/keda-tps/thumb.jpg
-author: matheus
+image: assets/images/capa-keda.png
 featured: false
 published: true
 categories: [ keda, kubernetes, containers, cloud-native, capacity, dicas ]

@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/replicacao-capa-2.png
+image: assets/images/system-design/capa-replicacao.png
 author: matheus
 featured: false
 published: true

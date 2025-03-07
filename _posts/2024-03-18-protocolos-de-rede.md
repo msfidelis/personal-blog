@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/protocolos.png
+image: assets/images/system-design/capa-redes.png
 author: matheus
 featured: false
 published: true
