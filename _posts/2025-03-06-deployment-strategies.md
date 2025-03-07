@@ -18,17 +18,7 @@ Mais um texto rápido da série. O objetivo deste texto é abordar conceitualmen
 
 O termo "deployment" vem de uma origem militar, onde os mesmos usavam para descrever o ato de disponibilizar tropas, recursos e equipamentos em locais estratégicos antes de iniciar as devidas operações. Dentro da engenharia de software o Deployment, ou implantação é um termo usado para designar o ato de disponibilizar uma versão de uma aplicação em um ambiente predefinido para ser testado, avaliado ou disponibilizado para os clientes utilizarem.
 
-O deployment pode ser realizado com em diversos contextos e recursos, sendo para distribuir itens de infraestrutura, configurações e versões de aplicações novas ou já existentes. O deployment, quando realizado de forma moderna, é estruturado em dois momentos que podem coexistir por meio de pontes, que são o CI, Continuous Integration, ou Integração Contínua e o CD, Continuous Deployment, ou Deploy Contínuo.
-
-<br>
-
-# Continuous Deployment (Entrega Contínua)
-
-O Continuous Deployment (CD), ou Entrega Contínua, é o próximo passo após o processo de integração contínua. **Após a execução dos testes e a garantia do fluxo básico de qualidade, podemos considerar a nova versão do software integrada a algum ambiente, preferencialmente em produção.**
-
-O processo de Continous Deployment **busca reunir um conjunto de ferramentas capazes de realizar a construção de artefatos, binários, executáveis e demais recursos, levando-os a um ambiente onde possam ser testados, validados ou utilizados pelos clientes** da aplicação. Em processos modernos de CI/CD, o CD pode pular a fase de construção da aplicação caso esse passo já tenha sido realizado previamente pelo fluxo de integração contínua e disponibilizado em registries de imagens, binários e outros artefatos.
-
-Dentro do processo de deployment contínuo, **é essencial incluir mecanismos que permitam validar segurança, capacidade e detectar possíveis impactos negativos inesperados** que possam estar indo para o ambiente de produção dessa nova versão. É nesse estágio que aplicamos os modelos de deployment e rollback, os quais discutiremos adiante.
+O deployment pode ser realizado com em diversos contextos e recursos, sendo para distribuir itens de infraestrutura, configurações e versões de aplicações novas ou já existentes. O deployment, quando realizado de forma moderna, é estruturado em dois momentos que podem coexistir por meio de pontes, que são o CI, Continuous Integration, ou Integração Contínua e o CD, Continuous Delivery, ou Entrega Contínuo.
 
 
 <br>

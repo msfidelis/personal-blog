@@ -7,6 +7,16 @@ categories: [system-design, engineering, cloud]
 title: System Design -  Continuous Integration
 ---
 
+<br>
+
+## Continuous Deployment (Entrega Contínua)
+
+O Continuous Deployment (CD), ou Entrega Contínua, é o próximo passo após o processo de integração contínua. **Após a execução dos testes e a garantia do fluxo básico de qualidade, podemos considerar a nova versão do software integrada a algum ambiente, preferencialmente em produção.**
+
+O processo de Continous Deployment **busca reunir um conjunto de ferramentas capazes de realizar a construção de artefatos, binários, executáveis e demais recursos, levando-os a um ambiente onde possam ser testados, validados ou utilizados pelos clientes** da aplicação. Em processos modernos de CI/CD, o CD pode pular a fase de construção da aplicação caso esse passo já tenha sido realizado previamente pelo fluxo de integração contínua e disponibilizado em registries de imagens, binários e outros artefatos.
+
+Dentro do processo de deployment contínuo, **é essencial incluir mecanismos que permitam validar segurança, capacidade e detectar possíveis impactos negativos inesperados** que possam estar indo para o ambiente de produção dessa nova versão. É nesse estágio que aplicamos os modelos de deployment e rollback, os quais discutiremos adiante.
+
 
 ## Continuous Integration (Integração Contínua)
 
