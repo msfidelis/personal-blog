@@ -1,17 +1,20 @@
 ---
 layout: post
-image: assets/images/system-design/deploy-logo.jpg
+image: assets/images/system-design/deploy-capa.png
 featured: false
 published: true
 categories: [system-design, engineering, cloud]
 title: System Design -  Deployment
 ---
 
-O objetivo desse texto é abordar conceitualmente os principais termos que estão ao redor das técnicas de deployment e entrega de software. O objetivo não é apenas dizer "o que é" cada um dos termos e os modelos de deployment que eu considerei mais importantes, mas explicar o "por que" deles existirem e quais os reais benefícios da adoção dos mesmos.
+Mais um texto rápido da série. O objetivo deste texto é abordar conceitualmente os principais termos que envolvem as técnicas de deployment e entrega de software. O objetivo não é apenas dizer **"o que cada um dos termos significa"** e os modelos de deployment que considerei mais importantes, mas explicar **"o porquê"** de eles existirem e quais os reais benefícios da adoção dos mesmos.
+
 
 <br>
 
 # Definindo um Deployment
+
+![Deploy](/assets/images/system-design/deploy.png)
 
 O termo "deployment" vem de uma origem militar, onde os mesmos usavam para descrever o ato de disponibilizar tropas, recursos e equipamentos em locais estratégicos antes de iniciar as devidas operações. Dentro da engenharia de software o Deployment, ou implantação é um termo usado para designar o ato de disponibilizar uma versão de uma aplicação em um ambiente predefinido para ser testado, avaliado ou disponibilizado para os clientes utilizarem.
 
@@ -19,52 +22,18 @@ O deployment pode ser realizado com em diversos contextos e recursos, sendo para
 
 <br>
 
-## Continuous Integration (Integração Contínua)
+# Continuous Deployment (Entrega Contínua)
 
-A **Integração Contínua** ou **Continuous Integration**, é a forma como as empresas que trabalham com projetos de software organizam e facilitam o trabalho em conjunto de seus desenvolvedores e demais profissionais de tecnologia. A ideia do **CI** é prover uma série de processos e ferramentas que garantam que novas modificações na *****base de código** sejam integradas de forma responsável e com a devida qualidade.
+O Continuous Deployment (CD), ou Entrega Contínua, é o próximo passo após o processo de integração contínua. **Após a execução dos testes e a garantia do fluxo básico de qualidade, podemos considerar a nova versão do software integrada a algum ambiente, preferencialmente em produção.**
 
-Cada vez que uma **interação na base de códigoé realizada, essa modificação deve ser automaticamente testada e verificada em diversas dimensões** . Caso esteja funcionando corretamente e atenda a todos os padrões estabelecidos, ela pode ser finalmente integrada à base oficial de código, garantindo que o que foi alterado não afete fluxos e comportamentos pré-existentes. Se essa modificação quebrar algum teste ou processo, o desenvolvedor **responsável** precisa ser notificado sobre qual comportamento foi alterado indevidamente e de que forma isso ocorreu. Para isso, existem alguns processos mais conhecidos que podemos categorizar para definirmos os conceitos.
+O processo de Continous Deployment **busca reunir um conjunto de ferramentas capazes de realizar a construção de artefatos, binários, executáveis e demais recursos, levando-os a um ambiente onde possam ser testados, validados ou utilizados pelos clientes** da aplicação. Em processos modernos de CI/CD, o CD pode pular a fase de construção da aplicação caso esse passo já tenha sido realizado previamente pelo fluxo de integração contínua e disponibilizado em registries de imagens, binários e outros artefatos.
 
-
-![CI](/assets/images/system-design/ci.drawio.png)
-
-Dentro de um fluxo de trabalho realizado por meio do Git, podemos entender, de forma simplificada e ilustrativa, que **o desenvolvedor integra uma nova feature a um sistema já existente**. Esse desenvolvedor realiza o commit de suas alterações em uma branch destinada a centralizar o trabalho nessa nova funcionalidade. **A partir dos fluxos de Continuous Integration, as automações determinam se as novas modificações estão aptas ou não a serem integradas à branch principal** do projeto e, posteriormente, direcionadas para o processo de release ou Entrega Contínua.
-
-Fluxos de integração contínua mais modernos podem considerar a construção de artefatos sempre que branches estratégicas são modificadas. Além dos testes e validações, a aplicação construída pode ser disponibilizada em um local específico, aguardando para ser promovida à produção de forma mais fácil e ágil quando fizer sentido.
-
-
-### Testes de Unidade
-
-Os testes de unidade, ou também popularmente conhecidos como estes unitários, são responsáveis por garantir o comportamento de pequenas partes do código como funções, métodos e interfaces, inicialmente **especificando suas entradas e testando suas saídas para garantir que tudo está sendo executado como o planejado**. o executar esses testes a cada mudança, é possível identificar e corrigir problemas de forma rápida, evitando que erros simples se propaguem para áreas maiores do sistema.
-
-
-### Testes de Integração
-
-Ao contrário dos testes unitários que buscam testar componentes de forma mais isolada possível, **os testes de integração verificam como o sistema se comporta analisando componentes que interagem entre si**. Por exemplo, testar uma requisição para um endpoint e validar seu retorno, ou testar um cliente de um serviço externo, com ou sem o uso de mocks. **Esse tipo de teste é um pouco mais custoso e demorado do que os testes unitários, mas tende a fornecer respostas importantes sobre as mudanças realizadas**, garantindo que nada deixou de funcionar ou teve seu comportamento alterado de forma inesperada.
-
-
-### Linters e Checagem de Sintaxe
-
-Os **linters são ferramentas que analisam o código comparando-o com uma série de padrões predefinidos**. Ao executar esse tipo de verificação, **garantimos que a nova modificação está aderente aos padrões de qualidade e estilo de codificação acordados na empresa, no time ou em um contexto específico**. Essa estratégia busca aumentar a qualidade no ciclo de vida do produto, assegurando que todos os responsáveis pelas alterações no código sigam os mesmos padrões, mantendo-o padronizado e legível.
-
-
-### Análise Estática de Código
-
-Diferentemente dos testes que executam o código de alguma forma, as **ferramentas de análise estática examinam a base sem executá-la, com o intuito de identificar vulnerabilidades no código, problemas de desempenho, complexidade desnecessária e más práticas de implementação**. A análise estática **também pode ser estendida para a análise de dependências**, realizando as mesmas verificações em bibliotecas e módulos utilizados, a fim de identificar os mesmos problemas e vulnerabilidades. Essa prática é **altamente recomendada para evitar que versões comprometidas em termos de segurança** sejam integradas ao ambiente de produção, prevenindo riscos para o usuário final.
+Dentro do processo de deployment contínuo, **é essencial incluir mecanismos que permitam validar segurança, capacidade e detectar possíveis impactos negativos inesperados** que possam estar indo para o ambiente de produção dessa nova versão. É nesse estágio que aplicamos os modelos de deployment e rollback, os quais discutiremos adiante.
 
 
 <br>
 
-## Continuous Deployment (Entrega Contínua)
-
-O Continuous Deployment (CD), ou Entrega Contínua, é o próximo passo após o processo de integração contínua. **Após a execução dos testes e a garantia do fluxo básico de qualidade, podemos considerar a nova versão do software integrada a algum ambiente, preferencialmente em produção.**
-
-O CD busca reunir um conjunto de ferramentas capazes de realizar a construção de artefatos, binários, executáveis e demais recursos, levando-os a um ambiente onde possam ser testados, validados ou utilizados pelos clientes da aplicação. Em processos modernos de CI/CD, o CD pode pular a fase de construção da aplicação caso esse passo já tenha sido realizado previamente pelo fluxo de integração contínua e disponibilizado em registries de imagens, binários e outros artefatos.
-
-Dentro do processo de deployment contínuo, **é essencial incluir mecanismos que permitam validar segurança, capacidade e detectar possíveis impactos negativos inesperados**. É nesse estágio que aplicamos os modelos de deployment e rollback, os quais discutiremos adiante.
-
-
-## Rollbacks de Versões
+# Rollbacks de Versões
 
 **Mais importante do que entregar rapidamente é conseguir reverter uma versão com agilidade caso um comportamento inesperado seja detectado**. O processo de rollback ocorre quando, por meio de processos automatizados ou manuais, precisamos cancelar um deployment e retornar a uma versão anterior. 
 
@@ -75,20 +44,14 @@ t.
 
 # Estratégias de Deployments
 
+![Deployment Methods](/assets/images/system-design/deployment-paes.png)
+
 Após explicar conceitualmente os principais componentes de um fluxo de integração e entrega contínua, podemos avançar para a explicação dos principais modelos de deployment, abstraídos de ferramentas específicas. O objetivo não é apenas detalhar **como** eles devem ser executados, mas, principalmente, esclarecer **por que** existem e quais tipos de problemas cada um resolve. 
 
 Isso permitirá uma análise clara das necessidades de cada produto, garantindo que os times de engenharia tenham uma base sólida para decidir o melhor modelo de deployment para cada cenário.
 
+Para exemplificar com exemplos do mundo real, *se imagine em uma padaria renomada e tradicional, onde você é o responsável pela panificação. Vamos desenvolver em torno desse exemplo pra ilustrar o objetivo de cada um dos tipos dos deployments apresentados*. 
 
-## Rolling Updates
-
-Os Rolling Updates são, possivelmente, o tipo mais comum de deployment. **Esse modelo promove uma atualização gradual da versão de um serviço, iniciando novas réplicas e, assim que estiverem estáveis, desligando as versões anteriores**. Essa abordagem permite que o sistema continue operando, com parte das instâncias ainda executando a versão antiga, enquanto outras já utilizam a nova versão.
-
-Se uma aplicação possui 10 réplicas, podemos configurar os Rolling Updates para atualizar uma a uma, duas a duas e assim por diante. Assim que a nova réplica estiver ativa e operando corretamente, o fluxo de progressão continua até que 100% das réplicas tenham sido atualizadas.
-
-![Rolling Update](/assets/images/system-design/rolling-update.drawio.png)
-
-Embora os Rolling Updates promovam uma atualização escalonada, **não há validações intermediárias entre as interações**. Ou seja, a única verificação realizada é se as aplicações estão em execução e passaram por um health check básico. **Não há controle refinado sobre o direcionamento do tráfego nem mecanismos para validar previamente a nova versão**. Esse tipo de limitação pode exigir abordagens mais estratégicas e com um maior nível de tecnologia envolvida.
 
 ## Big Bang Deployments
 
@@ -98,9 +61,25 @@ Os Big Bang Deployments, ou Recreate Deployments, são **estratégias que recria
 
 Esse tipo de estratégia pode ser necessário em aplicações que utilizam padrões de **leasing**, como consumidores de Kafka, onde a constante alternância de consumidores em um tópico pode gerar operações de rebalanceamento, afetando significativamente a performance do consumo. **Nesses casos, a recriação total do sistema pode ser mais viável do que uma atualização progressiva**. Além disso, esse modelo pode ser útil quando há necessidade de trocar esquemas de banco de dados ou modificar contratos de comunicação.
 
+*Imagine que você precisa testar uma nova farinha para os pães de sua padaria, e você decide fazer isso logo na primeira fornada da manhã em diante. Assim que o dia começa, toda a panificação começa a ser realizada de uma vez com a nova marca de farinha, abrindo as portas para atendimento dos clientes já com a receita nova, sem chance para validação ou experimentação prévia dos mesmos.* 
+
 Esse padrão só deve ser considerado viável quando as aplicações envolvidas adotam modelos de [comunicação assíncrona](/mensageria-eventos-streaming/) e operam com [consistência eventual](/teorema-cap/).
 
 Vale ressaltar que essa abordagem deve ser utilizada apenas como último recurso, seja nos exemplos citados ou em outros contextos, sempre com muito cuidado e parcimônia. Embora operacionalmente seja mais simples por não exigir mecanismos de controle para progressão e validação, ela adiciona um alto nível de risco para o cliente.
+
+## Rolling Updates
+
+Os Rolling Updates são, possivelmente, o tipo mais comum de deployment. **Esse modelo promove uma atualização gradual da versão de um serviço, iniciando novas réplicas e, assim que estiverem estáveis, desligando as versões anteriores**. Essa abordagem permite que o sistema continue operando, com parte das instâncias ainda executando a versão antiga, enquanto outras já utilizam a nova versão.
+
+Se uma aplicação possui 10 réplicas, podemos configurar os Rolling Updates para atualizar uma a uma, duas a duas e assim por diante. Assim que a nova réplica estiver ativa e operando corretamente, o fluxo de progressão continua até que 100% das réplicas tenham sido atualizadas.
+
+![Rolling Update](/assets/images/system-design/rolling-update.drawio.png)
+
+*Ilustrando, imagine que você quer mudar a receita dos pães franceses da padaria. Numa estratégia de rolling update, conforme as unidades de pães forem sendo compradas pelos clientes e espaços forem surgindo para novas fornadas, o estoque vai sendo substituído pelos novos pães que foram feitos usando a nova receita, até que toda prateleira seja substituída pelos pães da nova versão.*
+
+Embora os Rolling Updates promovam uma atualização escalonada, **não há validações intermediárias entre as interações**. Ou seja, a única verificação realizada é se as aplicações estão em execução e passaram por um health check básico. **Não há controle refinado sobre o direcionamento do tráfego nem mecanismos para validar previamente a nova versão**. Esse tipo de limitação pode exigir abordagens mais estratégicas e com um maior nível de tecnologia envolvida.
+
+No caso da padaria, caso os clientes levem o pão pra casa, estranhem ou não gostem, não terão mais acesso as pães feitos com a receita anterior. 
 
 
 ## Blue-Green Deployments
@@ -108,6 +87,8 @@ Vale ressaltar que essa abordagem deve ser utilizada apenas como último recurso
 O Blue/Green Deployment é uma estratégia de deployment que vista buscar o **"zero downtime"** **durante releases de novas versões, e garantir o rollback rápido caso necessário**, garantindo alta disponibilidade durante o rollout de novas versões.
 
 O modelo Blue/Green é uma estratégia que permite realizar releases de novas versões com segurança e garantir um rollback rápido caso necessário, assegurando alta disponibilidade durante o rollout de novas versões.
+
+*Voltando ao exemplo da receita de pão, imagine que você tem uma fornada ativa com a receita anterior, da qual os clientes estão comprando da prateleira, e essa versão ainda está em vigor na produção da cozinha. Para substituir os pães que os clientes consomem, é necessário produzir o pão na mesma escala e quantidade, de modo a testar não apenas a receita em si, mas também toda a produção, os equipamentos e a logística de panificação. Esse novo lote de pães, feito com a receita em validação, é apreciado pelos funcionários da padaria, que dão suas impressões. Caso todos aprovem, os pães na prateleira são substituídos por essa nova fornada, permitindo que os clientes passem a comprá-los. Por segurança, a versão antiga permanece em estoque, para que, caso alguém reclame, seja possível levar para casa a versão anterior e o processo de produção retorne à receita antiga nas próximas fornadas.*
 
 Esse modelo recebe essa denominação porque **consiste em disponibilizar dois ambientes idênticos, divergindo apenas na versão do componente atualizado**. O termo **“Blue” identifica a versão estável que está em uso produtivo**, sendo consumida pelos usuários do sistema, enquanto o termo **“Green” representa a versão mais recente, candidata a substituir a versão estável**.
 
@@ -139,6 +120,10 @@ O Canary Release **incrementa porcentagens seguras de tráfego para a nova vers�
 ![Canary Releases](/assets/images/system-design/canary-workflow.drawio.png)
 
 A maneira mais moderna e eficiente de orquestrar a progressão do tráfego no canary **é associar o aumento das porcentagens a checagens de métricas, alertas e testes sintéticos** que podem ser executados durante o deploy para validar se o processo está ocorrendo de forma segura.
+
+
+*Imagine que você é um padeiro de uma padaria tradicional da sua cidade. A receita do seu pão é extremamente padronizada e já tem o seu público firmado. Para validar algum processo, ingrediente ou novas proporções, você começa a inserir uma pequena porcentagem de pães com a receita nova junto à receita tradicional todos os dias. Conforme você vai coletando feedbacks e impressões dos clientes, ou acostumando o paladar deles à nova receita, vai adicionando cada vez mais pães da receita nova nas fornadas e acompanhando, com calma e atenção, como os clientes reagem à mudança. Esse processo pode demorar semanas ou meses, até que toda a receita seja substituída nas fornadas, garantindo que a mudança resulte em pães melhores. Se, durante esse processo, os clientes que receberam os pães novos reclamarem, as unidades podem ser substituídas pela versão antiga ou, estrategicamente, você pode optar por retornar à versão antiga de forma total.*
+
 
 Mais **importante do que acelerar a progressão do canary é garantir a possibilidade de rollback rápido**. Durante o período em que o Canary Release está em operação, **métricas essenciais podem ser monitoradas para verificar se tudo está ocorrendo conforme esperado, incluindo latência, taxa de erros e métricas customizadas que reflitam a operação do produto**. A importância dessas métricas como indicadores facilita a automação tanto da progressão quanto do rollback do canary, garantindo segurança e confiabilidade no processo.
 
@@ -193,7 +178,7 @@ Feature Flags **dependem de componentes centralizados para controlar a distribui
 
 Sistemas que segmentam clientes por categorias — como Pessoa Física e Pessoa Jurídica, ou setores como Varejo, Agropecuária, Mídia, Assinaturas e Serviços — podem utilizar Feature Flags para testar funcionalidades de forma controlada entre diferentes grupos de usuários.
 
-O uso de Feature Flags **pode ser estendido para times de negócio e produto**, permitindo que eles validem novas funcionalidades diretamente com os clientes, sem depender da intervenção dos times de engenharia.
+*O uso de Feature Flags **pode ser estendido para times de negócio e produto**, permitindo que eles validem novas funcionalidades diretamente com os clientes, sem depender da intervenção dos times de engenharia. Na nossa padaria, isso pode significar alguns clientes de confiança, onde você pode avisar que está validando algo novo em sua receita, e direcionar esse produto pontualmente para eles, afim de coletar impressões e feedbacks antes de expandir a produção para pessoas cujas quais você não tenha uma certa proximidade. *
 
 
 ### Clustering e Segregação de Segmentos
@@ -205,20 +190,20 @@ Uma técnica interessante que viabiliza a segregação de clientes por meio de c
 
 Aplicar estratégias de clustering na prática, perme alocar esforço operacional e realizar o deployment de versões de forma segmentada, minimizando riscos, podendo ser feita em clusters menos críticos e habilitando a liberação de funcionalidades de acordo com o perfil do cliente, melhorando a experiência de testes e pilotos. 
 
+*Na padaria, podemos selecionar os clientes por grupos similares, como idosos, jovens, pais e mães com muitas crianças em casa, clientes mais tradicionais, clientes mais experimentativos e quando precisarmos testar uma versão nova da receita dos pães, ou algum outro tipo de bolo ou salgado, podemos direcionar as recomendações e produtos para esse grupo específico.* 
+
 
 ## Sharding deployment
 
 O tema de [Sharding e Particionamento](/sharding/) já foi abordado anteriormente sob as perspectivas de dados, computação e segregação de clientes. Aqui, seguimos os mesmos princípios. Utilizando **chaves de partição** bem estruturadas e definidas, **podemos subdividir nossas infraestruturas de forma isolada e direcionar os clientes para esses shards de maneira consistente**. Isso permite **expandir as capacidades de deployment para shards menos prioritários, ambientes de teste ou pilotos, validando novas versões de forma parcial com apenas uma fração dos usuários e clientes**.
 
+![Sharding Deployments](/assets/images/system-design/shard-deployments.drawio.png)
+
 Essa abordagem é amplamente utilizada em arquiteturas **multi-tenant**, possibilitando a propagação controlada de novas versões para subconjuntos específicos de clientes, em vez de toda a base de usuários. Dessa forma, uma eventual falha não se espalha para o sistema inteiro, reduzindo o impacto e facilitando a mitigação de problemas.
 
 No entanto, essa estratégia **é altamente avançada e exige um planejamento rigoroso de capacidade e custos**, pois tende a aumentar os gastos financeiros e operacionais, uma vez que envolve a replicação de componentes básicos da infraestrutura para isolar corretamente as cargas de trabalho.
 
-
-
-<br>
-
-### Obrigado aos Revisores
+Em padarias que atendem outros estabelecimentos ao invés de clientes gerais, podemos experimentar modificações e receitas em empresas e encomendas específicas, oferecidas de forma clara ou não. Dessa forma, caso algo dê errado na produção, podemos garantir que o ocorrido não se deu em clientes que encomendam quantidades maiores e mais recorrentes. 
 
 
 <br>
@@ -248,3 +233,5 @@ No entanto, essa estratégia **é altamente avançada e exige um planejamento ri
 [Istio Canary Deployments](https://docs.flagger.app/tutorials/istio-progressive-delivery)
 
 [8 Different Types of Kubernetes Deployment Strategies](https://spacelift.io/blog/kubernetes-deployment-strategies)
+
+[Entendendo Clusters e K-Means](https://medium.com/cwi-software/entendendo-clusters-e-k-means-56b79352b452)
