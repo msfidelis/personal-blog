@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/system-design-load-test.png
+image: assets/images/system-design/capa-load-test.png
 author: matheus
 featured: false
 published: true

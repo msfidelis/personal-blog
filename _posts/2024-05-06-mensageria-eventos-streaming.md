@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/async.png
+image: assets/images/system-design/capa-mensageria.png
 author: matheus
 featured: false
 published: true

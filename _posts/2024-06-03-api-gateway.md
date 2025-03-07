@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/api-gateway-wide.png
+image: assets/images/system-design/capa-api-gateway.png
 author: matheus
 featured: false
 published: true

@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/recomendacao-sistemas-distribuidos.png
+image: assets/images/capa-indicacoes-leitura.png
 author: matheus
 featured: false
 published: true

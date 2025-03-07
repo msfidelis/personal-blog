@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/escalabilidade-capa.png
+image: assets/images/system-design/capa-performance.png
 author: matheus
 featured: false
 published: true

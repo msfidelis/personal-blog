@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/scale-cube-logo.png
+image: assets/images/system-design/capa-scale-cube.png
 author: matheus
 featured: false
 published: true

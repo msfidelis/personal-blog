@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/janelas-quebradas.png
+image: assets/images/capa-janelas.png
 author: matheus
 featured: false
 published: true

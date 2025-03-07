@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/concurrency.png
+image: assets/images/system-design/capa-paralelismo.png
 author: matheus
 featured: false
 published: true

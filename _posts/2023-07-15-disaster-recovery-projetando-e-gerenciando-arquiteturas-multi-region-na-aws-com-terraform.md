@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/dr-logo-vg.png
+image: assets/images/capa-disaster-recovery.png
 author: matheus
 featured: true
 categories: [ aws, arquitetura, disaster-recovery, terraform ]

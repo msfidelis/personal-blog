@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/logo-ms-monolito.png
+image: assets/images/system-design/capa-monolitos-microservicos.png
 author: matheus
 featured: false
 published: true
