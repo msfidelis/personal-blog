@@ -9,7 +9,7 @@ title: System Design -  Service Mesh
 
 Esse capítulo, assim como vários outros que seguem uma linha mais concisa e resumida, surgiu a partir de um resumo de uma aula que construí sobre o mesmo tema. As inúmeras propostas e abordagens do mercado sobre o que se espera — ou não — de um service mesh me motivaram a reunir esta revisão bibliográfica conceitual, com a proposta, mais uma vez, de colocar os pés no chão e retornar às origens dos patterns de engenharia.
 
-Entendemos que, em diversos níveis, a implementação adequada de service meshes tende a ser altamente benéfica para diferentes tipos de arquiteturas de solução, agregando valor em termos de resiliência, disponibilidade e inteligência para sistemas distribuídos. Portanto, o objetivo final deste capítulo é esclarecer, de uma vez por todas, o que é uma malha de serviço e onde esse tipo de pattern é melhor empregado.
+Entendemos que, em diversos níveis, a implementação adequada de service meshes tende a ser altamente benéfica para diferentes tipos de arquiteturas de solução, agregando valor em termos de resiliência, disponibilidade e inteligência para sistemas distribuídos. Portanto, o objetivo final deste capítulo é esclarecer, de uma vez por todas, o que é uma malha de serviço e onde esse tipo de pattern é melhor empregado, abstraindo ao maximo as implementações diretas, focando diretamente no conceito.
 
 
 <br>
@@ -94,3 +94,17 @@ Por possuírem uma natureza mais próxima do sistema operacional, **essas soluç
 <br>
 
 # Funcionalidades Comuns dos Service Meshes
+
+Como dito anteriormente, o principal objetivo de se adotar um pattern de malha de serviço é poder adicionar comportamentos diretamente na camada da de comunicação entre as aplicações. e esses comportamentos podem se desdobrar em vários funcionalidades muito conhecidas que trabalham de forma totalmente abstraída e transparente para as aplicações que compõe a malha de servico. Aqui estaremos listando algumas. 
+
+## Roteamento de Tráfego Inteligente
+
+## Balanceamento de Carga Dinâmico 
+
+## Observabilidade e Telemetria Transparente
+
+## Segurança, Autenticação e Autorização 
+
+## Criptografia de Tráfego
+
+## Resilência e Controle de Tráfego
