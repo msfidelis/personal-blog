@@ -95,9 +95,15 @@ Por possuírem uma natureza mais próxima do sistema operacional, **essas soluç
 
 # Funcionalidades Comuns dos Service Meshes
 
-Como dito anteriormente, o principal objetivo de se adotar um pattern de malha de serviço é poder adicionar comportamentos diretamente na camada da de comunicação entre as aplicações. e esses comportamentos podem se desdobrar em vários funcionalidades muito conhecidas que trabalham de forma totalmente abstraída e transparente para as aplicações que compõe a malha de servico. Aqui estaremos listando algumas. 
+Como dito anteriormente, o principal objetivo de se adotar um pattern de malha de serviço é poder adicionar comportamentos diretamente na camada da de comunicação entre as aplicações. e esses comportamentos podem se desdobrar em vários funcionalidades muito conhecidas que trabalham de forma totalmente abstraída e transparente para as aplicações que compõe a malha de servico. Aqui estaremos listando algumas que já apareceram em capítulos anteriores, mas dessa vez sendo abordados diretamente no service mesh. 
 
 ## Roteamento de Tráfego Inteligente
+
+Service Meshes permitem definir **regras sofisticadas de roteamento de tráfego** entre serviços. É possível, por exemplo, encaminhar requisições com base em cabeçalhos, paths, versões ou pesos de tráfego. Isso viabiliza estratégias como **deployments canary**, **blue-green**, ou roteamento por contexto, como device, geolocalização ou tipo de cliente.
+
+![Mesh](/assets/images/system-design/Scale-Mesh_Routing.drawio.png)
+
+Uma das principais características de Service Meshs que atuam principalmente em [Layer 7](/protocolos-de-rede/) é a capacidade de **definir e trabalhar com regras complexas e sofisticadas de roteamento entre aplicações**. É possível realizar **roteamento de forma granular**, por exemplo, encaminhar requisições com base em cabeçalhos, paths, versões ou pesos de tráfego. Esse tipo de capacidade nos permite elaborar estratégias mais inteligentes de [Deployment, permitindo a execução de Canary Releases, Blue/Green Deployments, Traffic Mirror](/deployment-strategies/) e etc.
 
 ## Balanceamento de Carga Dinâmico 
 
