@@ -120,7 +120,12 @@ Essa mesma capacidade nos permite **gerar spans de tracing distribuído** automa
 
 A Telemetria e a observabilidade de dia zero tende, a ser um dos ganhos mais valiosos e instantâneas das malhas de serviço. 
 
-## Segurança, Autenticação e Autorização 
+## Segurança, Autenticação e Autorização
+
+O Control Plane e o Data Plane de um Service Mesh podem dispor de mecanismos para mapear e identificar quais são os membros de determinados grupos de microserviços. A partir disso, durante a interceptação do tráfego, é possível aplicar **controles de acesso granulares**, totalmente gerenciados na camada de comunicação. Com isso, torna-se viável **restringir acessos ou permitir que apenas determinados microserviços possam se comunicar entre si**, bem como consumir endpoints e métodos específicos de forma controlada.
+
+Quando projetamos plataformas que hospedam muitos serviços de diferentes produtos, times ou clientes, esse tipo de controle permite **segregar e isolar cargas de trabalho específicas**, garantindo segurança e isolamento de forma altamente performática e transparente — negando ou permitindo acessos diretamente na camada de rede.
+
 
 ## Criptografia de Tráfego
 
