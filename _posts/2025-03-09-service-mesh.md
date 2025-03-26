@@ -107,12 +107,18 @@ Uma das principais características de Service Meshs que atuam principalmente em
 
 ## Balanceamento de Carga Dinâmico 
 
-O [Balanceamento de Carga](/load-balancing/) é um dos conceitos mais básicos que são abordados quando falamos de sistemas distribuídos, [performance, capacidade, escalabilidade](/performance-capacidade-escalabilidade/) e [resiliência](/resiliencia). Dentro do Service Mesh, o balanceamento de carga **deixa de ser responsabilidade de um componente intermediário e centralizado, e passa a ser gerenciado pela própria camada de comunicação**. Dessa forma podemos realizar checagens de saúde proativamente e aplicar de forma granular vários tipos de algoritmos de balanceamento como **Least Request, Round Robin, IP-Hash, Least Connection** em cada microserviço de forma isolada, otimizando de forma pontual todos os tipos de cenários. 
+O [balanceamento de carga](/load-balancing/) é um dos conceitos mais básicos ao se falar de sistemas distribuídos, [performance, capacidade, escalabilidade](/performance-capacidade-escalabilidade/) e [resiliência](/resiliencia). Dentro de um Service Mesh, o balanceamento de carga **deixa de ser responsabilidade de um componente intermediário e centralizado, passando a ser gerenciado diretamente pela própria camada de comunicação**.  
+
+Dessa forma, é possível realizar **checagens de saúde proativas** e aplicar, de forma granular, diversos algoritmos de balanceamento — como **Least Request, Round Robin, IP-Hash e Least Connection** — em cada microserviço de forma isolada, otimizando pontualmente os diferentes tipos de cenários encontrados em ambientes distribuídos. Para que isso funcione de forma eficiente, o Service Mesh deve **possuir funcionalidades adicionais de descoberta de serviço** para que seja possível **registrar os participantes do contexto de cada microserviço**. 
 
 
 ## Observabilidade e Telemetria Transparente
 
-Por ser possível **interceptar e adicionar comportamentos customizados diretamente nas conexões e requisições** entre os componentes da malha, podemos adicionar métricas de **latência, taxa de erro, throughput, e tempo de resposta** dessas interações de uma forma mais fidedigna e transparente, sem a necessidade de componentes adicionais ou risco de metrificacão de comportamentos de forma tendenciosa. Essa mesma capacidade nos permite de **gerar spans de tracing distribuído** automaticamente de forma desacoplada das aplicações. O objetivo é ter **fontes mais confiáveis para troubleshooting, detecção de anomalias e análise de performance em complexos**. 
+Por ser possível **interceptar e adicionar comportamentos customizados diretamente nas conexões e requisições** entre os componentes da malha, podemos incluir métricas de **latência, taxa de erro, throughput e tempo de resposta** dessas interações de forma mais fidedigna e transparente, sem a necessidade de componentes adicionais ou o risco de métricas tendenciosas.
+
+Essa mesma capacidade nos permite **gerar spans de tracing distribuído** automaticamente, de forma desacoplada das aplicações. O objetivo é obter **fontes mais confiáveis para troubleshooting, detecção de anomalias e análise de performance em ambientes complexos**.
+
+A Telemetria e a observabilidade de dia zero tende, a ser um dos ganhos mais valiosos e instantâneas das malhas de serviço. 
 
 ## Segurança, Autenticação e Autorização 
 
