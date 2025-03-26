@@ -107,7 +107,12 @@ Uma das principais características de Service Meshs que atuam principalmente em
 
 ## Balanceamento de Carga Dinâmico 
 
+O [Balanceamento de Carga](/load-balancing/) é um dos conceitos mais básicos que são abordados quando falamos de sistemas distribuídos, [performance, capacidade, escalabilidade](/performance-capacidade-escalabilidade/) e [resiliência](/resiliencia). Dentro do Service Mesh, o balanceamento de carga **deixa de ser responsabilidade de um componente intermediário e centralizado, e passa a ser gerenciado pela própria camada de comunicação**. Dessa forma podemos realizar checagens de saúde proativamente e aplicar de forma granular vários tipos de algoritmos de balanceamento como **Least Request, Round Robin, IP-Hash, Least Connection** em cada microserviço de forma isolada, otimizando de forma pontual todos os tipos de cenários. 
+
+
 ## Observabilidade e Telemetria Transparente
+
+Por ser possível **interceptar e adicionar comportamentos customizados diretamente nas conexões e requisições** entre os componentes da malha, podemos adicionar métricas de **latência, taxa de erro, throughput, e tempo de resposta** dessas interações de uma forma mais fidedigna e transparente, sem a necessidade de componentes adicionais ou risco de metrificacão de comportamentos de forma tendenciosa. Essa mesma capacidade nos permite de **gerar spans de tracing distribuído** automaticamente de forma desacoplada das aplicações. O objetivo é ter **fontes mais confiáveis para troubleshooting, detecção de anomalias e análise de performance em complexos**. 
 
 ## Segurança, Autenticação e Autorização 
 
