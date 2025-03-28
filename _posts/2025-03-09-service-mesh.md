@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/deploy-capa.png
+image: assets/images/system-design/mesh-capa.png
 featured: false
 published: true
 categories: [system-design, engineering, cloud]
@@ -109,12 +109,16 @@ Uma das principais características de Service Meshs que atuam principalmente em
 
 O [balanceamento de carga](/load-balancing/) é um dos conceitos mais básicos ao se falar de sistemas distribuídos, [performance, capacidade, escalabilidade](/performance-capacidade-escalabilidade/) e [resiliência](/resiliencia). Dentro de um Service Mesh, o balanceamento de carga **deixa de ser responsabilidade de um componente intermediário e centralizado, passando a ser gerenciado diretamente pela própria camada de comunicação**.  
 
+![mesh balancing](/assets/images/system-design/mesh-balancing.drawio.png)
+
 Dessa forma, é possível realizar **checagens de saúde proativas** e aplicar, de forma granular, diversos algoritmos de balanceamento — como **Least Request, Round Robin, IP-Hash e Least Connection** — em cada microserviço de forma isolada, otimizando pontualmente os diferentes tipos de cenários encontrados em ambientes distribuídos. Para que isso funcione de forma eficiente, o Service Mesh deve **possuir funcionalidades adicionais de descoberta de serviço** para que seja possível **registrar os participantes do contexto de cada microserviço**. 
 
 
 ## Observabilidade e Telemetria Transparente
 
 Por ser possível **interceptar e adicionar comportamentos customizados diretamente nas conexões e requisições** entre os componentes da malha, podemos incluir métricas de **latência, taxa de erro, throughput e tempo de resposta** dessas interações de forma mais fidedigna e transparente, sem a necessidade de componentes adicionais ou o risco de métricas tendenciosas.
+
+![Telemetry Mesh](/assets/images/system-design/telemetry-mesh.drawio.png)
 
 Essa mesma capacidade nos permite **gerar spans de tracing distribuído** automaticamente, de forma desacoplada das aplicações. O objetivo é obter **fontes mais confiáveis para troubleshooting, detecção de anomalias e análise de performance em ambientes complexos**.
 
@@ -127,6 +131,17 @@ O Control Plane e o Data Plane de um Service Mesh podem dispor de mecanismos par
 Quando projetamos plataformas que hospedam muitos serviços de diferentes produtos, times ou clientes, esse tipo de controle permite **segregar e isolar cargas de trabalho específicas**, garantindo segurança e isolamento de forma altamente performática e transparente — negando ou permitindo acessos diretamente na camada de rede.
 
 
-## Criptografia de Tráfego
+## Criptografia de Tráfego e mTLS
 
-## Resilência e Controle de Tráfego
+Outra vantagem importante no quesito segurança, ao falarmos de Service Mesh, é a possibilidade de trafegar pacotes utilizando **protocolos de criptografia em ambas as pontas das conexões, de forma transparente e abstraída**. Ao adotar **mTLS por padrão**, é possível garantir que toda a comunicação entre os serviços seja criptografada diretamente em trânsito, impedindo que payloads sensíveis sejam interceptados, alterados ou envenenados por componentes maliciosos — estejam eles dentro ou fora da malha.  
+
+O mTLS também **valida a identidade da origem e do destino antes que a conexão de fato ocorra**, além de permitir a **troca de chaves criptográficas diretamente entre os componentes intermediários**, como os sidecars, **retirando essa responsabilidade da aplicação**.
+
+Uma boa implementação de mTLS no contexto de Service Mesh deve ser a mais transparente possível para as aplicações, **sem exigir configuração manual de certificados ou alterações nas chamadas no nível de código**. O **Control Plane** é responsável por gerenciar a emissão, rotação e revogação dos certificados, enquanto o **Data Plane** deve aplicá-los diretamente nos componentes intermediários — sejam eles instruções no kernel ou proxies em modelos com sidecar — **executando as regras de forma totalmente transparente para os serviços**.
+
+
+## Resiliência na Camada de Comunicação
+
+Ao atuar diretamente na camada de rede, o Service Mesh pode ajudar **provendo mecanismos nativos e abstraídos para lidar com falhas e instabilidades na comunicação entre os serviços**. De forma totalmente transparente à implementação dos microserviços, é possível aplicar **estratégias de retries customizadas**, com controle sobre a quantidade de tentativas e os intervalos entre elas, **timeouts configuráveis** para evitar conexões presas indefinidamente, **circuit breakers** que interrompem chamadas para destinos com falhas persistentes, e **fallbacks** que permitem a execução de comportamentos alternativos em caso de falhas, sem que as aplicações sequer percebam que esses mecanismos estão em ação.
+
+Além disso, podemos também aplicar **injeção de falhas intencionais na comunicação entre microserviços**, com o objetivo de testar e validar as estratégias de resiliência adotadas, promovendo um ambiente mais robusto e preparado para situações adversas.
