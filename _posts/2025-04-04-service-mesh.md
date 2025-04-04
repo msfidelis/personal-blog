@@ -58,6 +58,8 @@ Os agentes do Data Plane normalmente operam por meio de proxies, que **atuam com
 
 # Modelos de Service Mesh
 
+Ao explorar as possibilidades de mercado, em essência, todas as opções de service mesh vão ter seus prós e contras, mas vão servir pra praticamente a mesma finalidade de oferecer features adicionais na camada de rede. O "como" isso é implementado pode variar um pouco, sendo um detalhe muito importante na tomada de decisão de adoção desse tipo de arquitetura. Neste tópico vamos listar algumas das abordagens mais comuns que encontramos nos modelos de uso, para que seja possível conhecer qual o tipo de implementação faz mais sentido para o ambiente, produto ou plataforma onde vamos implementar a malha de serviço. 
+
 ## Modelo Client e Server
 
 O modelo Client-Server é, talvez, o **modelo mais rudimentar de Service Mesh, pois exige a implementação direta na aplicação, especificando os endereços do Control Plane para que a aplicação renove, periodicamente, suas configurações e políticas em memória**.
