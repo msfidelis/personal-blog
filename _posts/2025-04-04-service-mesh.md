@@ -7,9 +7,9 @@ categories: [system-design, engineering, cloud]
 title: System Design -  Service Mesh
 ---
 
-Esse capítulo, assim como vários outros que seguem uma linha mais concisa e resumida, surgiu a partir de um resumo de uma aula que construí sobre o mesmo tema. As inúmeras propostas e abordagens do mercado sobre o que se espera — ou não — de um service mesh me motivaram a reunir esta revisão bibliográfica conceitual, com a proposta, mais uma vez, de colocar os pés no chão e retornar às origens dos patterns de engenharia.
+Esse capítulo, assim como vários outros que seguem uma linha mais concisa e resumida, surgiu a partir de um resumo de uma aula que dei sobre o tema. As inúmeras propostas e abordagens do mercado sobre o que se espera — ou não — de um service mesh me motivaram a reunir esta revisão bibliográfica conceitual, com a proposta, mais uma vez, de **colocar os pés no chão e retornar às origens dos patterns de engenharia**.
 
-Entendemos que, em diversos níveis, a implementação adequada de service meshes tende a ser altamente benéfica para diferentes tipos de arquiteturas de solução, agregando valor em termos de resiliência, disponibilidade e inteligência para sistemas distribuídos. Portanto, o objetivo final deste capítulo é esclarecer, de uma vez por todas, o que é uma malha de serviço e onde esse tipo de pattern é melhor empregado, abstraindo ao maximo as implementações diretas, focando diretamente no conceito.
+Entendemos que, em diversos níveis, a i**mplementação adequada de service meshes tende a ser altamente benéfica para diferentes tipos de arquiteturas de solução**, agregando valor em termos de **resiliência, disponibilidade e inteligência para sistemas distribuídos**. Portanto, o objetivo final deste capítulo é esclarecer, de uma vez por todas, **o que é uma malha de serviço e onde esse tipo de pattern é melhor empregado, abstraindo ao maximo as implementações diretas, focando diretamente no conceito**.
 
 
 <br>
