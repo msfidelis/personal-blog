@@ -144,4 +144,39 @@ Uma boa implementação de mTLS no contexto de Service Mesh deve ser a mais tran
 
 Ao atuar diretamente na camada de rede, o Service Mesh pode ajudar **provendo mecanismos nativos e abstraídos para lidar com falhas e instabilidades na comunicação entre os serviços**. De forma totalmente transparente à implementação dos microserviços, é possível aplicar **estratégias de retries customizadas**, com controle sobre a quantidade de tentativas e os intervalos entre elas, **timeouts configuráveis** para evitar conexões presas indefinidamente, **circuit breakers** que interrompem chamadas para destinos com falhas persistentes, e **fallbacks** que permitem a execução de comportamentos alternativos em caso de falhas, sem que as aplicações sequer percebam que esses mecanismos estão em ação.
 
-Além disso, podemos também aplicar **injeção de falhas intencionais na comunicação entre microserviços**, com o objetivo de testar e validar as estratégias de resiliência adotadas, promovendo um ambiente mais robusto e preparado para situações adversas.
+![Retry Mesh](/assets/images/system-design/retry-mesh.png)
+
+Além disso, podemos também aplicar **injeção de falhas intencionais na comunicação entre microserviços**, com o objetivo de testar e validar as estratégias de resiliência adotadas, promovendo um ambiente mais preparado para permanecer disponível em situações adversas com os patterns de Fault Injection. 
+
+![Mesh Fault Injection](/assets/images/system-design/mesh-fault-injection.drawio.png)
+
+
+<br>
+
+### Referências
+
+[Service mesh](https://www.redhat.com/pt-br/topics/microservices/what-is-a-service-mesh)
+
+[The Istio service mesh](https://istio.io/latest/about/service-mesh/)
+
+[Dissecting Overheads of Service Mesh Sidecars](https://dl.acm.org/doi/pdf/10.1145/3620678.3624652)
+
+[An Empirical Study of Service Mesh Traffic Management Policies for Microservices](https://dl.acm.org/doi/pdf/10.1145/3620678.3624652)
+
+[Service Mesh Patterns](https://dl.acm.org/doi/pdf/10.1145/3489525.3511686)
+
+[Istio - ZTunnel](https://github.com/istio/ztunnel)
+
+[Service mesh vs. API gateway](https://www.solo.io/topics/service-mesh/service-mesh-vs-api-gateway)
+
+[Introducing Ambient Mesh](https://istio.io/latest/blog/2022/introducing-ambient-mesh/)
+
+[Use the proxyless service mesh feature in gRPC services](https://www.alibabacloud.com/help/en/asm/use-cases/use-the-proxyless-service-mesh-feature-in-grpc-services)
+
+[Proxyless Service Mesh](https://dubbo.apache.org/en/overview/mannual/golang-sdk/tutorial/deploy2/proxyless_service_mesh/)
+
+[What is a Service Mesh?](https://konghq.com/blog/learning-center/what-is-a-service-mesh)
+
+[Service Mesh: O que é e Principais Características](https://www.luisdev.com.br/2022/06/15/service-mesh-o-que-e-principais-caracteristicas/)
+
+[O que é Fault Injection Testing](https://lbodev.com.br/glossario/o-que-e-fault-injection-testing/)
