@@ -16,19 +16,19 @@ Entendemos que, em diversos níveis, a i**mplementação adequada de service mes
 
 # Definindo Service Mesh
 
-O Service Mesh, ou Malha de Serviço, é, antes de qualquer coisa, um **pattern de networking**. Um Service Mesh existe para **oferecer mecanismos, diretamente na camada de rede, capazes de lidar com a alta complexidade de comunicação** entre diversos microserviços e componentes de um ambiente distribuído, fornecendo funcionalidades de **métricas, observabilidade, segurança, controle e resiliência de forma desacoplada da aplicação**, de maneira padronizada e **transparente**.
+O Service Mesh, ou Malha de Serviço, é, antes de qualquer coisa, um **pattern de networking**. Um Service Mesh existe para **oferecer mecanismos, diretamente na camada de rede, capazes de lidar com a alta complexidade de comunicação entre diversos microserviços e componentes** de um ambiente distribuído, fornecendo funcionalidades de **métricas, observabilidade, segurança, controle e resiliência de forma desacoplada da aplicação**, de maneira padronizada e **transparente**, de forma que os seus atores nem saibam que estão numa malha de serviço.
 
 ![Malha de Serviço](/assets/images/system-design/malha-de-servico.png)
 
-O nome “malha de serviço” faz alusão a uma malha formada por muitos componentes que se comunicam entre si — sejam eles microserviços ou suas dependências diretas — consumidos por diversas fontes a todo momento.
+O termo “malha de serviço” faz alusão a uma malha ou rede formada por muitos componentes que se comunicam entre si — sejam eles microserviços ou suas dependências diretas — consumidos por diversas fontes a todo momento de forma padronizada ou não.
 
 ![No-Mesh](/assets/images/system-design/no-mesh.drawio.png)
 
-Atuando diretamente na camada de comunicação e nos protocolos de rede, um Service Mesh permite operar em uma dimensão onde, **em vez de cada serviço da malha implementar isoladamente seus próprios mecanismos de segurança, balanceamento de carga, autenticação, autorização, observabilidade e resiliência — como retries, circuit breakers e service discovery — essas responsabilidades são centralizadas de forma transparente em uma camada de comunicação dedicada a essas finalidades**, sem que a aplicação precise lidar diretamente com elas. Isso pode ocorrer por meio da interceptação do tráfego via proxies ou em camadas mais baixas, diretamente no kernel do sistema.
+Atuando diretamente na camada de comunicação e nos protocolos de rede, um Service Mesh permite operar em uma dimensão onde, **em vez de cada serviço da malha implementar isoladamente seus próprios mecanismos de segurança, balanceamento de carga, autenticação, autorização, observabilidade e resiliência — como retries, circuit breakers e service discovery — essas responsabilidades são centralizadas de forma transparente em uma camada de comunicação dedicada a essas finalidades**, sem que a aplicação precise lidar diretamente com elas. Isso pode ocorrer por meio da **interceptação do tráfego** via proxies ou em camadas mais baixas, diretamente no kernel do sistema.
 
 ![With Mesh](/assets/images/system-design/mesh.drawio.png)
 
-O pattern de Service Mesh nos permite **estender as capacidades de conexões simples como TCP, HTTP ou gRPC**. Na maioria dos cenários, o fato de um componente estabelecer conexão com outro para acionar uma funcionalidade ocorre de forma “natural”. Os Service Meshes permitem **interceptar essas conexões e adicionar uma série de comportamentos e funcionalidades adicionais**, elevando os níveis de segurança, resiliência e observabilidade em um nível abstraído da aplicação.
+O pattern de Service Mesh nos permite **estender as capacidades de conexões simples como TCP, HTTP ou gRPC**. Na maioria dos cenários, o fato de um componente estabelecer conexão com outro para acionar para solicitar dados ou executar comandos ocorre de forma “natural” na rede. Os Service Meshes permitem **interceptar essas conexões e adicionar uma série de comportamentos e funcionalidades adicionais**, elevando os níveis de segurança, resiliência e observabilidade em um nível abstraído da aplicação.
 
 Uma forma simples e direta de entender a proposta do Service Mesh em um ambiente complexo de microserviços é perceber sua capacidade de **tratar a rede como software**, definindo seus comportamentos, mecanismos e níveis de segurança de forma declarativa e configurável.
 
@@ -37,7 +37,7 @@ Uma forma simples e direta de entender a proposta do Service Mesh em um ambiente
 
 # Componentes de um Service Mesh
 
-As implementações de Service Mesh normalmente são **subdivididas em dois componentes principais: Control Plane (Plano de Controle) e Data Plane (Plano de Dados)**. Independentemente do modelo de uso ou da forma como o Service Mesh foi construído, esses dois conceitos tendem a permanecer presentes em algum nível. Ambos são complementares e definem o que, como e onde as regras de rede definidas na malha serão executadas.
+As implementações de Service Mesh normalmente são **subdivididas em dois componentes principais: Control Plane (Plano de Controle) e Data Plane (Plano de Dados)**. Independentemente do modelo de uso ou da forma como o Service Mesh foi construído, esses dois conceitos tendem a permanecer presentes em algum nível. Ambos são complementares e definem **o que, como e onde as regras definidas serão executadas**.
 
 ![Control Plane Data Plane](/assets/images/system-design/control-plane-data-plane.drawio.png)
 
