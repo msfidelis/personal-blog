@@ -8,7 +8,7 @@ categories: [system-design, engineering, cloud]
 title: System Design -  Estratégias de Deployment
 ---
 
-Mais um texto rápido da série. O objetivo deste texto é abordar conceitualmente os principais termos que envolvem as técnicas de deployment e entrega de software. O objetivo não é apenas dizer **"o que cada um dos termos significa"** e os modelos de deployment que considerei mais importantes, mas explicar **"o porquê"** de eles existirem e quais os reais benefícios da adoção dos mesmos.
+Mais um texto rápido da série de System Design. O objetivo deste artigo é abordar conceitualmente os principais termos que envolvem as técnicas de deployment e entrega de software. O objetivo não é apenas dizer **"o que cada um dos termos significa"** entre os modelos de deployment que considerei mais importantes, mas explicar **"o porquê"** de eles existirem e quais os reais benefícios da adoção dos mesmos em projetos reais. 
 
 
 <br>
