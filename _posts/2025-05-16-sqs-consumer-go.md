@@ -1,14 +1,16 @@
 ---
 layout: post
-image: assets/images/system-design/mesh-capa.png
+image: assets/images/blueprint/sqs/blueprint-sqs-logo.png
 featured: false
 published: true
-categories: [system-design, engineering, cloud]
-title: Blueprint -  Golang SQS Consumer Tunning
+categories: [golang, engineering, cloud, aws]
+title: Blueprint -  Golang SQS Consumer Performance Tunning
 ---
 
-> Blueprints são pequenas documentações que eu estruturo em forma de um breve estudo a respeito de algum tema ou ideia específica. Não tem ideia de ser um artigo estruturado, somente uma breve documentação com exemplos para consultas futuras. 
+> Blueprints são pequenas documentações que eu estruturo em forma de um breve estudo a respeito de algum tema ou ideia específica. Não tem objetivo de ser um artigo estruturado, somente uma breve documentação com exemplos para consultas futuras. 
 
+
+O objetivo deste blueprint é documentar uma evolução incremental de um consumidor SQS em termos de performance. 
 
 
 # Cenário
@@ -719,3 +721,39 @@ Para fazer um teste mais longo, realizei um teste com 100.000 mensagens na fila 
 2025/05/16 20:22:36 Tempo total: 2m57.05202975s
 2025/05/16 20:22:36 TPS Médio: 564
 ```
+
+<br>
+
+# Resultados e Comparações
+
+Aqui está a tabela resumindo os resultados de todas as variações testadas:
+
+| Implementação                                                  | Workers | Mensagens | Tempo Total | TPS Médio |
+| -------------------------------------------------------------- | :-----: | :-------: | :---------: | :-------: |
+| Consumidor Simples                                             |    1    |   1 000   |  5m40.612s  |     2     |
+| Batch Consumer                                                 |    1    |   1 000   |  3m10.466s  |     5     |
+| Worker Pool + Batch Consumer                                   |    3    |   1 000   |   1m2.080s  |     16    |
+| Worker Pool + Batch Consumer                                   |    5    |   1 000   |  0m38.014s  |     26    |
+| Worker Pool + Batch Consumer                                   |    10   |   1 000   |  0m21.779s  |     47    |
+| Worker Pool + Batch Consumer + Batch Delete                    |    5    |   1 000   |   0m8.329s  |    125    |
+| Canais & Goroutines + Batch Consumer + Batch Delete            |    5    |   1 000   |   0m5.311s  |    200    |
+| Canais & Goroutines + Batch Consumer + Batch Delete            |    10   |   1 000   |   0m4.202s  |    250    |
+| Canais & Goroutines + Batch Consumer + Batch Delete (long run) |    10   |  100 000  |  2m57.052s  |    564    |
+
+<br> <br>
+
+### Referências
+
+[Amazon SQS message quotas](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html)
+
+[AWS SQS Package](https://pkg.go.dev/github.com/aws/aws-sdk-go-v2/service/sqs)
+
+[Simplifying Message Queueing with Golang and Amazon SQS](https://dev.to/thanhphuchuynh/simplifying-message-queueing-with-golang-and-amazon-sqs-3gpl)
+
+[Boas Práticas de Uso de Channels e Go Routines](https://aprendagolang.com.br/boas-praticas-na-utilizacao-de-goroutines-e-channels/)
+
+[DeleteMessageBatch](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_DeleteMessageBatch.html)
+
+[HTSQS](https://github.com/bernardopericacho/htsqs)
+
+[SQS Consumer Design: Achieving High Scalability while managing concurrency in Go](https://medium.com/data-science/sqs-consumer-design-achieving-high-scalability-while-managing-concurrency-in-go-d5a8504ea754)
