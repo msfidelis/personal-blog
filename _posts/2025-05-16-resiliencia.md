@@ -131,6 +131,12 @@ Os questionamentos utilizados para estimar esses danos podem vir na forma de **"
 
 <br>
 
+## Single Point of Failure (SPOF) 
+
+
+
+<br>
+
 # Estratégias e Patterns de Resiliência
 
 A seguir, iremos catalogar não todas, mas as principais estratégias e padrões de implementação em engenharia que ajudam a contornar falhas e adicionar vários níveis de resiliência em diferentes cenários conhecidos. O objetivo é expandir nossa "caixa de ferramentas" com opções arquiteturais inteligentes e aplicáveis. Muitos desses conceitos já foram apresentados anteriormente, e a ideia é reaproveitá-los, agora com um foco em características de resiliência e disponibilidade. 
@@ -432,12 +438,6 @@ Caso essa renovação não seja realizada pelo cliente, o recurso é automaticam
 Em pools de conexão de banco de dados, **cada cliente ou thread recebe um lease para uma conexão ou um número solicitado de conexões**. Se o cliente **não enviar um heartbeat ou não liberar a conexão ao final do uso, o lease expira** e a conexão é automaticamente **disponibilizada para novos clientes que precisem se conectar ao banco de dados**, evitando que conexões fiquem presas ou monopolizadas por clientes inativos. Bancos de dados são um exemplo claro de leasing, pois, na maioria dos bancos transacionais, o número máximo de conexões simultâneas é limitado, e quando o limite é excedido, ocorre uma rejeição automática da solicitação impedindo que ela mesmo se inicie.
 
 <br>
-
-## Shuffle Sharding
-
-## Event Sourcing - Não sei se vale um texto só pra isso 
-
-## Queueing Theory-based Designs - Não sei se vale um texto só pra isso 
 
 
 
