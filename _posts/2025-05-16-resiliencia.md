@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/resiliencia-cover.png
+image: assets/images/system-design/capa-resiliencia.png
 author: matheus
 featured: false
 published: true
@@ -127,6 +127,12 @@ O Blast Radius é um **conceito originalmente bélico**, que **descreve, de form
 Embora tenha origens militares e traga uma conotação contraditória, o conceito também é utilizado em discussões de arquitetura de sistemas e engenharia de confiabilidade para **estimar o impacto da falha de um componente em um sistema distribuído**. Esse termo é aplicado para **identificar pontos críticos e oportunidades de melhoria na resiliência**, e sugere, por meio de **exercícios de simulação de falhas** ou **"perguntas provocativas" em revisões arquiteturais**, a estimativa dos **impactos das falhas em pontos críticos do sistema**. A partir dessas estimativas, busca-se discutir como **minimizar os danos nesses cenários** através de fallbacks, aplicação de estratégias e implementação de padrões de resiliência, entre outros.
 
 Os questionamentos utilizados para estimar esses danos podem vir na forma de **"Se o componente X parar, o que acontece?"**, avançando para **"Se este componente estiver em downtime, aquele outro continuará funcionando?"** e indo até perguntas como **"Se essa API cair, o que para de funcionar? O que continua funcionando parcialmente? O que permanece funcionando normalmente? Em quanto tempo me recupero se ela voltar? Gero inconsistências em alguma parte do meu processo?"**, evoluindo assim para uma variedade de cenários. O ponto que quero destacar é que **essas "perguntas provocativas" devem ser feitas sempre que possível**. É essencial criar um ambiente seguro e aberto para que esses questionamentos sejam feitos sem barreiras ou cerimônias. Considero essa prática uma das mais dinâmicas e eficientes para partir do zero a algo concreto em um review arquitetural de resiliência, e recomendo sua experimentação a todos.
+
+
+<br>
+
+## Single Point of Failure (SPOF) 
+
 
 
 <br>
@@ -432,12 +438,6 @@ Caso essa renovação não seja realizada pelo cliente, o recurso é automaticam
 Em pools de conexão de banco de dados, **cada cliente ou thread recebe um lease para uma conexão ou um número solicitado de conexões**. Se o cliente **não enviar um heartbeat ou não liberar a conexão ao final do uso, o lease expira** e a conexão é automaticamente **disponibilizada para novos clientes que precisem se conectar ao banco de dados**, evitando que conexões fiquem presas ou monopolizadas por clientes inativos. Bancos de dados são um exemplo claro de leasing, pois, na maioria dos bancos transacionais, o número máximo de conexões simultâneas é limitado, e quando o limite é excedido, ocorre uma rejeição automática da solicitação impedindo que ela mesmo se inicie.
 
 <br>
-
-## Shuffle Sharding
-
-## Event Sourcing - Não sei se vale um texto só pra isso 
-
-## Queueing Theory-based Designs - Não sei se vale um texto só pra isso 
 
 
 
