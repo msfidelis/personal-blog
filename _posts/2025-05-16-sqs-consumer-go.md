@@ -736,9 +736,9 @@ Aqui está a tabela resumindo os resultados de todas as variações testadas:
 | Worker Pool + Batch Consumer                                   |    5    |   1 000   |  0m38.014s  |     26    |
 | Worker Pool + Batch Consumer                                   |    10   |   1 000   |  0m21.779s  |     47    |
 | Worker Pool + Batch Consumer + Batch Delete                    |    5    |   1 000   |   0m8.329s  |    125    |
-| Canais & Goroutines + Batch Consumer + Batch Delete            |    5    |   1 000   |   0m5.311s  |    200    |
-| Canais & Goroutines + Batch Consumer + Batch Delete            |    10   |   1 000   |   0m4.202s  |    250    |
-| Canais & Goroutines + Batch Consumer + Batch Delete (long run) |    10   |  100 000  |  2m57.052s  |    564    |
+| Channels & Goroutines + Batch Consumer + Batch Delete            |    5    |   1 000   |   0m5.311s  |    200    |
+| Channels & Goroutines + Batch Consumer + Batch Delete            |    10   |   1 000   |   0m4.202s  |    250    |
+| Channels & Goroutines + Batch Consumer + Batch Delete (long run) |    10   |  100 000  |  2m57.052s  |    564    |
 
 <br> <br>
 
