@@ -8,13 +8,13 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Resiliência
 ---
 
-{% include latex.html %}
-
 Nesse capitulo iremos **revisitar praticamente tudo que já foi visto, e dar pequenos spoilers de capítulos que ainda vão vir, porém com algumas óticas adicionais**. A maioria, beirando **todos os tópicos já forma tratados em capítulos anteriores**. Então caso tenha sentido falta de uma maior profundidade conceitual, **recomendo fortemente voltar alguns passos atrás e ler sobre nos materiais**. 
 
 Esse material talvez seja **um dos mais importantes dessa série**, porque além de tratar de um dos tópicos mais importantes de sistemas distribuídos, encaminha a minha proposta principal que é **entender conceitualmente algo, e conseguir remoldar esse algo para diferentes pontos de vista**. Veremos que por mais que, a partir dessa linha, **tudo que veremos será abordado com tons de resiliência, mas mesmo assim não irão perder em nada seus propósitos originais de implementação**. 
 
 Essa talvez seja a lição mais valiosa pelo qual estou me esforçando para passar nesse livro. Um grande exercício para mim como escritor, e para você como leitor. 
+
+{% include latex.html %}
 
 <br>
 
@@ -127,12 +127,6 @@ O Blast Radius é um **conceito originalmente bélico**, que **descreve, de form
 Embora tenha origens militares e traga uma conotação contraditória, o conceito também é utilizado em discussões de arquitetura de sistemas e engenharia de confiabilidade para **estimar o impacto da falha de um componente em um sistema distribuído**. Esse termo é aplicado para **identificar pontos críticos e oportunidades de melhoria na resiliência**, e sugere, por meio de **exercícios de simulação de falhas** ou **"perguntas provocativas" em revisões arquiteturais**, a estimativa dos **impactos das falhas em pontos críticos do sistema**. A partir dessas estimativas, busca-se discutir como **minimizar os danos nesses cenários** através de fallbacks, aplicação de estratégias e implementação de padrões de resiliência, entre outros.
 
 Os questionamentos utilizados para estimar esses danos podem vir na forma de **"Se o componente X parar, o que acontece?"**, avançando para **"Se este componente estiver em downtime, aquele outro continuará funcionando?"** e indo até perguntas como **"Se essa API cair, o que para de funcionar? O que continua funcionando parcialmente? O que permanece funcionando normalmente? Em quanto tempo me recupero se ela voltar? Gero inconsistências em alguma parte do meu processo?"**, evoluindo assim para uma variedade de cenários. O ponto que quero destacar é que **essas "perguntas provocativas" devem ser feitas sempre que possível**. É essencial criar um ambiente seguro e aberto para que esses questionamentos sejam feitos sem barreiras ou cerimônias. Considero essa prática uma das mais dinâmicas e eficientes para partir do zero a algo concreto em um review arquitetural de resiliência, e recomendo sua experimentação a todos.
-
-
-<br>
-
-## Single Point of Failure (SPOF) 
-
 
 
 <br>
@@ -351,6 +345,24 @@ Para ilustrar, considere um sistema que funciona como um gateway de pagamento, o
 
 <br>
 
+
+## Backpressure como Resiliência
+
+Ao adotar [fluxos assíncronos](mensageria-eventos-streaming/) na nossa arquitetura, **podemos presumir que lidaremos com um throughput muito alto de requisições**. Não é uma regra absoluta, mas **escalamos o processamento de grandes volumes de dados e transações com paralelismo externo de forma muito mais eficiente do que utilizando apenas métodos síncronos e bloqueantes**, como [chamadas de APIs REST ou implementações de gRPC](/padroes-de-comunicacao-sincronos/). O **ciclo de vida dessas transações pode ser híbrido**, contendo **chamadas HTTP mesmo num fluxo assíncrono para lidar com dependências externas ou produzindo mensagens para outros sistemas** que finalizam a transação iniciada de forma assíncrona. No entanto, um fluxo de grande volume como o proposto que faz uso intensivo de I/O pode causar indisponibilidade em sistemas subsequentes de forma repentina.
+
+Quando abordamos [backpressure](/performance-capacidade-escalabilidade/) pela primeira vez, entendemos esse conceito como uma **“força contrária” que gera um gargalo no fluxo de transações**. Em termos de resiliência, o **backpressure ativo e intencional permite desacelerar a produção ou a integração com outros serviços**, **diminuindo o ritmo de consumo ou enfileirando o processamento** em memória para **poupar componentes downstream de uma sobrecarga vinda do nosso sistema**. Em resumo, implementações de backpressure **permitem que o sistema envie sinais ativos de degradação e desaceleração, preservando a integridade dos componentes** posteriores e evitando picos de latência ou falhas em cascata.
+
+![Backpressure ativo](/assets/images/system-design/backpressure-resiliencia.drawio.png)
+
+As implementações de backpressure **podem se basear em métricas de observabilidade** e ao **detectar latências crescentes, aumento de erros ou filas internas que excedem determinados thresholds**, o adaptador de backpressure aciona um feedback loop que **desacelera as chamadas a serviços externos ou redireciona parte do tráfego para fallbacks alternativas ou filas de offload**. Esse mecanismo preventivo atua como um **circuito de segurança antes que os limites de capacidade sejam ultrapassados**, reduzindo o blast radius de picos de carga inesperados.
+
+Uma forma avançada de estender as capacidades de backpressure inteligente é i**ntegrá-lo ao monitoramento dos nossos SLIs e error budgets**, tanto das **aplicações quanto de suas dependências**. Por exemplo, **se o error budget de um endpoint crítico de uma dependência estiver próximo do limite em um determinado período, o sistema pode reduzir proativamente sua taxa de ingestão, produção  e processamento** — via backpressure — para **priorizar a estabilidade da malha de serviços**, gerando métricas de retenção de tráfego que alimentam dashboards e alertas. Assim, o backpressure deixa de ser apenas um guardião da saturação de recursos críticos e torna-se um componente operacional que alinha resiliência técnica a metas de continuidade de negócio.
+
+Algumas implementações de [Service Mesh](/service-mesh) também nos permitem aplicar essas políticas de forma agnóstica à aplicação, simplificando a adoção de backpressure em todo o ecossistema de microsserviços.
+
+
+<br>
+
 ## Resiliência na Camada de Dados
 
 Quando falamos de dados, **estamos lidando com a camada mais complexa de escalar e desenvolver mecanismos de tolerância a falhas**. Projetar **estratégias que garantam resiliência na camada de dados torna a aplicação dos outros patterns consideravelmente mais simples**. Nesta seção, assim como nas demais, vamos compilar muitos cenários já abordados anteriormente, pois esse assunto tem sido talvez o maior foco de estudo deste livro.
@@ -482,3 +494,9 @@ Em pools de conexão de banco de dados, **cada cliente ou thread recebe um lease
 [Conversation Patterns](https://www.enterpriseintegrationpatterns.com/patterns/conversation/Lease.html)
 
 [graceful degradation](https://www.techtarget.com/searchnetworking/definition/graceful-degradation)
+
+[Envoy Flow Control](https://blog.mygraphql.com/en/posts/cloud/envoy/flow-control/)
+
+[Istio Service Mesh](https://www.istioworkshop.io/09-traffic-management/06-circuit-breaker/)
+
+[Back Pressure in Distributed Systems](https://www.geeksforgeeks.org/back-pressure-in-distributed-systems/)
