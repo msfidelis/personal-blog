@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Resiliência
+title: System Design - Padrões de Resiliência
 ---
 
 Nesse capítulo, iremos revisitar praticamente tudo o que já foi visto e dar pequenos spoilers de capítulos que ainda virão, porém com algumas óticas adicionais. A maioria, praticamente todos os tópicos, já foi tratada em capítulos anteriores. Então, caso você tenha sentido falta de uma maior profundidade conceitual, recomendo fortemente voltar alguns passos atrás e reler os materiais.
