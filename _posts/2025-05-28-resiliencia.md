@@ -8,7 +8,7 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Padrões de Resiliência
 ---
 
-Nesse capítulo, iremos revisitar praticamente tudo o que já foi visto e dar pequenos spoilers de capítulos que ainda virão, porém com algumas óticas adicionais. A maioria, praticamente todos os tópicos, já foi tratada em capítulos anteriores. Então, caso você tenha sentido falta de uma maior profundidade conceitual, recomendo fortemente voltar alguns passos atrás e reler os materiais.
+Nesse capítulo, iremos revisitar praticamente tudo o que já foi visto e dar pequenos spoilers de capítulos que ainda virão, porém com algumas óticas adicionais. A maioria, ou praticamente todos os tópicos já foram tratados em capítulos anteriores, o que mudará aqui será somente a perspectiva. Então, caso você tenha sentido falta de uma maior profundidade conceitual, recomendo fortemente voltar alguns passos atrás e reler os materiais.
 
 Este material talvez seja um dos mais importantes desta série, porque, além de tratar de um dos temas centrais em sistemas distribuídos, apresenta minha proposta principal, que é entender conceitualmente algo e ser capaz de remoldar esse conceito para diferentes pontos de vista. Veremos que, a partir dessa linha, tudo o que veremos será abordado sob a ótica da resiliência, mas mesmo assim não perderá em nada seu propósito original de implementação.
 
