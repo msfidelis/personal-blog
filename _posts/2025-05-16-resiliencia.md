@@ -25,6 +25,8 @@ Resiliência é um termo muito comum em arquitetura e engenharia de software, qu
 
 A preocupação com resiliência é recorrente no dia a dia dos times de desenvolvimento e de operações. A maneira mais simples de explicá-la, de forma resumida, é **propor que, quando algum serviço ou ponto específico do sistema falhar, o sistema deva possuir mecanismos para contornar a situação e minimizar o impacto no funcionamento geral**.
 
+<br>
+
 ## Resiliência e Disponibilidade
 
 Embora os termos resiliência e disponibilidade sejam muito próximos e frequentemente caminhem juntos, **seus conceitos possuem diferenças fundamentais e não devem ser confundidos**. A disponibilidade pode ser descrita em dois cenários principais: o primeiro **mede quantas solicitações enviadas ao sistema foram processadas com sucesso**, enquanto o segundo **mede o tempo em que o sistema permaneceu indisponível em determinados períodos**.
