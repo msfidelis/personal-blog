@@ -21,9 +21,9 @@ Esta talvez seja a lição mais valiosa pela qual estou me esforçando para tran
 
 # Definindo Resiliência
 
-Resiliência é um termo muito comum em arquitetura e engenharia de software, que **refere-se à capacidade dos sistemas, processos e componentes de suportar uma ampla variedade de cenários de falhas e manter sua operação**, seja de forma total ou parcial. **Esse conceito está diretamente relacionado a diversas disciplinas e tópicos de engenharia**, sempre com o objetivo de elevar os níveis de eficiência e segurança operacional das funcionalidades das aplicações e das jornadas dos clientes.
+Resiliência é um termo muito comum em arquitetura e engenharia de software, que **refere-se à capacidade dos sistemas, processos e componentes de suportar uma ampla variedade de cenários de falhas e manter sua operação**, seja de forma total ou parcial. **Esse conceito está diretamente relacionado a diversas disciplinas e tópicos de engenharia**, sempre com o objetivo de elevar os níveis de eficiência e segurança operacional das funcionalidades das aplicações e das jornadas dos clientes dentro dos sistemas. Se olharmos com muito critério **tudo desenvolvido e implementado com a devida qualidade pode ser uma prática de resiliência**. 
 
-A preocupação com resiliência é recorrente no dia a dia dos times de desenvolvimento e de operações. A maneira mais simples de explicá-la, de forma resumida, é **propor que, quando algum serviço ou ponto específico do sistema falhar, o sistema deva possuir mecanismos para contornar a situação e minimizar o impacto no funcionamento geral**.
+A preocupação com resiliência é recorrente no dia a dia dos times de desenvolvimento e de operações responsáveis por funcionalidades críticas, e a maneira mais simples de explicá-la de forma rotineira é dizendo que, **quando algum serviço ou ponto específico do sistema falhar, o mesmo deve possuir mecanismos para contornar a situação e minimizar o impacto no funcionamento geral**.
 
 <br>
 
@@ -47,7 +47,7 @@ Uma grande variedade de métricas pode ser utilizada para avaliar a disponibilid
 
 ### Métrica de Disponibilidade de Uso
 
-A forma mais comum de medir a disponibilidade usando a quantidade de uso de uma API ou funcionalidade como parâmetro é calcular essa **disponibilidade usando como base a taxa de erros dos mesmos**. Isso basicamente consiste em **dividir dois contadores: um referente à quantidade de erros ocorridos dentro do período e outro representando a soma total das requisições** que ocorreram, independentemente do resultado (sucesso ou falha).
+A forma mais comum de medir a disponibilidade de sistemas é tomando como régua seu uso. Podemos calcular essa disponibilidade usando como base a **taxa de erros dos mesmos**. Isso basicamente consiste em dividir dois contadores: um **referente à quantidade de erros ocorridos dentro do período e outro representando a soma total das requisições** que ocorreram, independentemente do resultado (sucesso ou falha). Isso nos diz de maneira clara e simple **qual a porcentagem de vezes que aquele sistema foi requisitado e não respondeu de acordo**. 
 
 \begin{equation}
 \text{Taxa de Erros} = \left( \frac{\text{Número de Erros}}{\text{Número Total de Tentativas ou Eventos}} \right) \times 100
