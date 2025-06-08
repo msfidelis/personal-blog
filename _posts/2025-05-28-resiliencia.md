@@ -326,7 +326,6 @@ Um fallback também pode incluir uma **alternativa de mensageria para fluxos que
 
 Por exemplo, **considere uma API interna que aciona diversos serviços de notificação, como o envio de e-mails aos clientes**. Embora as notificações devam, na maior parte do tempo, **ser executadas de forma sequencial, atrasos ocasionais não representem problema significativo**. Em caso de falha de componentes — como bancos de dados ou servidores SMTP —, em vez de retornar um erro ao cliente da API, **o fluxo secundário é acionado**, enviando a solicitação de e-mail para uma fila de mensageria. Essa mensagem será **reprocessada diversas vezes até que o serviço seja restabelecido**, permitindo que as **operações sejam concluídas assim que a disponibilidade for retomada**.
 
----
 
 ### Exemplo: Fallback Contratual
 
