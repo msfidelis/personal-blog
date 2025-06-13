@@ -26,13 +26,13 @@ São raros os sistemas que não possuam nenhum tipo de Pontos Únicos de Falha, 
 
 # Identificando Single Point of Failures
 
-Identificar os SPoF de algum ambiente pode parecer extremamente trivial, porém se tornar uma tarefa árdua de esforço corporativo em ambientes grandes e de larga escala, pois precisamos mapear quais as funcionalidades mais críticas, documentar cada serviço, clusters, nodes, servidores, databases, componentes de rede, brokers de eventos e mensagens e até fornecedores, sem falar dos times responsáveis e formas de acionamento de cada um deles. 
+Identificar os SPoF de algum ambiente pode parecer extremamente trivial, porém se tornar uma tarefa árdua de esforço corporativo em ambientes grandes e de larga escala, pois precisamos mapear quais são as funcionalidades mais críticas, documentar cada serviço, seus clusters, nodes, servidores, databases, componentes de rede, brokers de eventos e mensagens e até fornecedores, sem falar dos times responsáveis e formas de acionamento de cada um deles. 
 
 ![SPOF](/assets/images/system-design/spof-identiticacao.drawio.png)
 
 Durante esse mapeamento, é **necessário desenhar um "fluxo feliz" de cada transação dessas funcionalidades críticas**, **mapear todos os atores, desde a requisição de fato, até a resposta para o usuário**. Em seguida é necessário inspecionar **quais desses componentes [não possuam réplicas](), [implementem padrões de resiliência](), fallbacks e mecanismos que consigam assumir esses fluxos alternativos automaticamente**. São nesses atores que são encontrados **candidatos para se tornarem pontos únicos de falha** num fluxo crítico. 
 
-A identificação de "Pontos únicos de falha" não é uma tarefa pontual ou trivial, necessita de constante revisão arquitetural e força corporativa para que seja realmente efetivo. 
+A identificação de "Pontos únicos de falha" não é uma tarefa pontual ou fácil, necessita de constante revisão arquitetural e força corporativa para que seja realmente efetivo, ainda mais se começarmos a descer o nível de abstrações de virtualização, networking, replicação de provedores e etc.
 
 ## 
 
@@ -46,6 +46,11 @@ Existem estratégias comuns que podem nos auxiliar corrigir e principalmente evi
 
 ![Ativa](/assets/images/system-design/spof-ativa.drawio.png)
 
+Uma redundância ou replicação ativa é um modelo onde todas as intâncias e replicas de um serviço trabalham simultâneamente para receber e processar as requisições da carga de trabalho. Resumidamente, nenhuma das replicas tem como objetivo ficar ociosa aguardando uma falha geral para que assuma o processamento primário das requisições. Esse arranjo arquitetural pode ser encontrado em replicas de aplicações atrás de balanceadores de carga, onde todos são verificados em integridade e recebem carga quase que uniformemente mediante a solicitação do serviço, ou em mensageria onde todas as replicas estão conectadas nos tópicos/filas e podem receber mensagens e eventos para processar. No geral, esse tipo de arquitetura, quando trabalhada sem estado, permite que na falha eventual de pequenas quantidade das replicas, continue operando e consiga se recuperar sem gerar grandes ou nenhum dano a experiência do cliente.
+
+Esse modelo também pode ser encontrado em replicas de leitura de bancos de dados que possuam em estado transacional, todas os dados escritos nas replicas primárias. E além de possuir um viés de disponibilidade, onde essa réplica é capaz de assumir o papel de escrita em caso de falha na replica princial, pode exercer funcionalidades ativas na [segregação de escrita e leitura]() em diferentes instâncias. 
+
+
 
 ## Redundância e Replicação Passiva 
 
@@ -57,9 +62,15 @@ Existem estratégias comuns que podem nos auxiliar corrigir e principalmente evi
 
 ## Ativo-Ativo
 
+![Ativo / Ativo](/assets/images/system-design/ativo-ativo.drawio.png)
+
 ## Ativo-Passivo
 
+![Ativo / Passivo](/assets/images/system-design/ativo-passivo.drawio.png)
+
 ## Pilot Light (Luz Piloto)
+
+![Pilot Light](/assets/images/system-design/pilot-light.drawio.png)
 
 ### Referencias 
 
