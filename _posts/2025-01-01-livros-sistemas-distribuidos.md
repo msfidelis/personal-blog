@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: Um Guia de Literatura Para Sistemas Distribuídos (e o porquê eu não quero que você o siga)
+seo_title: Guia de Literatura para Sistemas Distribuídos — Recomendações e Reflexões
+seo_description: Um roteiro pessoal sobre livros essenciais para quem deseja entender sistemas distribuídos, confiabilidade, microserviços e arquitetura moderna. Indicado para profissionais com experiência prática em engenharia de software.
+excerpt: Este artigo apresenta um roteiro pessoal com os livros que mais impactaram minha jornada em sistemas distribuídos, confiabilidade e arquitetura moderna. Uma curadoria não linear, feita para quem já percorreu parte do caminho.
 ---
 
 **Esse não é um artigo comum aqui do blog****. Na verdade, é o tipo de material que eu sou mais relutante em produzir:** uma recomendação. Não gosto de dar recomendações gerais porque isso presume muitas coisas sobre muitas pessoas ao mesmo tempo, ignorando peculiaridades, nuances e momentos distintos de cada indivíduo, que pode ler e interpretar algo de formas diferentes. Na verdade, esse receio molda a maneira como prefiro acompanhar a carreira das pessoas no dia a dia e conduzir mentorias: de forma pontual, direta e olhando para a pessoa que está à minha frente, sem presumir nenhum molde genérico do tipo *“faça assim que vai dar certo pra você”*. **A coisa menos genérica que existe é gente**... Gosto de olhar cada pessoa individualmente, caso a caso. Por isso, já desisti várias vezes de escrever um post assim, mas aqui está... O primeiro post do ano.

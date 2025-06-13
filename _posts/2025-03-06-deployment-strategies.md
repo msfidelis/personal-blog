@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [system-design, engineering, cloud]
 title: System Design -  Estratégias de Deployment
+seo_title: Estratégias de Deployment em System Design — Canary, Blue-Green, Rolling e mais
+seo_description: Explore as principais estratégias de deployment como Blue-Green, Canary Releases, Rolling Updates, Shadow Deployments e Feature Flags. Saiba como escolher o melhor modelo para garantir disponibilidade e rollback seguro.
+excerpt: Neste artigo, revisamos as principais estratégias de deployment como Canary, Blue-Green, Rolling Updates, Shadow Deployments e Feature Flags, explicando quando aplicá-las, seus benefícios e como contribuem para sistemas resilientes e seguros.
 ---
 
 Mais um texto rápido da série de System Design. O objetivo deste artigo é abordar conceitualmente os principais termos que envolvem as técnicas de deployment e entrega de software. O objetivo não é apenas dizer **"o que cada um dos termos significa"** entre os modelos de deployment que considerei mais importantes, mas explicar **"o porquê"** de eles existirem e quais os reais benefícios da adoção dos mesmos em projetos reais. 

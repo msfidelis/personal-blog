@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Saga Pattern
+seo_title: Saga Pattern em System Design — Orquestração de Transações Distribuídas
+seo_description: Entenda o Saga Pattern e como ele resolve transações distribuídas em microsserviços. Veja exemplos de orquestração, coreografia, compensações e consistência eventual aplicada ao System Design.
+excerpt: Neste artigo exploramos o Saga Pattern como solução para transações distribuídas, abordando conceitos de orquestração, coreografia, compensações, consistência eventual e boas práticas em microsserviços.
 ---
 
 O ano de publicação desse texto **foi marcado por interessantes experiências profissionais nas quais eu pude resolver problemas muito complexos de sistemas distribuídos utilizando o modelo Saga**. Logo, por mais que tenha sido sensacional poder compilar todas as referências bibliográficas e materiais que consumi por todo esse período aqui, também foi extremamente desafiador remover as "exclusividades" que foram trabalhadas e deixar as sugestões sem um excesso de particularidades dos meus cenários. 

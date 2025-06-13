@@ -5,6 +5,9 @@ featured: false
 published: true
 categories: [golang, engineering, cloud, aws]
 title: Blueprint -  Golang SQS Consumer Performance Tunning
+seo_title: Otimizando um Consumer SQS com Golang — Tuning de Performance com Channels e Batches
+seo_description: Aprenda como otimizar um consumidor SQS escrito em Go usando channels, batching e controle de concorrência. Veja estratégias práticas para melhorar o throughput e reduzir latência em sistemas assíncronos.
+excerpt: Este blueprint apresenta técnicas para tunar um consumer SQS em Golang, explorando uso eficiente de channels, processamento em lote, controle de concorrência e medições reais de performance.
 ---
 
 > Blueprints são pequenas documentações que eu estruturo em forma de um breve estudo a respeito de algum tema ou ideia específica. Não tem objetivo de ser um artigo estruturado, somente uma breve documentação com exemplos para consultas futuras. 

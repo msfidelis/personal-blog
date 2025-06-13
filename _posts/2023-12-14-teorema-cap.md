@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, databases, engineering ]
 title: System Design - Teorema CAP, ACID, BASE e Bancos de Dados Distribuídos
+seo_title: Teorema CAP — Consistência, Disponibilidade e Tolerância à Partições em Sistemas Distribuídos
+seo_description: Entenda o que é o Teorema CAP, como ele impacta o design de sistemas distribuídos e como escolher entre consistência, disponibilidade e tolerância a partições em cenários reais.
+excerpt: Neste artigo, descomplicamos o Teorema CAP, explicando como os princípios de consistência, disponibilidade e tolerância à partições afetam a arquitetura e as decisões técnicas em sistemas distribuídos modernos.
 ---
 
 Esse é mais um artigo da série de **System Design**, que está se mostrando extremamente prazerosa de escrever. Tem sido muito gratificante me desafiar a entender temas densos e complexos e simplificar suas explicações. Da ultima vez falamos sobre [Concorrência, Paralelismo e Multithreading](), hoje não consegui gerar exemplos tão didáticos para o mundo real quando nesse artigo, mas ainda assim espero de coração que você ainda saia com algum conhecimento bacana daqui. 
