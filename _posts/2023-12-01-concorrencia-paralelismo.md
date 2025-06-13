@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, golang, engineering ]
 title: System Design - Paralelismo, Concorrência e Multithreading
+seo_title: Concorrência e Paralelismo — Diferenças e Aplicações em System Design
+seo_description: Entenda as diferenças entre concorrência e paralelismo, como elas impactam o desempenho de sistemas modernos, e como projetar arquiteturas que aproveitam essas abordagens de forma eficiente.
+excerpt: Neste artigo, exploramos os conceitos de concorrência e paralelismo sob a perspectiva de System Design, discutindo suas distinções, aplicações práticas e implicações em sistemas de alta performance.
 ---
 
 Este artigo é o primeiro de uma série sobre **System Design**. Esta série tem como objetivo explicar conceitos complexos de programação de maneira simples e objetiva para todos os tipos de profissionais, independentemente do nível de senioridade ou tempo de experiência, contribuindo para a fixação de conceitos de ciências da computação e arquitetura.

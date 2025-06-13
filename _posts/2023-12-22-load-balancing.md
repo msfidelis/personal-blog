@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Load Balancers e Proxies Reversos
+seo_title: Load Balancing — Como Funciona o Balanceamento de Carga em Sistemas de Alta Disponibilidade
+seo_description: Explore os principais conceitos, algoritmos e tipos de balanceadores de carga, e entenda como o Load Balancing garante performance e resiliência em arquiteturas modernas.
+excerpt: Este artigo explica de forma didática como funciona o balanceamento de carga, quais algoritmos são mais usados, e como aplicá-lo para distribuir requisições, garantir escalabilidade e evitar sobrecarga em sistemas distribuídos.
 ---
 
 Este é o terceiro artigo da série sobre System Design. Hoje, vamos dar um *deep dive* em um tópico interessante e frequentemente subestimado: os **Balanceadores de Carga** e os **Proxies Reversos**.

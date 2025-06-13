@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Padrões de Comunicação Síncronos
+seo_title: Padrões de Comunicação Síncronos — REST, Webhooks, gRPC e GraphQL no System Design
+seo_description: Entenda os principais padrões de comunicação síncronos, como REST, Webhooks, gRPC e GraphQL, e como aplicá-los em arquiteturas distribuídas com resiliência e performance.
+excerpt: Este capítulo apresenta os principais padrões de comunicação síncronos entre serviços, como REST, gRPC e GraphQL, explicando sua aplicabilidade, vantagens e desafios sob a perspectiva de System Design.
 ---
 
 Este texto é uma continuação direta do capitulo onde falamos sobre [Protocolos e Comunicação de Redes](/protocolos-de-rede/). A ideia é seguir com os conceitos direcionados anteriormente para aplicá-los em diferentes tipos de padrões de comunicação empregados na contrução de software em arquiteturas modernas e distribuídas. Nesse capítulo iremos falar sobre alguns padrões que podemos utilizar para **construção de chamadas sincronas entre serviços**, aproveitando os conhecimentos ofertados quando abordamos sobre o **Protocolo HTTP, TCP/IP e UDP** para detalhar conceitualmente com a visão de System Design outras tecnologias e padrões como o **Padrão REST, Webhooks, gRPC, Websockets e GraphQL**. 

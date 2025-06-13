@@ -34,6 +34,17 @@ plugins:
   - jekyll-linkpreview
   # - jekyll-compress-images
 
+whitelist:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-archives
+  - jekyll-gist
+  - jekyll-embed-urls
+  - jekyll-linkpreview
+  # - jekyll-compress-images
+
 # compress_images:
 #   images_path: "assets/images/**/*.{gif,png,jpg,jpeg,svg}"
 

@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - API Gateways
+seo_title: API Gateway em System Design — Exposição de Serviços com Segurança, Roteamento e Governança
+seo_description: Entenda como os API Gateways centralizam e protegem serviços distribuídos, atuando com autenticação, rate limiting, roteamento inteligente, versionamento e abstração em arquiteturas baseadas em microserviços.
+excerpt: Neste artigo, exploramos o conceito de API Gateway como padrão arquitetural para exposição de serviços, cobrindo funções como autenticação, roteamento, rate limiting, canary deployments e governança em ambientes distribuídos.
 ---
 
 O objetivo deste capítulo é aproveitar as jornadas de [protocolos de rede](/protocolos-de-rede/), [balanceadores de carga](/load-balancing/), [padrões de comunicações síncronos](/padroes-de-comunicacao-sincronos/), [monolitos e microserviços](/monolitos-microservicos/) para analisarmos os **API Gateways**. Ter a oportunidade de olhar os Gateways como um pattern e detalhar seus conceitos, abstraindo as implementações e desassociando-os de tecnologias específicas, pode nos abrir caminhos para elucidar soluções e sugerir melhorias em arquiteturas complexas de exposição de serviços, tanto interna quanto externamente nas organizações. Além disso, pode gerar insights produtivos para a governança desse tipo de cenário.

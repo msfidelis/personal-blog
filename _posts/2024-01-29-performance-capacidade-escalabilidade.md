@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Performance, Capacidade e Escalabilidade
+seo_title: Performance, Capacidade e Escalabilidade — Fundamentos para o System Design
+seo_description: Entenda os conceitos de performance, capacidade e escalabilidade aplicados a sistemas distribuídos. Explore suas diferenças, impactos e como tratá-los no planejamento de arquiteturas modernas.
+excerpt: Este artigo explora os pilares fundamentais de performance, capacidade e escalabilidade sob a ótica de System Design, trazendo definições claras, distinções práticas e implicações arquiteturais em sistemas modernos.
 ---
 
 Esse é mais um artigo da série sobre System Design. Nele, vamos abordar três tópicos: **Capacidade**, **Performance** e **Escalabilidade** (*não necessariamente nessa ordem*), sempre com uma perspectiva conceitual de System Design. Ao escrever este capítulo, me questionei se deveria dividí-lo em três textos separados. Contudo, fiquei tão satisfeito com o resultado que não consegui tomar essa decisão. À medida que criava tópicos, estudava e coletava referências, uma estranha sensação de querer que este capítulo nunca terminasse surgiu. Com base nisso, levantei muitos outros tópicos para explorar e abordar nos próximos artigos.
