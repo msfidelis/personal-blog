@@ -209,6 +209,8 @@ Quando um resolver DNS (geralmente operado por seu provedor de internet) precisa
 
 O **Protocolo de Configuração Dinâmica de Host** (*Dynamic Host Configuration Protocol*) é um protocolo de rede que permite a servidores com essa responsabilidade **designar automaticamente um endereço IP e outras informações a dispositivos que se conectam na rede.** O **DHCP é usado para a gestão de endereços IP em redes grandes e pequenas**, facilitando a conectividade e **reduzindo conflitos de endereços**. É utilizado principalmente em projetos de networking que possibilitam a entrada e saída de hosts com certa frequência, sem a necessidade de alocar IP's fixos e evitar conflitos de 2 dispositivos tentarem utilizar o mesmo IP.
 
+![DHCP](/assets/images/system-design/dhcp.png)
+
 Quando um dispositivo - cliente DHCP - se conecta a uma rede, ele solicita informações de configuração de rede a um servidor DHCP. O processo segue quatro etapas básicas, conhecidas como **DORA** (*Discovery, Offer, Request, Acknowledgment*).
 
 **1. Discovery**: O cliente envia um pacote **DHCPDISCOVER** para a rede, procurando por servidores DHCP disponíveis.
