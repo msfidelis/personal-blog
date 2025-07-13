@@ -57,9 +57,9 @@ O uso dos bancos de dados baseados em grafos podem ser implementados para encont
 
 Os bancos de dados baseados em tempo são especializados em armazenar séries temporais com indexação baseada por tempo, e também são conhecidos como TSDBs (Time-Series Data Bases). Cada registro inserido em um Time Series Database é como um "carimbo" temporal preciso daquela métrica ao decorrer do tempo. Os modelos desse tipo de banco de dados implementam o armazenamento por "append-only", registrando cada ponto do dado de forma sementada e sequencial. Esse tipo de banco de dados é utilizado em sistemas de observabilidade e monitoramento, sendo utilizado para acompanhar o desempenho de determinada métrica ao decorrer de longos períodos de tempo, como horas, dias, semanas, meses e até anos, garantindo buscas tápidas além da capacidade de realizar diversas operações e calculos matemáticos nas mesas de forma performática e barata, além de alta capacidade de ingestão de dados distibuídos através de endpoints centralizados e escaláveis. 
 
-Esse tipo de database possui também features inteligentes de expurgo de dados expirados, afim de gerenciar de forma mais performática o sgorage para comportar diversas métricas ao correr do tempo. 
+Os principais usos dos TSDB's são agregadores de logs, métricas, preços, medições sequenciais de IOT e etc. 
 
-## Multi Model Databases
+Esse tipo de database possui também features inteligentes de expurgo de dados expirados, afim de gerenciar de forma mais performática o storage para comportar diversas métricas ao correr do tempo. 
 
 
 # Modelos de Dados 
@@ -71,8 +71,6 @@ Esse tipo de database possui também features inteligentes de expurgo de dados e
 ## Modelos Colunares (Wide-Column)
 
 ## Modelos Key-Value (Chave-Valor)
-
-## Modelos de Grafos
 
 
 # Armazenamento e Indexação
