@@ -70,7 +70,17 @@ Esse tipo de database possui também features inteligentes de expurgo de dados e
 
 ## Modelos Colunares (Wide-Column)
 
+Os modelos de dados colunares são inspirados em sistemas como o Apache Cassandra ou o Google Bigtable. Os modelos transacionais organizam seus dados em formatos de colunas e linhas dentro de uma tabela. Todos os dados dessa tabela possuem o mesmo número de variáveis colunares, e caso você precise adicionar uma nova coluna para adicionar um atributo novo nos dados da tabela, essa coluna será inserida em toda a tabela com adotando valores nulos ou default caso definido no schema. Os bancos de dados colunares ainda possuem o conceito de linhas, porém cada registro pode conter seu próprio conjunto de colunas. 
+
+Os dados são organizados em famílias de colunas agrupadas ao redor de chaves de linha. Para assimilar como funciona o agrupamento e recuperação dos dados, linha pode ter um conjunto diferente de colunas e essas colunas são agrupadas em "famílias de colunas", e quando você precisa buscar os dados dessas colunas de forma explicita via query de consulta, o sistema do banco de dados busca apenas as linhas que estão dentro dessas familias de colunas. Isso é eficiente quando temos conjuntos de dados dispersos, séries temporais, data-warehouses, data lakes desestruturados e dispersos. 
+
+As implementações de databases wide-column são adaptados para lidar com replicação e e sharding de forma distribuída com capacidade de escala até milhares de nós, com pontos únicos de falha reduzidas e schemas altamente flexíveis a custo de consistência eventual e capacidade de transações atômicas e joins limitados entre tabelas e famílias limitados. 
+
 ## Modelos Key-Value (Chave-Valor)
+
+Os bancos chave-valor, ou key-value, talvez sejam o tipo mais simples de bancos de dados NoSQL que podemos encontrar e trabalhar. Como o próprio nome sugere, eles armazenam seus dados em uma coleção de paridade, sendo uma chave que funciona como um identificador único para o dado no conjunto e o valor que pode estar em diversos formatos não estruturados, esses que variam de simples strings, números, valores booleanos, JSON's e até mesmo blobs complexos. Os exemplos mais notáveis que temos são as engines de cache como Redis, Valkey e Memcached, mas quando devidamente configurados e modelados, podemos encontrar implementações até mesmo em databases como MongoDB, DynamoDB, Elasticsearch e etc. 
+
+Sua performance está embasada na extrema facilidade de indexação e recuperação do dados, pois o mesmo ocorre diretamente pela chave previamente composta e conhecida pelo cliente, e permite facilmente uma replicacão e distribuição para suportar grandes volumes de acesso e armazenamento, além da simplificação da forma de acesso, sendo realizado normalmente através de protocolos já bem estabelecidos diretamente via [TCP/IP]() ou implementações [RESTful](), evitando a utilização de protocolos complexos. 
 
 
 # Armazenamento e Indexação
@@ -130,3 +140,7 @@ Esse tipo de database possui também features inteligentes de expurgo de dados e
 [SQL, NewSQL, and NOSQL Databases: A Comparative Survey](https://ieeexplore.ieee.org/document/9078970)
 
 [Clash of Database Technologies: SQL vs. NoSQL vs. NewSQL](https://aaron-russell.co.uk/blog/sql-vs-nosql-vs-newsql/)
+
+[Wide-column Database Definition FAQ's](https://www.scylladb.com/glossary/wide-column-database/)
+
+[Cassandra Column Family](https://www.scylladb.com/glossary/cassandra-column-family/)
