@@ -91,7 +91,7 @@ O uso dos bancos de dados baseados em grafos podem ser implementados para encont
 
 # Armazenamento e Indexação
 
-A forma a engine do banco de dados realiza seu armazenamento e indexação impacta diretamente em termos de desempenho e flexibilidade na forma de escrita, leitura e operações complexas que podem ser realizadas nos conjuntos de dados. O objetivo desse tópico e descrever as principais formas de indexação e armazenamento que podem ser encontrados nas engines de mercado e quais seus principais tradeoffs existentes. 
+A forma a engine do banco de dados realiza seu armazenamento e indexação impacta diretamente em termos de desempenho e flexibilidade na forma de escrita, leitura e operações complexas que podem ser realizadas nos conjuntos de dados. O objetivo desse tópico e descrever as principais formas de indexação e armazenamento que podem ser encontrados nas engines de mercado e quais seus principais tradeoffs existentes.  Sem  a devida indexação, o database em questão precisaria escanear a tabela ou coleção inteira, como um enorme conjunto de dados para encontrar os dados desejados, uma operação extremamente lenta em tabelas grandes que impede uma escalabilidade saudável. Nesse tópico iremos abordar alguns conceitos comuns entre as implementações de bancos de dados que podem agregar na compreensão dessas operações. 
 
 ## Page Size 
 
@@ -112,13 +112,25 @@ Os Log-Structured Systems também são conhecidos pelo termo LSM-Tree, ou Log-St
 Engines como BigTable, DynamoDB, Apache Cassandra, InfluxDB e ScyllaDB implementam o modelo de LSM-Tree para escrita e indexação posterior para otimizar sua escrita em troca de consistência eventual e performance. 
 
 
-## Indexação B-Tree e B+Tree
+## Indexação B-Tree (Binary Tree) - Achei que ficou ruim, preciso deixar mais simples. 
 
-A indexação por B-Tree, ou Binary Tree, ou Arvore Binária, aplicam estruturas de dados de busca e armazenamento aplicando o conceito de arvores auto-balanceadas. PAra isso os dados precisam ser catalogados e classificados, permitindo buscas, inserções, atualizações e deleções em tempo logarítmico. Uma arvore binária consiste em nós. Cada nó pode ter um certo número de chaves (dados de indexação) e ponteiros para outros nós (filhos). Os nós internos (não-folha) armazenam chaves e ponteiros para os nós filhos. Os nós folha armazenam as chaves e os ponteiros para os registros de dados reais no disco.
+A indexação por B-Tree, ou Binary Tree, ou Arvore Binária, são estruturas de dados de busca e armazenamento que aplicam o conceito de arvores auto-balanceadas de dados devidamente ordenados. Para isso os dados precisam ser catalogados, classificados e ordenados, permitindo buscas, inserções, atualizações e deleções em tempo logarítmico. Uma arvore binária consiste em nós. Cada nó pode ter um certo número de chaves, sendo esses dados para indexação ou apontamento para outros nós filhos. Baseado no valor da chave buscada, o sistema decide qual ponteiro seguir para o próximo nó, que pode ser um bloco de disco ou a referência para o próximo nó, até que o valor solicitado seja devidamente encontrado na coleção de dados. 
 
-A implementação de B+Tree, ou B-PLus Tree otimiza ainda mais a busca e demais operações dentro de uma engine de bancos de dados. 
+
+A profundidade da árvore, e consequentemente o número de I/Os de disco, é minimizada. Esse tipo de estratégia é projetada para armazenar um nó inteiro em um bloco do disco. Ao buscar uma chave indexada, apenas o bloco onde a mesma está alocada é carregado para a memória, tornando extreamemente rápida a busca pelo dado. 
+
 
 ## Indexação por Hashing
+
+A indexação baseada em hashing é uma ténica que permite localizar itens e valores de uma tabela por valores iguais, ou exact-matches. Ao contrário de estruturas como as Arvores Binárias que suportam consultas e buscas por dados inteiros diminuindo as operações em disco e eliminando a necessidade de blocos desnecessários realizando saltos de forma logarítimica, a indexação por hashing é otimizada para buscas diretas.
+
+Dois conceitos importantes para a aplicação desse tipo de indexação são as funções hashs, as tabelas hash e os buckets. Uma função hash é responsável por providenciar uma forma idempotente e determinística de conversão de um dado para um endereço. Ou seja, aplicando a função hash sobre uma string como `hash("fidelis")`, ela resultaria em um identificador para esse dado, como por exemplo `10`. Se essa operação for repetida 1 milhão de vezes, o resultado deverá ser exatamente o mesmo esse valor seja um identificador único em um bucket de dados. 
+
+Um bucket não armazena um único dado com base no identificador resultante, como seria fosse aplicado em um algoritmo de `hash table`, e sim aponta para um endereço de uma lista encadeada ou um Binary-Tree pequena. Em exemplo, quando você calcula `hash("fidelis")`, o valor aponta para o endereço de um `bucket` específico na sua tabela hash. Em um exemplo hipotético o bucket `10`. Se esse bucket já contém outros dados, é porque outras chaves, digamos, `hash("tarsila")`, `hash("sasha")` e `hash("saori")` colidiram resultaram no mesmo bucket de número `10`. Ao inserir o valor de `fidelis` nessa lista, o valor referente será adicionado sequencialmente ao final dessa lista (ou inserido em ordem, se a lista for ordenada). 
+
+* Antes: `bucket[5] -> [ ("tarsila", "foo") -> ("sasha", "bar") -> ("saori", "ping") ]`
+* Depois: `bucket[5] -> [ ("tarsila", "foo") -> ("sasha", "bar") -> ("saori", "ping") -> ("fidelis", "pong") ]`
+
 
 ## Indices Invertidos
 
@@ -178,3 +190,5 @@ A implementação de B+Tree, ou B-PLus Tree otimiza ainda mais a busca e demais 
 [Índices columnstore: visão geral](https://learn.microsoft.com/pt-br/sql/relational-databases/indexes/columnstore-indexes-overview?view=sql-server-ver17)
 
 [Row-based vs. Column-based Indexes](https://www.linkedin.com/pulse/row-based-vs-column-based-indexes-ayman-elnory/)
+
+[Understanding Hash Indexing in Databases](https://medium.com/@rohmatmret/understanding-hash-indexing-in-databases-11c02b7d4ed1)
