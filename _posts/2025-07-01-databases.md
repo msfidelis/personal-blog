@@ -183,10 +183,24 @@ As soluções clássicas de bancos de dados SQL escalam verticalmente sem impact
 
 ## Cenários de Write-Intensive 
 
+Cenários Write-Intensive, ou Escriva Intensiva, são sistemas em que taxa de escrita supera consideralmente em magnitude a taxa de leitura. São sistemas que precisam ingerir um volume contínuo e massivo de dados e precisam que sua infraestrutura de apoio viabilizem isso de forma performática e com alta disponibilidade.  Nestes cenários intensivos em escrita, a prioridade é capturar os dados com alta velocidade e disponibilidade, garantindo que nenhuma informação seja perdida, mesmo que pra isso tenha que abrir mão da consistência forte e precise lidar com réplicas da camada de dados desatualizadas por períodos de tempo. 
+
+Esses sistemas normalmente são aplicações corporativas que possuem seu processamento assincrono, agregadores de logs de sistemas, captação de dados de dispositivos IoT, feeds de posts e comentários de redes sociais e etc. 
+
+Para suportar quantidades significativas a arquitetura de solução normalmente se volta para sistemas NoSQL, que são projetados para performance de escrita e escalabilidade horizontal de nodes. Suas arquiteturas internas são otimizada para distribuir escritas através de um cluster de múltiplos nós de forma performática, normalmente adotando operações sequenciais de escrita "append-only", estratégias de indexação e replicação assincrona normalmente sendo algoritmos de Log, como o LSM-Tree. 
+
+Diferente das B-Trees, que podem exigir operações de I/O custosas para novas escritasa e atualizações, a implementação das LSM-Trees nessas arquiteuras transformam cada escrita em uma operação sequencial de append, que é extremamente rápida para gravação rápida, pois como explicadas no tópico conceitual, enfileram essas escritas em memória, e posteriormente são escritas em disco de forma organizada, não prendendo a solicitação até que a mesma seja totalmente finalizada em todos os nós. 
+
+Essa arquitetura inerentemente favorece a consistência eventual, pois para alcançar alta disponibilidade e baixa latência das operações, o sistema não espera que a solicitação de escrita seja replicada e confirmada em todos os nós antes de responder ao cliente. As engines mais otimizadas para esse tipo de cenário são DynamoDB, Cassandra, ScyllaDB e etc. Engines que não são "as a service" possuem parametrizações de quorum para ter um equilibrio ajustável entre latência, disponibilidade e níveis de consitência. 
+
 ## Cenários de Read-Intensive 
+
+Cenários Read-Intensive, ou de Leitura Intensiva, possuem necessidades inversas do Write-Intensive, sendo normalmente ambientes onde a quantidade de leitura se sobressai sobre as operações de escrita. 
 
 ## Consistencia Forte e Consistencia Eventual 
 
+
+Ele garante que, eventualmente, todos os nós convergirão para o mesmo estado. Em contrapartida, a consistência eventual o torna inadequado para casos de uso transacionais, e os padrões de consulta são mais restritos, geralmente limitados à chave de partição para obter performance.
 
 ## Padrão de Acesso aos Dados
 
