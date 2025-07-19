@@ -16,6 +16,7 @@ Um Banco de dados, em essência, é **uma forma de organizar dados dentro de uma
 
 Em arquiteturas distribuídas, o papel de um banco de dados pode adquirir complexidades adicionais para elevar o nível de consistência, disponibilidade e performance, principalmente trabalhando com camadas de replicação geográticas, baixa latência ou realizando a melhor escolha entre consistência forte ou consistência eventual para as operações que precisam ser realizadas nos dados. 
 
+<br>
 
 # Tipos de Bancos de Dados
 
@@ -56,6 +57,7 @@ Os principais usos dos TSDB's são agregadores de logs, métricas, preços, medi
 
 Esse tipo de database possui também features inteligentes de expurgo de dados expirados, afim de gerenciar de forma mais performática o storage para comportar diversas métricas ao correr do tempo. 
 
+<br>
 
 # Modelos de Dados 
 
@@ -90,6 +92,7 @@ Comparando com os modelos SQL onde os relacionamentos são criados baseados em c
 
 O uso dos bancos de dados baseados em grafos podem ser implementados para **encontrar relacionamentos e proporcionar features de recomendação de produtos com base no comportamento de certos tipos de usuários parecidos**, análise de redes sociais, modelagem de ameaças, análises de fraude e estudar cadeias de valor e de logística de forma complexa. As consultas de um banco de grafos deve levar em conta o grau e complexidade dos vértices, a seletividade de padrões e a cardinalidade de seus valores e familiaridades para construir padrões que minimizem leituras aleatórias de disco 
 
+<br>
 
 # Armazenamento e Indexação
 
@@ -157,12 +160,26 @@ Por exemplo, em uma loja online, ao realizar uma busca como "geladeira verde 2 p
 
 A construção de um índice invertido dentro das engines que implementam geralmente envolve uma certa pipeline do dado no momento da sua gravação e indexação, como por exemplo um pré-processamento, onde os documentam passam por processode map/reduce de palavras, normalização o dado, o processo de tokenização que viabilizam o processo de busca onde o texto é divido em tokens de palavras individuais e a por fim a criação do indice que permite a listagem de todos os documentos que aquele token aparece. 
 
-# Arquitetura 
-
 ## Compressão e Encoding
 
+<br>
+
+# Arquitetura 
+
+A escolha do banco de dados é uma representação direta da arquitetura do sistema. Sistemas distibuídos no geral envolvem escolhas que impactam diretamente o desempenho, disponibilidade, escalabilidade e consistencia de uma parte, ou do sistema como um todo, e o delimitador do sucesso dessas escolhas é a escolha da tecnologia correta para a persistência do mesmo, que deve levar em conta suas características e seus requisitos funcionais e não funcionais. E escolha equivocada de um banco de dados pode acarretar em inumeros problemas de performance e confiabilidade se não levarmos em conta suas características e limitações. Dado isso, aqui listaremos os cenários mais comuns que podemos encontrar e sugestões do que levar inicialmente para as discussões de arquitetura. 
 
 ## Cenários Transacionais 
+
+Cenários onde precisamos realizar duas ou mais operações dentro de um database, envolvendo uma ou mais tabelas, onde várias operações precisam ser concluídas em sua totalidade para assim garantir o sucesso da transação, caracterizam um ambiente transacional. Cada operação deve ser tratada como um contrato: ou ela é concluída com sucesso e de forma integral, ou é revertida completamente, garantindo que o estado do domínio permaneça sempre válido e confiável para todos os consumidores na malha de dados. São cenários que precisam de  consistência forte, permitindo níveis de consistência transacional que asseguram leituras imediatas das últimas escritas.
+
+ Os cenários transacionais são ideais para ambientes e funcionalidades que demandam operações atômicas com garantias, como atualizações de saldo mediante a o registro de uma transação, atualização no estoque de um e-commerce baseado na compra e pagamento e etc.  Essas implementações são mais críticas em ambientes corporativos que demandam operações atomicidade e garantias [ACID](), e o as implementações mais comuns são os bancos relacionais que já fornecem esse tipo de funcionalidade por padrão. 
+
+Os bancos transacionais normalmente são a fonte mais confiável para eventos de negócio, como a criação de um pedido, a confirmação de um pagamento ou o registro e atualização de um novo cliente. A diretriz arquitetônica para essas engines **não é a velocidade ou o volume**, mas a **integridade e a consistência inquestionáveis dos dados**, sendo em muitos casos **combinadas com outros padrões de bancos de dados** como camadas de cache em modelo chave-valor ou [CQRS]() para otimizar cenários de leitura intensiva em engines mais otimizadas para isso, isolando a "golden source" transacional de picos de acesso sem comprometer sua disponibilidade.
+
+A estratégia de indexação mais comum é a implementação de B-Trees, pois facilitam buscas extremamente rápidas em chaves primárias das tabelas e indices segundários em multi-atributos dos dados, porém as características atômicas e consistentes acarretam em maior latência em escritas, principalmente em cenários distribuídos em várias réplicas. Quanto mais replicas a engine tiver, sejam elas para leitura ou não, maior o tempo de commit da transação, pois o dado precisa ser confirmado em todos os nós para que a transação seja efetivamente concluída para a sincronização. 
+
+As soluções clássicas de bancos de dados SQL escalam verticalmente sem impacto na latência de commit, porém exigem hardware cada vez mais caro, enquanto iniciativas NewSQL escalam horizontalmente mas pagam o preço de protocolos de consenso, como (Raft/Paxos) que adicionam latência e aumentam o custo de rede e CPU entre os nodes. 
+
 
 ## Cenários de Write-Intensive 
 
