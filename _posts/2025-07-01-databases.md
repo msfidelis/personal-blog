@@ -195,7 +195,11 @@ Essa arquitetura inerentemente favorece a consistência eventual, pois para alca
 
 ## Cenários de Read-Intensive 
 
-Cenários Read-Intensive, ou de Leitura Intensiva, possuem necessidades inversas do Write-Intensive, sendo normalmente ambientes onde a quantidade de leitura se sobressai sobre as operações de escrita. 
+Cenários Read-Intensive, ou de Leitura Intensiva, possuem necessidades inversas do Write-Intensive, sendo normalmente ambientes onde a quantidade de leitura se sobressai sobre as operações de escrita, e seu objetivo é maximizar o throughput de consulta e minimizar latências de leitura. Processos analíticos ou de alto tráfego de leitura como feeds de redes sociais, catálogos de itens de e-commerces, catálogos de produtos, listagens de usuários, consultas de endereços e CEP's e outros cenários em que os dados são mais consultados do que atualizados demandam otimizações específicas para viabilizarem suas reais capacidades. 
+
+As réplicas asseguram escalabilidade de leitura, possibilitando até mesmo que os nodes [escalem horizontalmente dde forma dinâmica](). 
+
+As otimizações mais comuns são estratégias de combinar um banco primário consistente, e até mesmo cumprindo características transacionais, como PostgreSQL ou MySQL, com réplicas de leitura e camadas de cache em Redis ou Memcached. 
 
 ## Consistencia Forte e Consistencia Eventual 
 
