@@ -26,6 +26,13 @@ Quando avaliamos o banco de dados para uma determinada solução, devemos sempre
 
 Os bancos de dados SQL (Structured Query Language) são baseados num modelo proposto por **Edgar F. Codd em 1970**, sendo **o modelo mais conceituado entre as opções arquiteturais**. O modelo é um organizado em tabelas **compostas por tuplas (linhas) e atributos (colunas)** e possuem features que **viabilizam schemas e estruturas rígidas**, definindo por um contrato os **tipos de dados, restrições de integridades, indentificadores únicos e regras de coerencia entre os relacionamentos das tabelas**. Os bancos relacionais, como o próprio nome diz, são pensados para **proporcionar relacionamentos internos e declarativos entre os dados de diferentes tabelas**. A engenharia de software faz uso desse modelo relacional para trabalhar com entidades e agregados dentro de [contextos de domínios](/monolitos-microservicos/) de um software. Esses bancos contam normalmente com features do modelo [ACID, como Atomicidade, Consistencia, Integridade e Durablidade](/teorema-cap/). 
 
+![Relacionais SQL](/assets/images/system-design/databases-relacionais.png)
+
+Para um exemplo ilustrativo, em um sistema de pedidos tradicional em um sistema de estoque, cada cliente é identificado por um registro único na tabela `cliente`, onde estão armazenados seu nome e e-mail. Quando esse cliente realiza uma compra, gera-se um registro na tabela `pedido`, que guarda a data e a referência ao cliente responsável por aquele pedido. Caso um pedido seja criado com um `cliente_id` inexistente na tabela `cliente`, o mecanismo de consistencia e relacionado de um banco SQL não permitiria a efetivação dessa transação sem necessidade de verificações adicionais na parte da aplicação. 
+
+Em seguida, cada pedido pode incluir vários produtos, mas como um produto pode aparecer em diferentes pedidos, criamos a tabela `item\_pedido` para mapear essa relação “muitos-para-muitos”: cada linha de `item\_pedido` associa um único pedido a um único produto, informando também a quantidade solicitada. Por sua vez, todos os produtos disponíveis estão listados na tabela `produto`, que contém atributos como nome, preço e uma chave estrangeira para `categoria`. Essa última tabela organiza os produtos em grupos — como **“Eletrônicos”, “Alimentos” ou “Vestuário”** — permitindo classificar e filtrar itens de forma eficiente. Dessa forma, ao consultar um pedido, o sistema une `pedido` → `cliente` para identificar quem comprou, `pedido` → `item\_pedido` para saber o que foi comprado e em que quantidade, e `item\_pedido`, `produto` , `categoria` para exibir detalhes e agrupamentos de cada produto solicitado. Essa estrutura relacional assegura a integridade referencial — já que um pedido não pode existir sem um cliente válido, e um item de pedido não pode referenciar produtos inexistentes — e facilita a construção de relatórios como **total gasto por cliente**, **quantidade vendida por categoria** ou **itens mais pedidos em determinado período**.
+
+
 ## Banco de Dados Não-Relacionais NoSQL
 
 Os bancos Não Relacionais, ou NoSQL (Not Only SQL), são uma proposta mais flexivel aos modelos rigidos dos bancos SQL, trocando níveis altos de consistencia e integridade por escalabilidade. Os bancos NoSQL por padrão utilizam outros formatos de dados além de tabelas e linhas, e não possuem relacionamentos diretos entre os seus conjuntos de dados, tendo schemas mais flexiveis e com consistência eventual em troca de maior desempenho de leitura, escrita, escalabilidade horizontal e distribuição. 
@@ -42,9 +49,15 @@ As implementações de databases NewSQL costumam ser extremamente focadas em nec
 
 Os databases em memoria, ou in-memory databases, são bancos de dados especializados em volatilidade e realizar a gestão de seus dados diretamente na RAM do servidor ao invés de tratar a persistência de forma durável em [discos e volumes físicos](/storage/). 
 
+![Databases Memória](/assets/images/system-design/database-memoria.drawio.png)
+
 O objetivo dos bancos de dados em memória é reduzir latência e tempos de resposta da consulta do dado, uma vez que uma consulta em memória volátil pode ser realizado em nanosegundos na RAM ao invés de milisesegundos em um acesso em disco, cenário que pode ser agravado por um uso intensivo de I/O do volume. 
 
 Os modelos de dados encontrados nesse tipo de implementação costumam ser extremamente simples, e seu melhor uso possível se baseando em chave-valor e combinado com outros tipos de databases duráveis, sendo pensados para sistemas de [cache](/caching/) de dados, fazendo uma camada de acesso rápido para dados caros e que não são alterados com grande frequência. 
+
+![Databases em Memória - Partição](/assets/images/system-design/database-memoria-particao.drawio.png)
+
+Os bancos de dados em memória, por serem estruturas simples e cujos dados podem ser recuperados da origem caso sejam perdidos, podem facilitar a escalabilidade horizontal, facilitando a adição e remoção de nodes aplicando [algoritmos de hashing consistente](/sharding/) e seus derivados para distribuição das informações entre diversos data nodes. Um ou mais nós do cluster podem ser designados para receber as requisições de escrita, calcular o hashing da chave e designar um node responsável entre os existentes para armazenar o dado. Para a recuperacão, o mesmo algoritmo é aplicado para saber onde será redirecionada a solicitação de leitura. Dessa forma, conseguimos trabalhar redimencionamento de forma simplificada. 
 
 Utilizar somente a memória RAM para armazenar dados presume uma série de tradeoffs consideráveis, como assumir a não-durabilidade do dado, uma vez que sendo reiniciado o serviço ou o servidor, todos os dados podem ser perdidos, logo o uso só é recomendado para dados que podem ser reconstituidos a qualquer momento diretamente de sua origem, além de sua escalabilidade costumar ser financeiramente cara de forma [horizontal e vertical](/performance-capacidade-escalabilidade/).
 
@@ -53,7 +66,9 @@ Utilizar somente a memória RAM para armazenar dados presume uma série de trade
 
 Os bancos de dados baseados em tempo são especializados em armazenar séries temporais com indexação baseada por tempo, e também são conhecidos como TSDBs (Time-Series Data Bases). Cada registro inserido em um Time Series Database é como um "carimbo" temporal preciso daquela métrica ao decorrer do tempo. Os modelos desse tipo de banco de dados implementam o armazenamento por "append-only", registrando cada ponto do dado de forma sementada e sequencial. Esse tipo de banco de dados é utilizado em sistemas de observabilidade e monitoramento, sendo utilizado para acompanhar o desempenho de determinada métrica ao decorrer de longos períodos de tempo, como horas, dias, semanas, meses e até anos, garantindo buscas tápidas além da capacidade de realizar diversas operações e calculos matemáticos nas mesas de forma performática e barata, além de alta capacidade de ingestão de dados distibuídos através de endpoints centralizados e escaláveis. 
 
-Os principais usos dos TSDB's são agregadores de logs, métricas, preços, medições sequenciais de IOT e etc. 
+![TSDB](/assets/images/system-design/databases-tsdb.drawio.png)
+
+Os Time-Series Databases são otimizados para conseguir ingerir e consultar historicamente e aplicar operações matemáticas em uma grande quantidade de dados sequenciais em diferentes tipos de implementações, em trade-offs da capacidade de relacionamentos, consistência, disponibilidade e confiabilidade e seus principais usos dos TSDB's são agregadores de logs, métricas, preços, medições sequenciais de IOT e etc. Para suportar alta ingestão de dados, e uma grande quantidade de consultas, é comum as mesmas serem enfileiradas em processos de backpressure caso alguma das capacidades internas do database seja comprometida. Não é uma garantia atômica da disponibilidade do dado após a solicitacão de escrita, e garantias de todos os dados sejam retornados de forma exata nas consultas, sendo desaconselhavel para processos transacionais, e aconselhado para processos analiticos.
 
 Esse tipo de database possui também features inteligentes de expurgo de dados expirados, afim de gerenciar de forma mais performática o storage para comportar diversas métricas ao correr do tempo. 
 
@@ -252,3 +267,5 @@ Ele garante que, eventualmente, todos os nós convergirão para o mesmo estado. 
 [Understanding Hash Indexing in Databases](https://medium.com/@rohmatmret/understanding-hash-indexing-in-databases-11c02b7d4ed1)
 
 [Understanding Inverted Indexes: The Backbone of Efficient Search ](https://dev.to/surajvatsya/understanding-inverted-indexes-the-backbone-of-efficient-search-3hoe)
+
+[What is Time Series Database (TSDB)?](https://thecustomizewindows.com/2019/10/what-is-time-series-database-tsdb/)
