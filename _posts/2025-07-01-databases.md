@@ -10,6 +10,8 @@ title: System Design - Databases
 
 O objetivo desse artigo é mostrar as principais implementacões e suas diferenças, para que as mesmas fiquem claras para eventuais escolhas arquiteturais. 
 
+<br>
+
 # Definindo um Banco de Dados
 
 Um Banco de dados, em essência, é **uma forma de organizar dados dentro de uma estrutura predefinida que pode ser armazenada, gerenciada e disponibilizada para acesso de escrita e leitura através de um padrão de consulta pré-estabelecido.** Um banco de dados trabalha como uma **camada intermediária entre o cliente e o dado**, permitindo que os mesmos sejam manipulados sem que o desenvolvedor precise lidar de temas de alocação em disco, indexação e algoritmos de distribuição para buscar o dado de forma performática. Esse dado pode estar sendo persistido em [storages duráveis](/storage/), temporários ou uma combinação de ambos, escolhas que variam de sua implementação. 
@@ -32,12 +34,60 @@ Para um exemplo ilustrativo, em um sistema de pedidos tradicional em um sistema 
 
 Em seguida, cada pedido pode incluir vários produtos, mas como um produto pode aparecer em diferentes pedidos, criamos a tabela `item\_pedido` para mapear essa relação “muitos-para-muitos”: cada linha de `item\_pedido` associa um único pedido a um único produto, informando também a quantidade solicitada. Por sua vez, todos os produtos disponíveis estão listados na tabela `produto`, que contém atributos como nome, preço e uma chave estrangeira para `categoria`. Essa última tabela organiza os produtos em grupos — como **“Eletrônicos”, “Alimentos” ou “Vestuário”** — permitindo classificar e filtrar itens de forma eficiente. Dessa forma, ao consultar um pedido, o sistema une `pedido` → `cliente` para identificar quem comprou, `pedido` → `item\_pedido` para saber o que foi comprado e em que quantidade, e `item\_pedido`, `produto` , `categoria` para exibir detalhes e agrupamentos de cada produto solicitado. Essa estrutura relacional assegura a integridade referencial — já que um pedido não pode existir sem um cliente válido, e um item de pedido não pode referenciar produtos inexistentes — e facilita a construção de relatórios como **total gasto por cliente**, **quantidade vendida por categoria** ou **itens mais pedidos em determinado período**.
 
-
 ## Banco de Dados Não-Relacionais NoSQL
 
 Os bancos Não Relacionais, ou NoSQL (Not Only SQL), são uma proposta mais flexivel aos modelos rigidos dos bancos SQL, trocando níveis altos de consistencia e integridade por escalabilidade. Os bancos NoSQL por padrão utilizam outros formatos de dados além de tabelas e linhas, e não possuem relacionamentos diretos entre os seus conjuntos de dados, tendo schemas mais flexiveis e com consistência eventual em troca de maior desempenho de leitura, escrita, escalabilidade horizontal e distribuição. 
 
 São nos bancos NoSQL que encontramos maior diversidade de formatos, como chave-valor, JSON, BSON, Grafos e etc, sendo que o principal foco é evitar joins custosos a favor de modelos de dados mais simples e com regras mais mutáveis, o que pode acarretar tanto em maior performance quanto também gerar riscos de incosistências de tipos de dados e contratos que precisam ser respeitados do lado da aplicação que consome o dado de fato. 
+
+
+```json
+{
+  "_id": ObjectId("60f5a2d1a2e9b5f1d4c8e918"),
+  "nome": "Ana Silva",
+  "email": "ana.silva@exemplo.com",
+  "pedidos": [
+    {
+      "pedidoId": "PED12345",
+      "data": "2025-07-27T14:35:00Z",
+      "itens": [
+        {
+          "produto": {
+            "id": ObjectId("60f5a3e8a2e9b5f1d4c8e91a"),
+            "nome": "Camiseta Manga Curta",
+            "preco": 79.90
+          },
+          "quantidade": 2
+        },
+        {
+          "produto": {
+            "id": ObjectId("60f5a3f2a2e9b5f1d4c8e91b"),
+            "nome": "Calça Jeans",
+            "preco": 149.90
+          },
+          "quantidade": 1
+        }
+      ]
+    },
+    {
+      "pedidoId": "PED12346",
+      "data": "2025-07-28T09:20:00Z",
+      "itens": [
+        {
+          "produto": {
+            "id": ObjectId("60f5a3e8a2e9b5f1d4c8e91a"),
+            "nome": "Camiseta Manga Curta",
+            "preco": 79.90
+          },
+          "quantidade": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+Seguindo o Exemplo do sistema de pedidos e estoque, toda a cadeia de entidades como `cliente`, `pedido`, `item do pedido`, `produto` e `categoria` é representada de forma hierárquica dentro de um único documento por cliente, eliminando a necessidade de múltiplas coleções e joins de diversas coleções de dados distribuídos entre diferentes tabelas. Cada documento da coleção traz não só os dados básicos do usuário, mas também uma lista de pedidos, em que cada elemento inclui o ID do pedido, a data e, por sua vez, uma sub-lista de itens com os detalhes de cada produto e a quantidade comprada. A coleção produtos mantém a definição de cada item e já incorpora o objeto categoria, trazendo o nome e o identificador da categoria embutidos — assim, ao ler um produto, não é preciso buscar em outra coleção.
 
 ## Bancos de Dados NewSQL
 
@@ -61,7 +111,6 @@ Os bancos de dados em memória, por serem estruturas simples e cujos dados podem
 
 Utilizar somente a memória RAM para armazenar dados presume uma série de tradeoffs consideráveis, como assumir a não-durabilidade do dado, uma vez que sendo reiniciado o serviço ou o servidor, todos os dados podem ser perdidos, logo o uso só é recomendado para dados que podem ser reconstituidos a qualquer momento diretamente de sua origem, além de sua escalabilidade costumar ser financeiramente cara de forma [horizontal e vertical](/performance-capacidade-escalabilidade/).
 
-
 ## Time-Series Databases 
 
 Os bancos de dados baseados em tempo são especializados em armazenar séries temporais com indexação baseada por tempo, e também são conhecidos como TSDBs (Time-Series Data Bases). Cada registro inserido em um Time Series Database é como um "carimbo" temporal preciso daquela métrica ao decorrer do tempo. Os modelos desse tipo de banco de dados implementam o armazenamento por "append-only", registrando cada ponto do dado de forma sementada e sequencial. Esse tipo de banco de dados é utilizado em sistemas de observabilidade e monitoramento, sendo utilizado para acompanhar o desempenho de determinada métrica ao decorrer de longos períodos de tempo, como horas, dias, semanas, meses e até anos, garantindo buscas tápidas além da capacidade de realizar diversas operações e calculos matemáticos nas mesas de forma performática e barata, além de alta capacidade de ingestão de dados distibuídos através de endpoints centralizados e escaláveis. 
@@ -74,27 +123,55 @@ Esse tipo de database possui também features inteligentes de expurgo de dados e
 
 <br>
 
+
+# Níveis de Consistência
+
+## Consistência Forte
+
+## Consistência Eventual
+
+
 # Modelos de Dados 
 
-## Modelos Relacionais 
+## Modelos Orientados a Tuplas (Linhas e Colunas)
 
-## Modelos de Documentos
+![Linhas e Colunas](/assets/images/system-design/databases-rows.drawio.png)
+
+## Modelos de Documentos 
 
 Bancos de dados orientados a documentos, cada registro é um uma entidade completamente autonoma e geralmente com formato livre e sem restrições e consistencias de campos, normalmente sendo estruturados em JSON ou BSON. Esse modelo flexivel facilita evoluir a estrutura de dados e contratos pela ótica da aplicação consumidora sem a necessidade de migrações complexas e operações imperativas que atuam na estrutura geral. Os modelos de documentos normalmente são utilizados para agrupar dados relacionados direto no mesmo objeto ou entidade e fornecerem indexação invertida ou full-text search, permitindo buscar por padrões de dados em todo o documento sem necessariamente se prender a uma condição de busca baseada em um campo específico. Seus filtros são estruturados sobre atributos aninhados, agregações e pipelines de transformação, suportando indexação em campos internos de forma flexivel e performática. 
 
+![Documento](/assets/images/system-design/databases-documentos.png)
+
 Seus usos mais comuns estão em implementações de catalogos de produtos, historicos de clientes, historicos de paciêntes, agregadores de logs armazenamento de crawlers e outros usos que precisam fornecer agregações, sumarizações e buscas flexíveis e desestruturadas. É comum os bancos de dados orientados a documentos serem uma segunda camada de consulta após transformações de dados, sendo uma forma otimizada de consultas para implementações [CQRS](/cqrs/).
 
-## Modelos Colunares (Wide-Column)
+## Modelos Colunares 
 
-Os modelos de dados colunares são inspirados em sistemas como o Apache Cassandra ou o Google Bigtable. Os modelos transacionais organizam seus dados em formatos de colunas e linhas dentro de uma tabela. Todos os dados dessa tabela possuem o mesmo número de variáveis colunares, e caso você precise adicionar uma nova coluna para adicionar um atributo novo nos dados da tabela, essa coluna será inserida em toda a tabela com adotando valores nulos ou default caso definido no schema. Os bancos de dados colunares ainda possuem o conceito de linhas, porém cada registro pode conter seu próprio conjunto de colunas. 
+Os modelos de dados colunares são inspirados em sistemas de Big Data e Data Warehouse. Os modelos transacionais como apresentado no modelo de tuplas organizam seus dados em formatos de colunas e linhas dentro de uma tabela. Todos os dados dessa tabela possuem o mesmo número de variáveis colunares, e caso você precise adicionar uma nova coluna para adicionar um atributo novo nos dados da tabela, essa coluna será inserida em toda a tabela com adotando valores nulos ou default caso definido no schema. 
+
+![Column](/assets/images/system-design/databases-colunas.drawio.png)
+
+Em um banco colunar, cada coluna de uma tabela é armazenada de forma contígua em disco ou em memória, em vez de manter linhas inteiras juntas. Essa implementação permite que sistemas analíticos que podem analisar grandes quantidades de dados em repouso façam consultas e operações complexas e otimizadas em atributos específicos, como por exemplo "média e desvio padrão dos valores de venda", "idade de determinados segmentos de público", "fechamentos contábeis de caixa", "análise dos tipos de dispositivos móveis dos clientes" sejam retornados de forma performática. 
+
+
+## Modelos de Coluna Larga (Wide-Column)
+
+Os bancos de dados colunares ainda possuem o conceito de linhas, porém cada registro pode conter seu próprio conjunto de colunas. 
 
 Os dados são organizados em famílias de colunas agrupadas ao redor de chaves de linha. Para assimilar como funciona o agrupamento e recuperação dos dados, linha pode ter um conjunto diferente de colunas e essas colunas são agrupadas em "famílias de colunas", e quando você precisa buscar os dados dessas colunas de forma explicita via query de consulta, o sistema do banco de dados busca apenas as linhas que estão dentro dessas familias de colunas. Isso é eficiente quando temos conjuntos de dados dispersos, séries temporais, data-warehouses, data lakes desestruturados e dispersos. 
 
+![Wide-Column](/assets/images/system-design/databases-wide-column.drawio.png)
+
 As implementações de databases wide-column são adaptados para lidar com replicação e e sharding de forma distribuída com capacidade de escala até milhares de nós, com pontos únicos de falha reduzidas e schemas altamente flexíveis a custo de consistência eventual e capacidade de transações atômicas e joins limitados entre tabelas e famílias limitados. 
+
 
 ## Modelos Key-Value (Chave-Valor)
 
-Os bancos chave-valor, ou key-value, talvez sejam o tipo mais simples de bancos de dados NoSQL que podemos encontrar e trabalhar. Como o próprio nome sugere, eles armazenam seus dados em uma coleção de paridade, sendo uma chave que funciona como um identificador único para o dado no conjunto e o valor que pode estar em diversos formatos não estruturados, esses que variam de simples strings, números, valores booleanos, JSON's e até mesmo blobs complexos. Os exemplos mais notáveis que temos são as engines de cache como Redis, Valkey e Memcached, mas quando devidamente configurados e modelados, podemos encontrar implementações até mesmo em databases como MongoDB, DynamoDB, Elasticsearch e etc. 
+Os bancos chave-valor, ou key-value, talvez sejam o tipo mais simples de bancos de dados NoSQL que podemos encontrar e trabalhar. Como o próprio nome sugere, eles armazenam seus dados em uma coleção de paridade, sendo uma chave que funciona como um identificador único para o dado no conjunto e o valor que pode estar em diversos formatos não estruturados, esses que variam de simples strings, números, valores booleanos, JSON's e até mesmo blobs complexos. 
+
+![Key-Value](/assets/images/system-design/databases-key-value.drawio.png)
+
+Os exemplos mais notáveis que temos são as engines de cache como Redis, Valkey e Memcached, mas quando devidamente configurados e modelados, podemos encontrar implementações até mesmo em databases como MongoDB, DynamoDB, Elasticsearch e etc. 
 
 Sua performance está embasada na extrema facilidade de indexação e recuperação do dados, pois o mesmo ocorre diretamente pela chave previamente composta e conhecida pelo cliente, e permite facilmente uma replicacão e distribuição para suportar grandes volumes de acesso e armazenamento, além da simplificação da forma de acesso, sendo realizado normalmente através de protocolos já bem estabelecidos diretamente via [TCP/IP](/protocolos-de-rede/) ou implementações [RESTful](/padroes-de-comunicacao-sincronos/), evitando a utilização de protocolos complexos. 
 
@@ -102,6 +179,8 @@ Sua performance está embasada na extrema facilidade de indexação e recuperaç
 ## Modelos Baseados em Grafos
 
 Os bancos de dados baseados em grafos são tecnologias implementadas em estruturas **onde o relacionamento entre as entidades é mais, ou tão  importantes quanto o próprio dado** em si. 
+
+![Databases Grafos](/assets/images/system-design/databases-grafos.drawio.png)
 
 Comparando com os modelos SQL onde os relacionamentos são criados baseados em chaves estrangeiras entre tabelas e JOIN's criados durante a consulta, **os bancos de grafos aplicam o conceito de nodes (entidades) e arestas (relacionamentos) como os objetos de primeira classe, permitindo relacionar vários tipos de dados entre diferentes entidades**. Os dados são **propriedades chave-valor chamados de vértices, e as arestas que conectam os semelhantes desses dados**. Isso permite realizar de forma performática consultas que precisam responder questões como "alunos da turma da manhã que moram no mesmo bairro e possuam uma média escolar maior que 8", ou "encontre amigos de amigos que vivem na mesma cidade e trabalharam na mesma empresa" sem a necessidade de JOIN's custosos em difersas tabelas relacionais. 
 
@@ -123,7 +202,7 @@ O principal trade-off dessa implementação reside no tamanho da página, pois *
 
 Diversos bancos de dados SQL e NoSQL aplicam o conceito de Page Size em conjunto com outros tipos de armazenamento e indexação. Exemplos notáveis incluem **MySQL (InnoDB), MariaDB (InnoDB), PostgreSQL e SQL Server**. Todos eles organizam e armazenam seus dados em blocos de tamanhos fixos, seja em memória ou em disco.
 
-## Formato Colunar 
+## Indexação Colunar 
 
 A indexação por **formato colunar, columnar format, ou column-based indexing**, especifica padrões onde cada coluna de uma tabela é **escrita em um segmento contínuo no sistema de arquivos**. Essa separação, por mais que contra intuitiva a respeito de I/O, *permite que as consultas sejam específicas ao nível de atributos recuperados, permitindo recuperar somente os compos necessários que foram específicados*. Nesse sentido, temos uma redução de I/O considerável quanto otimizamos as pesquisas e processos analíticos. Esse tipo de cenário também facilita aplicar operações matemáticas diretamente nas consultas do banco.  
 
@@ -216,21 +295,6 @@ As réplicas asseguram escalabilidade de leitura, possibilitando até mesmo que 
 
 As otimizações mais comuns são estratégias de combinar um banco primário consistente, e até mesmo cumprindo características transacionais, como PostgreSQL ou MySQL, com réplicas de leitura e camadas de cache em Redis ou Memcached. 
 
-## Consistencia Forte e Consistencia Eventual 
-
-
-Ele garante que, eventualmente, todos os nós convergirão para o mesmo estado. Em contrapartida, a consistência eventual o torna inadequado para casos de uso transacionais, e os padrões de consulta são mais restritos, geralmente limitados à chave de partição para obter performance.
-
-## Padrão de Acesso aos Dados
-
-### Chave Única / Primária 
-
-### Consultas Complexas e Indices
-
-### Consultas por Padrões e Indices
-
-### Full-Text Searchs
-
 
 ## Referências 
 
@@ -269,3 +333,7 @@ Ele garante que, eventualmente, todos os nós convergirão para o mesmo estado. 
 [Understanding Inverted Indexes: The Backbone of Efficient Search ](https://dev.to/surajvatsya/understanding-inverted-indexes-the-backbone-of-efficient-search-3hoe)
 
 [What is Time Series Database (TSDB)?](https://thecustomizewindows.com/2019/10/what-is-time-series-database-tsdb/)
+
+[Sequential Consistency](https://en.wikipedia.org/wiki/Sequential_consistency)
+
+[Sequential Consistency In Distributed Systems](https://www.geeksforgeeks.org/system-design/sequential-consistency-in-distributive-systems/)
