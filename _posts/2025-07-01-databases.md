@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/capa-storage.png
+image: assets/images/system-design/capa-databases.png
 author: matheus
 featured: false
 published: true
@@ -321,6 +321,8 @@ As réplicas asseguram escalabilidade de leitura, possibilitando até mesmo que 
 
 As otimizações mais comuns são estratégias de combinar um banco primário consistente, e até mesmo cumprindo características transacionais, como PostgreSQL ou MySQL, com réplicas de leitura e camadas de cache em Redis ou Memcached. 
 
+
+<br>
 
 ## Referências 
 
