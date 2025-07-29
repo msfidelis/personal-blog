@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Databases
+title: System Design - Databases, Modelos de Dados e Indexação
 ---
 
 O objetivo desse artigo é mostrar as principais implementacões e suas diferenças, para que as mesmas fiquem claras para eventuais escolhas arquiteturais. 
@@ -126,10 +126,33 @@ Esse tipo de database possui também features inteligentes de expurgo de dados e
 
 # Níveis de Consistência
 
+Em sistemas distribuídos, o nível de consistência dos dados é um dos fatores mais importantes para serem levados em consideração na escolha arquitetural. Escolher entre níveis adequados de consistência forte e consistência eventual podem elevar a escalabilidade e consistência transacional a níveis elevados, tanto quanto podem gerar problemas de confiabilidade e afete a experiência do usuário caso seus tradeoffs não sejam levados em consideração na arquitetura de solução. Nesse texto, iremos abordar diversos desses níveis em diferentes implementações de bancos de dados, e nessa sessão, iremos deixar claro as diferenças entre os modelos.  
+
 ## Consistência Forte
+
+A  Consistência Forte também é conhecida por um processo chamado **linearizabilidade** ou **sequential consistency** em termos acadêmicos, e representa um nível de consistência agressivamente transacional. Em um termo relativo de "níveis de consistência", o termômetro hipotético estaria no grau mais extremo de temperativa possível. 
+
+Isso significa que independente do número de réplicas que um banco de dados tenha, todas elas sempre irão retornar sempre os mesmos dados. Isto é, todo acesso de leitura a uma réplica sempre retorna o valor mais recente gravado por qualquer operação de escrita que tenha sido previamente completada. 
+
+Uma vez que um cliente recebe confirmação de um commit de uma transação aberta, qualquer outra leitura, mesmo em outro nó ou região geográfica, refletirá esse valor commitado, até que outra transação completada da mesma forma seja efetuada para alterar o dado dado. Uma transação só pode levar o banco de dados de um estado consistênte para outro estado consistênte, sem flexibilidade nesse ponto
+
+Os databases com consistência forte, normalmente estão no modelo "CA" (Consistency e Availability) do [teorema cap](/teorema-cap), ou seja, os bancos de dados SQL tradicionais, e para alcançar esse comportamento, o sistema costuma empregar protocolos de consenso como Paxos, Raft ou commits síncronos entre réplicas, o que implica que cada operação de escrita deve obter acordos de um número mínimo de nós do quorum antes de ser confirmada, podendo acarretar em maior latência e maior consumo de I/O dependendo da quantidade de nós e distribuição geográfica em troca dessa confiabilidade do dado.
+
 
 ## Consistência Eventual
 
+A Consistência Eventual é um termo que define sistemas de dados onde independente do volume de escritas que o mesmo tem, em algum momento, o sistema irá convergir para um estado consistente, mas por um breve momento, diferentes réplicas do banco poderão retornar diferentes versões do dado. Para viabilizar esse modelo, as [replicações](/replicacao ) são feitas de forma assíncrona, sem bloqueios de escrita. 
+
+Quando uma escrita acontece, apenas um nó, ou um pequeno quorum de nós precisa confirmar a operação, o restante é realizada por meio de replicação por logs ou outro algoritmo de propagação de operações. Se uma leitura for realizada em algum nó que não tenha a escrita propagada, o mesmo pode retornar dados faltando ou desatualizados. 
+
+Esse tipo de modelo sacrifica a consistência para elevar o nível de alta disponibilidade e performance, pois as confirmações de escrita são locais e não esperam resposta de outros nós, e mesmo frente a partições de rede ou indisponibilidade parcial as escritas e leituras podem prosseguir em réplicas isoladas.
+
+Esse modelo possui uma série de desafios além de insconsistência do dado por períodos de tempo, pois precisam implementar na própria engine, ou na aplicação, estratégias de sincronização e resolução de conflitos como o "last-write-wins" que resolve por meio de checagem de timestamp conflitos de diversos operadores tentando atualizar o mesmo dado, ou [CRDT's](/replicacao), que aplicam algoritmos mais complexos de sincronização. 
+
+No geral, tudo que não possui consistência forte, que é o extremo do termômetro, é de alguma forma consistência eventual. Se seu banco de dados ACID SQL possui um quorum de commit, onde somente 2/3 das replicas precisam confirmar a escrita para que ela seja considerada efetivada, isso diz que 1/3 pode lidar com dados desatualizados, tornando o sistema aberto para um "apetite" eventual, e essa arquitetura  é inclinada a topo­logias geo-distribuídas e a grandes volumes de operações concorrentes.
+
+
+<br>
 
 # Modelos de Dados 
 
@@ -254,7 +277,6 @@ Por exemplo, em uma loja online, ao realizar uma busca como "geladeira verde 2 p
 
 A construção de um índice invertido dentro das engines que implementam geralmente envolve uma certa pipeline do dado no momento da sua gravação e indexação, como por exemplo um pré-processamento, onde os documentam passam por processode map/reduce de palavras, normalização o dado, o processo de tokenização que viabilizam o processo de busca onde o texto é divido em tokens de palavras individuais e a por fim a criação do indice que permite a listagem de todos os documentos que aquele token aparece. 
 
-## Compressão e Encoding
 
 <br>
 
@@ -337,3 +359,7 @@ As otimizações mais comuns são estratégias de combinar um banco primário co
 [Sequential Consistency](https://en.wikipedia.org/wiki/Sequential_consistency)
 
 [Sequential Consistency In Distributed Systems](https://www.geeksforgeeks.org/system-design/sequential-consistency-in-distributive-systems/)
+
+[Last-Write-Wins in Database Systems](https://www.linkedin.com/pulse/last-write-wins-database-systems-yeshwanth-n-emc8c/)
+
+[CRDT's](https://crdt.tech/)
