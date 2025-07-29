@@ -156,9 +156,13 @@ No geral, tudo que não possui consistência forte, que é o extremo do termôme
 
 # Modelos de Dados 
 
-## Modelos Orientados a Tuplas (Linhas e Colunas)
+## Modelos de Tuplas (Row-Oriented)
+
+Os modelos baseados em linha, ou row-oriented, é o modelo modelo mais tradicional de dados que temos no mercado, e cada tupla, ou linha, com seus valores identificados por colunas  é gravada e gerenciada em disco ou memória de forma contínua e completa, guardando em sequencia todos os seus atributos. Esse tipo de modelo é o mais comum que podemos encontrar nos modelos de dados, pois favorece de forma intermediária as operações de ponto a ponto na mesma entidade ou registro, como as operações convencionais de leitura, escrita, atualização e deleção, sendo ideal para facilitar cenários transacionais que criamos, editamos e buscamos registros inteiros com frequencia.  
 
 ![Linhas e Colunas](/assets/images/system-design/databases-rows.drawio.png)
+
+Os sistemas baseados em linha, são otimizados para granularidade com baixa latência, e fazem uso intensivo de caches de paginas como veremos a seguir, e esse modelo otimiza a recuperação completa de uma linha e toda sua sequencia de campos, trazendo de uma só vez todos os valores que estão armazenados no mesmo bloco do disco. 
 
 ## Modelos de Documentos 
 
@@ -168,7 +172,7 @@ Bancos de dados orientados a documentos, cada registro é um uma entidade comple
 
 Seus usos mais comuns estão em implementações de catalogos de produtos, historicos de clientes, historicos de paciêntes, agregadores de logs armazenamento de crawlers e outros usos que precisam fornecer agregações, sumarizações e buscas flexíveis e desestruturadas. É comum os bancos de dados orientados a documentos serem uma segunda camada de consulta após transformações de dados, sendo uma forma otimizada de consultas para implementações [CQRS](/cqrs/).
 
-## Modelos Colunares 
+## Modelos Colunares (Column-Oriented)
 
 Os modelos de dados colunares são inspirados em sistemas de Big Data e Data Warehouse. Os modelos transacionais como apresentado no modelo de tuplas organizam seus dados em formatos de colunas e linhas dentro de uma tabela. Todos os dados dessa tabela possuem o mesmo número de variáveis colunares, e caso você precise adicionar uma nova coluna para adicionar um atributo novo nos dados da tabela, essa coluna será inserida em toda a tabela com adotando valores nulos ou default caso definido no schema. 
 
