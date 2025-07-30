@@ -8,7 +8,9 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Databases, Modelos de Dados e Indexação
 ---
 
-O objetivo desse artigo é mostrar as principais implementacões e suas diferenças, para que as mesmas fiquem claras para eventuais escolhas arquiteturais. 
+O objetivo desse artigo é mostrar as principais implementacões de databases e suas diferenças práticas para sistemas produtivos, para que as mesmas fiquem claras para eventuais escolhas arquiteturais. Foi um pouco complicado moldar esse artigo sem que o mesmo virasse um "painel de avião" com a quantidade de termos e conceitos que podem ser levados em conta em diferentes databases, e é muito dificil falar sobre engines de bancos de dados procurando por conceitos e termos comuns entre todos sem tornar o artigo sobre o próprio database em si. Ao contrário do padrão combinado dos capítulos dessa série, **não conseguirei evitar de utilizar exemplos nominais de tecnologia para explicar sua implementação**. Espero que esse texto seja de grande ajuda e atue de forma complementar com os capítulos anteriores onde falamos de **[ACID, BASE e o Teorema CAP](/teorema-cap/)**. Aqui abordaremos também diversos modelos de dados e tipos de indexação que podem ser comuns entre diversos tipos de databases. 
+
+Espero que seja de grande ajuda e influencie ainda mais a sua curiosidade sobre o tema. 
 
 <br>
 
@@ -252,6 +254,8 @@ Bancos de dados e engines otimizados para **analytics**, **big data** e **data w
 
 Os Log‑Structured Systems, frequentemente implementados através do padrão **LSM‑Tree (Log‑Structured Merge‑Tree)**, aplicam modelos de dados que são salvos primeiro em tabelas em memória (memtables) e, posteriormente, exportados para arquivos imutáveis no disco (sstables) em um modelo de **append‑only**.
 
+![LSM-Tree](/assets/images/system-design/lsm-tree.drawio.png)
+
 O modelo **append‑only** oferece **extrema performance de escrita e baixa latência de confirmação** do recebimento da transação, pois as operações são sequenciais (adicionadas ao final) e evitam ao máximo consultas aleatórias em disco. No entanto, ele **não realiza atualizações in‑place** de registros. Em vez disso, **novas “versões” do dado são inseridas** como novos registros. Da mesma forma, a **deleção de um dado** é tipicamente realizada através da inserção de um registro especial chamado **“tombstone”**, que marca o dado como logicamente excluído. A remoção física dos dados antigos ou marcados com tombstone ocorre posteriormente, durante um processo de **compactação** (merge) dos sstables.
 
 Esse tipo de cenário é ideal para sistemas que precisam garantir **transações sequenciais e imutáveis** para auditoria e rastreabilidade de modificações, pois mantém todas as versões anteriores do dado que ainda podem ser recuperadas se necessário. Isso permite a implementação de **ledger tables**, livros‑caixa, registros de auditoria e rastreabilidade de transações financeiras, **trace** de operações de usuários em sistemas críticos, entre outros.
@@ -290,6 +294,8 @@ A busca pelo valor de uma chave específica também segue essa lógica. Quando p
 ## Índices Invertidos
 
 Os **Índices Invertidos**, ou **Inverted Indexes**, são **estruturas de dados de busca que permitem encontrar documentos completos através de termos de busca específicos e dinâmicos**, possibilitando **executar processos de “full‑text search” em grandes volumes de dados**. Ao invés das estruturas convencionais que mapeiam um documento ou entidade para um valor ou termo, **um índice invertido faz o trabalho oposto**: ele **mapeia termos, palavras ou tokens para os respectivos documentos onde aparecem**, permitindo buscas em textos e valores longos por meio de termos simples. Essa técnica é característica de bancos orientados a documento, como Elasticsearch e Apache Solr, mas também pode ser implementada em bancos relacionais que possuam features de full‑text search, como PostgreSQL, SQL Server e Oracle.
+
+![Inverted Indexes](/assets/images/system-design/interted-indexes.drawio.png)
 
 Esse tipo de estrutura facilita imensamente a implementação de engines de busca em dados desestruturados ou semi‑estruturados, como catálogos, listas de produtos de e‑commerce, buscas por termos em contratos jurídicos e agregadores de logs. Imagine usar um motor de busca que precise escanear todos os atributos de todas as linhas de uma tabela em busca de padrões de texto: esse processo seria **extremamente lento e custoso computacionalmente** em grandes volumes de dados. **Os índices invertidos resolvem isso.** **Eles funcionam como um catálogo de biblioteca ou arquivo de documentos**: em vez de folhear cada livro para achar um termo específico, você consulta o catálogo — o índice invertido — que o direciona diretamente aos documentos que contêm aquela palavra, tornando a busca **mais rápida e eficiente**.
 
