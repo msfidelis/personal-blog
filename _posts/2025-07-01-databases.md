@@ -8,9 +8,7 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Databases, Modelos de Dados e Indexação
 ---
 
-O objetivo desse artigo é mostrar as principais implementacões de databases e suas diferenças práticas para sistemas produtivos, para que as mesmas fiquem claras para eventuais escolhas arquiteturais. Foi um pouco complicado moldar esse artigo sem que o mesmo virasse um "painel de avião" com a quantidade de termos e conceitos que podem ser levados em conta em diferentes databases, e é muito dificil falar sobre engines de bancos de dados procurando por conceitos e termos comuns entre todos sem tornar o artigo sobre o próprio database em si. Ao contrário do padrão combinado dos capítulos dessa série, **não conseguirei evitar de utilizar exemplos nominais de tecnologia para explicar sua implementação**. Espero que esse texto seja de grande ajuda e atue de forma complementar com os capítulos anteriores onde falamos de **[ACID, BASE e o Teorema CAP](/teorema-cap/)**. Aqui abordaremos também diversos modelos de dados e tipos de indexação que podem ser comuns entre diversos tipos de databases. 
-
-Espero que seja de grande ajuda e influencie ainda mais a sua curiosidade sobre o tema. 
+O objetivo desse artigo é mostrar as principais implementacões de databases e suas diferenças práticas para sistemas produtivos, para que as mesmas fiquem claras para eventuais escolhas arquiteturais. Foi um pouco complicado moldar esse artigo sem que o mesmo virasse um "painel de avião" com a quantidade de termos e conceitos que podem ser levados em conta em diferentes databases, e é muito dificil falar sobre engines de bancos de dados procurando por conceitos e termos comuns entre todos sem tornar o artigo sobre o próprio database em si. Ao contrário do padrão combinado dos capítulos dessa série, **não conseguirei evitar de utilizar exemplos nominais de tecnologia para explicar sua implementação**. Espero que esse texto seja de grande ajuda e atue de forma complementar com os capítulos anteriores onde falamos de **[ACID, BASE e o Teorema CAP](/teorema-cap/)**. Aqui abordaremos também diversos modelos de dados e tipos de indexação que podem ser comuns entre diversos tipos de databases. Espero que seja de grande ajuda e influencie ainda mais a sua curiosidade sobre o tema para os proximos capitulos. 
 
 <br>
 
@@ -328,13 +326,17 @@ Cenários **Write‑Intensive**, ou **escrita intensiva**, são sistemas em que 
 
 Exemplos incluem processamentos assíncronos corporativos, agregadores de logs, captação de dados de IoT e feeds de redes sociais. Para suportar alta taxa de escrita, a arquitetura geralmente adota **NoSQL**, projetado para **escalabilidade horizontal** e **escritas rápidas**. Internamente, usam modelos **append‑only** (LSM‑Trees) e replicação assíncrona.
 
+![Write Path](/assets/images/system-design/WRITE.drawio.png)
+
 Diferente das B‑Trees, que podem exigir I/O custoso para escritas e atualizações, as **LSM‑Trees** transformam cada escrita em operação sequencial de append, armazenando em memória e, depois, em disco de forma organizada, sem bloquear a solicitação até a confirmação nos nós. Essa arquitetura favorece **consistência eventual**, pois o sistema não espera replicação completa antes de responder ao cliente. Engines otimizadas para esse cenário incluem **DynamoDB**, **Cassandra** e **ScyllaDB**. Implementações on‑premises permitem ajustar o quórum entre **latência**, **disponibilidade** e **consistência**.
 
 ## Cenários de Read‑Intensive
 
 Cenários **Read‑Intensive**, ou **leitura intensiva**, possuem necessidades inversas aos Write‑Intensive, sendo ambientes onde a quantidade de leituras se sobressai sobre as escritas. O objetivo é maximizar o **throughput de consulta** e minimizar latências de leitura. Exemplos: feeds de redes sociais, catálogos de produtos, listagens de usuários e consultas de endereços.
 
-Réplicas asseguram **escalabilidade de leitura**, permitindo que os nós **escalem horizontalmente de forma dinâmica**. As otimizações mais comuns combinam um banco primário consistente (por exemplo, **PostgreSQL** ou **MySQL**) com **réplicas de leitura** e **camadas de cache** (Redis, Memcached).
+![Read Path](/assets/images/system-design/READ.drawio.png)
+
+Podemos realizar uma combinação de diversos métodos que iremos aprodundar em outros textos. Réplicas asseguram **escalabilidade de leitura**, permitindo que os nós **escalem horizontalmente de forma dinâmica**. As otimizações mais comuns combinam um banco primário consistente (por exemplo, **PostgreSQL** ou **MySQL**) com **réplicas de leitura** e **camadas de cache** (Redis, Memcached). Também podemos realizar processos de [CQRS](/cqrs) para otimizar dados capturados num caminho otimizado para escrita e convertê-los para modelos otimizados para leitura.
 
 
 
