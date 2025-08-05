@@ -242,13 +242,13 @@ Diversos bancos de dados SQL e NoSQL aplicam o conceito de Page Size em conjunto
 
 ## Indexação Colunar
 
-A indexação por **formato colunar**, **columnar format** ou **column‑based indexing** especifica padrões onde cada coluna de uma tabela é **escrita em um segmento contíguo no sistema de arquivos**. Essa separação, por mais **contraintuitiva em termos de I/O**, **permite que as consultas sejam específicas ao nível de atributos recuperados, recuperando somente os **componentes necessários** que foram especificados**. Nesse sentido, temos uma **redução considerável de I/O** ao otimizar pesquisas e processos analíticos. Esse cenário também facilita aplicar **operações matemáticas diretamente** nas consultas do banco.
+A indexação por **formato colunar**, **columnar format** ou **column‑based indexing** especifica padrões onde cada coluna de uma tabela é **escrita em um segmento contíguo no sistema de arquivos**. Essa separação, por mais **contraintuitiva em termos de I/O**, **permite que as consultas sejam específicas ao nível de atributos recuperados**, recuperando somente os **componentes necessários** que foram especificados**. Nesse sentido, temos uma **redução considerável de I/O** ao otimizar pesquisas e processos analíticos. Esse cenário também facilita aplicar **operações matemáticas diretamente** nas consultas do banco.
 
 Outro grande benefício é a **compressão de dados**. O formato colunar agrupa dados **homogêneos** (com pouca diversidade ou muitos valores repetidos) da mesma coluna, o que é ideal para a aplicação de algoritmos de compressão altamente eficazes, como a **compressão por dicionários**. Isso economiza espaço em disco e melhora ainda mais o desempenho de I/O.
 
 Bancos de dados e engines otimizados para **analytics**, **big data** e **data warehouses**, como **Amazon Redshift**, **Google BigQuery**, **MemSQL** e **SQL Server (modo Columnstore Index)**, utilizam essa arquitetura de armazenamento e indexação para alcançar **alta performance** em consultas complexas e analíticas.
 
-## LSM-trees (Log-Structured Merge-Tree)
+## LSM-Trees (Log-Structured Merge-Tree)
 
 Os Log‑Structured Systems, frequentemente implementados através do padrão **LSM‑Tree (Log‑Structured Merge‑Tree)**, aplicam modelos de dados que são salvos primeiro em tabelas em memória (memtables) e, posteriormente, exportados para arquivos imutáveis no disco (sstables) em um modelo de **append‑only**.
 
