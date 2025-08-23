@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Databases, Modelos de Dados e Indexação
+seo_title: Databases, Modelos de Dados e Indexação — Estruturação Eficiente para Alta Performance
+seo_description: Explore os principais tipos de bancos de dados, modelos de dados e técnicas de indexação. Entenda como escolher entre bancos relacionais, NoSQL, documentais e colunar com foco em performance.
+excerpt: Neste artigo abordamos a evolução dos bancos de dados, os diferentes modelos de dados (relacional, documentos, grafos), tipos de indexação (B-Tree, Hash, LSM) e como essas escolhas afetam a performance de sistemas distribuídos.
 ---
 
 O objetivo desse artigo é mostrar as principais implementacões de databases e suas diferenças práticas para sistemas produtivos, para que as mesmas fiquem claras para eventuais escolhas arquiteturais. Foi um pouco complicado moldar esse artigo sem que o mesmo virasse um "painel de avião" com a quantidade de termos e conceitos que podem ser levados em conta em diferentes databases, e é muito dificil falar sobre engines de bancos de dados procurando por conceitos e termos comuns entre todos sem tornar o artigo sobre o próprio database em si. Ao contrário do padrão combinado dos capítulos dessa série, **não conseguirei evitar de utilizar exemplos nominais de tecnologia para explicar sua implementação**. Espero que esse texto seja de grande ajuda e atue de forma complementar com os capítulos anteriores onde falamos de **[ACID, BASE e o Teorema CAP](/teorema-cap/)**. Aqui abordaremos também diversos modelos de dados e tipos de indexação que podem ser comuns entre diversos tipos de databases. Espero que seja de grande ajuda e influencie ainda mais a sua curiosidade sobre o tema para os proximos capitulos. 
