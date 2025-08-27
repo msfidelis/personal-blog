@@ -22,6 +22,8 @@ O Teorema CAP é uma sigla para **Consistency, Availability, and Partition Toler
 
 Esse modelo foi proposto por **Eric Brewer** da **Universidade da Califórnia** durante uma conferência no ano 2000. O teorema foi crucial para influenciar escolhas arquiteturais em bancos de dados distribuídos.
 
+![CAP](/assets/images/system-design/cap.drawio.png)
+
 O teorema propõe que, na perspectiva de sistemas distribuídos, um banco de dados só pode entregar dois dos três atributos descritos no CAP. Isso é análogo à máxima popular de ***"Escolha 2: Bom, Rápido e Barato"***. Se for **Bom e Barato, não vai Rápido**. Se for **Rápido e Bom não vai ser Barato**. Se for **Barato e Rápido não vai ser Bom**. A proposta inicial segue essa lógica. 
 
 Ele fornece uma base para entender as limitações inerentes a qualquer sistema de banco de dados distribuído e ajuda a esclarecer por que não é possível atingir todas as três propriedades simultaneamente. Vamos explorar o modelo proposto comparando com abordagens mais modernas ao longo deste artigo.
