@@ -200,7 +200,9 @@ Esse atributo é particularmente valioso em aplicações distribuídas geografic
 
 O termo "partição" pode gerar confusão, especialmente quando já estamos familiarizados com outros termos de Bancos de Dados. Porém, no contexto de "CAP" e "Tolerância a Partições", **Partição de Rede** refere-se a uma situação onde ocorre uma falha sistêmica de rede entre dois ou mais nós do banco de dados, impedindo que eles permaneçam sincronizados e gerando uma inconsistência temporária. Isso se torna mais complexo quando a escrita é distribuída entre os nós.
 
-Frequentemente, em um cluster otimizado para tolerância a partições, é possível isolar um nó do restante do cluster para executar manutenção, troubleshooting, adição de recursos ou atualização. Após a conclusão, esse nó é reintegrado ao cluster, passando por um processo de sincronização para retomar a operação consistente com os demais.
+![Partição de Rede](/assets/images/system-design/pacelc-particao.drawio.png)
+
+Frequentemente, em um cluster otimizado para tolerância a partições, é **possível isolar um nó do restante do cluster para executar manutenção, troubleshooting, adição de recursos ou atualização**. Após a conclusão, **esse nó é reintegrado ao cluster, passando por um processo de sincronização para retomar a operação consistente com os demais**. Podemos entender que, mediante a uma falha de comunicação de rede entre um ou mais nós que recebem requisições de escita, quando esse problema de comunicação for resolvido, o meu banco de dados terá a capacidade de realizar a [replicação e resolução de conflitos das operacões](/replicacao) entre todos os nodes do cluster.
 
 
 <br>
