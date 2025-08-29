@@ -61,7 +61,7 @@ Esse cenário exemplifica o funcionamento do balanceamento de carga no seu dia a
 
 Um Load Balancer é uma ferramenta essencial para a gestão de tráfego de rede em ambientes com múltiplos servidores, tais como datacenters privados, nuvens públicas e aplicações web distribuídas. Sua função principal é **distribuir as requisições de entrada entre vários hosts de maneira eficiente e estratégica, otimizando o uso dos recursos, aprimorando os tempos de resposta, reduzindo a carga em cada servidor e assegurando a disponibilidade do serviço, mesmo em caso de falhas em algum dos hosts do pool**. Existem várias estratégias de balanceamento de carga que possuem diferenças entre si, vamos abordar essas nuâncias no tópico de **Algoritmos de Balanceamento de Carga**.
 
-Do ponto de vista da resiliência, o load balancer desempenha um papel crucial, **evitando que qualquer servidor individual do pool se torne um ponto único de falha**.
+Do ponto de vista da resiliência, o load balancer desempenha um papel importante, **evitando que qualquer servidor individual do pool se torne um ponto único de falha**.
 
 As aplicações de um balanceador de carga são diversas, abrangendo desde hardwares de rede até softwares especializados que operam em determinadas camadas de rede, distribuindo a carga entre hosts que operam no mesmo protocolo do balanceador.
 
@@ -382,7 +382,7 @@ Algoritmos baseados em **IP Hash** criam um hash consistente a partir do endere�
 
 O processo de hashing do IP do cliente sempre resulta no mesmo hash, o que significa que as requisições de um cliente específico serão consistentemente encaminhadas para o mesmo host de destino, **contanto que este esteja disponível**.
 
-Essa técnica é utilizada em diversos outros algoritmos, como o **[Maglev](#maglev)** que será discutido posteriormente. Ela se mostra eficaz em workloads onde é crucial manter um tipo de "sessão", em situações que exigem que as requisições sejam resolvidas em uma certa ordem de dependência, facilitadas por caching, ou que necessitem sumarizar chunks de dados ou executar operações de persistência de maneira contínua.
+Essa técnica é utilizada em diversos outros algoritmos, como o **[Maglev](#maglev)** que será discutido posteriormente. Ela se mostra eficaz em workloads onde é necessário manter um tipo de "sessão", em situações que exigem que as requisições sejam resolvidas em uma certa ordem de dependência, facilitadas por caching, ou que necessitem sumarizar chunks de dados ou executar operações de persistência de maneira contínua.
 
 ### Limitações ao Implementar a Técnica de IP Hashing
 

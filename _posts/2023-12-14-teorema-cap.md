@@ -20,7 +20,7 @@ Hoje vamos abordar alguns tópicos muito importantes relacionados à arquitetura
 
 O Teorema CAP é uma sigla para **Consistency, Availability, and Partition Tolerance** (Consistência, Disponibilidade e Tolerância a Partições), e representa um princípio fundamental para compreender a arquitetura e as limitações na escolha de uma base de dados.
 
-Esse modelo foi proposto por **Eric Brewer** da **Universidade da Califórnia** durante uma conferência no ano 2000. O teorema foi crucial para influenciar escolhas arquiteturais em bancos de dados distribuídos.
+Esse modelo foi proposto por **Eric Brewer** da **Universidade da Califórnia** durante uma conferência no ano 2000. O teorema foi de extrema importancia para influenciar escolhas arquiteturais em bancos de dados distribuídos.
 
 ![CAP](/assets/images/system-design/cap.drawio.png)
 
@@ -28,7 +28,7 @@ O teorema propõe que, na perspectiva de sistemas distribuídos, um banco de dad
 
 Ele fornece uma base para entender as limitações inerentes a qualquer sistema de banco de dados distribuído e ajuda a esclarecer por que não é possível atingir todas as três propriedades simultaneamente. Vamos explorar o modelo proposto comparando com abordagens mais modernas ao longo deste artigo.
 
-Para entender a concepção completa de todas as propriedades do terema CAP, precisamos explorar alguns conceitos que irão ajudar na sua compreesão. Antes de detalhar o que significa cada item do CAP, é necessário entender os conceitos de **ACID** e **BASE** e compreender como funcionam transações e operações dentro dos bancos de dados. 
+Para entender a concepção completa de todas as propriedades do terema CAP, precisamos explorar alguns conceitos que irão ajudar na sua compreensão. Antes de detalhar o que significa cada item do CAP, é necessário entender os conceitos de **ACID** e **BASE** e compreender como funcionam transações e operações dentro dos bancos de dados. 
 
 <br>
 
@@ -36,7 +36,7 @@ Para entender a concepção completa de todas as propriedades do terema CAP, pre
 
 Nas disciplinas de bancos de dados, dois conjuntos de conceitos são fundamentais para guiar o design e a gestão das transações e/ou consultas: **ACID** e **BASE**.
 
-Entender a diferença entre ambos é crucial para qualquer pessoa que trabalhe com engenharia ou arquitetura, e que deseje trabalhar de forma eficiente com bancos de dados distribuídos, além da escolha de uma tecnologia específica.
+Entender a diferença entre ambos é de extrema importancia para qualquer pessoa que trabalhe com engenharia ou arquitetura, e que deseje trabalhar de forma eficiente com bancos de dados distribuídos, além da escolha de uma tecnologia específica.
 
 Vamos começar detalhando sobre ACID. 
 
