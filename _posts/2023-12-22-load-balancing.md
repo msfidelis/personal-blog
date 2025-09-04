@@ -89,6 +89,8 @@ Um Load Balancer também é apropriado em ambientes com **escalabilidade horizon
 
 Comparado ao proxy reverso, que pode atuar como uma camada intermediária simples entre cliente e servidor, aplicando regras de roteamento, realizando offload de SSL/TLS e implementando **cache**.
 
+![Proxy Reverso](/assets/images/system-design/proxy-reverso.png)
+
 Enquanto o Load Balancer é utilizado quando existem vários hosts da mesma aplicação, o Proxy Reverso pode ser aplicado em uma relação de 1:1. É comum um servidor expor sua aplicação por trás de um Proxy Reverso, responsável pela gestão de pools de conexões, limites de upload, tipos de conteúdo, restrições, segurança e cacheamento. Um exemplo é o uso de **Sidecars de Envoy no Kubernetes**, a stack **Nginx com PHP FPM**, ou servidores Web rodando NodeJS, Java com Spring, Golang, entre outros, posicionados atrás de um proxy reverso para gerir as requisições.
 
 Também é possível encontrar configurações de Proxy Reverso com mais de um host no pool, semelhante ao Load Balancer, e até mesmo servindo mais de uma aplicação, controlando o redirecionamento por meio de URLs, Basepaths, Headers, IPs de origem, etc.
