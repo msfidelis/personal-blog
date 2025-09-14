@@ -38,7 +38,7 @@ jobs:
           BRANCH_NAME="${{ steps.check-pr.outputs.branch_name }}"
           
           if [[ $BRANCH_NAME == draft/* ]]; then
-            PR_TITLE="[DRAFT] $(echo $BRANCH_NAME | sed 's/draft\///' | sed 's/-/ /g' | sed 's/\b\w/\u&/g')"
+            PR_TITLE="[DRAFT] $(echo $BRANCH_NAME)"
             PR_LABELS="draft,needs-review"
             cat > pr_body.txt << 'EOF'
           🚧 **Esta é uma PR de rascunho (draft)**
@@ -61,7 +61,7 @@ jobs:
           EOF
             sed -i "s/BRANCH_NAME_PLACEHOLDER/$BRANCH_NAME/g" pr_body.txt
           elif [[ $BRANCH_NAME == fix/* ]]; then
-            PR_TITLE="[FIX] $(echo $BRANCH_NAME | sed 's/fix\///' | sed 's/-/ /g' | sed 's/\b\w/\u&/g')"
+            PR_TITLE="[FIX] $BRANCH_NAME"
             PR_LABELS="bug,fix,needs-review"
             cat > pr_body.txt << 'EOF'
            **Esta é uma PR de correção (fix)**
