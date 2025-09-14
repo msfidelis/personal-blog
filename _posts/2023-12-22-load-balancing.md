@@ -584,7 +584,11 @@ Requisição 10 direcionada para: http://host2.com
 
 <br>
 
-# Load Balancing e Camada OSI 
+# Load Balancing e Camada OSI
+
+Quando olhamos para a atuação dos balanceadores de carga dentro da arquitetura de solução, podemos fazer um cruzamento direto com o [modelo OSI](/protocolos-de-rede). Existem diversas implementações de balanceadores de carga que podem atuar em diferentes camadas do modelo, oferecendo vantagens e desvantagens específicas. Essas características devem ser cuidadosamente consideradas de acordo com as necessidades de exposição da aplicação, levando em conta a forma como os backends são acessados e qual tipo de protocolo está sendo utilizado.  
+
+Neste contexto, vamos abordar dois cenários principais que estão mais próximos do design de sistemas: **Layer 4 (Transporte)** e **Layer 7 (Aplicação)**.
 
 ## Load Balancers em Layer 4 (Transporte)
 

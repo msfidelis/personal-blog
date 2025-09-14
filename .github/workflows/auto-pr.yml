@@ -48,13 +48,6 @@ jobs:
             echo "## Descrição" >> pr_body.txt
             echo "Esta PR contém um artigo em desenvolvimento. Por favor, revise o conteúdo e forneça feedback." >> pr_body.txt
             echo "" >> pr_body.txt
-            echo "## Checklist" >> pr_body.txt
-            echo "- [ ] Conteúdo revisado" >> pr_body.txt
-            echo "- [ ] Gramática e ortografia verificadas" >> pr_body.txt
-            echo "- [ ] Links funcionando" >> pr_body.txt
-            echo "- [ ] Imagens otimizadas" >> pr_body.txt
-            echo "- [ ] Metadados corretos" >> pr_body.txt
-            echo "" >> pr_body.txt
             echo "## Observações" >> pr_body.txt
             echo "- Esta PR será marcada como draft até estar pronta para publicação" >> pr_body.txt
             echo "- Adicione comentários e sugestões de melhoria" >> pr_body.txt
@@ -77,11 +70,6 @@ jobs:
             echo "- [ ] Correção de formatação" >> pr_body.txt
             echo "- [ ] Correção de metadados" >> pr_body.txt
             echo "- [ ] Outro: ___________" >> pr_body.txt
-            echo "" >> pr_body.txt
-            echo "## Checklist" >> pr_body.txt
-            echo "- [ ] Alterações testadas localmente" >> pr_body.txt
-            echo "- [ ] Não quebra funcionalidades existentes" >> pr_body.txt
-            echo "- [ ] Documentação atualizada (se necessário)" >> pr_body.txt
             echo "" >> pr_body.txt
             echo "## Observações" >> pr_body.txt
             echo "- Descreva brevemente o que foi corrigido" >> pr_body.txt
