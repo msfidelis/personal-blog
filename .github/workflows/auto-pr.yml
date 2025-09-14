@@ -1,0 +1,81 @@
+name: Auto Create Pull Request
+
+on:
+  push:
+    branches:
+      - 'draft/**'
+      - 'fix/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if PR already exists
+        id: check-pr
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "Branch: $BRANCH_NAME"
+          
+          # Verifica se já existe uma PR para essa branch
+          PR_EXISTS=$(gh pr list --head "$BRANCH_NAME" --base main --json number --jq length)
+          echo "pr_exists=$PR_EXISTS" >> $GITHUB_OUTPUT
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get branch type and create PR title
+        id: pr-details
+        run: |
+          BRANCH_NAME="${{ steps.check-pr.outputs.branch_name }}"
+          
+          if [[ $BRANCH_NAME == draft/* ]]; then
+            PR_TITLE="[DRAFT] $(echo $BRANCH_NAME | sed 's/draft\///' | sed 's/-/ /g' | sed 's/\b\w/\u&/g')"
+            PR_LABELS="draft,needs-review"
+            PR_BODY="🚧 **Esta é uma PR de rascunho (draft)**
+
+Esta PR foi criada automaticamente para a branch \`$BRANCH_NAME\`.
+
+## Descrição
+Esta PR contém um artigo em desenvolvimento. Por favor, revise o conteúdo e forneça feedback.
+
+## Checklist
+- [ ] Conteúdo revisado
+- [ ] Gramática e ortografia verificadas
+- [ ] Links funcionando
+- [ ] Imagens otimizadas
+- [ ] Metadados corretos
+
+## Observações
+- Esta PR será marcada como draft até estar pronta para publicação
+- Adicione comentários e sugestões de melhoria"
+          elif [[ $BRANCH_NAME == fix/* ]]; then
+            PR_TITLE="[FIX] $(echo $BRANCH_NAME | sed 's/fix\///' | sed 's/-/ /g' | sed 's/\b\w/\u&/g')"
+            PR_LABELS="bug,fix,needs-review"
+            PR_BODY="🐛 **Esta é uma PR de correção (fix)**
+
+Esta PR foi criada automaticamente para a branch \`$BRANCH_NAME\`.
+
+## Descrição
+Esta PR contém correções para o blog. Por favor, revise as alterações.
+
+## Tipo de correção
+- [ ] Correção de bug
+- [ ] Correção de typo
+- [ ] Correção de link quebrado
+- [ ] Correção de formatação
+- [ ] Correção de metadados
+- [ ] Outro: ___________
+
+## Checklist
+- [ ] Alterações testadas localmente
+- [ ] Não quebra funcionalidades existentes
+- [ ] Documentação atualizada (se necessário)
