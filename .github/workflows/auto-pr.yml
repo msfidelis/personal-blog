@@ -41,7 +41,7 @@ jobs:
             PR_TITLE="[DRAFT] $(echo $BRANCH_NAME | sed 's/draft\///' | sed 's/-/ /g' | sed 's/\b\w/\u&/g')"
             PR_LABELS="draft,needs-review"
             
-            echo "🚧 **Esta é uma PR de rascunho (draft)**" > pr_body.txt
+            echo "🚧 **Esta é uma PR de rascunho de artigo (draft)**" > pr_body.txt
             echo "" >> pr_body.txt
             echo "Esta PR foi criada automaticamente para a branch \`$BRANCH_NAME\`." >> pr_body.txt
             echo "" >> pr_body.txt
@@ -63,7 +63,7 @@ jobs:
             PR_TITLE="[FIX] $(echo $BRANCH_NAME | sed 's/fix\///' | sed 's/-/ /g' | sed 's/\b\w/\u&/g')"
             PR_LABELS="bug,fix,needs-review"
             
-            echo "🐛 **Esta é uma PR de correção (fix)**" > pr_body.txt
+            echo "🚧  **Esta é uma PR de correção de artigo (fix)**" > pr_body.txt
             echo "" >> pr_body.txt
             echo "Esta PR foi criada automaticamente para a branch \`$BRANCH_NAME\`." >> pr_body.txt
             echo "" >> pr_body.txt

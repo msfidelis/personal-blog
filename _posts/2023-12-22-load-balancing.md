@@ -582,8 +582,32 @@ Requisição 9 direcionada para: http://host1.com
 Requisição 10 direcionada para: http://host2.com
 ```
 
+<br>
+
+# Load Balancing e Camada OSI 
+
+## Load Balancers em Layer 4 (Transporte)
+
+Quando falamos de implementações de balanceadores em Layer 4, estamos nos referindo à **camada de transporte do modelo OSI**, **responsável por protocolos como TCP e UDP**. Diferente do balanceamento em Layer 7, que entende a aplicação e pode aplicar regras de roteamento baseadas em URLs, headers ou conteúdo, **em Layer 4 o balanceador não possui a capacidade de interpretar o payload e nem os demais protocolos criados acima do que se refere ao TCP/IP**, podendo lidar apenas com **pacotes e destinos**. Ele **trabalha apenas com endereços IP e portas**, **encaminhando o tráfego de forma transparente e sem muitas customizações** e implementações de algoritmos complexos de distribuição.
+
+Essa característica o torna **extremamente rápido e eficiente, com latência altamente otimizada quando comparado as implementações em outras camadas**, já que **não há necessidade de processar o conteúdo da requisição**, apenas **encaminhá-los para o devido destino**. Por isso, Load Balancers de Layer 4 são bastante utilizados em **cenários onde a performance e throughput são requisitos prioritários**. 
+
+Sua principal desvantagem, ou tradeoff, é a falta de granularidade e customizações de roteamento. Diferente das demais camadas. ele não tem capacidade de interpretar protocolos e realizar roteamentos granulares em base em `headers`, `query strings`, `paths` e afins. 
+
+## Load Balancers em Layer 7 (Aplicação)
+
+Já quando estamos falando em balanceadores que trabalham em Layer 7, entramos **na camada de aplicação do modelo OSI**, implementações que lidam diretamente com protocolos mais complexos como [**HTTP, gRPC e WebSocket**](/protocolos-de-rede/). Diferente das aplicações Layer 4, o balanceador aqui entende o conteúdo da requisição e pode aplicar decisões de roteamento mais granulares e complexas, levando em conta regras com base em **URLs, headers, body ou querystrings**, além de oferecer recursos como **SSL/TLS offloading** (retirando a carga de processamento e troca de certificados de criptografia do servidor), permitindo viabilizar [**cache de respostas**](/caching) e até compressão do payload para performance e redução de latência.
+
+Em um cenário distribuído de microserviços, podemos utilizar balanceadores layer 7 para encaminhar direfentes requisições para diferentes microserviços baseados em paths, hosts ou demais headers. 
+
+Em comparativo, podemos dizer que **balanceadores Layer 7 focam em inteligencia e flexibilidade de roteamento**, dando suporte para algoritmos de balanceamento mais complexos, enquanto os **balanceadores Layer 4 focam em velocidade e eficiencia de tráfego**. 
+
+
+<br>
+
 # Implementações e Tecnologias
 
+Fazendo um rapido apanhado de tecnologias de mercado para que seja possível associar a teoria com a prática, abaixo se encontra uma lista de tecnologias que podem ser considerados proxies reversos, balanceadores e até assumindo os dois papéis. 
 
 ### Envoy Proxy
 
