@@ -41,59 +41,51 @@ jobs:
             PR_TITLE="[DRAFT] $(echo $BRANCH_NAME | sed 's/draft\///' | sed 's/-/ /g' | sed 's/\b\w/\u&/g')"
             PR_LABELS="draft,needs-review"
             
-            cat > pr_body.txt << 'EOFBODY'
-          🚧 **Esta é uma PR de rascunho (draft)**
-          
-          Esta PR foi criada automaticamente para a branch `BRANCH_NAME_PLACEHOLDER`.
-          
-          ## Descrição
-          Esta PR contém um artigo em desenvolvimento. Por favor, revise o conteúdo e forneça feedback.
-          
-          ## Checklist
-          - [ ] Conteúdo revisado
-          - [ ] Gramática e ortografia verificadas
-          - [ ] Links funcionando
-          - [ ] Imagens otimizadas
-          - [ ] Metadados corretos
-          
-          ## Observações
-          - Esta PR será marcada como draft até estar pronta para publicação
-          - Adicione comentários e sugestões de melhoria
-          EOFBODY
-            
-            sed -i "s/BRANCH_NAME_PLACEHOLDER/$BRANCH_NAME/g" pr_body.txt
+            echo "🚧 **Esta é uma PR de rascunho (draft)**" > pr_body.txt
+            echo "" >> pr_body.txt
+            echo "Esta PR foi criada automaticamente para a branch \`$BRANCH_NAME\`." >> pr_body.txt
+            echo "" >> pr_body.txt
+            echo "## Descrição" >> pr_body.txt
+            echo "Esta PR contém um artigo em desenvolvimento. Por favor, revise o conteúdo e forneça feedback." >> pr_body.txt
+            echo "" >> pr_body.txt
+            echo "## Checklist" >> pr_body.txt
+            echo "- [ ] Conteúdo revisado" >> pr_body.txt
+            echo "- [ ] Gramática e ortografia verificadas" >> pr_body.txt
+            echo "- [ ] Links funcionando" >> pr_body.txt
+            echo "- [ ] Imagens otimizadas" >> pr_body.txt
+            echo "- [ ] Metadados corretos" >> pr_body.txt
+            echo "" >> pr_body.txt
+            echo "## Observações" >> pr_body.txt
+            echo "- Esta PR será marcada como draft até estar pronta para publicação" >> pr_body.txt
+            echo "- Adicione comentários e sugestões de melhoria" >> pr_body.txt
             
           elif [[ $BRANCH_NAME == fix/* ]]; then
             PR_TITLE="[FIX] $(echo $BRANCH_NAME | sed 's/fix\///' | sed 's/-/ /g' | sed 's/\b\w/\u&/g')"
             PR_LABELS="bug,fix,needs-review"
             
-            cat > pr_body.txt << 'EOFBODY'
-          🐛 **Esta é uma PR de correção (fix)**
-          
-          Esta PR foi criada automaticamente para a branch `BRANCH_NAME_PLACEHOLDER`.
-          
-          ## Descrição
-          Esta PR contém correções para o blog. Por favor, revise as alterações.
-          
-          ## Tipo de correção
-          - [ ] Correção de bug
-          - [ ] Correção de typo
-          - [ ] Correção de link quebrado
-          - [ ] Correção de formatação
-          - [ ] Correção de metadados
-          - [ ] Outro: ___________
-          
-          ## Checklist
-          - [ ] Alterações testadas localmente
-          - [ ] Não quebra funcionalidades existentes
-          - [ ] Documentação atualizada (se necessário)
-          
-          ## Observações
-          - Descreva brevemente o que foi corrigido
-          - Adicione screenshots se relevante
-          EOFBODY
-            
-            sed -i "s/BRANCH_NAME_PLACEHOLDER/$BRANCH_NAME/g" pr_body.txt
+            echo "🐛 **Esta é uma PR de correção (fix)**" > pr_body.txt
+            echo "" >> pr_body.txt
+            echo "Esta PR foi criada automaticamente para a branch \`$BRANCH_NAME\`." >> pr_body.txt
+            echo "" >> pr_body.txt
+            echo "## Descrição" >> pr_body.txt
+            echo "Esta PR contém correções para o blog. Por favor, revise as alterações." >> pr_body.txt
+            echo "" >> pr_body.txt
+            echo "## Tipo de correção" >> pr_body.txt
+            echo "- [ ] Correção de bug" >> pr_body.txt
+            echo "- [ ] Correção de typo" >> pr_body.txt
+            echo "- [ ] Correção de link quebrado" >> pr_body.txt
+            echo "- [ ] Correção de formatação" >> pr_body.txt
+            echo "- [ ] Correção de metadados" >> pr_body.txt
+            echo "- [ ] Outro: ___________" >> pr_body.txt
+            echo "" >> pr_body.txt
+            echo "## Checklist" >> pr_body.txt
+            echo "- [ ] Alterações testadas localmente" >> pr_body.txt
+            echo "- [ ] Não quebra funcionalidades existentes" >> pr_body.txt
+            echo "- [ ] Documentação atualizada (se necessário)" >> pr_body.txt
+            echo "" >> pr_body.txt
+            echo "## Observações" >> pr_body.txt
+            echo "- Descreva brevemente o que foi corrigido" >> pr_body.txt
+            echo "- Adicione screenshots se relevante" >> pr_body.txt
           fi
           
           echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
@@ -125,11 +117,6 @@ jobs:
           
           # Adiciona um comentário na PR existente sobre o novo push
           gh pr comment "${{ steps.check-pr.outputs.branch_name }}" \
-            --body "🔄 **Novos commits detectados**
-
-          Novos commits foram adicionados a esta branch. A PR foi automaticamente atualizada.
-
-          ⏰ Atualizado em: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
-          📝 Commit: \`${GITHUB_SHA:0:7}\`"
+            --body "🔄 **Novos commits detectados** - Novos commits foram adicionados a esta branch. A PR foi automaticamente atualizada. - ⏰ Atualizado em: $(date -u '+%Y-%m-%d %H:%M:%S UTC') - 📝 Commit: \`${GITHUB_SHA:0:7}\`"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
