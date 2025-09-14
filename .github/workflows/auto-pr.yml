@@ -55,17 +55,6 @@ jobs:
           - [ ] Imagens otimizadas
           - [ ] Metadados corretos
 
-          ## Observações
-          - Esta PR será marcada como draft até estar pronta para publicação
-          - Adicione comentários e sugestões de melhoria
-          EOF
-            sed -i "s/BRANCH_NAME_PLACEHOLDER/$BRANCH_NAME/g" pr_body.txt
-          elif [[ $BRANCH_NAME == fix/* ]]; then
-            PR_TITLE="[FIX] $BRANCH_NAME"
-            PR_LABELS="bug,fix,needs-review"
-            cat > pr_body.txt << 'EOF'
-           **Esta é uma PR de correção (fix)**
-
           Esta PR foi criada automaticamente para a branch `BRANCH_NAME_PLACEHOLDER`.
 
           ## Descrição
@@ -84,16 +73,7 @@ jobs:
           - [ ] Não quebra funcionalidades existentes
           - [ ] Documentação atualizada (se necessário)
 
-          ## Observações
-          - Descreva brevemente o que foi corrigido
-          - Adicione screenshots se relevante
-          EOF
-            sed -i "s/BRANCH_NAME_PLACEHOLDER/$BRANCH_NAME/g" pr_body.txt
-          fi
-          
-          echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
-          echo "pr_labels=$PR_LABELS" >> $GITHUB_OUTPUT
-
+        
       - name: Create Pull Request
         if: steps.check-pr.outputs.pr_exists == '0'
         run: |
