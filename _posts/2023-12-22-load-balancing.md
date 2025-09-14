@@ -59,16 +59,13 @@ Esse cenário exemplifica o funcionamento do balanceamento de carga no seu dia a
 
 # Fundamentos de Balanceadores de Carga
 
-Um Load Balancer é uma ferramenta essencial para a gestão de tráfego de rede em ambientes com múltiplos servidores, tais como datacenters privados, nuvens públicas e aplicações web distribuídas. Sua função principal é **distribuir as requisições de entrada entre vários hosts de maneira eficiente e estratégica, otimizando o uso dos recursos, aprimorando os tempos de resposta, reduzindo a carga em cada servidor e assegurando a disponibilidade do serviço, mesmo em caso de falhas em algum dos hosts do pool**. Existem várias estratégias de balanceamento de carga que possuem diferenças entre si, vamos abordar essas nuâncias no tópico de **Algoritmos de Balanceamento de Carga**.
+Um Load Balancer, antes de qualquer coisa, é um pattern de rede. É um padrão arquitetural para a gestão de tráfego de rede em ambientes com múltiplos servidores, tais como datacenters privados, nuvens públicas e aplicações web distribuídas. Sua função principal é **distribuir as requisições de entrada entre vários hosts de maneira eficiente e estratégica, otimizando o uso dos recursos, aprimorando os tempos de resposta, reduzindo a carga em cada servidor e assegurando a disponibilidade do serviço, mesmo em caso de falhas em algum dos hosts do pool**. Existem várias estratégias de balanceamento de carga que possuem diferenças entre si, vamos abordar essas nuâncias no tópico de **Algoritmos de Balanceamento de Carga**.
 
-Do ponto de vista da resiliência, o load balancer desempenha um papel crucial, **evitando que qualquer servidor individual do pool se torne um ponto único de falha**.
+Do ponto de vista da resiliência, o load balancer desempenha um papel importante, **evitando que qualquer servidor individual do pool se torne um ponto único de falha**.
 
 As aplicações de um balanceador de carga são diversas, abrangendo desde hardwares de rede até softwares especializados que operam em determinadas camadas de rede, distribuindo a carga entre hosts que operam no mesmo protocolo do balanceador.
 
 Além da distribuição de tráfego, muitos balanceadores de carga oferecem funcionalidades adicionais. Eles podem permitir customizações na camada 7 da rede, como roteamento específico baseado em basepaths, querystrings, headers e IPs de origem. Uma função comum em softwares e dispositivos de balanceamento de carga é o offload de certificados SSL/TLS, removendo essa carga de processamento das aplicações individuais do pool.
-
-A seguir, apresentaremos um exemplo ilustrativo do funcionamento de um balanceador de carga:
-
 
 
 ![GIF Load Balancer](/assets/images/system-design/load-balancer.gif)
@@ -79,7 +76,7 @@ A seguir, apresentaremos um exemplo ilustrativo do funcionamento de um balancead
 
 Um Proxy Reverso, ou Reverse Proxy, atua como um intermediário para requisições destinadas a um ou mais servidores internos. Ele recebe as requisições dos clientes e as encaminha para o servidor apropriado. Após o servidor processar a requisição, o proxy reverso retorna a resposta do servidor ao cliente original.
 
-> Ué, não é isso que um Load Balancer faz?
+> Mas, não é isso que um Load Balancer faz?
 
 A definição de ambos parece semelhante, já que as duas ferramentas atuam entre clientes e servidores como pontos únicos de acesso a múltiplos hosts de aplicação. Portanto, é compreensível a confusão sobre o papel de cada um.
 
@@ -89,13 +86,15 @@ Um Load Balancer também é apropriado em ambientes com **escalabilidade horizon
 
 Comparado ao proxy reverso, que pode atuar como uma camada intermediária simples entre cliente e servidor, aplicando regras de roteamento, realizando offload de SSL/TLS e implementando **cache**.
 
+![Proxy Reverso](/assets/images/system-design/proxy-reverso.png)
+
 Enquanto o Load Balancer é utilizado quando existem vários hosts da mesma aplicação, o Proxy Reverso pode ser aplicado em uma relação de 1:1. É comum um servidor expor sua aplicação por trás de um Proxy Reverso, responsável pela gestão de pools de conexões, limites de upload, tipos de conteúdo, restrições, segurança e cacheamento. Um exemplo é o uso de **Sidecars de Envoy no Kubernetes**, a stack **Nginx com PHP FPM**, ou servidores Web rodando NodeJS, Java com Spring, Golang, entre outros, posicionados atrás de um proxy reverso para gerir as requisições.
 
 Também é possível encontrar configurações de Proxy Reverso com mais de um host no pool, semelhante ao Load Balancer, e até mesmo servindo mais de uma aplicação, controlando o redirecionamento por meio de URLs, Basepaths, Headers, IPs de origem, etc.
 
-Soluções modernas de balanceamento de carga muitas vezes podem desempenhar tanto o papel de Load Balancer quanto de Proxy Reverso em alguma medida.
+Soluções modernas de balanceamento de carga muitas vezes podem desempenhar tanto o papel de Load Balancer quanto de Proxy Reverso em alguma medida. 
 
-
+Para concluirmos esse tópico, vale ressaltar que, tanto load balancers quando proxies reversos são **patterns de rede**, inclusive sendo viabilizado pelas mesmas tecnologias. Como por exemplo, o Envoy Proxy ou Nginx podem aparecer implementando responsabilidade de proxy reversos de 1:1 como sidecars em [service meshes de mercado](/service-mesh) quanto em balanceadores de carga. 
 
 <br>
 
@@ -232,6 +231,8 @@ Requisição 20 direcionada para: http://host1.com
 
 O algoritmo **Least Request** é uma abordagem de balanceamento de carga simples, porém eficiente, que direciona a requisição atual para o servidor que processou o menor número de requisições até aquele momento. Este método utiliza um contador associado a cada host ativo, que incrementa individualmente à medida que as requisições são distribuídas. Para escolher o próximo host, o algoritmo prioriza aquele com o menor contador dentre as opções disponíveis. Dependendo da implementação, este contador pode ser reiniciado após um período específico, tornando-o escalável em ambientes com escalabilidade horizontal.
 
+![Least Request](/assets/images/system-design/least-request.drawio.png)
+
 O objetivo do **Least Request** é **garantir uma distribuição equitativa de carga baseada na frequência com que as requisições são atendidas**, ao invés de focar na duração ou complexidade delas. Isso o torna **uma opção vantajosa para cenários com requisições uniformes e curtas**. Um exemplo seria um microserviço com poucas rotas, mas de alta performance, como um serviço de consulta de usuários que recebe um `id` e retorna o recurso rapidamente.
 
 Analogamente, no supermercado, seria como direcionar os clientes para o caixa com a menor fila, buscando uma distribuição mais equilibrada.
@@ -239,6 +240,8 @@ Analogamente, no supermercado, seria como direcionar os clientes para o caixa co
 ### Limitações do Least Request
 
 Embora o **Least Request** aborde a uniformidade das requisições, ele ainda pode enfrentar problemas de desbalanceamento em ambientes com requisições muito diversificadas e de durações variadas. Assim como o [Round Robin](#round-robin), ele não considera a saturação dos hosts, o que pode tornar a simples contagem de requisições insuficiente para representar a real distribuição de carga.
+
+![Least Request](/assets/images/system-design/least-request-fail.drawio.png)
 
 Implementações que não possuem um mecanismo para "zerar" o contador de requisições podem se tornar problemáticas em ambientes com escalabilidade horizontal. Uma má implementação desse algoritmo pode resultar em uma "negação de serviço" involuntária para novos hosts que entram no pool do balanceador.
 
@@ -341,6 +344,8 @@ Distribuição de requisições executadas: [10 10 10]
 
 Os algoritmos de **Least Connection** representam técnicas mais sofisticadas de balanceamento de carga, utilizadas para distribuir requisições de forma inteligente entre os hosts do pool de um balanceador. Ao contrário do [Round Robin](#round-robin) e [Least Request](#least-request), que visam distribuir requisições uniformemente sem considerar o estado atual dos servidores, essa abordagem tenta levar em conta a carga de trabalho de cada servidor.
 
+![Least Connection](/assets/images/system-design/least-connection.drawio.png)
+
 O método **Least Connection** **direciona a solicitação atual para o servidor com o menor número de conexões ativas no momento**. Uma "conexão ativa" se refere a **uma sessão ou interação em andamento entre cliente e servidor**, independentemente de a requisição já ter sido processada, como em casos de implementações que suportam keep alive, web sockets, GRPC persistentes, etc.
 
 Por exemplo, se um host está gerenciando 5 conexões ativas e outro apenas 3, a próxima requisição será direcionada para o host com 3 conexões, mesmo que essas possam ser tarefas de menor demanda.
@@ -363,6 +368,8 @@ O **Least Outstanding Requests (LOR)** é um algoritmo de balanceamento de carga
 
 Em resumo, enquanto o **[Least Connection](#least-connection) considera "quantas conexões"** estão ativas, o **LOR foca em "quantas requisições" ainda estão sendo processadas**.
 
+![LOR](/assets/images/system-design/lor.drawio.png)
+
 O **LOR** busca equilibrar a carga de trabalho, direcionando novas requisições para os hosts com menos requisições pendentes. Dessa forma, ele visa garantir que todos os servidores mantenham um volume de trabalho semelhante e gerenciável, concentrando-se na possível saturação em vez da quantidade de requisições. Isso o torna uma opção eficaz em ambientes onde as requisições podem ter tempos de resposta variáveis e imprevisíveis.
 
 ### Limitações do Least Outstanding Requests
@@ -380,14 +387,17 @@ O algoritmo de **IP Hash** é uma técnica de balanceamento de carga frequenteme
 
 Algoritmos baseados em **IP Hash** criam um hash consistente a partir do endereço IP do cliente para determinar para qual host as requisições ou pacotes de rede serão direcionados.
 
+![IP Hash](/assets/images/system-design/ip-hash.drawio.png)
+
 O processo de hashing do IP do cliente sempre resulta no mesmo hash, o que significa que as requisições de um cliente específico serão consistentemente encaminhadas para o mesmo host de destino, **contanto que este esteja disponível**.
 
-Essa técnica é utilizada em diversos outros algoritmos, como o **[Maglev](#maglev)** que será discutido posteriormente. Ela se mostra eficaz em workloads onde é crucial manter um tipo de "sessão", em situações que exigem que as requisições sejam resolvidas em uma certa ordem de dependência, facilitadas por caching, ou que necessitem sumarizar chunks de dados ou executar operações de persistência de maneira contínua.
+Essa técnica é utilizada em diversos outros algoritmos, como o **[Maglev](#maglev)** que será discutido posteriormente. Ela se mostra eficaz em workloads onde é necessário manter um tipo de "sessão", em situações que exigem que as requisições sejam resolvidas em uma certa ordem de dependência, facilitadas por caching, ou que necessitem sumarizar chunks de dados ou executar operações de persistência de maneira contínua.
 
 ### Limitações ao Implementar a Técnica de IP Hashing
 
 O **IP Hashing** é menos eficaz quando os usuários estão atrás de NATs ou proxies, situação em que muitos podem compartilhar o mesmo endereço IP público. Além disso, pode resultar em uma distribuição desigual de carga entre os servidores, especialmente se a base de usuários não estiver distribuída uniformemente em termos de endereços IP. Como alternativa a isso a lógica de **IP Hash** pode se extender a outros valores vindos de headers, URL's e etc. 
 
+![IP Hash](/assets/images/system-design/ip-hash-error.drawio.png)
 
 ### Exemplo de Implementação 
 
@@ -572,8 +582,38 @@ Requisição 9 direcionada para: http://host1.com
 Requisição 10 direcionada para: http://host2.com
 ```
 
+<br>
+
+# Load Balancing e Camada OSI
+
+Quando olhamos para a atuação dos balanceadores de carga dentro da arquitetura de solução, podemos fazer um cruzamento direto com o [modelo OSI](/protocolos-de-rede). Existem diversas implementações de balanceadores de carga que podem atuar em diferentes camadas do modelo, oferecendo vantagens e desvantagens específicas. Essas características devem ser cuidadosamente consideradas de acordo com as necessidades de exposição da aplicação, levando em conta a forma como os backends são acessados e qual tipo de protocolo está sendo utilizado.  
+
+![OSI](/assets/images/system-design/osi-lb.drawio.png)
+
+Neste contexto, vamos abordar dois cenários principais que estão mais próximos do design de sistemas: **Layer 4 (Transporte)** e **Layer 7 (Aplicação)**.
+
+## Load Balancers em Layer 4 (Transporte)
+
+Quando falamos de implementações de balanceadores em Layer 4, estamos nos referindo à **camada de transporte do modelo OSI**, **responsável por protocolos como TCP e UDP**. Diferente do balanceamento em Layer 7, que entende a aplicação e pode aplicar regras de roteamento baseadas em URLs, headers ou conteúdo, **em Layer 4 o balanceador não possui a capacidade de interpretar o payload e nem os demais protocolos criados acima do que se refere ao TCP/IP**, podendo lidar apenas com **pacotes e destinos**. Ele **trabalha apenas com endereços IP e portas**, **encaminhando o tráfego de forma transparente e sem muitas customizações** e implementações de algoritmos complexos de distribuição.
+
+Essa característica o torna **extremamente rápido e eficiente, com latência altamente otimizada quando comparado as implementações em outras camadas**, já que **não há necessidade de processar o conteúdo da requisição**, apenas **encaminhá-los para o devido destino**. Por isso, Load Balancers de Layer 4 são bastante utilizados em **cenários onde a performance e throughput são requisitos prioritários**. 
+
+Sua principal desvantagem, ou tradeoff, é a falta de granularidade e customizações de roteamento. Diferente das demais camadas. ele não tem capacidade de interpretar protocolos e realizar roteamentos granulares em base em `headers`, `query strings`, `paths` e afins. 
+
+## Load Balancers em Layer 7 (Aplicação)
+
+Já quando estamos falando em balanceadores que trabalham em Layer 7, entramos **na camada de aplicação do modelo OSI**, implementações que lidam diretamente com protocolos mais complexos como [**HTTP, gRPC e WebSocket**](/protocolos-de-rede/). Diferente das aplicações Layer 4, o balanceador aqui entende o conteúdo da requisição e pode aplicar decisões de roteamento mais granulares e complexas, levando em conta regras com base em **URLs, headers, body ou querystrings**, além de oferecer recursos como **SSL/TLS offloading** (retirando a carga de processamento e troca de certificados de criptografia do servidor), permitindo viabilizar [**cache de respostas**](/caching) e até compressão do payload para performance e redução de latência.
+
+Em um cenário distribuído de microserviços, podemos utilizar balanceadores layer 7 para encaminhar direfentes requisições para diferentes microserviços baseados em paths, hosts ou demais headers. 
+
+Em comparativo, podemos dizer que **balanceadores Layer 7 focam em inteligencia e flexibilidade de roteamento**, dando suporte para algoritmos de balanceamento mais complexos, enquanto os **balanceadores Layer 4 focam em velocidade e eficiencia de tráfego**. 
+
+
+<br>
+
 # Implementações e Tecnologias
 
+Fazendo um rapido apanhado de tecnologias de mercado para que seja possível associar a teoria com a prática, abaixo se encontra uma lista de tecnologias que podem ser considerados proxies reversos, balanceadores e até assumindo os dois papéis. 
 
 ### Envoy Proxy
 

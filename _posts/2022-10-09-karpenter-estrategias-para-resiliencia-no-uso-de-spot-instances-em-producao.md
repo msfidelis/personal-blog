@@ -26,7 +26,6 @@ Caso você não tenha visto ainda, fiz um artigo sobre uma PoC onde descrevo **c
 
 {% linkpreview "https://medium.com/@fidelissauro/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter-4d302b32b620" %}
 
-
 Caso você não tenha visto ainda, te convido para ler um artigo que eu escrevi sobre como utilizar o **Istio para sobreviver a cenários de caos**. Não tem nada a ver com o tema, mas eu acho que você vai gostar. #Confia.
 
 {% linkpreview "https://medium.com/@fidelissauro/sobrevivendo-a-cen%C3%A1rios-de-caos-no-kubernetes-com-istio-e-amazon-eks-4fb8469a73da" %}
