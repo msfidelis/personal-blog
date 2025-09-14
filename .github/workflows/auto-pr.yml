@@ -40,42 +40,91 @@ jobs:
           if [[ $BRANCH_NAME == draft/* ]]; then
             PR_TITLE="[DRAFT] $(echo $BRANCH_NAME | sed 's/draft\///' | sed 's/-/ /g' | sed 's/\b\w/\u&/g')"
             PR_LABELS="draft,needs-review"
-            PR_BODY="🚧 **Esta é uma PR de rascunho (draft)**
+            cat > pr_body.txt << 'EOF'
+          🚧 **Esta é uma PR de rascunho (draft)**
 
-Esta PR foi criada automaticamente para a branch \`$BRANCH_NAME\`.
+          Esta PR foi criada automaticamente para a branch `BRANCH_NAME_PLACEHOLDER`.
 
-## Descrição
-Esta PR contém um artigo em desenvolvimento. Por favor, revise o conteúdo e forneça feedback.
+          ## Descrição
+          Esta PR contém um artigo em desenvolvimento. Por favor, revise o conteúdo e forneça feedback.
 
-## Checklist
-- [ ] Conteúdo revisado
-- [ ] Gramática e ortografia verificadas
-- [ ] Links funcionando
-- [ ] Imagens otimizadas
-- [ ] Metadados corretos
+          ## Checklist
+          - [ ] Conteúdo revisado
+          - [ ] Gramática e ortografia verificadas
+          - [ ] Links funcionando
+          - [ ] Imagens otimizadas
+          - [ ] Metadados corretos
 
-## Observações
-- Esta PR será marcada como draft até estar pronta para publicação
-- Adicione comentários e sugestões de melhoria"
+          ## Observações
+          - Esta PR será marcada como draft até estar pronta para publicação
+          - Adicione comentários e sugestões de melhoria
+          EOF
+            sed -i "s/BRANCH_NAME_PLACEHOLDER/$BRANCH_NAME/g" pr_body.txt
           elif [[ $BRANCH_NAME == fix/* ]]; then
             PR_TITLE="[FIX] $(echo $BRANCH_NAME | sed 's/fix\///' | sed 's/-/ /g' | sed 's/\b\w/\u&/g')"
             PR_LABELS="bug,fix,needs-review"
-            PR_BODY="🐛 **Esta é uma PR de correção (fix)**
+            cat > pr_body.txt << 'EOF'
+           **Esta é uma PR de correção (fix)**
 
-Esta PR foi criada automaticamente para a branch \`$BRANCH_NAME\`.
+          Esta PR foi criada automaticamente para a branch `BRANCH_NAME_PLACEHOLDER`.
 
-## Descrição
-Esta PR contém correções para o blog. Por favor, revise as alterações.
+          ## Descrição
+          Esta PR contém correções para o blog. Por favor, revise as alterações.
 
-## Tipo de correção
-- [ ] Correção de bug
-- [ ] Correção de typo
-- [ ] Correção de link quebrado
-- [ ] Correção de formatação
-- [ ] Correção de metadados
-- [ ] Outro: ___________
+          ## Tipo de correção
+          - [ ] Correção de bug
+          - [ ] Correção de typo
+          - [ ] Correção de link quebrado
+          - [ ] Correção de formatação
+          - [ ] Correção de metadados
+          - [ ] Outro: ___________
 
-## Checklist
-- [ ] Alterações testadas localmente
-- [ ] Não quebra funcionalidades existentes
-- [ ] Documentação atualizada (se necessário)
+          ## Checklist
+          - [ ] Alterações testadas localmente
+          - [ ] Não quebra funcionalidades existentes
+          - [ ] Documentação atualizada (se necessário)
+
+          ## Observações
+          - Descreva brevemente o que foi corrigido
+          - Adicione screenshots se relevante
+          EOF
+            sed -i "s/BRANCH_NAME_PLACEHOLDER/$BRANCH_NAME/g" pr_body.txt
+          fi
+          
+          echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
+          echo "pr_labels=$PR_LABELS" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.check-pr.outputs.pr_exists == '0'
+        run: |
+          # Determina se a PR deve ser criada como draft
+          DRAFT_FLAG=""
+          if [[ "${{ steps.check-pr.outputs.branch_name }}" == draft/* ]]; then
+            DRAFT_FLAG="--draft"
+          fi
+          
+          gh pr create \
+            --title "${{ steps.pr-details.outputs.pr_title }}" \
+            --body-file pr_body.txt \
+            --base main \
+            --head "${{ steps.check-pr.outputs.branch_name }}" \
+            --label "${{ steps.pr-details.outputs.pr_labels }}" \
+            $DRAFT_FLAG
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on existing PR
+        if: steps.check-pr.outputs.pr_exists != '0'
+        run: |
+          echo "✅ Uma Pull Request já existe para a branch ${{ steps.check-pr.outputs.branch_name }}"
+          
+          # Adiciona um comentário na PR existente sobre o novo push
+          gh pr comment "${{ steps.check-pr.outputs.branch_name }}" \
+            --body "🔄 **Novos commits detectados**
+
+          Novos commits foram adicionados a esta branch. A PR foi automaticamente atualizada.
+
+          ⏰ Atualizado em: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          📝 Commit: \`${GITHUB_SHA:0:7}\`"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
