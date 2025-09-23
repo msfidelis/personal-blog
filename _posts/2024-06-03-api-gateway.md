@@ -62,11 +62,11 @@ Basicamente, os API Gateways encapsulam a complexidade dos sistemas distribuído
 
 Esse tipo de arquitetura permite que cada requisição feita para um `recurso` ou `método` da API descrita no Gateway seja encaminhada para um microserviço diferente. Essa flexibilidade é muito interessante para solucionar problemas de governança e organização de produtos oferecidos internamente ou externamente. Essa abordagem pode facilitar tanto em casos mais simples quanto em casos de roteamento mais complexos.
 
-![API Gateway](/assets/images/system-design/api-gateway-1.png)
+![API Gateway](/assets/images/system-design/api-gateway-1.drawio.png)
 
 > API Gateway redirecionando tráfego para diversos microserviços com base no path-prefix
 
-![API Gateway](/assets/images/system-design/api-gateway-2.png)
+![API Gateway](/assets/images/system-design/api-gateway-2.drawio.png)
 
 > API Gateway redirecionando tráfego para diversos microserviços com base em regras mais específicas de método e path
 
@@ -83,7 +83,7 @@ Enquanto balanceadores se concentram em distribuir requisições entre N réplic
 
 Os API Gateways se concentram em resolver problemas de governança em um âmbito muito específico de APIs REST, expondo somente os endpoints selecionados e gerenciando o consumo dos mesmos. Já as outras opções possuem propostas mais abrangentes, que muitas vezes não suprem a necessidade de uma gestão granular proporcionada por um API Gateway.
 
-![API Gateway](/assets/images/system-design/api-gateway-balancer.png)
+![API Gateway](/assets/images/system-design/api-gateway-balancer.drawio.png)
 
 > API Gateways tendo Load Balancers como Backend
 
@@ -95,40 +95,86 @@ Ambas as soluções podem e são utilizadas em conjunto, com APIs Gateways conce
 
 Esta seção descreve os principais componentes e a estrutura arquitetônica de um API Gateway, destacando como cada parte contribui para a eficiência, segurança e escalabilidade da aplicação. Um API Gateway típico é composto por vários componentes e funcionalidades que trabalham juntos para processar as requisições, como por exemplo **roteamento de requisições**, centralizador de autenticação e autorização, limitador de tráfego e mecanismo de throttling, modificação de mensagens e gerenciamento de cache.
 
+<br>
+
 ## Roteamento de Requisições
 
-O roteamento de requisições centralizado é a funcionalidade central dos padrões de design de API Gateway. Ele permite que, com base em informações fornecidas pelo cliente através do próprio protocolo HTTP, o roteamento para o microserviço responsável seja feito de forma correta, mesmo que os clientes não conheçam diretamente os microserviços que existem atrás do API Gateway,
+O roteamento de requisições centralizado é a funcionalidade central dos padrões de design de API Gateway. Ele permite que, com base em informações fornecidas pelo cliente através do próprio protocolo HTTP, o roteamento para o microserviço responsável seja feito de forma correta, mesmo que os clientes não conheçam diretamente os microserviços que existem atrás do API Gateway.
 
+<br>
 
 ## Autenticação e Autorização
 
-A **autenticação é o processo de verificar a identidade do usuário**, enquanto a **autorização determina quais recursos ou serviços o usuário pode acessar**, baseado em suas permissões. Basicamente, **autenticação diz ao sistema quem você é**, enquanto **autorização diz ao sistema o que você pode fazer**. Muitos API Gateways fornecem uma forma centralizada de validar esse tipo de controle de acesso, eliminando a necessidade de implementar esses processos em todos os microserviços que recebem as requisições diretamente. Abstrair a autenticação e autorização diretamente no API Gateway proporciona uma oportunidade de escalabilidade e clareza arquitetural.
+A **autenticação é o processo de verificar a identidade do usuário**, enquanto a **autorização determina quais recursos ou serviços o usuário pode acessar**, baseado em suas permissões. Basicamente, **autenticação diz ao sistema quem você é**, enquanto **autorização diz ao sistema o que você pode fazer**. 
 
-Em muitos casos, os API Gateways precisam contar com um servidor de identidade externo para se integrar com provedores de autenticação e autorização.
+![Auth](/assets/images/system-design/api-gateway-auth.drawio.png)
 
+Muitos API Gateways fornecem uma forma centralizada de validar esse tipo de controle de acesso, eliminando a necessidade de implementar esses processos em todos os microserviços que recebem as requisições diretamente. Abstrair a autenticação e autorização diretamente no API Gateway proporciona uma oportunidade de escalabilidade e clareza arquitetural. Em muitos casos, os API Gateways precisam contar com um servidor de identidade externo para se integrar com provedores de autenticação e autorização.
+
+<br>
 
 ## Limitação de Taxa (Rate Limiting) e Throttling
 
 Os API Gateways comumente fazem uso de mecanismos de limitação e controle de uso de seus recursos para evitar sobrecarga em seus sistemas adjacentes, ou até mesmo na própria infraestrutura do gateway. Esses recursos são as implementações de Rate Limiting e Throttling.
 
-O Rate Limiting, ou limitação de taxa, é o processo de **restringir o número de solicitações que um usuário pode fazer a um serviço em um período específico**. É a **prática de controlar a quantidade de recursos usados por uma aplicação ou cliente**. Essa é uma estratégia muito valiosa para prevenir abusos de uso pontuais e proteger os recursos do backend de saturarem e atuarem além da capacidade disponível sem ferir a qualidade. Imagine que você conhece as limitações do serviço de compra de pacotes de backend que responde no basepath `/pacote`. Você sabe que seu serviço atende sem degradar até 100 requisições por segundo e esse é o gargalo limitador desse backend. Você pode utilizar o Rate Limiting para segurar as demais requisições que ultrapassarem os 100 TPS no Gateway e evitar passar o volume excedente para o serviço. As limitações de taxa são medidas preventivas e também podem ser utilizadas como features comerciais de uso das APIs, em que podem ser comercializados rate limits maiores para clientes que têm planos maiores do seu produto.
+### Rate Limit
 
-O Throttling, ou estrangulamento, é a **prática de controlar a quantidade de recursos usados quando os limites são atingidos**, geralmente diminuindo ou bloqueando a taxa de solicitações permitidas quando a mesma é ultrapassada. Pode ser consequência do Rate Limiting quando o mesmo é ultrapassado numa escala global do gateway. O Throttling pode ser ativado de forma temporária, até que o serviço do backend seja estabilizado em caso de saturação dos sistemas adjacentes. Ele pode ser configurado como um recurso do próprio gateway, e não dos subsistemas de backend. Como por exemplo, sabemos que cada cliente pode realizar até 10 requisições no período de 1 segundo. Porém, independentemente dessa taxa ser criada para proteger o sistema destino, o próprio gateway tem suas limitações de escalabilidade e infraestrutura, e pode suportar até 10.000 transações por segundo. Caso a soma de todos os clientes ultrapasse o limite do próprio gateway, uma medida de Throttling pode ser acionada, limitando parcialmente a quantidade de requisições que podem ser atendidas para restabelecer a saúde de toda a malha de serviço.
+O Rate Limiting, ou limitação de taxa, é o processo de **restringir o número de solicitações que um usuário pode fazer a um serviço em um período específico**. É a **prática de controlar a quantidade de recursos usados por uma aplicação ou cliente**. 
 
-O Throttling é como um sistema de defesa. Imagine que um componente de uma máquina atinge uma temperatura que pode causar uma pane geral no funcionamento. Uma operação de Throttling restringiria a capacidade de funcionamento da máquina significativamente até que a temperatura diminua. Durante esse meio tempo, a vazão da máquina é reduzida para proteger sua integridade.
+![Rate Limit](/assets/images/system-design/api-gateway-rate-limit.drawio.png)
+
+Essa é uma estratégia muito valiosa para prevenir abusos de uso pontuais e proteger os recursos do backend de saturarem e atuarem além da capacidade disponível sem ferir a qualidade. Imagine que você conhece as limitações do serviço de compra de pacotes de backend que responde no basepath `/pacote`. Você sabe que seu serviço atende sem degradar até 100 requisições por segundo e esse é o gargalo limitador desse backend. 
+![Limit](/assets/images/system-design/api-gateway-limits.drawio.png)
+
+Você pode utilizar o Rate Limiting para segurar as demais requisições que ultrapassarem os 100 TPS no Gateway e evitar passar o volume excedente para o serviço. As limitações de taxa são medidas preventivas e também podem ser utilizadas como features comerciais de uso das APIs, em que podem ser comercializados rate limits maiores para clientes que têm planos maiores do seu produto.
+
+### Throttling
+
+O Throttling, ou estrangulamento, é a **prática de controlar a quantidade de recursos usados quando os limites são atingidos**, geralmente diminuindo ou bloqueando a taxa de solicitações permitidas quando a mesma é ultrapassada. Pode ser consequência do Rate Limiting quando o mesmo é ultrapassado numa escala global do gateway. 
+
+O Throttling pode ser **ativado de forma temporária**, até que o serviço do **backend seja estabilizado em caso de saturação dos sistemas adjacentes**. Ele pode ser configurado como um recurso do próprio gateway, e não dos subsistemas de backend. Como por exemplo, sabemos que cada cliente pode realizar até 10 requisições no período de 1 segundo. Porém, independentemente dessa taxa ser criada para proteger o sistema destino, o próprio gateway tem suas limitações de escalabilidade e infraestrutura, e pode suportar até 10.000 transações por segundo. **Caso a soma de todos os clientes ultrapasse o limite do próprio gateway, uma medida de Throttling pode ser acionada**, limitando parcialmente a quantidade de requisições que podem ser atendidas para restabelecer a saúde de toda a malha de serviço.
+
+O Throttling é como um sistema de defesa. Imagine que um componente de uma máquina atinge uma temperatura que pode causar uma pane geral no funcionamento. **Uma operação de Throttling restringiria a capacidade de funcionamento da máquina significativamente até que a temperatura diminua**. Durante esse meio tempo, a vazão da máquina é reduzida para proteger sua integridade.
 
 Tanto o Rate Limiting quanto o Throttling se baseiam em controlar a quantidade de tráfego, mas o Rate Limiting funciona de forma preventiva, e o Throttling de forma reativa.
 
+### Token Bucket 
+
+O **Token Bucket** é um dos algoritmos mais utilizados para implementar **rate limits em sistemas distribuídos**. Ele funciona como um **"balde" com capacidade limitada de tokens**, que pode ser aplicado com base em uma dimensão de tempo e ter diversos escopos, como **"conta"**, **"usuário"**, **"tenant"** e também **globais**. 
+
+O algoritmo se baseia em uma representação ilustrativa de um balde, onde a **taxa de tokens é adicionada de forma fixa e constante** com uma variável de tempo. Por exemplo: **100 tokens por segundo**, **1000 tokens por hora**, **10 tokens por segundo para cada usuário**, entre outros. Além disso, existe uma **capacidade máxima de tokens** no balde.
+
+![Token Bucket](/assets/images/system-design/token-bucket.drawio.png)
+
+Um exemplo ilustrativo seria um balde com capacidade para **200 tokens** e taxa de reposição de **100 tokens por segundo**. Nesse cenário, um cliente pode enviar até **200 requisições de uma só vez**, aproveitando os tokens acumulados, mas depois só poderá continuar no ritmo de **100 requisições por segundo**. A cada requisição, um token é removido do pool; caso os tokens tenham se esgotado antes da renovação, os **requests são negados** para evitar sobrecarga no backend e respeitar os limites de uso. 
+
+O objetivo do **Token Bucket** é trabalhar com **limites "seguros e flexíveis"**, e ele é normalmente implementado em **API Gateways** utilizando estruturas distribuídas como **Redis** e demais bancos de dados em memória para manter contadores centralizados (e eventualmente consistentes), garantindo o funcionamento entre múltiplas réplicas do serviço. 
+
+Esse algoritmo permite que o API Gateway lide com **"picos inesperados" curtos (bursts)**, administrando a reserva de tokens que podem ser acumulados até o limite estabelecido. 
+
+Sua consistência não é forte. Isso significa que, quando implementado a nível de usuário ou conta, pode existir um **vazamento flexível de tokens**. Um limite estabelecido de **100 tokens por segundo** para uma chave pode frequentemente **"deixar passar" alguns requests a mais**, por conta da dimensão total do bucket e da gestão flexível do consumo de tokens. 
+
+
+### Leaky Buckets 
+
+O **Leaky Bucket** impõe um conceito de **saída constante**. Independentemente do número de requisições que chegam, a **taxa de saída** é sempre mantida. Isso significa que, comparado ao **Token Bucket**, que trabalha com a dimensão de reposição e acúmulo de tokens para lidar com eventuais **bursts de uso**, o **Leaky Bucket** funciona apenas com **limites rígidos e previsíveis de tráfego**. Ele não permite requests além da taxa definida, mas garante a **suavização total do tráfego** para o backend, sendo ideal em sistemas que precisam de **cadência controlada**. 
+
+![Leaky Bucket](/assets/images/system-design/leaky-bucket.drawio.png)
+
+Em um exemplo de uso, o tamanho do bucket é exatamente igual à sua taxa de reposição. Diferente do **Token Bucket**, que pode possuir uma taxa de reposição de **50 tokens por segundo** e um **tamanho total de bucket de 200 tokens**, o **Leaky Bucket** trabalharia com **50 tokens por segundo** e **tamanho total de bucket de 50**, nunca permitindo que esse limite seja quebrado ou flexibilizado. 
+
+
+<br>
 
 ## Gerenciamento de APIs e Versionamento
 
 O gerenciamento de APIs envolve a criação, publicação, manutenção e monitoração das APIs. O versionamento é a prática de gerenciar mudanças nas APIs, permitindo que múltiplas versões de uma API coexistam para suportar diferentes clientes e casos de uso ao longo do tempo. Esse tipo de recurso normalmente se dispõe em reescrever a chamada do backend além do path do gateway, como por exemplo:
 
-![API Gateway Versionamento](/assets/images/system-design/api-gateway-version.png)
+![API Gateway Versionamento](/assets/images/system-design/api-gateway-version.drawio.png)
 
 A capacidade de fazer uma gestão de tráfego entre duas versões do mesmo backend também é uma necessidade verdadeira. API Gateways, de uma forma geral, também podem oferecer uma proposta de release gradativa, como um canary deployment progressivo e controlado para facilitar uma substituição a quente de um serviço por outro, desde que os dois respeitem os mesmos contratos, como por exemplo:
 
-![API Gateway Canary](/assets/images/system-design/api-gateway-canary.png)
+![API Gateway Canary](/assets/images/system-design/api-gateway-canary.drawio.png)
 
 <br>
 
