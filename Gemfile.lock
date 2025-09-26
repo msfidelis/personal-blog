@@ -109,6 +109,7 @@ GEM
     jekyll-linkpreview (0.7.0)
       jekyll (>= 3.5, < 5.0)
       metainspector (~> 5.9)
+    jekyll-mermaid (1.0.0)
     jekyll-paginate (1.1.0)
     jekyll-sass-converter (3.0.0)
       sass-embedded (~> 1.54)
@@ -191,6 +192,7 @@ DEPENDENCIES
   jekyll-gist
   jekyll-import!
   jekyll-linkpreview
+  jekyll-mermaid
   jekyll-paginate
   jekyll-seo-tag
   jekyll-sitemap
@@ -200,4 +202,4 @@ DEPENDENCIES
   safe_yaml
 
 BUNDLED WITH
-   2.4.21
+   2.4.22
