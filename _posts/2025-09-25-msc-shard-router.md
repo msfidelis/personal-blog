@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/capa-pacelc.png
+image: assets/images/system-design/sharding-route-capa.png
 author: matheus
 featured: false
 published: true
