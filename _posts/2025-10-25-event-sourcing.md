@@ -64,13 +64,33 @@ Ao reaplicar os 3 eventos da transação `432`, é reconstituido totalmente e de
 
 Esse modelo é análogo ao **append-only log** usado por sistemas como Kafka ou bancos contábeis — o dado nunca é substituído, apenas acumulado, por isso é comparado a um ledger distribuído, um registro permanente, auditável e verificável ao decorrer do tempo de tudo que aconteceu dentro de um domínio.
 
+![Event Store Ledger](/assets/images/system-design/event-store-ledger.drawio.png)
+
+Modelar o nosso event-store para se tornar agnótisco ao time de operação efetuada, utilizando campos livres ou em blob para armazenar dados e metadados do evento com fins de repuplicação e reprocessamento, utilizando de indices para otimização de consultas transacionais e recuperação de estado histórico. 
+
 <br>
 
 ## Event-Bus e Publishers 
 
-Dentro - e fora - de uma arquitetura de Event Sourcing, o Event Bus é o componente dedicado para permitir que os eventos gerados dentro de um domínio sejam publicados, e assim propagados para outros domínios, sistemas e subsistemas interessados nos acontecimentos e mudanças de estados de suas entidades. Seu objetivo é carregar esses eventos de forma desacoplada para outras partes do sistema. 
+Dentro - e fora - de uma arquitetura de Event Sourcing, o Event Bus é o componente dedicado para permitir que os eventos gerados dentro de um domínio sejam publicados, e assim propagados para outros domínios, sistemas e subsistemas interessados nos acontecimentos e mudanças de estados de suas entidades. Seu objetivo é carregar esses eventos de forma desacoplada para os consumidores do sistema. O Event Store é o registro de verdade, a golden source dos eventos. O Event Bus é o meio de projeção de consequências desses eventos. 
 
-Os Publishers são componentes de um sistema Event Sourcing  que são responsáveis por publicar os eventos confirmados no Event Store nesses tópicos, filas ou barramentos. Esse comportamento de publicação deve ter característica atômica, e os eventos só podem ser emitidos no event-bus quando a gravação e outras operações são bem sucedidas. 
+![Event Bus](/assets/images/system-design/event-bus.drawio.png)
+
+Os Publishers são componentes de um sistema Event Sourcing  que são responsáveis por publicar os eventos confirmados no Event Store nesses tópicos, filas ou barramentos. Esse comportamento de publicação deve ter característica atômica, e os eventos só podem ser emitidos no event-bus quando a gravação e outras operações são bem sucedidas. O Event Bus pode ser implementado sobre tecnologias como Kafka, RabbitMQ, SQS, NATS ou Pulsar, dependendo do SLA e das garantias necessárias.
+
+Ambos não são definitivamente obrigatórios para uma arquitetura event sourcing, porém são grandes facilitadores em implementações em arquiteturas de microserviços orientadas a eventos. De qualquer forma um Event Bus devem preservar ordenação dos eventos por stream ou aggregate, e garantir que o evento seja entregue pelo uma vez, com deduplicação evitando que os mesmos sejam repetidos de forma não intencional e idempotencia a nível dos consumidores para permitir reprocessamento. 
+
+Um Event Sourcing pode possuir vários barramentos de service bus que são responsáveis por registrar e transmir eventos de domínio para consumidores especificos com ações específicos em domínios diferentes. 
+
+![Event Bus Conta Confirmada](/assets/images/system-design/event-bus-conta.drawio.png)
+
+Um Event Bus com características de ledger distribuido, que é responsável por registrar de forma histórica todas ações efetuadas dentro de uma conta específica, pode emitir eventos como "Nova Conta Registrada" para domínios que precisam persistir previamente uma estrutura base de uma nova conta antes de começar a consumir o evento central como por exemplo uma transação, como um Saldo (Balance) ou um Extrato (Statement). 
+
+Assim que houverem eventos emitidos dentro do event sourcing responsável por registrar as transações, essas mensagens de transações persistidas são transmitidas para outro barramento de event-bus responsável por notificar os domínios que esses eventos aconteceram, por exemplo para compor o balance e registrar de forma histórica eventos de extrato. 
+
+![Event Bus Transacao Confirmada](/assets/images/system-design/event-bus-transacao.drawio.png)
+
+Dessa forma conseguimos notificar e recompor entidades inteiras dentro de domínios que podem aplicar suas proprias características de event sourcing ou persistencia transacional por meio de arquiteturas orientadas a eventos de forma eventualmente consistente. 
 
 <br>
 
@@ -78,15 +98,30 @@ Os Publishers são componentes de um sistema Event Sourcing  que são responsáv
 
 Os Event-Stores dos Sistemas Event-Sourcing são otimizados para grandes quantidades de escrita, porém, entretanto, podem apresentar desafios de leituras e recuperações de dados. Os databases principais devem conter idealmente apenas os logs dos fatos. Para criar consultas sistemicas para alimentar API's e outros processos, precisamos ter meios de criar modelos otimizados para a leitura. 
 
-Uma Projection, é um componente que “ouve” os eventos do Event Store e atualiza uma visão derivada em um formato otimizado para leitura do próprio sistema, ou de outros sistemas. Esses modelos são conhecidos como Modelos de Leitura, ou Read Models. Esses modelos podem sim, ser construídos em uma visão de State Mutation.
+Eventos por definição são eventos e ações de fatos que aconteceram no passado. Projections são componentes e processos que são utilizados para interpretar esses fatos e transformá-los em algo utilizável sistemicamente, em termos de leitura. Uma projection é a consolidação de vários eventos de um mesmo identificador ou entidade, que após interpretados, chegamos a um resultado esperado e esse resultado é salvo em um modelo de leitura, ou Read Model. 
+
+![Projections](/assets/images/system-design/projection.drawio.png)
+
+Em outras palavras, os projections,são componentes ou processos que “ouvem” os eventos do Event Store e atualiza uma visão derivada em um formato otimizado para leitura do próprio sistema, ou de outros sistemas. Esses modelos são conhecidos como Modelos de Leitura, ou Read Models. Esses modelos podem sim, ser construídos em uma visão de State Mutation.
 
 ![Read Models](/assets/images/system-design/read-models.drawio.png)
 
-Projections são construídas utilizando padrão de CQRS (Command-Query Responsability Segregation), onde portamos de forma assincrona, um modelo otimizado para escrita, para outro otimizado para a leitura.  Em Read Models, podemos utilizar bancos de dados em memória para escrever e retornar dados voláteis rápidos, bancos de dados orientados a documentos para buscas textuais ou modelos relacionais e não relacionais para relatórios consolidados. 
+Projections são normalmente construídas utilizando padrão de CQRS (Command-Query Responsability Segregation), onde portamos de forma sincrona ou assincrona, um modelo otimizado para escrita, para outro modelo otimizado para a leitura.  Em Read Models, podemos utilizar bancos de dados em memória para escrever e retornar dados voláteis rápidos, bancos de dados orientados a documentos para buscas textuais ou modelos relacionais e não relacionais para relatórios consolidados. 
 
 Ao contrário do event-sourcing, uma projeção são determinísticas ao estado atual, e os processos de “Replay” dos eventos em caso de reprocessamento dos eventos guardados de forma temporal para recomposição dos estados deve refletir também nas projections, que devem ser atualizadas e refletir o estado atual do sistema.
 
 Em sistemas maiores, várias projeções coexistem, cada uma representando uma visão específica: analytics, relatórios, dashboards, filas de envio, catálogos, etc.
+
+### Projections e Read Models Transacionais 
+
+Dentro de um modelo transacional, podemos agrupar pequenas projections dentro do mesmo banco de dados do event store de forma atômica.
+
+![Transacao](/assets/images/system-design/read-model-transacional.drawio.png)
+
+
+### Projections e Read Models Assincronos 
+
+![Async](/assets/images/system-design/read-model-async.drawio.png)
 
 <br>
 
@@ -125,7 +160,7 @@ Em sistemas distribuídos baseados em eventos ou arquiteturas assincronas em ger
 
 Em arquiteturas event-sourcing, podemos decidir reprocessar todos os eventos de um período específico e recompor projeções e notificações para sistemas subjacentes e forma histórica. Para que todo esse processo ocorra dentro do domínio, e nos domínios ao redor, precisamos garantir processos de idempotencia distribuída e controle de versão dos eventos, para que os eventos processados corretamente não sejam impactados por efeitos colaterais e gerar efeitos negativos. 
 
-Cada evento deve possuir um `event_id` único e uma `version` incremental. Isso evita duplicações e permite evoluir o schema de eventos com segurança.
+Cada evento deve possuir um `event_id` único e uma `version` incremental. Isso evita duplicações e permite evoluir o schema de eventos com segurança. Esse processo também pode ser conduzido por Unix timestamps indicando ordem temporal direta. 
 
 <br>
 
@@ -142,3 +177,4 @@ Cada evento deve possuir um `event_id` único e uma `version` incremental. I
 - [Event Bus & Event Store](https://docs.axoniq.io/axon-framework-reference/4.11/events/infrastructure/)
 - [How to Create a Event Bus in Go](https://leapcell.medium.com/how-to-create-a-event-bus-in-go-d7919b59a584)
 - [Implementing event-based communication between microservices (integration events)](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/integration-event-based-microservice-communications)
+- [Guide to Projections and Read Models in Event-Driven Architecture](https://event-driven.io/en/projections_and_read_models_in_event_driven_architecture/)
