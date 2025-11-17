@@ -108,20 +108,45 @@ Em outras palavras, os projections,são componentes ou processos que “ouvem”
 
 Projections são normalmente construídas utilizando padrão de CQRS (Command-Query Responsability Segregation), onde portamos de forma sincrona ou assincrona, um modelo otimizado para escrita, para outro modelo otimizado para a leitura.  Em Read Models, podemos utilizar bancos de dados em memória para escrever e retornar dados voláteis rápidos, bancos de dados orientados a documentos para buscas textuais ou modelos relacionais e não relacionais para relatórios consolidados. 
 
+Read Models não são apenas caches de leitura, eles são representações materializadas e derivadas de fatos históricos ocorridos no passado e registrados no event store. Isso significa que eles precisam evoluir junto com o domínio e com a semântica dos eventos em tempo proximo do real.
+
 Ao contrário do event-sourcing, uma projeção são determinísticas ao estado atual, e os processos de “Replay” dos eventos em caso de reprocessamento dos eventos guardados de forma temporal para recomposição dos estados deve refletir também nas projections, que devem ser atualizadas e refletir o estado atual do sistema.
 
-Em sistemas maiores, várias projeções coexistem, cada uma representando uma visão específica: analytics, relatórios, dashboards, filas de envio, catálogos, etc.
+Em sistemas maiores, várias projeções coexistem, cada uma representando uma visão específica: analytics, relatórios, dashboards, filas de envio, catálogos, etc. Seguindo as boas práticas de reprocessamento e elasticidade inerente ao domínio principal, as Read Models distribuídas se tornam efêmeras descartáveis, podendo ser reconstituídas a qualquer momento do tempo. 
+
+<br>
 
 ### Projections e Read Models Transacionais 
 
-Dentro de um modelo transacional, podemos agrupar pequenas projections dentro do mesmo banco de dados do event store de forma atômica.
+Dentro de um modelo transacional, podemos agrupar pequenas projections dentro do mesmo banco de dados do event store de forma atômica. Um event source não é otimizado para leitura, são otimizados para escrita intensiva. Em processos que exigem uma carga de trabalho e volumes muito altos de dados, uma gama maior de operações dentro de uma transação do event source pode gerar gargalos e uma escalabilidade vertical maior das aplicações e databases. 
 
 ![Transacao](/assets/images/system-design/read-model-transacional.drawio.png)
 
+Nesse modelo, a prioridade é preservar atomicidade e consistência imediata. Isso significa que, dentro de uma única transação, tanto o evento quanto a projeção derivada são persistidos de forma atômica. O maior benefício desse modelo é a eliminação de latência entre escrita e leitura, permitindo consistência em valores que não aceitam divergência em nenhum estado, porém leva complexidade operacional ao Event Source e maior carga de operações ao Event Store, sendo um gargalo em cenários de alta volumetria. 
+
+<br>
+
+### Projections e Read Models Semi-Sincronos
+
+O propósito inicial de uma Event Source é **gerar uma fonte segura e confiável de dados transacionais** e que os mesmos **possam ser reconstituidos e replicados**. No modelo transacional, como visto anteiormente, mesmo que algumas Read Models sejam construidas dentro do próprio Event Source de forma atômica, idealmente elas precisam ser encaminhadas para aplicações que iram tratar e otimizar esses dados para leitura, lidando com esses dados transacionais apenas para atualização e reconstrução de projections. Em outras palavras, precisamos reduzir qualquer outra operação que possam comprometer a capacidade dedicada para escrita e confiabilidade. 
+
+Nesses casos, podemos tratar a afinidade transacional do event source para tratá-lo como uma "**golden source atômica**", e atualizar nossas Read Models de forma assincrona e eventual, tendo duas fontes do mesmo dado, uma voltada apenas para persistencia e confiabilidade, e outra para consulta. Ideal para grandes volumes de dados.
+
+![Golden Source](/assets/images/system-design/semi-sync-read-model.drawio.png)
+
+Uma operacão de saldo precisa ser executada de forma atômica e transacional para evitar inconsistências. Precisamos garantir **exclusão mutua** e lidar com **diversas operações por meio de transactions** para lidar com todos os lançamentos e movimentações para chegar ao saldo atual. **Essas operações podem ser executadas dentro de um event source**. Após cada transação, o novo saldo é calculado de forma atômica e é produzido no event bus onde pode ser consumido por um Read Model que expõe o dado para uma modelagem e database otimizados para consulta e exposição para grandes volumes de requisições. 
+
+**Esse caso pode ser assumido apenas onde podemos lidar com otimismo entre os níveis de consistência.**
+
+<br>
 
 ### Projections e Read Models Assincronos 
 
+Em sistemas que tem apetite para consistencia eventual, podemos encaminhar os dados registrados no event sourcing via event-bus para construção de read models diretamente nos domínios interessados, removendo qualquer complexidade adicional no event store. 
+
 ![Async](/assets/images/system-design/read-model-async.drawio.png)
+
+Dessa forma deixamos o capacity do event source dedicado apenas para registrar, confirmar e repassar os logs temporais e garantir uma temporalidade atômica. Todos os modelos de leitura são construidos e processados de forma totalmente desacoplada do event source, porem lidando com aumento computacional significativo em cada proposta de processamento e sendo necessário o envio completo dos logs para reconstituição. Tiramos a complexidade e demanda computacional do motor dos eventos e repassamos os mesmos para cada aplicação e domínio responsável por tratar os dados de forma agnóstica. 
 
 <br>
 
@@ -141,6 +166,16 @@ No entanto, snapshots devem ser tratados como artefatos derivados e descartáve
 <br>
 
 # Reconstituição de Estados e Rehydratation
+
+A reconstituição de estado de um agregado dentro do event source, popularmente conhecido como Rehydratation, é o processo pelo qual utilizamos os logs sequenciais registrados no event store para reconstruir o estado de entidades e operações dentro e fora do domínio principal. Um event source deve idealmente ter ferramentas que permitam que todos os registros sejam reprocessados sequencialmente reaplicando todos os eventos associados a ele. Esse processo é central ao Event Sourcing, e permite que a história contada pelos logs seja novamente reconstituida. 
+
+![Rehydratation](/assets/images/system-design/rehydratation.drawio.png)
+
+No cenário hipotético de um event source que guarda todas as transações de credito e debito e dispara esses eventos confirmados para outros domínios que fazem uso dessa informação como saldo ou extrato do cliente que irá disponibilizar read models dessas informações sumarizadas. Um desses domínios sofre algum grau de inconsistencia sistemica ou manual, perdendo total ou parcialmente todos os dados e ferindo a integridade da informação. Nossa aplicação event source, deve oferecer gatilhos para reaplicar todos os eventos e enviá-los de forma sequencial para o event-bus, oferendo meios de que os domínios subsequentes consigam se reconstituir com essa informação temporal e recalcular o saldo atual, ou reconstruir a visualização de lançamentos. 
+
+Essa estratégia pode ser implementada em domínios complexos que exigem otimizações e reconstituições rastreáveis como rastreio de medicamentos farmaceuticos, históricos de linhas de fabricação, aplicação de descontos, prontuários e histórico médico de pacientes, fechamento de caixas e etc. 
+
+
 
 <br>
 
