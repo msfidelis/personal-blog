@@ -8,7 +8,11 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Event Sourcing
 ---
 
-Dando sequencia a exploração de patterns arquiteturais da série de System Design, hoje vamos colocar um marco de complexidade estrutural falando de Event Sourcing e dos conceitos e componentes que viabilizam a implementação do mesmo. O objetivo desse capitulo será oferecer uma revisão honesta e conceitual sobre a adoção desse modelo, e também suas complexidades sistêmicas. 
+Dando sequencia a exploração de patterns arquiteturais da série de System Design, hoje vamos colocar um marco de complexidade estrutural falando de Event Sourcing e dos conceitos e componentes que viabilizam a implementação do mesmo. O objetivo desse capitulo será oferecer uma revisão honesta e conceitual sobre a adoção desse modelo, e também suas complexidades sistêmicas, que são altas. 
+
+Ao longo do conteúdo, são discutidos os principais conceitos que compõem esse modelo como **Event Store, Event Bus, Projections, Read Models, Snapshotting e Rehydration** e como eles se relacionam para formar um **ecossistema transacional e historicamente reconstruível.**
+
+Além dos fundamentos conceituais, o texto aborda **estratégias práticas para lidar com consistência eventual, versionamento, idempotência e controle de concorrência**, temas essenciais para o design de **sistemas distribuídos de alta confiabilidade e larga escala.**
 
 # Definindo Event Sourcing
 
