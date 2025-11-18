@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/capa-pacelc.png
+image: assets/images/system-design/capa-event-source.png
 author: matheus
 featured: false
 published: true
@@ -13,6 +13,8 @@ Dando sequencia a exploração de patterns arquiteturais da série de System Des
 Ao longo do conteúdo, são discutidos os principais conceitos que compõem esse modelo como **Event Store, Event Bus, Projections, Read Models, Snapshotting e Rehydration** e como eles se relacionam para formar um **ecossistema transacional e historicamente reconstruível.**
 
 Além dos fundamentos conceituais, o texto aborda **estratégias práticas para lidar com consistência eventual, versionamento, idempotência e controle de concorrência**, temas essenciais para o design de **sistemas distribuídos de alta confiabilidade e larga escala.**
+
+<br>
 
 # Definindo Event Sourcing
 
@@ -151,6 +153,7 @@ Um Event Store **não é otimizado para leitura — é otimizado para escrita in
 
 ![Transação](/assets/images/system-design/read-model-transacional.drawio.png)
 
+
 **Nesse modelo, a prioridade é preservar atomicidade e consistência imediata.**  
 Isso significa que, **dentro de uma única transação, tanto o evento quanto a projeção derivada são persistidos de forma atômica.**  
 **O maior benefício desse modelo é a eliminação da latência entre escrita e leitura**, permitindo **consistência imediata em valores que não toleram divergência em nenhum estado.**  
@@ -273,19 +276,18 @@ A **idempotência** é a propriedade que permite que uma operação seja executa
 Em sistemas centralizados, isso pode ser garantido por meio de **transações ACID**.  
 Mas em **arquiteturas distribuídas**, onde eventos são propagados de forma assíncrona e cada serviço mantém sua própria consistência, **a idempotência precisa ser explicitamente e cuidadosamente projetada.**
 
-Em sistemas distribuídos baseados em eventos — ou em arquiteturas assíncronas em geral —, **a idempotência é um requisito fundamental que permite operar arquiteturas complexas de forma segura.**  
+Em sistemas distribuídos baseados em eventos, ou em arquiteturas assíncronas em geral, **a idempotência é um requisito fundamental que permite operar arquiteturas complexas de forma segura.**  
 Isso se deve ao fato de que **a entrega e o processamento de eventos são inerentemente inconstantes e não determinísticos**, podendo **ocorrer em duplicidade**, sofrer **race conditions ocasionais**, ou **falhar durante a execução e precisar ser reiniciados**, o que **reforça a necessidade de evitar esforço computacional redundante.**
 
 Em **arquiteturas baseadas em Event Sourcing**, **podemos decidir reprocessar todos os eventos de um período específico para recompor projeções e notificações para sistemas subjacentes de forma histórica.**  
 Para que esse processo ocorra corretamente **tanto dentro do domínio quanto nos domínios adjacentes**, é necessário **garantir processos de idempotência distribuída e controle de versão dos eventos**, assegurando que **eventos já processados não gerem efeitos colaterais ou resultados inconsistentes.**  
 odos os domínios downstream devem realizar checagens e manter chaves de idempotência fortes e consistentes a todo momento.
 
-
-
 <br>
 
 ### Referências 
 
+- [Github: Event Source Distributed Ledger](https://github.com/msfidelis/event-source-distributed-ledger)
 - [Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html)
 - [Event sourcing pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/event-sourcing.html)
 - [Eventsourcing e EventStore, Projeções, Snapshots](https://medium.com/@rvf.vazquez/eventsourcing-e-eventstore-proje%C3%A7%C3%B5es-snapshots-97b964a220d)
