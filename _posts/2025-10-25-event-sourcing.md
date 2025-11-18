@@ -8,6 +8,8 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Event Sourcing
 ---
 
+Dando sequencia a exploração de patterns arquiteturais da série de System Design, hoje vamos colocar um marco de complexidade estrutural falando de Event Sourcing e dos conceitos e componentes que viabilizam a implementação do mesmo. O objetivo desse capitulo será oferecer uma revisão honesta e conceitual sobre a adoção desse modelo, e também suas complexidades sistêmicas. 
+
 # Definindo Event Sourcing
 
 Event Sourcing é um padrão arquitetural que busca registrar todos os eventos que mudam o estado de ume entidade em uma base de dados de forma historica. Esse padrão é usado para "contar uma história" de ume transação ou entidade em todo seu ciclo de vida.
@@ -40,7 +42,7 @@ O Modelo de Event Sourcing propõe essa inversão conceitual, onde ao invés de 
 
 ![Persistencia Event Sourcing](/assets/images/system-design/persistencia-event-sourcing.drawio.png)
 
-Cada operação representa uma operação imutável, de que “algo aconteceu” e está sumariamente registrado, fazendo com que o estado represente de fato uma sequencia ordenada e temporal de eventos, e não sua atualização mais recente.
+**Cada operação representa uma operação imutável, de que “algo aconteceu” e está sumariamente registrado**, fazendo com que o estado represente de fato uma sequencia ordenada e temporal de eventos, e não sua atualização mais recente.
 
 Todas as operações em um sistema Event Sourcing são naturalmente inserts de novos dados sobre o estado da entidade. Sendo necessário recuperar o ultimo estado sempre que o mesmo precisar ser consultado. Exigindo mais das operações de leitura em caso de alto volume, sendo um tradeoff conhecido, e onde é necessário empregar as maiores otimizações
 
@@ -124,6 +126,8 @@ Dentro de um modelo transacional, podemos agrupar pequenas projections dentro do
 
 Nesse modelo, a prioridade é preservar atomicidade e consistência imediata. Isso significa que, dentro de uma única transação, tanto o evento quanto a projeção derivada são persistidos de forma atômica. O maior benefício desse modelo é a eliminação de latência entre escrita e leitura, permitindo consistência em valores que não aceitam divergência em nenhum estado, porém leva complexidade operacional ao Event Source e maior carga de operações ao Event Store, sendo um gargalo em cenários de alta volumetria. 
 
+Em cenários de alto volume, é comum aplicar o padrão **“Transactional Outbox”** como mecanismo mitigador. Nesse padrão, o evento é escrito junto da projeção dentro da mesma transação, mas posteriormente publicado de forma assíncrona — garantindo atomicidade sem bloquear o throughput, criando uma ponte para o modelo Semi-Sincrono. 
+
 <br>
 
 ### Projections e Read Models Semi-Sincronos
@@ -134,30 +138,30 @@ Nesses casos, podemos tratar a afinidade transacional do event source para trat�
 
 ![Golden Source](/assets/images/system-design/semi-sync-read-model.drawio.png)
 
-Uma operacão de saldo precisa ser executada de forma atômica e transacional para evitar inconsistências. Precisamos garantir **exclusão mutua** e lidar com **diversas operações por meio de transactions** para lidar com todos os lançamentos e movimentações para chegar ao saldo atual. **Essas operações podem ser executadas dentro de um event source**. Após cada transação, o novo saldo é calculado de forma atômica e é produzido no event bus onde pode ser consumido por um Read Model que expõe o dado para uma modelagem e database otimizados para consulta e exposição para grandes volumes de requisições. 
-
-**Esse caso pode ser assumido apenas onde podemos lidar com otimismo entre os níveis de consistência.**
+Uma operacão de saldo precisa ser executada de forma atômica e transacional para evitar inconsistências. Precisamos garantir **exclusão mutua** e lidar com **diversas operações por meio de transactions** para lidar com todos os lançamentos e movimentações para chegar ao saldo atual. **Essas operações podem ser executadas dentro de um event source**. Após cada transação, o novo saldo é calculado de forma atômica e é produzido no event bus onde pode ser consumido por um Read Model que expõe o dado para uma modelagem e database otimizados para consulta e exposição para grandes volumes de requisições. Assim, o Event Store atua como a **“fonte de verdade”** e o Read Model como **“estado derivado seguro”**. **Esse caso pode ser assumido apenas onde podemos lidar com otimismo entre os níveis de consistência.**
 
 <br>
 
 ### Projections e Read Models Assincronos 
 
-Em sistemas que tem apetite para consistencia eventual, podemos encaminhar os dados registrados no event sourcing via event-bus para construção de read models diretamente nos domínios interessados, removendo qualquer complexidade adicional no event store. 
+Em sistemas que tem apetite para consistencia eventual, **podemos encaminhar os dados registrados no event sourcing via event-bus para construção de read models diretamente nos domínios interessados**, removendo qualquer **complexidade adicional no event store**. 
 
 ![Async](/assets/images/system-design/read-model-async.drawio.png)
 
-Dessa forma deixamos o capacity do event source dedicado apenas para registrar, confirmar e repassar os logs temporais e garantir uma temporalidade atômica. Todos os modelos de leitura são construidos e processados de forma totalmente desacoplada do event source, porem lidando com aumento computacional significativo em cada proposta de processamento e sendo necessário o envio completo dos logs para reconstituição. Tiramos a complexidade e demanda computacional do motor dos eventos e repassamos os mesmos para cada aplicação e domínio responsável por tratar os dados de forma agnóstica. 
+Dessa forma deixamos o **capacity do event source dedicado apenas para registrar, confirmar e repassar os logs temporais e garantir uma sequencialidade atômica**. Todos os **modelos de leitura são construidos e processados de forma totalmente desacoplada do event source**, porem lidando com aumento computacional significativo em cada proposta de processamento e sendo necessário o envio completo dos logs para reconstituição. **Tiramos a complexidade e demanda computacional do motor dos eventos e repassamos os mesmos para cada aplicação e domínio responsável** por tratar os dados de forma agnóstica. 
 
 <br>
 
 
 ## Snapshotting 
 
-O modelo event sourcing se propõe a que seja armazenada todas as alterações e operações de estado para que esse dado consiga ser auditado e recomposto durante o tempo. Em um exemplo transacional de o saldo de uma conta bancária, podemos saver o saldo atual da conta, mas perdemos a a trilha de eventos que representa o mesmo até seu momento atual. Depositos, saques, transferencias, estornos em conjunto construiriam o estado atual do saldo. Em domínios onde a auditabilidade, rastreabilidade ou causalidade são importantes, essa ausência histórica é um problema significativo. 
+O modelo transacional propõe que t**odas as alterações e operações de estado sejam armazenados para que esse dado consiga ser auditado e recomposto durante o tempo**. 
 
-No entanto, reconstruir o estado completo pode se tornar computacionalmente caro com o crescimento da base de eventos. É nesse ponto que surge o conceito de **Snapshotting**. Snapshotting é uma técnica otimização que cria “pontos de restauração” intermediários do estado, como “fotografias” que permitem reconstruir o estado de forma incremental, sem precisar realizar cálculos de todas as transações a todo o momento. 
+Em um exemplo transacional de uma conta bancária, **podemos saber pontualmente o saldo atual da conta, mas perdemos a trilha de eventos que levaram o mesmo até seu estado atual**. Depositos, saques, transferencias, estornos em conjunto construiriam o estado atual do saldo. Em domínios onde a auditabilidade, rastreabilidade ou causalidade são importantes, essa ausência histórica é um problema significativo. 
 
-Um Snapshot representa o estado de um agregado ou entidade em um determinado ponto do tempo, junto com um indice do ultimo evento aplicado para gerar aquele determinado estado. Assim, caso seja necessário “reidratar” o estado, o sistema ao invés de processar todo o histórico de inicio ao fim, ele pode iniciar o processamento apenas aos eventos que ocorreram depois dele. 
+No entanto, **reconstruir o estado completo pode se tornar computacionalmente caro com o crescimento da base de eventos**. É nesse ponto que surge o conceito de **Snapshotting**. Snapshotting é uma técnica otimização que cria **“pontos de restauração” intermediários do estado, como “fotografias” que permitem reconstruir o estado de forma incremental**, sem precisar realizar cálculos de todas as transações a todo o momento. 
+
+**Um Snapshot representa o estado de um agregado ou entidade em um determinado ponto do tempo**, junto com um indice do ultimo evento aplicado para gerar aquele determinado estado. Assim, caso seja necessário “reidratar” o estado, o sistema ao invés de processar todo o histórico de inicio ao fim, ele pode iniciar o processamento apenas aos eventos que ocorreram depois dele. 
 
 Por exemplo, a entidade Saldo dentro do Agregado “Conta” possui 1.000.000 de eventos historicos de lançamentos e movimentações. Para realizar um recalculo de saldo, ao invés de processar todos os eventos dispersos no banco de dados, a cada 10.000 eventos, o sistema pode gerar um snapshot contendo o saldo consolidado a partir do ultimo evento. Para reconstruir o estado atual, basta carregar o ultimo snapshot e aplicar os eventos posteriores a ele, reduzindo de forma considerável o tempo e custo computacional de leitura.  
 
@@ -176,31 +180,38 @@ No cenário hipotético de um event source que guarda todas as transações de c
 Essa estratégia pode ser implementada em domínios complexos que exigem otimizações e reconstituições rastreáveis como rastreio de medicamentos farmaceuticos, históricos de linhas de fabricação, aplicação de descontos, prontuários e histórico médico de pacientes, fechamento de caixas e etc. 
 
 
-
 <br>
 
-# Integração de Domínios em Arquiteturas Complexas 
+# Versionamento e Garantias de Ordem em Consistência Eventual (Last-Write-Wins)
+
+Quando existe a necessidade de rehydratate de um, alguns ou todos os agregados, **precisamos garantir que os domínios que vão consumir esses eventos atendam alguns critérios para que isso aconteça da melhor forma possível** para garantir um resultado final consistente das operações. Dentro do Event Sourcing, **o Event Store deve garantir uma ordenação local dos eventos de um mesmo agregado**, ou seja, **todos os eventos relacionados da mesma entidade precisam ser aplicados na sequencia temporal em que as mesmas ocorreram**. Essa ordenação local é o que permite reconstruir estados de forma determinística. 
+
+Quando estamos falando de Event Bus, o **Event Source pode garantir uma publicação desses eventos a medida que ocorrem, porém a ordem que os mesmos serão consumidas não é globalmente garantida por padrão**.  Isso significa que eventos mesmo que publicados em ordem, podem chegar em ordens diferentes em replicas distintas e em sistemas distintos e sofrer com tempos de processamento diferente até sua devida atualização de estado. **Em arquiteturas event-driven, isso não é explicitamente uma falha, é o comportamento esperado de consistencia eventual**.
+
+![Event Store Race Condition](/assets/images/system-design/event-source-race-condition.png)
+
+Em uma operação de saldo, **podemos ter várias transações que atualizam o saldo de um cliente em um curto espaço de tempo**, mas são inseridas com característica temporal e atômica no Event Store e **publicadas sequencialmente no Event Bus**. Porém a **ordem de consumo e processamento nos clientes finais pode ter características paralelas com tempos de processamento desordenado**, o que poderia por exemplo criar uma **Read Model final com um estado incorreto por processar eventos novos mais rápido que eventos antigos**. 
+
+Nesse cenário, o modelo Last-Write-Wins (LWW) é uma maneira simples para lidar com conflitos de escrita ou reprocessamentos duplicados. Ele define que, em caso de eventos concorrentes para o mesmo agregado, o último evento válido (por timestamp ou versão) prevalece. 
+
+![LWW](/assets/images/system-design/lww-version.drawio.png)
+
+**Em eventos e sinais produzidos por arquiteturas Event Source, cada evento deve possuir um `id` único do evento ou entidade e uma `version` incremental** que irá identificar a versão do evento que deve ser comparado. Isso evita duplicações em sistemas subjacentes e permite evoluir o stream de eventos com segurança. Esse processo também pode ser conduzido por Unix timestamps indicando ordem temporal direta. 
+
+Os sistemas que consomem eventos produzidos no event bus de um event source, **deve realizar checagens constantes da versão do evento com o estado atual persistido**, para **evitar sobrescritas indevidas**. Podemos realizar isso de **forma transacional**, condicionais a nível de código **ou realizando escritas condicionais** em bancos de dados que suportem esse tipo de operação. 
 
 <br>
 
 # Idempotencia em Dominios Complexos 
 
-A **idempotência** é a propriedade que permite que uma operação seja executada múltiplas vezes
+A **idempotência** é a propriedade que permite que uma operação seja executada múltiplas vezes **sem alterar o resultado final**. Em sistemas centralizados, isso pode ser implementado com transações ACID. Mas em arquiteturas distribuídas, onde eventos são propagados de forma assíncrona e cada serviço mantém sua própria consistência, a idempotência precisa ser **explicitamente  e cuidadosamente projetada**.
 
-**sem alterar o resultado final**.
+Em sistemas distribuídos baseados em eventos ou arquiteturas assincronas em geral, **a idempotencia é um requisito obrigatório que nos permite operar arquiteturas complexas de forma segura**, principalmente pelo fato de que a entrega e **o processamento de eventos são inerentes a tempos inconstantes e não deterministicos**, muitas vezes **podendo ocorrer em duplicidade, race conditions ocasionais, processamentos podem falhar em meio a execução e precisar serem reiniciadas** evitando esforço computacional adicional.
 
-Em sistemas centralizados, isso pode ser implementado com transações ACID. Mas em arquiteturas distribuídas, onde eventos são propagados de forma assíncrona e cada serviço mantém sua própria consistência, a idempotência precisa ser **explicitamente  e cuidadosamente projetada**.
+Em arquiteturas event-sourcing, **podemos decidir reprocessar todos os eventos de um período específico e recompor projeções e notificações para sistemas subjacentes e forma histórica**. Para que todo esse processo ocorra dentro do domínio, e nos domínios ao redor, precisamos garantir **processos de idempotencia distribuída e controle de versão dos eventos**, para que os eventos processados corretamente não sejam impactados por efeitos colaterais e gerar efeitos negativos. Todos os domínios em downstream devem realizar checagens e manter chaves de idempotencia fortes a todo momento. 
 
-Em sistemas distribuídos baseados em eventos ou arquiteturas assincronas em geral, a idempotencia é um requisito que nos permite operar arquiteturas complexas de forma segura, principalmente pelo fato de que a entrega e o processamento de eventos são inerentes e não deterministicos, muitas vezes podendo ocorrer duplicidade na entrega, race conditions ocasionais, processamentos podem falhar em meio a execução e precisar serem reiniciadas . 
-
-Em arquiteturas event-sourcing, podemos decidir reprocessar todos os eventos de um período específico e recompor projeções e notificações para sistemas subjacentes e forma histórica. Para que todo esse processo ocorra dentro do domínio, e nos domínios ao redor, precisamos garantir processos de idempotencia distribuída e controle de versão dos eventos, para que os eventos processados corretamente não sejam impactados por efeitos colaterais e gerar efeitos negativos. 
-
-Cada evento deve possuir um `event_id` único e uma `version` incremental. Isso evita duplicações e permite evoluir o schema de eventos com segurança. Esse processo também pode ser conduzido por Unix timestamps indicando ordem temporal direta. 
 
 <br>
-
-# Garantias de Ordem em Consistência Eventual (Last-Write-Wins)
-
 
 ### Referências 
 
