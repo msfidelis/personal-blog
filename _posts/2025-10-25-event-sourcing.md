@@ -61,6 +61,14 @@ Como visto, **o estado de cada entidade é mutável por padrão**, ou seja, cada
 
 # Arquitetura Event-Sourcing 
 
+## Agregados 
+
+Dentro de uma arquitetura de Event Sourcing, **o agregado é a unidade lógica e transacional que agrupa uma entidade e todas as regras de negócio necessárias para garantir sua consistência interna**. Ele representa o **objeto no qual eventos são aplicados, validados, ordenados e evoluídos**, assegurando que o **estado resultante seja sempre derivado de uma sequência determinística de fatos temporais**.
+
+Agregados são a **estrutura de dados que permitem um contexto de consistência**, responsável por decidir quais eventos podem ocorrer, em que ordem e sob quais condições, preservando as modificações das entidades dentro do domínio. Dentro do agregado as mutações de estado são convertidas em eventos imutáveis, que posteriormente serão armazenados no Event Store e publicados no Event Bus, sendo a principal fonte de dado de uma arquitetura Event Sourcing. 
+
+<br>
+
 ## Event Store
 
 **O Event Store é o banco de dados central de uma arquitetura baseada em Event Sourcing.** Um banco de dados de Event Store deve ser tratado como um **ledger imutável**, responsável por armazenar o log de todos os eventos que registram mudanças de estado das entidades do sistema, **respeitando uma ordem temporal e absoluta.**
