@@ -209,28 +209,6 @@ Dessa forma, **o capacity do Event Store permanece dedicado exclusivamente a reg
 
 <br>
 
-## Snapshotting
-
-O modelo transacional propõe que **todas as alterações e operações de estado sejam armazenadas para que esses dados possam ser auditados e recompostos ao longo do tempo.**
-
-Em um exemplo transacional de uma conta bancária, **podemos saber pontualmente o saldo atual da conta, mas perdemos a trilha de eventos que levaram até esse estado.**  
-**Depósitos, saques, transferências e estornos, em conjunto, constroem o estado atual do saldo.**  
-Em domínios onde **auditabilidade, rastreabilidade ou causalidade são importantes**, a ausência desse histórico representa **um problema significativo.**
-
-No entanto, **reconstruir o estado completo pode se tornar computacionalmente caro com o crescimento da base de eventos.**  
-É nesse ponto que surge o conceito de **Snapshotting.**  
-**Snapshotting é uma técnica de otimização que cria “pontos de restauração” intermediários do estado** como “fotografias" que permitem reconstruí-lo de forma incremental, **sem precisar recalcular todas as transações a cada operação.**
-
-Um snapshot representa o **estado de um agregado ou entidade em um determinado ponto no tempo**, acompanhado de um **índice do último evento aplicado para gerar aquele estado.**  Assim, caso seja necessário **“reidratar” o estado**, o sistema, em vez de processar todo o histórico do início ao fim, **pode iniciar o processamento apenas a partir dos eventos ocorridos depois dele.**
-
-Por exemplo: **a entidade “Saldo”, dentro do agregado “Conta”, pode possuir 1.000.000 de eventos históricos de lançamentos e movimentações.**  
-Para recalcular o saldo, em vez de processar todos os eventos dispersos no banco de dados, **o sistema pode gerar um snapshot a cada 10.000 eventos, contendo o saldo consolidado a partir do último evento.**  Para reconstruir o estado atual, basta carregar o último snapshot e aplicar os eventos posteriores a ele, reduzindo de forma considerável o tempo e o custo computacional de leitura.
-
-No entanto, **snapshots devem ser tratados como artefatos derivados e descartáveis, não como fonte primária de verdade.**   O **Event Store** continua sendo o **single source of truth**, e os snapshots são **mecanismos auxiliares de performance pontual para a operação.**
-
-
-<br>
-
 # Reconstituição de Estados e Rehydration
 
 A reconstituição de estado de um agregado dentro do Event Sourcing popularmente conhecida como *Rehydration* é o **processo pelo qual utilizamos os logs sequenciais registrados no Event Store para reconstruir o estado de entidades e operações dentro e fora do domínio principal.**  
@@ -244,6 +222,28 @@ Nossa aplicação Event Sourcing deve oferecer mecanismos para **reaplicar todos
 
 Essa estratégia é especialmente útil em domínios complexos que **exigem rastreabilidade e reconstituições auditáveis**, como cadeias farmacêuticas (rastreio de medicamentos), linhas de fabricação, aplicação de descontos, prontuários médicos e históricos de pacientes, ou processos de fechamento contábil.
 
+<br>
+
+## Snapshotting
+
+O modelo transacional propõe que **todas as alterações e operações de estado sejam armazenadas para que esses dados possam ser auditados e recompostos ao longo do tempo.**
+
+Em um exemplo transacional de uma conta bancária, **podemos saber pontualmente o saldo atual da conta, mas perdemos a trilha de eventos que levaram até esse estado.**  
+**Depósitos, saques, transferências e estornos, em conjunto, constroem o estado atual do saldo.**  
+Em domínios onde **auditabilidade, rastreabilidade ou causalidade são importantes**, a ausência desse histórico representa **um problema significativo.**
+
+No entanto, **reconstruir o estado completo pode se tornar computacionalmente caro com o crescimento da base de eventos.**  
+É nesse ponto que surge o conceito de **Snapshotting.**  
+**Snapshotting é uma técnica de otimização que cria “pontos de restauração” intermediários do estado** como “fotografias" que permitem reconstruí-lo de forma incremental, **sem precisar recalcular todas as transações a cada operação.**
+
+![Snapshotting](/assets/images/system-design/event-sourcing-snapshot.png)
+
+Um snapshot representa o **estado de um agregado ou entidade em um determinado ponto no tempo**, acompanhado de um **índice do último evento aplicado para gerar aquele estado.**  Assim, caso seja necessário **“reidratar” o estado**, o sistema, em vez de processar todo o histórico do início ao fim, **pode iniciar o processamento apenas a partir dos eventos ocorridos depois dele.**
+
+Por exemplo: **a entidade “Saldo”, dentro do agregado “Conta”, pode possuir 1.000.000 de eventos históricos de lançamentos e movimentações.**  
+Para recalcular o saldo, em vez de processar todos os eventos dispersos no banco de dados, **o sistema pode gerar um snapshot a cada 10.000 eventos, contendo o saldo consolidado a partir do último evento.**  Para reconstruir o estado atual, basta carregar o último snapshot e aplicar os eventos posteriores a ele, reduzindo de forma considerável o tempo e o custo computacional de leitura.
+
+No entanto, **snapshots devem ser tratados como artefatos derivados e descartáveis, não como fonte primária de verdade.**   O **Event Store** continua sendo o **"single source of truth"**, e os snapshots são **mecanismos auxiliares de performance pontual para a operação.**
 
 
 <br>
