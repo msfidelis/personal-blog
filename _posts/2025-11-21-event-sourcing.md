@@ -118,7 +118,7 @@ Assim que forem emitidos eventos dentro do Event Sourcing responsável por regis
 
 ![Event Bus Transação Confirmada](/assets/images/system-design/event-bus-transacao.drawio.png)
 
-Dessa forma, **conseguimos notificar e recompor entidades inteiras dentro de domínios** que aplicam suas próprias características de Event Sourcing ou persistência transacional**, **mantendo arquiteturas orientadas a eventos de forma eventualmente consistente.**
+Dessa forma, **conseguimos notificar e recompor entidades inteiras dentro de domínios** que aplicam suas próprias características de Event Sourcing ou persistência transacional, **mantendo arquiteturas orientadas a eventos de forma eventualmente consistente.**
 
 
 <br>
