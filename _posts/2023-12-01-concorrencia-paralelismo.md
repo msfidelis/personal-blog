@@ -345,7 +345,7 @@ O paralelismo pode ser dividido em duas categorias: **interno** e **externo**.
 
 ### Paralelismo Interno
 
-O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, ocorre dentro de uma **processo**. É o paralelismo que você **implementa no código da sua aplicação** quando precisa dividir tarefas ou itens em memória entre várias sub-tarefas que podem ser processadas simultaneamente. **Basicamente, é o paralelismo que você cria via código para ser executado dentro do seu container ou servidor**.
+O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, ocorre dentro de um **processo**. É o paralelismo que você **implementa no código da sua aplicação** quando precisa dividir tarefas ou itens em memória entre várias sub-tarefas que podem ser processadas simultaneamente. **Basicamente, é o paralelismo que você cria via código para ser executado dentro do seu container ou servidor**.
 
 ### Paralelismo Externo
 
@@ -598,7 +598,7 @@ Já exploramos o uso de Mutex no modelo de paralelismo interno, onde o controle 
 
 Desenvolver um Mutex para sistemas distribuídos apresenta uma série de desafios, mas em alguns aspectos, é mais facilitado do que os Mutexes em cenários de paralelismo interno com memória compartilhada. Entre os possíveis problemas que podemos encontrar estão a **comunicação entre componentes, latência de rede e falhas gerais nos serviços**.
 
-![Mutex Centralizado](/assets/images/system-design/mutex-distribuido-example.drawio.pngn )
+![Mutex Centralizado](/assets/images/system-design/mutex-distribuido-example.drawio.png )
 
 Para funcionar eficientemente, esses sistemas geralmente dependem de uma **base de dados centralizada** para manter o estado dos processos compartilhados entre todas as réplicas dos consumidores de mensagens. Isso é crucial para lidar com duplicidade de mensagens, eventos ou solicitações devido a cenários imprevistos.
 
