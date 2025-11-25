@@ -1066,7 +1066,6 @@ Essa foi uma implementação manual que pode ou não ser utilizada pra resolver 
 * [Jessica](https://twitter.com/whatever_jess)
 * [Luiz Aoqui, o revisor universal da comunidade](https://twitter.com/luiz_aoqui)
 
-> Imagens geradas pelo DALL-E
 
 <br>
 
