@@ -703,7 +703,7 @@ Caso outro processo tentasse acessar o recurso 12345 durante a execução do pri
 Mutex travado para o recurso 12345
 ```
 
-Esse é um exemplo simples pra entendimento do algoritmo que não trata todos os cenários de um ambiente produto. Para isso eu recomendo o uso de alguma biblioteca especifica para locks no Redis como [RedisLock](https://github.com/bsm/redislock)
+Esse é um exemplo simples pra entendimento do algoritmo que não trata todos os cenários de um ambiente produtivo. Para isso eu recomendo o uso de alguma biblioteca especifica para locks no Redis como [RedisLock](https://github.com/bsm/redislock)
 
 <br>
 
