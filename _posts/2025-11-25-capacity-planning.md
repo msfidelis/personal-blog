@@ -21,7 +21,7 @@ Em termos práticos, operar continuamente próximo a 100% de utilização elimin
 - Limitações históricas de estimativas baseadas apenas em médias
 
 
-
+<br>
 
 # Teoria das Filas
 
@@ -43,18 +43,99 @@ A teoria das filas propõe o **uso da variabilidade do coeficiente de variação
 
 Estratégias já vistas anteriormente como sharding, bulkheads, caching, escalabilidade vertical e horizontal, desacoplamento a nível de filas e eventos, aumento de consumidores, estratégias de concorrência e paralelismo nos ajudam a lidar com estabilidade de sistemas quando a taxa de chegada supera a taxa de processamento. 
 
+<br>
 
-### A Lei de Little
-- Interpretação prática além da fórmula
-- Relação entre WIP, latência e vazão
-- Uso correto e armadilhas comuns
-- Aplicações reais em arquiteturas distribuídas
+## A Lei de Little na Teoria das Filas
 
-### Knee Curve (Curva do Joelho)
+A Lei de Little, ou Little's Law, é um principio matematico simples integrado a Teoria das Filas apresentado por John D. C. Little na década de 1960 que nos fornece insights valiosos para entender qualquer comportamento de qualquer sistema sob carga. A lei não foi inicialmente formulada para conceitos computacionais complexos, ela pode ser utilizada para analisar a pressão de qualquer tipo de sistema sob a ótica da média de três variáveis, sendo elas o **número médio de itens em processamento no sistema (L)**, a **taxa média de chegada (λ)** e o **tempo médio de processamento e permanência desses itens (W) no sistema**. Essa relação é expressa pela equação:
+
+\begin{equation}
+L = \lambda \times W
+\end{equation}
+
+Esse calculo, por mais que seja simples, é valido para interpretar qualquer sistema estável, pois independe de estatisticas complexas e valores exatos da taxa de processamento e permanencia `(W)` e da taxa de chegada de itens ao sistema `(λ)`, **desde que suas médias sejam bem definidas**. 
+
+![Lei de Little](/assets/images/system-design/little-law.png)
+
+Em sistemas distribuídos, a Lei de Little nos ajuda a interpretar a capacidade de forma granular, a nível de cada componente, dependência ou microserviço, ou de forma mais ampla analisando um fluxo completo em cenários onde estimar as capacidades exatas de todos os componentes pode ser muito complexo ou inviável. 
+
+
+Em termos práticos, ela se resume a uma interpretação de capacidade adicional sobre o throughput e latência. Para uma taxa de chegada fixa `(λ)`, **qualquer aumento no tempo médio de resposta** `(W)` implica, de forma imediata, **um aumento proporcional no número de processos simultâneos** `(L)` no sistema.
+
+Considere um sistema de assincrono que recebe uma taxa média de `1.500` mensagens por segundo, com tempo médio de processamento por mensagem de `50ms`, aplicando a Little's Law, podemos encontrar o número de processos concorrentes dentro do mesmo segundo: 
+
+\begin{equation}
+L = 1.500 \times 0.05
+\end{equation}
+\begin{equation}
+L = 75
+\end{equation}
+
+Neste cenário o sistema mantém em média, `75` mensagens simultaneamente em processamento ou espera. **Esse valor representa a concorrência média interna do sistema e pode ser utilizado como base para dimensionamento de consumidores, threads de processamento, partições de filas ou limites de paralelismo**, servindo como **fator base para saber de uma eventual degradação ou otimização proativamente sem depender de saturação**. Lembrando que, com base interpretativa do modelo, quanto menor o valor de `L`, melhor. 
+
+**Pequenos aumentos no tempo médio de processamento impactariam diretamente o número de mensagens acumuladas**, aumentando o **risco de atraso e crescimento não controlado da fila**, por exemplo um aumento de tempo de processamento para `85ms`: 
+
+\begin{equation}
+L = 1.500 \times 0.085
+\end{equation}
+
+\begin{equation}
+L = 127
+\end{equation}
+
+
+Ao **elevar o tempo médio de processamento**, mesmo para um **aumento aparentemente pequeno** e plausível em cenários reais causado por variação de payload, latência de dependências externas, I/O ou demais contenções externas, o número médio de mensagens em voo salta para `127` de concorrência interna, **o aumento absoluto de 52 mensagens simultâneas por segundo**, que pode representar uma **elevação significativa da saturação e enfileiramento interno**, ampliando o uso de recursos compartilhados e aumentando a probabilidade de contenção, retries e atrasos adicionais. 
+
+A capacidade não pode ser avaliada utilizando apenas a taxa de consumo, mas deve ter formas de considerar a sensibilidade do sistema a latência de processamento. Um sistema que não possui margem o suficiente para absorver variações temporais está declaradamente em um estado de subdimensionamento.
+
+
+### Lei de Little e o "Ponto Saudável"
+
+A Lei de Little nos fornece um critério de avaliação para **encontrar um "ponto saudável" de operação de um sistema**, no qual entendemos que com o crescimento da carga `(λ)`, **não teremos aumento descontrolado da concorrência interna** `(L)`. 
+
+![L-Alvo](/assets/images/system-design/law-guardrail.png)
+
+Para tornar isso paupável, podemos adotar um `L(Alvo)` para o sistema, como um Service Level de engenharia, que representa um **número maximo desejável de itens em concorrência interna**, sendo esse compatível com os **limites físicos e operacionais da solução**, nos levando a busca por otimizações constantes para reduzir o tempo de processamento `(W)`.
+
+Considere uma API REST que possui **um `L(Alvo)` de `150`**. O sistema recebe `500` requisições por segundo com um tempo médio de resposta de `300ms`. Pela Lei de Little: 
+
+\begin{equation}
+L = 500 \times 0.3
+\end{equation}
+
+\begin{equation}
+L = 150
+\end{equation}
+
+Esse cenário caracteriza o contrato do "Ponto Saudável", **onde o sistema opera dentro do limite planejado de concorrência interna** e mantem uma certa previsibilidade e margem para absorver suas variações. A medida que a carga cresce no sistema para `1000` requisicões por segundo, o `L` vai para `300`, ultrapassando o `L(Alvo)` e podendo levar o sistema para uma região de saturação e risco. 
+
+Uma progressão saudável te leva a pesquisa interna para lidar com uma redução propocional do tempo de processamento `W`. Aqui aplicamos diversas técnicas de otimização para diminuir o tempo de processamento dos requests. Podemos descobrir o tempo alvo para otimização `(W)`, dividindo nosso `L(Alvo)` pela taxa de requisições recebidas `(λ)` atual e multiplicando categoricamente para chegar na mesma unidade de tempo que estamos utilizando, no caso do exemplo, milisegundos: 
+
+\begin{equation}
+W = \frac{\text{L(Alvo)}}{\lambda} * 1000
+\end{equation}
+
+Convertendo para o exemplo da nossa API 
+
+\begin{equation}
+W = \frac{150}{1000} * 1000
+\end{equation}
+
+\begin{equation}
+L = 150ms
+\end{equation}
+
+Nesse cenário podemos entender que para que nosso sistema volte a operar com o `L(Alvo)` de `150`, precisamos diminuir nosso tempo de processamento `(W)` de `300ms` para `150ms`. Nesse novo formato otimizado, o sistema processa 50% mais mensagens mantendo a mesma concorrência média interna. O objetivo é que o crescimento seja absorvido estruturalmente, sem acúmulo adicional de filas ou pressão excessiva sobre recursos.
+
+<br>
+
+## Knee Curve (Curva do Joelho)
 - Relação entre utilização e latência
 - Ponto ótimo operacional vs. ponto máximo de utilização
 - Custos técnicos e econômicos de operar próximo ao joelho
 - Implicações organizacionais e de SLO
+  
+a curva do joelho revela o ponto a partir do qual o sistema deixa de se comportar de forma previsível e passa a apresentar degradação acelerada
 
 ## Modelagem de Carga
 ### Métricas Fundamentais de Carga
@@ -158,3 +239,11 @@ Estratégias já vistas anteriormente como sharding, bulkheads, caching, escalab
 [Teoria das Filas](https://pt.wikipedia.org/wiki/Teoria_das_filas)
 
 [Elementos das Teorias das Filas](https://www.scielo.br/j/rae/a/34fWxG9RqkRmd8spnbPfJnR/?format=html&lang=pt)
+
+[Lei de Little (Little’s Law): A Ciência por Trás de Fazer Menos e Entregar Mais](https://br.k21.global/gestao-de-times-ageis/lei-de-little-littles-law-a-ciencia-por-tras-de-fazer-menos-e-entregar-mais)
+
+[Little's law](https://en-wikipedia-org.translate.goog/wiki/Little%27s_law?_x_tr_sl=en&_x_tr_tl=pt&_x_tr_hl=pt&_x_tr_pto=tc)
+
+[Knee of a curve](https://en.wikipedia.org/wiki/Knee_of_a_curve)
+
+[The “Knee” in Performance Testing: Where Throughput Meets the Wall](https://medium.com/@lahirukavikara/the-knee-in-performance-testing-where-throughput-meets-the-wall-904f90474346)
