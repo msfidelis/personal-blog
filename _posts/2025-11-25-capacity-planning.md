@@ -10,6 +10,8 @@ title: System Design - Capacity Planning
 
 {% include latex.html %}
 
+Passei os ultimos 3 meses do ano de 2025 procurando modelos matemáticos para me guiar nos assuntos de capacity planning e performance para minha caixa de ferramentas. Aqui, guardo um compilado dos conceitos e fórmulas mais relevantes que encontrei. 
+
 # Planejamento de Capacidade
 
 Em termos práticos, operar continuamente próximo a 100% de utilização elimina qualquer margem para absorver variações naturais da carga, transformando flutuações normais em incidentes operacionais.
@@ -35,11 +37,11 @@ A "filas" não existem apenas onde há estruturas literais de enfileiramento ass
 
 ![Teoria das Filas](/assets/images/system-design/teoria-das-filas-simples.png)
 
-Da forma mais simples, uma fila é um mecanismo onde **solicitações chegam (λ), e são processados (μ)**, e o sistema **oscila continuamente entre estados de ociosidade, equilíbrio e saturação** dentro desses dois parâmetros. **Quando a taxa de chegada (λ) se aproxima ou ultrapassa da taxa de processamento (μ), a gera um gargalo físico**, onde tempos de resposta aumentam e o throughput degrada por ter uma taxa de envio maior que o a taxa de vazão. É por esse tipo de detalhe técnico que um microsserviço em p95 saudável pode degradar em uma dimensão de p99 sob picos inesperados mesmo com CPU e outros recursos disponível. No geral, o problema não é falta de capacidade física, mas sim variabilidade temporal, bursts e o custo de espera entre as chamadas e processos.
+Da forma mais simples, uma fila é um mecanismo onde **solicitações chegam `(λ)`, e são processados `(μ)`**, e o sistema **oscila continuamente entre estados de ociosidade, equilíbrio e saturação** dentro desses dois parâmetros. **Quando a taxa de chegada `(λ)` se aproxima ou ultrapassa da taxa de processamento `(μ)`, a gera um gargalo físico**, onde tempos de resposta aumentam e o throughput degrada por ter uma taxa de envio maior que o a taxa de vazão. É por esse tipo de detalhe técnico que um microsserviço em p95 saudável pode degradar em uma dimensão de p99 sob picos inesperados mesmo com CPU e outros recursos disponível. No geral, o problema não é falta de capacidade física, mas sim variabilidade temporal, bursts e o custo de espera entre as chamadas e processos.
 
-Isso explica porque o autoscaling normalmente não resolve todos os problemas de capacidade, uma vez que o mesmo normalmente só reage a aumento de uso ou saturação dos recursos para adicionar e remover réplicas de um serviço. **O Autoscaling, superficialmente, aumenta a taxa de processamento (μ) de forma momentânea**, permitindo que a taxa de vazão aumente, mas ainda funciona com base a gatilhos temporais, ainda deixando o sistema sensível a bursts e picos de uso. Em outras palavras, **um sistema não sofre porque recebe “muitas requisições”, mas porque recebe requisições de forma imprevisível ou não uniformes**.
+Isso explica porque o autoscaling normalmente não resolve todos os problemas de capacidade, uma vez que o mesmo normalmente só reage a aumento de uso ou saturação dos recursos para adicionar e remover réplicas de um serviço. **O Autoscaling, superficialmente, aumenta a taxa de processamento `(μ)` de forma momentânea**, permitindo que a taxa de vazão aumente, mas ainda funciona com base a gatilhos temporais, ainda deixando o sistema sensível a bursts e picos de uso. Em outras palavras, **um sistema não sofre porque recebe “muitas requisições”, mas porque recebe requisições de forma imprevisível ou não uniformes**.
 
-A teoria das filas propõe o **uso da variabilidade do coeficiente de variação ou do desvio padrão ao invés de medidas como percentís, mínimos, máximos e médias na taxa de processamento**. Analisamos então a variação da taxa de chegada (λ) e variação da taxa de processamento (μ). Essa visão explica por que sistemas com a mesma capacidade de recursos podem ter comportamentos completamente distintos sob carga real. Dois serviços com a mesma taxa média de atendimento podem apresentar curvas de latência radicalmente diferentes se um deles processar requests com desvio padrão alto.
+A teoria das filas propõe o **uso da variabilidade do coeficiente de variação ou do desvio padrão ao invés de medidas como percentís, mínimos, máximos e médias na taxa de processamento**. Analisamos então a variação da taxa de chegada `(λ)` e variação da taxa de processamento `(μ)`. Essa visão explica por que sistemas com a mesma capacidade de recursos podem ter comportamentos completamente distintos sob carga real. Dois serviços com a mesma taxa média de atendimento podem apresentar curvas de latência radicalmente diferentes se um deles processar requests com desvio padrão alto.
 
 Estratégias já vistas anteriormente como sharding, bulkheads, caching, escalabilidade vertical e horizontal, desacoplamento a nível de filas e eventos, aumento de consumidores, estratégias de concorrência e paralelismo nos ajudam a lidar com estabilidade de sistemas quando a taxa de chegada supera a taxa de processamento. 
 
@@ -57,7 +59,7 @@ Esse calculo, por mais que seja simples, é valido para interpretar qualquer sis
 
 ![Lei de Little](/assets/images/system-design/little-law.png)
 
-Em sistemas distribuídos, a Lei de Little nos ajuda a interpretar a capacidade de forma granular, a nível de cada componente, dependência ou microserviço, ou de forma mais ampla analisando um fluxo completo em cenários onde estimar as capacidades exatas de todos os componentes pode ser muito complexo ou inviável. 
+Em sistemas distribuídos, a Lei de Little **nos ajuda a interpretar a capacidade de forma granular, a nível de cada componente, dependência ou microserviço**, ou de forma mais ampla **analisando um fluxo completo em cenários onde estimar as capacidades exatas de todos os componentes pode ser muito complexo ou inviável**. 
 
 
 Em termos práticos, ela se resume a uma interpretação de capacidade adicional sobre o throughput e latência. Para uma taxa de chegada fixa `(λ)`, **qualquer aumento no tempo médio de resposta** `(W)` implica, de forma imediata, **um aumento proporcional no número de processos simultâneos** `(L)` no sistema.
@@ -88,6 +90,7 @@ Ao **elevar o tempo médio de processamento**, mesmo para um **aumento aparentem
 
 A capacidade não pode ser avaliada utilizando apenas a taxa de consumo, mas deve ter formas de considerar a sensibilidade do sistema a latência de processamento. Um sistema que não possui margem o suficiente para absorver variações temporais está declaradamente em um estado de subdimensionamento.
 
+<br>
 
 ### Lei de Little e o "Ponto Saudável"
 
@@ -129,15 +132,54 @@ Nesse cenário podemos entender que para que nosso sistema volte a operar com o 
 
 <br>
 
-## Knee Curve (Curva do Joelho)
-- Relação entre utilização e latência
-- Ponto ótimo operacional vs. ponto máximo de utilização
-- Custos técnicos e econômicos de operar próximo ao joelho
-- Implicações organizacionais e de SLO
-  
-a curva do joelho revela o ponto a partir do qual o sistema deixa de se comportar de forma previsível e passa a apresentar degradação acelerada
+### Knee Curve (Curva do Joelho)
+
+![Knee Curve](/assets/images/system-design/knee-curve.png)
+
+A Knee Curve, ou Curva do Joelho, é um conceito que demonstra a relação de utilização de um sistema e o seu ponto de degradação de capacidade. Em um [teste de carga](/load-testing/), **representa onde o tempo de resposta muda drasticamente comparado a tendência anterior**. 
+
+Em termos normais, **a latência cresce de forma linear conforme a quantidade de requisições que um sistema esteja lidando aumenta**. A Curva do Joelho **revela o ponto a partir do qual o sistema deixa de se comportar de forma previsível e passa a apresentar degradação acelerada**. 
+
+![Knee Curve](/assets/images/system-design/knee-requests.png)
+
+Enquanto a utilização está antes da formação do "joelho", o sistema tem capacidade de operar de forma saudável e segura e absorver pequenas variações carga. Operar proximo, ou além da curva, aumentamos muito o enfileiramento interno de recursos, aumento de retries e saturação dos componentes.
+
+![Knee Curve](/assets/images/system-design/knee-cpu.png)
+
+Podemos aplicar o modelo para demais métricas além de requests propriamente ditos. Podemos utilizar recursos fisicos como CPU e Memória para **entender a partir de que ponto de uso nosso sistema começa a degradar de throughput e latência**, e a partir disso estimar suas devidas capacidades e automações preventivas de [auto scaling](/performance-capacidade-escalabilidade/) de forma mais assertiva.
+
+Em paralelo da Teoria das Filas, a medida em que a utilização cresce e se aproxima da capacidade maxima ou passa do "Ponto Saudável" da Lei de Little, **as filas internas começam a se formar e o tempo de espera passa a ser dominante perante a todo o tempo de processamento definido**. A partir desse ponto, a latência cresce de forma não linear, frequentemente exponencial, mesmo quando o aumento de utilização a partir desse ponto é pequeno ou irrelevante.
+
+![L-Alvo](/assets/images/system-design/knee-l-alvo.png)
+
+Em testes de performance, **encontrar a curva do joelho do sistema permite levantar dois pontos importantes, o "Ponto Saudável" e o "Ponto Maximo de Utilização"**. O Ponto Saudável, normalmente é uma **zona anterior a Curva do Joelho onde temos o maior equilibro operacional entre eficiência e previsibilidade**. Dentro desse intervalo, entendemos que **o throughput cresce de forma saudável e os tempos de resposta permanecem conhecidos e controlados**. 
+
+Já o **Ponto Máximo de Utilização corresponde ao limite teórico em que o sistema ainda processa requisições, porém à custa de latências elevadas, alta imprevisibilidade e risco significativo** de indisponibilidade e falhas na experiência do usuário. O ideal é que ambas as zonas se estabeleçam antes da curva do joelho definitiva. Uma para operar, outra para definir um limite máximo de risco. 
+
+<br>
 
 ## Modelagem de Carga
+
+A modelagem de carga é um dos principais requisitos para se estimar o capacity planning de um sistema. Dentro de ambientes modernos, possuimos diversas ferramentas de monitoramento e observabilidade que coletam sinais de **logs, métricas e traces emitidos pelas aplicações e seus componentes para gerar diversas dimensões de visualizações e alertas**. Quando vamos estimar a capacidade de um sistema, **precisamos análisar algumas delas de forma unificada e correlacionada**. **Transações por segundo**, **requests concorrentes** e o **payload médio** formam, em conjunto, uma representação fiel do comportamento real do que qualquer uma dessas métricas analisada de forma independente pode gerar.
+
+### Transações por Segundo 
+
+As Transações por Segundo, **representam a taxa de chegada de requisições ao sistema**, e representam o ponto inicial de qualquer estimativa. Nenhuma métrica é mais importante do que a quantidade de interações que um sistema recebe, ou irá receber. 
+
+Mesmo dentro do mesmo segundo, um sistema ainda pode apresentar insights valiosos de burst. Dois sistemas podem operar com o mesmo TPS médio e apresentarem comportamentos totalmente diferentes se a distribuição temporal dessas transações variar. Um workload com 1.000 TPS distribuídos de forma homogênea ao longo do segundo impõe uma pressão completamente distinta de outro com a mesma média, mas concentrado em bursts de 5–10 ms, e conhecer esse nível de granularidade pode nos ajudar a estimar com muito mais precisão a capacidade necessária para suprir as demandas de forma inteligente. 
+
+### Processos Concorrentes 
+
+Os requests concorrentes representam uma dimensão interna dentro do sistema que reflete a capacidade de processamento do mesmo. Diferente das Transações por Segundo que descrevem a taxa de chegada de solicitações do sistema, os Processos Concorrentes descrevem a quantidade de trabalho simultâneo que o sistema sustenta. 
+
+Em sistemas sincronos como servidores gRPC ou API's REST, isso se representa como thread ocupadas, conexões abertas e etc. Em sistemas assincronos, pode ser interpretado como mensagens em vôo, partições ocupadas, consumidores ativos e taxa de solicitações de eventos e mensagens para seus brokers. 
+
+Podemos ilustrar um exemplo  em APIs que apresentam latências aceitáveis em p95, mas mantêm concorrência interna elevada devido a pequenas degradações em dependências externas. Nesses casos, a capacidade aparente parece suficiente, enquanto o sistema já opera próximo a limites estruturais invisíveis. Precisamos ter consciência de formas de estimar e medir a concorrência interna para evitar esbarrar em "curvas do joelho" do sistema. 
+
+### Tamanho de Payload 
+
+
+
 ### Métricas Fundamentais de Carga
 - Transações por Segundo (TPS)
 - Requests concorrentes
