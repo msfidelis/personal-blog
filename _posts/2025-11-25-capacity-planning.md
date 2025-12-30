@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering ]
-title: System Design - Capacity Planning
+title: System Design - Dimensões de Capacity Planning
 ---
 
 {% include latex.html %}
@@ -160,13 +160,13 @@ Já o **Ponto Máximo de Utilização corresponde ao limite teórico em que o si
 
 ## Modelagem de Carga
 
-A modelagem de carga é um dos principais requisitos para se estimar o capacity planning de um sistema. Dentro de ambientes modernos, possuimos diversas ferramentas de monitoramento e observabilidade que coletam sinais de **logs, métricas e traces emitidos pelas aplicações e seus componentes para gerar diversas dimensões de visualizações e alertas**. Quando vamos estimar a capacidade de um sistema, **precisamos análisar algumas delas de forma unificada e correlacionada**. **Transações por segundo**, **requests concorrentes** e o **payload médio** formam, em conjunto, uma representação fiel do comportamento real do que qualquer uma dessas métricas analisada de forma independente pode gerar.
+A modelagem de carga é um dos principais requisitos para se estimar o capacity planning de um sistema. Dentro de ambientes modernos, possuimos diversas ferramentas de monitoramento e observabilidade que coletam sinais de **logs, métricas e traces emitidos pelas aplicações e seus componentes para gerar diversas dimensões de visualizações e alertas**. Quando vamos estimar a capacidade de um sistema, **precisamos análisar algumas delas de forma unificada e correlacionada**. **Transações por segundo**, **requests concorrentes** e o **payload médio** formam, em conjunto, uma representação fiel do comportamento real do que qualquer uma dessas métricas analisada de forma independente pode gerar. Juntas, essas três métricas formam a base mais sólida para uma modelagem de carga mais realista. **As Transações por Segundo descreve. o ritmo de solicitações**, a **concorrência descreve a pressão acumulada no sistema perante a chegada dessas solicitações**, e **tamanho do payload descreve o peso individual de cada transação** a nível de networking, storage, peso de serialização e memória.
 
 ### Transações por Segundo 
 
-As Transações por Segundo, **representam a taxa de chegada de requisições ao sistema**, e representam o ponto inicial de qualquer estimativa. Nenhuma métrica é mais importante do que a quantidade de interações que um sistema recebe, ou irá receber. 
+As Transações por Segundo, **representam a taxa de chegada de requisições ao sistema**, e representam o ponto inicial de qualquer estimativa. **Nenhuma métrica é mais importante do que a quantidade de interações que um sistema recebe, ou irá receber**. 
 
-Mesmo dentro do mesmo segundo, um sistema ainda pode apresentar insights valiosos de burst. Dois sistemas podem operar com o mesmo TPS médio e apresentarem comportamentos totalmente diferentes se a distribuição temporal dessas transações variar. Um workload com 1.000 TPS distribuídos de forma homogênea ao longo do segundo impõe uma pressão completamente distinta de outro com a mesma média, mas concentrado em bursts de 5–10 ms, e conhecer esse nível de granularidade pode nos ajudar a estimar com muito mais precisão a capacidade necessária para suprir as demandas de forma inteligente. 
+Mesmo dentro do mesmo segundo, um sistema ainda pode apresentar insights valiosos de burst. **Dois sistemas podem operar com o mesmo TPS médio e apresentarem comportamentos totalmente diferentes se a distribuição temporal dessas transações variar**. Um workload com 1000 TPS distribuídos de forma homogênea ao longo do segundo impõe uma pressão completamente distinta de outro com a mesma média, mas concentrado em bursts de 5–10 ms, e conhecer esse nível de granularidade pode nos ajudar a estimar com muito mais precisão a capacidade necessária para suprir as demandas de forma inteligente. 
 
 ### Processos Concorrentes 
 
@@ -178,17 +178,79 @@ Podemos ilustrar um exemplo  em APIs que apresentam latências aceitáveis em p9
 
 ### Tamanho de Payload 
 
+Estimar o tamanho do payload, seja esse mensagens ou requests HTTP, é uma dimensão que é rotineiramente ignorada durante a estimativa de capacidade. Em sistemas com requisições mais homogêneas, ou seja, microserviços que possuem poucos endpoints, ou contratos bem definidos de mensagens e eventos, podem facilmente prever o tamanho desses payloads com certa precisão e estimar de forma mais confiável a pressão de tráfego de I/O que sistema irá lidar. Porém, em sistemas que possuem multiplas funcionalidades distribuídas em diversas filas e endpoints, o payload médio pode não representar uma dimensão fiel a realidade do sistema. O risco do erro da estimativa não está na média dessa variável, mas sim na dispersão em torno dessa média. 
+
+Payloads maiores tendem a ampliar o tempo de processamento, consumo de memória, pressão em garbage collection, uso de buffers de rede e latência de serialização. Um sistema que processa majoritariamente payloads pequenos, mas ocasionalmente recebe payloads muito maiores, pode apresentar comportamento estável na média e, ainda assim, sofrer degradações abruptas sob cenários perfeitamente válidos do ponto de vista funcional. Essa variabilidade cria caudas longas no tempo de resposta e amplifica o efeito de filas internas, mesmo sem alterações perceptíveis na TPS.
+
+Idealmente precisamos modelar sistemas e contratos que não sofram muita variação de tamanho.  Quando não for possível, estimar cada uma das funcionalidades de forma isolada e se concentrar em encontrar alguma estatística que represente mais fielmente o sistema perante suas particularidades. 
+
+<br>
+
+### Calculos de Estimativa de Carga
+
+Podemos estimar matematicamente nossa modelagem de carga com uma série de equações simples que podem ser aplicadas a dimensões já conhecidas do sistema, ou fornecidas por times de produto. E a seguir, iremos abordar como dispersar ainda mais a aplicação das mesmas em diversos cenários mais específicos. 
+
+#### Estimativa de Transações por Segundo
+
+Quando falamos sobre [Performance, Capacidade e Escalabilidade](/performance-capacidade-escalabilidade/) já ressaltamos o quanto o throughput é uma métrica extremamente valiosa e importante para entender todo tipo de comportamento do sistema. Essa métrica é a primeira a precisar ser levantada porque conecta diretamente o comportamento do usuário à pressão exercida sobre a arquitetura. 
+
+Embora simples, o TPS deve ser interpretado como um valor estatístico médio, mínimo e maximo, e não como um fluxo contínuo e uniforme. Em sistemas reais, a taxa de chegada oscila ao longo do tempo, sofre efeitos de sincronização, burstiness e correlação entre usuários ou clientes. Levantar o desvio padrão do TPS também pode fornecer insights valiosos sobre a variação do mesmo ao decorrer de certos períodos.
+
+\begin{equation}
+\text{TPS} = \frac{\text{Unidades de Trabalho Processadas no Período}}{\text{Tempo em Segundos do Período}}
+\end{equation}
+
+Na prática, esse valor costuma ser extraído de métricas sazonais de séries históricas, projeções de crescimento ou metas de negócio, e posteriormente ajustado para picos, sazonalidade e eventos especiais que podem acontecer em certos períodos do mês ou ano, como promoções, ações de marketing, black friday, Natal e etc.
+
+#### TPS Sistemico 
+
+O TPS Sistêmico representa a capacidade efetiva de vazão de todo o sistema, considerando não apenas a aplicação principal, mas todas as suas dependências críticas. Em arquiteturas distribuídas, o throughput observado externamente é sempre limitado pelo menor gargalo ativo no caminho de processamento.
+
+\begin{equation}
+\text{TPS Sistêmico} =
+\min(\text{TPS App}, \text{TPS Database}, \text{TPS Cache}, \text{TPS etc...})
+\end{equation}
+
+Não importa o quão escalável seja a camada de aplicação se o banco de dados, o cache, o broker de mensagens ou uma API externa impõem limites mais restritivos. Além disso, o gargalo dominante pode mudar dinamicamente conforme o perfil de carga, tamanho de payload ou tipo de operação
+
+#### Estimativa de tamanho de Payload 
+
+A estimativa de tamanho de payload busca quantificar o volume médio de dados trafegados por requisição, considerando tanto o corpo da mensagem quanto o overhead de protocolos de transporte, como HTTP, TLS, mTLS e etc.
+
+\begin{equation}
+\text{Payload_bytes} = (\text{Body_bytes} + \text{Headers_bytes})
+\end{equation}
+
+Entretanto, em sistemas reais, é necessário considerar camadas adicionais de overhead como encoding, compressão, criptografia e framing de protocolo que podem tanto ampliar quanto reduzir o tamanho efetivamente trafegado. 
+
+\begin{equation}
+\text{Payload_bytes} = (\text{Body_bytes} + \text{Headers_bytes}) \times \text{Overhead}
+\end{equation}
+
+Mais importante do que o valor médio absoluto é a variabilidade do payload, pois payloads grandes tendem a amplificar latência, consumo de memória e tempo de processamento, criando caudas longas que afetam a estabilidade do sistema mesmo quando a média parece controlada.
+
+#### Estimativa de Bytes de Uma Transação
+
+Enquanto o payload representa uma única mensagem, a estimativa de bytes por transação considera o custo completo de uma interação, incluindo request e response. Essa visão é mais adequada para análises de capacidade fim a fim e para estimativas de custo e banda sob carga real.
 
 
-### Métricas Fundamentais de Carga
-- Transações por Segundo (TPS)
-- Requests concorrentes
-- Payload médio e variabilidade
+\begin{equation}
+\text{Payload_médio(bytes)} = \text{Request_payload} + \text{Response_payload}
+\end{equation}
 
-### Cálculo de Capacidade para Transações
-- Capacidade teórica vs. capacidade observada
-- Margens de segurança e buffers
-- Capacidade sob degradação controlada
+Essa métrica se torna especialmente relevante em APIs verbosas, fluxos com respostas ricas em dados ou sistemas onde o volume de resposta cresce com o contexto da operação. Ignorar o payload de resposta é um erro comum que pode fazer muita diferença para entender divergências das estimativas versus o tráfego real. 
+
+#### Estimativa de Banda pelo Payload e Transações por Segundo
+
+A estimativa de banda conecta diretamente throughput lógico (TPS) com consumo físico de rede. A partir do payload médio por transação, é possível estimar o volume de dados trafegados por segundo e, consequentemente, dimensionar links, limites de ingress, e custos de transferência.
+
+\begin{equation}
+\text{Banda_bytes/s} = \text{TPS} \times \text{Payload_médio(bytes)}
+\end{equation}
+
+Esse cálculo fornece uma aproximação inicial que deve ser refinada com fatores como retries, retransmissões, fan-out interno e replicação de tráfego entre zonas ou regiões.
+
+<br>
 
 ### Distribuição Estatística da Carga
 - Cargas uniformes e poissonianas
@@ -196,12 +258,40 @@ Podemos ilustrar um exemplo  em APIs que apresentam latências aceitáveis em p9
 - Impacto das caudas longas em filas e latência
 - Correlação temporal e efeitos acumulativos
 
+<br>
+
+
 ### Perfis de Tráfego
-- Perfil diário
-- Perfil semanal
-- Perfil sazonal
-- Sobreposição de ciclos de carga
-- Multi-tenancy e efeitos de sincronização
+
+#### Perfil Diário 
+
+O Perfil Diário busca estudar o comportamento de uso do sistema ao decorrer de um dia corrido, um período fechado de 24 horas. Normalmente está associado ao hábito e rotina dos usuários e os agendamentos das integrações sistêmicas. Aqui temos análises mais granulares com agregações de poucos minutos como 1, 2, 5 e 10 minutos para análises de tendência. Podemos aqui análisar diversas estatísticas como média, p95, p99, tempo máximo e mínimo da agregação dos requests.
+
+![Perfil Diário](/assets/images/system-design/perfil-diario.png)
+
+Em sistemas com finalidade operacional voltados a usuários finais, podemos entender em que momento do dia eles começam a operar dentro do sistema, normalmente tendo sua maior pressão de tráfego dentro das janelas de expediente, aliviando nos horarios de almoço e ficando com pouco, ou nenhum tráfego durante noite e madrugada. Em sistemas de delivery de comida, podemos presumir os maiores picos de uso minutos ou horas antes dos horarios de almoço e jantar, sistemas de carona proximos do inicio e fim do expediente e em sistemas B2B ou internos, os picos tendem a se alinhar a rotinas operacionais, fechamentos de lote ou execuções agendadas.
+
+Do ponto de vista de capacity planning, o perfil diário é crítico porque define a duração dos períodos de alta utilização e os de baixa utilização. Podemos utilizar esse tipo de estudo para entender os momentos do dia em que nosso tráfego irá aumentar de forma rotineira para ajustarmos preventivamente nosso capacity, ou quando o sistema ficará subutilizado. 
+
+#### Perfil Semanal
+
+O Perfil semanaal busca entender padrões de carga que se repetem durante os dias da semana, num período de tempo de 7 dias, para encontrar assim padrões e desvios de uso, erros e latência distribuídos entre os 7 dias da semana fechada, utilizando agregações de tempo maiores como 1, 2, 3 e 5 horas, ainda utilizando estatísticas de média e percentis de forma comparativa para entender desvios e comportamentos do sistema. 
+
+![Perfil Semanal](/assets/images/system-design/perfil-semanal.png)
+
+Um sistema pode operar confortavelmente abaixo do ponto saudável durante boa parte da semana e, ainda assim, entrar em regiões de saturação previsível em dias específicos. Diferente do perfil diário, que tende a ser mais suave e previsível, o perfil semanal pode introduzir assimetrias abruptas, como segundas-feiras sistematicamente mais carregadas ou sextas-feiras com picos concentrados em horários específicos, uso mais suavizado durante o restante dos dias úteis e trafego baixo durante os finais de semana. 
+
+Esse perfil é util para entender desvios de uso do sistema e nos ajuda a projetar capacidade com base em períodos repetitivos dentro de uma semana, nos proporcionando formas de realizar warm ups preventivos ou descomissionamento de containers ou servidores em períodos de ociosidade conhecida. 
+
+#### Perfil Sazonal
+
+O perfil sazonal descreve variações de carga em escalas mais longas como semanas, meses ou anos e está  normalmente associadas a ciclos de negócio, eventos externos ou mudanças de comportamento dos usuários. Esse tipo de dimensão nos ajuda a projetar diversas estratégias valiosas de capacity. Aqui a agregação pode ser feita de periodos maiores, como dias ou semanas. 
+
+![Perfil Sazonal](/assets/images/system-design/perfil-sazonal.png)
+
+Essa estratégia nos permite estudar o crescimento gradativo do sistema, e como ele se comporta em periodos específicos de fatias de tempo maiores. Exemplos comuns incluem períodos promocionais, datas comemorativas, ciclos fiscais, eventos regulatórios ou mesmo fatores externos como clima e calendário escolar. Podemos atingir níveis de escalabilidade adequados analizando apenas periodos mensais ou semanais, mas podemos ainda assim sofrer com falhas de capacidade em determinados períodos do ano que não estão no padrão encontrado em um "mês comum" ou "semana comum", por exemplo e-commerces em promoções de Black Friday, onde em uma semana específica de novembro excede todos os padrões encontrados no restante do ano. 
+
+Combinando os perfis diários para análises mais granulares, semanais para encontrar tendências e sazonais a nível de mês e ano nos permitem elevar nossa capacidade de projetar e estimar o capacity de nossos sistemas durante longos períodos de forma totalmente profissional.  
 
 ### Períodos Anômalos
 - Períodos de pico previsíveis
@@ -210,6 +300,7 @@ Podemos ilustrar um exemplo  em APIs que apresentam latências aceitáveis em p9
 - Estratégias de contingência e overprovisioning temporário
 
 ## Dimensões de Capacidade
+
 ### Capacidade por Instância
 - Limites de CPU, memória, I/O e rede
 - Capacidade elástica vs. capacidade fixa
