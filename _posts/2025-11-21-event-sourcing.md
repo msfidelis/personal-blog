@@ -7,7 +7,7 @@ published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Event Sourcing
 excerpt: Uma explicação completa e prática sobre Event Sourcing, cobrindo Event Store, Event Bus, Projections, Read Models, Snapshotting e Rehydration, além de estratégias para lidar com consistência eventual, versionamento, idempotência e concorrência em sistemas distribuídos modernos.
-seo_title: Event Sourcing: Arquitetura, Event Store, Projections, Snapshotting e Consistência Eventual
+seo_title: Event Sourcing Arquitetura, Event Store, Projections, Snapshotting e Consistência Eventual
 seo_description: Entenda em profundidade o padrão Event Sourcing: como funciona o Event Store, Event Bus, Projections, Read Models, Snapshotting, Rehydration, controle de versão e idempotência. Um guia completo para projetar sistemas distribuídos auditáveis, escaláveis e historicamente reconstituíveis, dominando trade-offs de consistência eventual e concorrência.
 ---
 
