@@ -289,15 +289,24 @@ O perfil sazonal descreve variações de carga em escalas mais longas como seman
 
 ![Perfil Sazonal](/assets/images/system-design/perfil-sazonal.png)
 
-Essa estratégia nos permite estudar o crescimento gradativo do sistema, e como ele se comporta em periodos específicos de fatias de tempo maiores. Exemplos comuns incluem períodos promocionais, datas comemorativas, ciclos fiscais, eventos regulatórios ou mesmo fatores externos como clima e calendário escolar. Podemos atingir níveis de escalabilidade adequados analizando apenas periodos mensais ou semanais, mas podemos ainda assim sofrer com falhas de capacidade em determinados períodos do ano que não estão no padrão encontrado em um "mês comum" ou "semana comum", por exemplo e-commerces em promoções de Black Friday, onde em uma semana específica de novembro excede todos os padrões encontrados no restante do ano. 
+Essa estratégia nos permite estudar o crescimento gradativo do sistema, e como ele se comporta em periodos específicos de fatias de tempo maiores. Exemplos comuns incluem períodos promocionais, datas comemorativas, ciclos fiscais, eventos regulatórios ou mesmo fatores externos como clima e calendário escolar. Podemos atingir níveis de escalabilidade adequados analizando apenas periodos mensais ou semanais, mas podemos ainda assim sofrer com falhas de capacidade em determinados períodos não estacionários do ano que não estão no padrão encontrado em um "mês comum" ou "semana comum", por exemplo e-commerces em promoções de Black Friday, onde em uma semana específica de novembro excede todos os padrões encontrados no restante do ano. 
 
 Combinando os perfis diários para análises mais granulares, semanais para encontrar tendências e sazonais a nível de mês e ano nos permitem elevar nossa capacidade de projetar e estimar o capacity de nossos sistemas durante longos períodos de forma totalmente profissional.  
 
-### Períodos Anômalos
-- Períodos de pico previsíveis
-- Eventos especiais e comportamento não estacionário
-- Falhas de extrapolação histórica
-- Estratégias de contingência e overprovisioning temporário
+
+<br>
+
+### Projeção de Crescimento
+
+A projeção de crescimento é um exercício de capacity planning onde a análise deixa de ser estática e adaptativa e passa a adotar estratégias de antecipação. Diferente do tópico anterior em que as estimativas buscavam entender o sistema e compreender seus comportamentos e tendências, a projeção busca responder uma pergunta um pouco mais difícil: como a carga do meu sistema será daqui 3, 6, 12 meses? 
+
+Responder esse tipo de pergunta visa uma análise temporal extensa do passado para entender o crescimento natural e também uma parceria com os times de negócio para entender as expectativas e perspectivas de mercado da empresa para os produtos. A missão da engenharia é suportar as expectativas dosm produtos de forma sustentável e realista, portanto as expectativas sobre futuro do sistema deve ser de comum conhecimento entre tecnologia e negócios.
+
+#### Crescimento Linear e Não Linear 
+
+O crescimento linear assume que métricas como TPS, volume de dados ou usuários ativos aumentam de forma proporcional ao tempo. O número de usuários, licenças, transações, compras aumentam com uma tendência parecida todos os meses ou semanas. A pequena variação dessa taxa, pra mais ou pra menos, não a caracteriza como "menos linear" nesse tipo de cenário. 
+
+#### Crescimento Mediante a Features e Negócio
 
 ## Dimensões de Capacidade
 
