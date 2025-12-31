@@ -306,7 +306,14 @@ Responder esse tipo de pergunta visa uma análise temporal extensa do passado pa
 
 O crescimento linear assume que métricas como TPS, volume de dados ou usuários ativos aumentam de forma proporcional ao tempo. O número de usuários, licenças, transações, compras aumentam com uma tendência parecida todos os meses ou semanas. A pequena variação dessa taxa, pra mais ou pra menos, não a caracteriza como "menos linear" nesse tipo de cenário. 
 
-#### Crescimento Mediante a Features e Negócio
+![Crescimento Linear](/assets/images/system-design/crescimento-linear.png)
+
+
+![Crescimento Não Linear](/assets/images/system-design/crescimento-nao-linear.png)
+
+#### Crescimento Mediante a Novas Features e Eventos de Negócio
+
+![Crescimento Mudanças](/assets/images/system-design/crescimento-mudancas.png)
 
 ## Dimensões de Capacidade
 
