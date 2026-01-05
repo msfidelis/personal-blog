@@ -8,9 +8,9 @@ categories: [ system-design, engineering ]
 title: System Design - Dimensões de Capacity Planning
 ---
 
-{% include latex.html %}
-
 Passei os ultimos 3 meses do ano de 2025 procurando modelos matemáticos para me guiar nos assuntos de capacity planning e performance para minha caixa de ferramentas. Aqui, guardo um compilado dos conceitos e fórmulas mais relevantes que encontrei. 
+
+{% include latex.html %}
 
 # Planejamento de Capacidade
 
@@ -302,25 +302,57 @@ A projeção de crescimento é um exercício de capacity planning onde a anális
 
 Responder esse tipo de pergunta visa uma análise temporal extensa do passado para entender o crescimento natural e também uma parceria com os times de negócio para entender as expectativas e perspectivas de mercado da empresa para os produtos. A missão da engenharia é suportar as expectativas dosm produtos de forma sustentável e realista, portanto as expectativas sobre futuro do sistema deve ser de comum conhecimento entre tecnologia e negócios.
 
-#### Crescimento Linear e Não Linear 
-
-O crescimento linear assume que métricas como TPS, volume de dados ou usuários ativos aumentam de forma proporcional ao tempo. O número de usuários, licenças, transações, compras aumentam com uma tendência parecida todos os meses ou semanas. A pequena variação dessa taxa, pra mais ou pra menos, não a caracteriza como "menos linear" nesse tipo de cenário. 
+#### Crescimento Linear 
 
 ![Crescimento Linear](/assets/images/system-design/crescimento-linear.png)
 
+O crescimento linear assume que métricas como TPS, volume de dados ou usuários ativos aumentam de forma proporcional ao tempo. O número de usuários, licenças, transações, compras aumentam com uma tendência parecida todos os meses ou semanas. A pequena variação dessa taxa, pra mais ou pra menos, não a caracteriza como "menos linear" nesse tipo de cenário. 
+
+Podemos encontrar esse cenário linear em estágios iniciais de um produtos ou em sistemas muito bem estabelecidos. Cenários opostos mas que que tem sua tendência de crescimento previsível e estável. Nesse tipo de análise, entendemos por inferência que, em linhas previsíveis, dobrar a quantidade de transações ou usuários de um sistema implica diretamente em dobrar a sua capacidade. 
+
+
+#### Crescimento Não Linear
 
 ![Crescimento Não Linear](/assets/images/system-design/crescimento-nao-linear.png)
+
+Em sistemas mais variáveis, o tráfego e capacidade raramente crescem de forma linear, podendo haver crescimento não previsível por tendências no sistema, por tempos se comportando de forma linear, exponencial ou desregulares em outros períodos. 
+
+O crescimento não linear invalida análises de comportamento prévias. Esses cenários podem ocorrer por modificações de comportamento e novas funcionalidades, onde pequenas variações no número de usuários ou eventos podem gerar aumentos desproporcionais em TPS, latência ou concorrência interna. Esse tipo de variação também pode acontecer por testes de estratégias de marketing e negócios que proporcionam comportamentos imprevisíveis de novos usuários e carga no sistema. 
+
+Crescimentos não lineares e não planejados podem ser muito perigosos para sistemas que operam proximo da sua taxa de processamento máxima conhecida. 
 
 #### Crescimento Mediante a Novas Features e Eventos de Negócio
 
 ![Crescimento Mudanças](/assets/images/system-design/crescimento-mudancas.png)
 
-## Dimensões de Capacidade
+Uma dimensão extremamente significativa que nos possibilita trabalhar junto aos times de negócio é a **projeção de crescimento mediante a mudanças, features e eventos planejados**. **A mudança de tráfego de um sistema pode mudar de forma brusca mediante a novas funcionalidades, migrações de usuários, campanhas de marketing de conversão e etc**. Ter esses eventos alinhados com os times responsáveis, nos da a oportunidade de **trabalhar de forma planejada e preventiva para suportar essa nova entrada de carga** de forma planejada. 
 
-### Capacidade por Instância
-- Limites de CPU, memória, I/O e rede
-- Capacidade elástica vs. capacidade fixa
-- Overhead de runtime e plataformas
+Uma mudança ou evento de negócio voltado a **trazer mais usuários pro sistema, ou aumentar seu uso, pode modificaros ponteiros de taxa de processamento e aproximar o sistema de sua "curva do joelho" de performance e capacidade** com as features já existentes, e **adicionar uma nova funcionalidade pode multiplicar o número de chamadas internas por requisição, aumentar significativamente o payload médio ou introduzir dependências adicionais no fluxo sistêmico**. Realizar testes de carga contemplando as características das novas features é de extrema importância para reavaliar o capacity necessário para atendê-las da melhor forma. 
+
+Nem toda mudança ou feature precisa de um novo planejamento de capacidade nos mínimos detalhes, mas aquelas que realmente tem o **objetivo de mudar o comportamento do sistema como um todo, precisam sim ser levadas em conta para maior segurança**. Levantar as estimativas e expectativas com todos os participantes dessas mudanças são necessárias para planejamentos mais assertivos. 
+
+<br>
+
+### Capacidade End to End (E2E)
+
+#### Throughput individual
+
+#### Throughput sistêmico
+
+O throughput sistemico corresponde a capacidade máxima de um sistema ou funcionalidade contemplando todas as suas dependências.  O objetivo é ser agnóstico a capacidade individual de cada um dos seus componentes, levando em consideração somente a entrada até a resposta final. Essa estratégia serve para avaliar a capacidade total da solução e encontrar oportunidades de melhoria nos quesitos de filas e gargalos. 
+
+Em termos prático, o throughput sistêmico busca encontrar a divergência de equilíbrio entre taxa de chegada `(λ)` e taxa de processamento `(μ)` em cada hop do fluxo, buscando encontrar qual componente está excercendo maior pressão contrária ao fluxo fim a fim. Mesmo que serviços isolados operem com folga, o sistema como um todo pode apresentar throughput limitado quando a variabilidade de throughput e latência se acumulam durante a comunicação fim a fim.  
+
+Do ponto de vista de capacity planning, medir throughput sistêmico implica observar o comportamento do sistema sob carga contínua, e não apenas picos instantâneos. Um sistema pode atingir um TPS elevado por curtos períodos e ainda assim não ser capaz de sustentar essa vazão ao longo do tempo, caracterizando uma capacidade apenas nominal, não operacional.
+
+#### Dependência do Gargalo 
+
+Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/performance-capacidade-escalabilidade/), gargalos são "pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual". Se para completar uma transação eu preciso da reposta de 3 microserviços, onde um deles possui uma capacidade de processar de forma saudável 400 transações por segundo, e dois deles podem processar uma taxa de 1000 transações, meu sistema é limitado a menor taxa de processamento, ou seja, 400 transações por segundo. 
+
+
+<br>
+
+## Dimensões de Capacidade
 
 ### Gargalos de Dependências
 - Bancos de dados, caches e filas
@@ -334,10 +366,7 @@ O crescimento linear assume que métricas como TPS, volume de dados ou usuários
 - Saturação progressiva vs. colapso abrupto
 - Modos de falha sob sobrecarga
 
-### Capacidade Fim a Fim
-- Throughput sistêmico
-- Dependência do menor gargalo
-- Capacidade percebida pelo usuário final
+<br>
 
 ## Planejamento de Storage e Crescimento de Dados
 ### Estimativa de Geração de Dados
@@ -377,8 +406,6 @@ O crescimento linear assume que métricas como TPS, volume de dados ou usuários
 - Planejamento contínuo e adaptativo
 - Capacidade como disciplina viva de System Design
 
-
-# Custos por Transação 
 
 
 ### Referências 
