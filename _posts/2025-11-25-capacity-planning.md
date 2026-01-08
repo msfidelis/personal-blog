@@ -337,6 +337,10 @@ Nem toda mudança ou feature precisa de um novo planejamento de capacidade nos m
 
 #### Throughput individual
 
+O throughput individual representa a capacidade máxima sustentável de **um componente isolado dentro do sistema**, avaliada fora do contexto completo do fluxo fim a fim. Ele descreve quanto trabalho um serviço, banco de dados, fila ou consumidor consegue processar por unidade de tempo sob condições controladas, considerando seus próprios limites de CPU, memória, I/O, concorrência e configuração interna.
+
+Essa dimensão pode ser avaliada em dois cenários, sendo um deles o contexto de um microserviço e suas dependências diretas como caches, filas e bancos de dados, onde a dimensão individual é avaliada dentro de um domínio de serviço, ou em cada micro componente. O primeiro cenário serve pra avaliar uma pequena fragmentação de negócio como "como quanto esse sistema de emissão de boletos consegue processar", e o segundo serve para responder "quanto esse banco de dados aguenta de I/O" e seus derivados. Ambas dão muitos insights valiosos sobre capacidade de produção. 
+
 #### Throughput sistêmico
 
 O throughput sistemico corresponde a capacidade máxima de um sistema ou funcionalidade contemplando todas as suas dependências.  O objetivo é ser agnóstico a capacidade individual de cada um dos seus componentes, levando em consideração somente a entrada até a resposta final. Essa estratégia serve para avaliar a capacidade total da solução e encontrar oportunidades de melhoria nos quesitos de filas e gargalos. 
@@ -347,47 +351,11 @@ Do ponto de vista de capacity planning, medir throughput sistêmico implica obse
 
 #### Dependência do Gargalo 
 
-Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/performance-capacidade-escalabilidade/), gargalos são "pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual". Se para completar uma transação eu preciso da reposta de 3 microserviços, onde um deles possui uma capacidade de processar de forma saudável 400 transações por segundo, e dois deles podem processar uma taxa de 1000 transações, meu sistema é limitado a menor taxa de processamento, ou seja, 400 transações por segundo. 
-
-
-<br>
-
-## Dimensões de Capacidade
-
-### Gargalos de Dependências
-- Bancos de dados, caches e filas
-- Serviços externos e APIs de terceiros
-- Efeito cascata de gargalos
-- Mudança dinâmica do gargalo dominante
-
-### Restrições de Capacidade
-- Latência como restrição operacional
-- Taxa de erro como limite funcional
-- Saturação progressiva vs. colapso abrupto
-- Modos de falha sob sobrecarga
+Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/performance-capacidade-escalabilidade/), gargalos são "pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual". Se para completar uma transação eu preciso da reposta de 3 microserviços, onde um deles possui uma capacidade de processar de forma saudável 400 transações por segundo, e dois deles podem processar uma taxa de 1000 transações, meu sistema é limitado a menor taxa de processamento, ou seja, 400 transações por segundo. Exceder essa taxa pode provocar filas sistemicas e gargalo entre os processos, threads e dependências desse ponto de gargalo que exerce pressão contrária ao fluxo da dos componentes da aplicação. 
 
 <br>
 
-## Planejamento de Storage e Crescimento de Dados
-### Estimativa de Geração de Dados
-- Taxa diária média
-- Variabilidade e picos de ingestão
-- Dados derivados e efeitos colaterais
 
-### Projeção de Crescimento
-- Crescimento linear vs. não linear
-- Crescimento acoplado a features e negócio
-- Incerteza de retenção e políticas de expurgo
-
-### Capacidade Lógica vs. Capacidade Física
-- Índices, metadados e estruturas auxiliares
-- Réplicas, backups e snapshots
-- Overhead invisível ao modelo lógico
-
-### Tiered Storage
-- Classificação por latência e custo
-- Hot, warm e cold data
-- Trade-offs entre acesso, custo e durabilidade
 
 ## Custos e Trade-offs de Capacidade
 ### Custo por Transação
@@ -395,16 +363,47 @@ Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/pe
 - Elasticidade e eficiência econômica
 - Impacto do overprovisioning e underprovisioning
 
-### Capacidade, Desempenho e Custo
-- Triângulo de trade-offs
-- Decisões locais vs. otimização global
-- Capacidade como instrumento de governança técnica
 
-## Considerações Finais
-- Limites das previsões de capacidade
-- Importância de observabilidade para realimentação do modelo
-- Planejamento contínuo e adaptativo
-- Capacidade como disciplina viva de System Design
+<br>
+
+# Planejamento de Capacidade
+
+O objetivo dessa sessão é fornecer um roteiro aplicável de planejamento de capacidade levando em conta a base teórica compliada durante esse capítulo. A partir daqui, vou fornecer uma "pseudo-estrutura" de um movimento de capacity planning para que seja criado um mapa mental adaptável para diversos cenários. 
+
+## Delimitar o Fluxo, Funcionalidades e Componentes. 
+
+O primeiro passo a ser seguido, é definir qual fluxo sistemico está sendo avaliado. Testar "o sistema" pode levar a modelagens genéricas que não podem ser tão assertivas com a realidade esperada. Então identifique as funcionalidades, contratos, quais os métodos de entrada, quais os serviços envolvidos, quais os dados e quais as respostas e onde elas serão enviadas. 
+
+Nessa fase de levantamento precisamos listar todos os microserviços, quais seus databases, filas, tópicos, quais os fluxos sincronos, quais os fluxos assíncronos e como todos eles se comunicam entre si. sse passo estabelece o escopo do throughput sistêmico, evitando análises locais desconectadas da experiência real do usuário.
+
+
+## Levantar as Estimativa de Carga 
+
+Com o fluxo definido, o próximo passo é construir a carga base, utilizando exatamente as métricas que você apresentou anteriormente, como o TPS médio, picos, perfís diários, semanais e quais as datas ou períodos sazonais de mudança de comportamento e o quanto eles podem variar. 
+
+Estimar os payloads, quais seus tamanhos e o quanto de banda eles vão trafegar durante os perfis levantados. E aqui existe a oportunidade, caso não houver de forma clara, quais são as variáveis de tempo de resposta e disponibilidade necessárias com times de produto e de negócio. Tornar esses indicadores claros são grandes facilitadores para saber se nosso capacity planning está sendo de fato efetivo ou se estamos subprovisionando ou exagerando em recursos ociosos. 
+
+Aqui, o objetivo não é precisão absoluta, mas ordem de grandeza. O modelo inicial serve para responder "em que condições meu sistema opera hoje?" para evitar projeções desconexas ou irreais.
+
+## Identificação do Throughput Individual dos Componentes e Serviços 
+
+Antes de projetar crescimento, é necessário entender os limites individuais de cada componente relevante do fluxo para encontrar qual deles pode exercer uma pressão contraria ou agravar gargalos e gerar "curvas do joelho" de forma precipitada, e principalmente encontrar em que condições isso acontece. 
+
+Aqui podemos lidar com variáveis como o tps máximo sustentável do serviço, quais os limites de concorrência como threads, conexões, consumers possuímos e qual a capacidade efetiva de cada uma de suas dependências como databases, caches, brokers e API's externas (recurso que pode ser mockado em ambiente controlado para que os mesmos não ofendam o teste de limite operacional do serviço).
+
+## Derivação do Throughput Sistemico 
+
+A partir dos throughput individuais, deriva-se o throughput sistêmico, aplicando explicitamente a lógica do menor gargalo. Aqui respondemos perguntas como "Qual componente limita a vazão hoje?", meu gargalo é rígido ou pode lidar com escalabilidade horizontal dentro de uma janela de tempo? O throughput, tempo de resposta e taxa de erros mudam de acordo com o tempo, variação de tráfego dentro dos perfis de carga encontrados? 
+
+Essa etapa é a mais importante do processo, pois a real capacidade é encontrada durante o encadeamento entre os serviços. 
+
+## Levantamento da Projeção de Crescimento 
+
+Com a capacidade atual compreendida, o planejamento passa a incorporar projeções, evitando o erro clássico de assumir crescimento linear único. Aqui podemos incluir times de negócio e até C-Levels para entender as projeções esperadas do sistema. O objetivo nesse passo não é medir com precisão o futuro, mas entender até qual ponto o sistema atual consegue suportar os objetivos da empresa e validar oportunidades de melhoria para o futuro planejado do sistema, evitando assim que essa evolução seja feita de forma reativa e com experiência já degradada dos clientes. 
+
+## Avaliar o Custo e Margens Operacionais
+
+## Definição dos Limites Operacionais 
 
 
 
@@ -423,3 +422,5 @@ Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/pe
 [Knee of a curve](https://en.wikipedia.org/wiki/Knee_of_a_curve)
 
 [The “Knee” in Performance Testing: Where Throughput Meets the Wall](https://medium.com/@lahirukavikara/the-knee-in-performance-testing-where-throughput-meets-the-wall-904f90474346)
+
+[A Capacity Planning Process for Performance Assurance of Component-Based Distributed Systems](https://dl.acm.org/doi/epdf/10.1145/1958746.1958784)
