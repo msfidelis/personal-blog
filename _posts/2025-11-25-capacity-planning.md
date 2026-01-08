@@ -362,6 +362,7 @@ Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/pe
 - Custo marginal vs. custo médio
 - Elasticidade e eficiência econômica
 - Impacto do overprovisioning e underprovisioning
+- Custo por Transação
 
 
 <br>
@@ -403,9 +404,11 @@ Com a capacidade atual compreendida, o planejamento passa a incorporar projeçõ
 
 ## Avaliar o Custo e Margens Operacionais
 
+Neste ponto, o planejamento incorpora explicitamente custo e risco. A pergunta deixa de ser “quanto aguenta” e passa a ser sobre o "quanto aguenta com previsibilidade e custo aceitável para o negócio?" Aqui trabalhamos com dimensões como o impacto de overprovisioning vs. underprovisioning e quais as regiões de operação do "Ponto Saudável" são aceitáveis em orçamento e como isso está em relação ao "pré joelho" de throughput e latência do sistema. Aqui a capacidade passa a ser tratada como orçamento, e não como máximo técnico.
+
 ## Definição dos Limites Operacionais 
 
-
+O resultado do capacity planning não deve ser um número único de "quanto aguenta", mas um conjunto de limites operacionais que já abordamos como o TPS Sustentável, o `L(Alvo)`, latência maxima aceitável em termos de média e percentís, taxa de erros máxima aceitável e principalmente tornar essas definições amplamente conhecidas entre os stakeholders do produto. Isso vai ajudar também um ponto de crescimento onde a reavaliação arquitetural será necessária novamente com todos, alinhando expectativas de orçamento e planejamento estratégico. 
 
 ### Referências 
 
