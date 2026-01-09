@@ -339,11 +339,15 @@ Nem toda mudança ou feature precisa de um novo planejamento de capacidade nos m
 
 O throughput individual representa a capacidade máxima sustentável de **um componente isolado dentro do sistema**, avaliada fora do contexto completo do fluxo fim a fim. Ele descreve quanto trabalho um serviço, banco de dados, fila ou consumidor consegue processar por unidade de tempo sob condições controladas, considerando seus próprios limites de CPU, memória, I/O, concorrência e configuração interna.
 
+![Throughput individual](/assets/images/system-design/tput-individual.png)
+
 Essa dimensão pode ser avaliada em dois cenários, sendo um deles o contexto de um microserviço e suas dependências diretas como caches, filas e bancos de dados, onde a dimensão individual é avaliada dentro de um domínio de serviço, ou em cada micro componente. O primeiro cenário serve pra avaliar uma pequena fragmentação de negócio como "como quanto esse sistema de emissão de boletos consegue processar", e o segundo serve para responder "quanto esse banco de dados aguenta de I/O" e seus derivados. Ambas dão muitos insights valiosos sobre capacidade de produção. 
 
 #### Throughput sistêmico
 
 O throughput sistemico corresponde a capacidade máxima de um sistema ou funcionalidade contemplando todas as suas dependências.  O objetivo é ser agnóstico a capacidade individual de cada um dos seus componentes, levando em consideração somente a entrada até a resposta final. Essa estratégia serve para avaliar a capacidade total da solução e encontrar oportunidades de melhoria nos quesitos de filas e gargalos. 
+
+![Throughput Sistemico](/assets/images/system-design/tput-sistemico.png)
 
 Em termos prático, o throughput sistêmico busca encontrar a divergência de equilíbrio entre taxa de chegada `(λ)` e taxa de processamento `(μ)` em cada hop do fluxo, buscando encontrar qual componente está excercendo maior pressão contrária ao fluxo fim a fim. Mesmo que serviços isolados operem com folga, o sistema como um todo pode apresentar throughput limitado quando a variabilidade de throughput e latência se acumulam durante a comunicação fim a fim.  
 
@@ -351,7 +355,15 @@ Do ponto de vista de capacity planning, medir throughput sistêmico implica obse
 
 #### Dependência do Gargalo 
 
-Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/performance-capacidade-escalabilidade/), gargalos são "pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual". Se para completar uma transação eu preciso da reposta de 3 microserviços, onde um deles possui uma capacidade de processar de forma saudável 400 transações por segundo, e dois deles podem processar uma taxa de 1000 transações, meu sistema é limitado a menor taxa de processamento, ou seja, 400 transações por segundo. Exceder essa taxa pode provocar filas sistemicas e gargalo entre os processos, threads e dependências desse ponto de gargalo que exerce pressão contrária ao fluxo da dos componentes da aplicação. 
+![Gargalo](/assets/images/system-design/gargalo.png)
+
+Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/performance-capacidade-escalabilidade/), gargalos são "pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual". Se para completar uma transação eu preciso da reposta de 3 microserviços, onde um deles possui uma capacidade de processar de forma saudável 400 transações por segundo, outro 600 e outro pode processar uma maior taxa de 1000 transações, meu sistema é limitado a menor taxa de processamento, ou seja, 400 transações por segundo. Exceder essa taxa pode provocar filas sistemicas e gargalo entre os processos, threads e dependências desse ponto de gargalo que exerce pressão contrária ao fluxo da dos componentes da aplicação. 
+
+\begin{equation}
+\text{Gargalo} = min(s1, s2, s3, ...)
+\end{equation}
+
+O gargalo atual do sistema é representado pelo componente ou processo com a menor taxa de processamento `(μ)` de todo o fluxo. Identificar essa dependência é importante para direcionar as melhorias de forma priorizada e estratégica. Como visto anteriormente, os gargalos também se movem com o tempo. Uma otimização pode gerar um gargalo em uma outra parte subsequente do sistema. 
 
 <br>
 
