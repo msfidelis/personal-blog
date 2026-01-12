@@ -5,14 +5,16 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering ]
-title: System Design - Capacity Planning e Teoria das Filas
+title: System Design - Capacity Planning e a Teoria das Filas
 ---
 
-Passei os ultimos 3 meses do ano de 2025 procurando modelos matemáticos para me guiar nos assuntos de capacity planning e performance para minha caixa de ferramentas. Aqui, guardo um compilado dos conceitos e fórmulas mais relevantes que encontrei. Rascunhei esse capítulo logo em seguida de uma das etapas mais intensas do meu mestrado, e seu resultado final foi uma linguagem muito mais densa e teórica que os anteriores, mas gostei muito do resultado. 
 
-Capacity planning não é sobre prever o futuro com precisão absoluta. É sobre entender os limites estruturais do sistema antes que eles se tornem incidentes. A maioria dos problemas de capacidade não surge de crescimento repentino, mas da incapacidade de interpretar o comportamento do sistema sob carga real. Métricas isoladas como CPU, memória ou TPS médio raramente contam a história completa. O que realmente importa é como esses sinais se relacionam, como a concorrência interna se acumula e onde os gargalos se formam quando a carga deixa de ser uniforme.
+**Capacity planning não é sobre prever o futuro com precisão absoluta.** É sobre entender os limites estruturais do sistema antes que eles se tornem incidentes. A maioria dos problemas de capacidade não surge de crescimento repentino, mas da incapacidade de interpretar o comportamento do sistema sob carga real. Métricas isoladas, como CPU, memória ou TPS médio, raramente contam a história completa. **O que realmente importa é como esses sinais se relacionam, como a concorrência interna se acumula e onde os gargalos se formam quando a carga deixa de ser uniforme.**
 
-Este texto não é um guia para dimensionar servidores. É uma abordagem sistemática para modelar carga, interpretar saturação e planejar crescimento de forma estruturada. A teoria das filas, a Lei de Little e a curva do joelho não são abstrações acadêmicas, são ferramentas práticas para responder perguntas como "quanto meu sistema aguenta de forma sustentável?" e "onde ele quebra antes de eu perceber?". O objetivo é transformar capacity planning de uma reação a incidentes em uma prática de engenharia preventiva e bem fundamentada.
+Passei os últimos 3 meses do ano de 2025 procurando modelos matemáticos para me guiar nos assuntos de capacity planning e performance para minha caixa de ferramentas. Aqui, guardo um compilado dos conceitos e fórmulas mais relevantes que encontrei. Rascunhei este capítulo logo em seguida a uma das etapas mais intensas do meu mestrado, e seu resultado final foi uma linguagem muito mais densa e teórica do que os anteriores, mas gostei muito do resultado.
+
+**Este texto não é um guia para dimensionar servidores.** É uma abordagem sistemática para modelar carga, interpretar saturação e planejar crescimento de forma estruturada. A teoria das filas, a Lei de Little e a curva do joelho não são abstrações acadêmicas, são ferramentas práticas para responder perguntas como "quanto meu sistema aguenta de forma sustentável?" e "onde ele quebra antes de eu perceber?". **O objetivo é transformar capacity planning de uma reação a incidentes em uma prática de engenharia preventiva e bem fundamentada.**
+
 
 
 {% include latex.html %}
@@ -23,42 +25,42 @@ Este texto não é um guia para dimensionar servidores. É uma abordagem sistem�
 
 ![Teoria das Filas](/assets/images/system-design/teoria-das-filas-conceitual.png)
 
-A teoria das filas é um dos fundamentos mais importantes e mal compreendidos em capacity planning. Em termos simples, a teoria estuda como **sistemas se comportam quando múltiplas demandas competem por recursos finitos**. Em engenharia de software podemos utilizar como base comportamentos comuns como requisições sincronas aguardando processamento para responder a um cliente, mensagens acumuladas em filas, multiplos itens sendo processados em memória, conexões disputando pools limitados em bancos de dados ou operações de I/O esperando acesso a um recurso compartilhado.
+A teoria das filas é um dos fundamentos mais importantes e mal compreendidos em capacity planning. Em termos simples, a teoria estuda como **sistemas se comportam quando múltiplas demandas competem por recursos finitos**. Em engenharia de software, podemos utilizar como base comportamentos comuns, como requisições síncronas aguardando processamento para responder a um cliente, mensagens acumuladas em filas, múltiplos itens sendo processados em memória, conexões disputando pools limitados em bancos de dados ou operações de I/O esperando acesso a um recurso compartilhado.
 
-De forma conceitual, toda fila pode ser entendida a partir de três dimensões: **como as demandas chegam ao sistema, como elas são processadas e em que ordem são atendidas.** O objetivo é transformar arquiteturas complexas em modelos matematicamente analisáveis, principalmente em arquiteturas distribuídas onde taxas de uso estáveis e tempos de resposta previsíveis raramente se sustentam de forma consistente. 
+De forma conceitual, toda fila pode ser entendida a partir de três dimensões: **como as demandas chegam ao sistema, como elas são processadas e em que ordem são atendidas**. O objetivo é transformar arquiteturas complexas em modelos matematicamente analisáveis, principalmente em arquiteturas distribuídas, onde taxas de uso estáveis e tempos de resposta previsíveis raramente se sustentam de forma consistente.
 
-A "filas" não existem apenas onde há estruturas literais de enfileiramento assincronos como brokers de mensagens e eventos. Embora a teoria das filas seja apenas como uma abstração acadêmica, ela nos dá formas de compreender gargalos, throughput real, tempo de resposta, latências em cascata decorrentes cenários como saturação de pools de threads, conexões de banco de dados, locks em recursos compartilhados e mecanismos de retry de forma isolada, mas sobretudo em arquiteturas distribuídas, onde cada hop, cada requisição, cada buffer e cada microserviço se comporta como uma fila independente, com sua própria taxa de chegada, taxa de processamento, saturação e congestionamento.
+As "filas" não existem apenas onde há estruturas literais de enfileiramento assíncrono, como brokers de mensagens e eventos. Embora a teoria das filas seja vista apenas como uma abstração acadêmica, ela nos fornece formas de compreender gargalos, throughput real, tempo de resposta e latências em cascata decorrentes de cenários como saturação de pools de threads, conexões de banco de dados, locks em recursos compartilhados e mecanismos de retry, não apenas de forma isolada, mas sobretudo em arquiteturas distribuídas, onde cada hop, cada requisição, cada buffer e cada microserviço se comporta como uma fila independente, com sua própria taxa de chegada, taxa de processamento, saturação e congestionamento.
 
 ![Teoria das Filas](/assets/images/system-design/teoria-das-filas-simples.png)
 
-Da forma mais simples, uma fila é um mecanismo onde **solicitações chegam `(λ)`, e são processados `(μ)`**, e o sistema **oscila continuamente entre estados de ociosidade, equilíbrio e saturação** dentro desses dois parâmetros. **Quando a taxa de chegada `(λ)` se aproxima ou ultrapassa o limite da taxa de processamento `(μ)`, a mesma gera um gargalo físico**, onde tempos de resposta aumentam e o throughput degrada por ter uma taxa de envio maior que o a taxa de vazão. É por esse tipo de detalhe técnico que um microsserviço em p95 saudável pode degradar em uma dimensão de p99 sob picos inesperados mesmo com CPU e outros recursos. No geral, o problema não é falta de capacidade física, mas sim variabilidade temporal, bursts e o custo de espera entre as chamadas e processos.
+Da forma mais simples, uma fila é um mecanismo onde **solicitações chegam `(λ)` e são processadas `(μ)`**, e o sistema **oscila continuamente entre estados de ociosidade, equilíbrio e saturação** dentro desses dois parâmetros. **Quando a taxa de chegada `(λ)` se aproxima ou ultrapassa o limite da taxa de processamento `(μ)`, isso gera um gargalo físico**, onde tempos de resposta aumentam e o throughput degrada por haver uma taxa de envio maior do que a taxa de vazão. É por esse tipo de detalhe técnico que um microsserviço saudável em p95 pode degradar de forma significativa em p99 sob picos inesperados, mesmo com CPU e outros recursos aparentemente estáveis. No geral, o problema não é a falta de capacidade física, mas sim a variabilidade temporal, bursts e o custo de espera entre chamadas e processos.
 
-Isso explica porque o autoscaling normalmente não resolve todos os problemas de capacidade, uma vez que o mesmo normalmente só reage a aumento expressivo de uso ou saturação dos recursos para adicionar e remover réplicas de um serviço. **O Autoscaling, superficialmente, aumenta a taxa de processamento `(μ)` de forma momentânea**, permitindo que a taxa de vazão aumente, mas ainda funciona com base a gatilhos temporais, deixando o sistema sensível a bursts e picos de uso. Em outras palavras, **um sistema não sofre porque recebe “muitas requisições”, mas porque recebe requisições de forma imprevisível ou não uniformes**.
+Isso explica por que o autoscaling normalmente não resolve todos os problemas de capacidade, uma vez que ele reage apenas a aumentos expressivos de uso ou saturação de recursos para adicionar ou remover réplicas de um serviço. **O autoscaling, de forma superficial, aumenta a taxa de processamento `(μ)` momentaneamente**, permitindo que a taxa de vazão cresça, mas ainda funciona com base em gatilhos temporais, deixando o sistema sensível a bursts e picos de uso. Em outras palavras, **um sistema não sofre porque recebe “muitas requisições”, mas porque recebe requisições de forma imprevisível ou não uniforme**.
 
-A teoria das filas propõe o **uso de métricas de variabilidade como o **coeficiente de variação** ou do **desvio padrão** ao invés de medidas como percentís, mínimos, máximos e médias na taxa de processamento**. Analisamos então a variação da taxa de chegada `(λ)` e variação da taxa de processamento `(μ)`. Essa visão explica por que sistemas com a mesma capacidade de recursos podem ter comportamentos completamente distintos sob carga real. Dois serviços com a mesma taxa média de atendimento podem apresentar curvas de latência radicalmente diferentes se um deles processar requests com desvio padrão alto.
+A teoria das filas propõe o **uso de métricas de variabilidade, como o coeficiente de variação ou o desvio padrão, em vez de medidas como percentis, mínimos, máximos e médias na taxa de processamento**. Analisamos, então, a variação da taxa de chegada `(λ)` e da taxa de processamento `(μ)`. Essa visão explica por que sistemas com a mesma capacidade de recursos podem apresentar comportamentos completamente distintos sob carga real. Dois serviços com a mesma taxa média de atendimento podem exibir curvas de latência radicalmente diferentes se um deles processar requisições com desvio padrão elevado.
 
-Estratégias já vistas anteriormente como sharding, bulkheads, caching, escalabilidade vertical e horizontal, desacoplamento a nível de filas e eventos, aumento de consumidores, estratégias de concorrência e paralelismo nos ajudam a lidar com estabilidade de sistemas quando a taxa de chegada supera a taxa de processamento. 
+Estratégias já discutidas anteriormente, como sharding, bulkheads, caching, escalabilidade vertical e horizontal, desacoplamento por meio de filas e eventos, aumento do número de consumidores, bem como estratégias de concorrência e paralelismo, nos ajudam a lidar com a estabilidade dos sistemas quando a taxa de chegada supera a taxa de processamento.
+
 
 <br>
 
 ## A Lei de Little na Teoria das Filas
 
-A Lei de Little, ou Little's Law, é um principio matematico simples integrado a Teoria das Filas apresentado por John D. C. Little na década de 1960 que nos fornece insights valiosos para entender qualquer comportamento de qualquer sistema sob carga. A lei não foi inicialmente formulada para conceitos computacionais complexos, ela pode ser utilizada para analisar a pressão de qualquer tipo de sistema sob a ótica da média de três variáveis, sendo elas o **número médio de itens em processamento no sistema (L)**, a **taxa média de chegada (λ)** e o **tempo médio de processamento e permanência desses itens (W) no sistema**. Essa relação é expressa pela equação:
+A Lei de Little, ou Little's Law, é um **princípio matemático simples integrado à Teoria das Filas**, apresentado por John D. C. Little na década de 1960, que nos fornece insights valiosos para entender o comportamento de qualquer sistema sob carga. A lei não foi inicialmente formulada para conceitos computacionais complexos; ela pode ser utilizada para analisar a pressão de qualquer tipo de sistema sob a ótica da média de três variáveis, sendo elas o **número médio de itens em processamento no sistema (L)**, a **taxa média de chegada (λ)** e o **tempo médio de processamento e permanência desses itens (W) no sistema**. Essa relação é expressa pela equação:
 
 \begin{equation}
 L = \lambda \times W
 \end{equation}
 
-Esse calculo, por mais que seja simples, é valido para interpretar qualquer sistema estável, pois independe de estatisticas complexas e valores exatos da taxa de processamento e permanencia `(W)` e da taxa de chegada de itens ao sistema `(λ)`, **desde que suas médias sejam bem definidas**. 
+Esse cálculo, por mais que seja simples, **é válido para interpretar qualquer sistema estável**, pois independe de estatísticas complexas e de valores exatos da taxa de processamento e permanência `(W)` e da taxa de chegada de itens ao sistema `(λ)`, **desde que suas médias sejam bem definidas**.
 
 ![Lei de Little](/assets/images/system-design/little-law.png)
 
-Em sistemas distribuídos, a Lei de Little **nos ajuda a interpretar a capacidade de forma granular, a nível de cada componente, dependência ou microserviço**, ou de forma mais ampla **analisando um fluxo completo em cenários onde estimar as capacidades exatas de todos os componentes pode ser muito complexo ou inviável**. 
+Em sistemas distribuídos, a Lei de Little **nos ajuda a interpretar a capacidade de forma granular, a nível de cada componente, dependência ou microserviço**, ou de forma mais ampla, **analisando um fluxo completo em cenários onde estimar as capacidades exatas de todos os componentes pode ser muito complexo ou inviável**.
 
+Em termos práticos, ela se resume a uma interpretação adicional de capacidade sobre throughput e latência. Para uma taxa de chegada fixa `(λ)`, **qualquer aumento no tempo médio de resposta `(W)` implica, de forma imediata, um aumento proporcional no número de processos simultâneos `(L)` no sistema**.
 
-Em termos práticos, ela se resume a uma interpretação de capacidade adicional sobre o throughput e latência. Para uma taxa de chegada fixa `(λ)`, **qualquer aumento no tempo médio de resposta** `(W)` implica, de forma imediata, **um aumento proporcional no número de processos simultâneos** `(L)` no sistema.
-
-Considere um sistema de assincrono que recebe uma taxa média de `1.500` mensagens por segundo, com tempo médio de processamento por mensagem de `50ms`, aplicando a Little's Law, podemos encontrar o número de processos concorrentes dentro do mesmo segundo: 
+Considere um sistema assíncrono que recebe uma taxa média de `1.500` mensagens por segundo, com tempo médio de processamento por mensagem de `50ms`. Aplicando a Little's Law, podemos encontrar o número de processos concorrentes dentro do mesmo segundo:
 
 \begin{equation}
 L = 1.500 \times 0.05
@@ -67,9 +69,9 @@ L = 1.500 \times 0.05
 L = 75
 \end{equation}
 
-Neste cenário o sistema mantém em média, `75` mensagens simultaneamente em processamento ou espera. **Esse valor representa a concorrência média interna do sistema e pode ser utilizado como base para dimensionamento de consumidores, threads de processamento, partições de filas ou limites de paralelismo**, servindo como **fator base para saber de uma eventual degradação ou otimização proativamente sem depender de saturação**. Lembrando que, com base interpretativa do modelo, quanto menor o valor de `L`, melhor. 
+Neste cenário, o sistema mantém, em média, `75` mensagens simultaneamente em processamento ou espera. **Esse valor representa a concorrência média interna do sistema e pode ser utilizado como base para dimensionamento de consumidores, threads de processamento, partições de filas ou limites de paralelismo**, servindo como **fator base para antecipar degradações ou otimizações de forma proativa, sem depender de saturação**. Lembrando que, com base interpretativa do modelo, **quanto menor o valor de `L`, melhor**.
 
-**Pequenos aumentos no tempo médio de processamento impactariam diretamente o número de mensagens acumuladas**, aumentando o **risco de atraso e crescimento não controlado da fila**, por exemplo um aumento de tempo de processamento para `85ms`: 
+**Pequenos aumentos no tempo médio de processamento impactam diretamente o número de mensagens acumuladas**, aumentando o **risco de atraso e crescimento não controlado da fila**, por exemplo, em um aumento do tempo de processamento para `85ms`:
 
 \begin{equation}
 L = 1.500 \times 0.085
@@ -79,22 +81,20 @@ L = 1.500 \times 0.085
 L = 127
 \end{equation}
 
+Ao **elevar o tempo médio de processamento**, mesmo para um **aumento aparentemente pequeno** e plausível em cenários reais, causado por variação de payload, latência de dependências externas, I/O ou demais contenções externas, o número médio de mensagens em voo salta para `127` de concorrência interna, **um aumento absoluto de 52 mensagen**
 
-Ao **elevar o tempo médio de processamento**, mesmo para um **aumento aparentemente pequeno** e plausível em cenários reais causado por variação de payload, latência de dependências externas, I/O ou demais contenções externas, o número médio de mensagens em voo salta para `127` de concorrência interna, **o aumento absoluto de 52 mensagens simultâneas por segundo**, que pode representar uma **elevação significativa da saturação e enfileiramento interno**, ampliando o uso de recursos compartilhados e aumentando a probabilidade de contenção, retries e atrasos adicionais. 
-
-A capacidade não pode ser avaliada utilizando apenas a taxa de consumo, mas deve ter formas de considerar a sensibilidade do sistema a latência de processamento. Um sistema que não possui margem o suficiente para absorver variações temporais está declaradamente em um estado de subdimensionamento.
 
 <br>
 
 ### Lei de Little e o "Ponto Saudável"
 
-A Lei de Little nos fornece um critério de avaliação para **encontrar um "ponto saudável" de operação de um sistema**, no qual entendemos que com o crescimento da carga `(λ)`, **não teremos aumento descontrolado da concorrência interna** `(L)`. 
+A Lei de Little nos fornece um critério de avaliação para **encontrar um "ponto saudável" de operação de um sistema**, no qual entendemos que, com o crescimento da carga `(λ)`, **não teremos aumento descontrolado da concorrência interna** `(L)`.
 
 ![L-Alvo](/assets/images/system-design/law-guardrail.png)
 
-Para tornar isso paupável, podemos adotar um `L(Alvo)` para o sistema, como um Service Level de engenharia, que representa um **número maximo desejável de itens em concorrência interna**, sendo esse compatível com os **limites físicos e operacionais da solução**, nos levando a busca por otimizações constantes para reduzir o tempo de processamento `(W)`.
+Para tornar isso palpável, podemos adotar um `L(Alvo)` para o sistema, como um Service Level de engenharia, que representa um **número máximo desejável de itens em concorrência interna**, sendo esse compatível com os **limites físicos e operacionais da solução**, nos levando à busca por otimizações constantes para reduzir o tempo de processamento `(W)`.
 
-Considere uma API REST que possui **um `L(Alvo)` de `150`**. O sistema recebe `500` requisições por segundo com um tempo médio de resposta de `300ms`. Pela Lei de Little: 
+Considere uma API REST que possui **um `L(Alvo)` de `150`**. O sistema recebe `500` requisições por segundo, com um tempo médio de resposta de `300ms`. Pela Lei de Little:
 
 \begin{equation}
 L = 500 \times 0.3
@@ -104,25 +104,26 @@ L = 500 \times 0.3
 L = 150
 \end{equation}
 
-Esse cenário caracteriza o contrato do "Ponto Saudável", **onde o sistema opera dentro do limite planejado de concorrência interna** e mantem uma certa previsibilidade e margem para absorver suas variações. A medida que a carga cresce no sistema para `1000` requisicões por segundo, o `L` vai para `300`, ultrapassando o `L(Alvo)` e podendo levar o sistema para uma região de saturação e risco. 
+Esse cenário caracteriza o contrato do "Ponto Saudável", **onde o sistema opera dentro do limite planejado de concorrência interna** e mantém uma certa previsibilidade e margem para absorver variações. À medida que a carga cresce no sistema para `1000` requisições por segundo, o `L` vai para `300`, ultrapassando o `L(Alvo)` e podendo levar o sistema para uma região de saturação e risco.
 
-Uma progressão saudável te leva a pesquisa interna para lidar com uma redução propocional do tempo de processamento `W`. Aqui aplicamos diversas técnicas de otimização para diminuir o tempo de processamento dos requests. Podemos descobrir o tempo alvo para otimização `(W)`, dividindo nosso `L(Alvo)` pela taxa de requisições recebidas `(λ)` atual e multiplicando categoricamente para chegar na mesma unidade de tempo que estamos utilizando, no caso do exemplo, milisegundos: 
-
-\begin{equation}
-W = \frac{\text{L(Alvo)}}{\lambda} * 1000
-\end{equation}
-
-Convertendo para o exemplo da nossa API 
+Uma progressão saudável nos leva à pesquisa interna para lidar com uma redução proporcional do tempo de processamento `W`. Aqui aplicamos diversas técnicas de otimização para diminuir o tempo de processamento dos requests. Podemos descobrir o tempo-alvo para otimização `(W)` dividindo nosso `L(Alvo)` pela taxa de requisições recebidas `(λ)` atual e multiplicando, de forma categórica, para chegar à mesma unidade de tempo que estamos utilizando — no caso do exemplo, milissegundos:
 
 \begin{equation}
-W = \frac{150}{1000} * 1000
+W = \frac{\text{L(Alvo)}}{\lambda} \times 1000
+\end{equation}
+
+Convertendo para o exemplo da nossa API:
+
+\begin{equation}
+W = \frac{150}{1000} \times 1000
 \end{equation}
 
 \begin{equation}
-L = 150ms
+W = 150ms
 \end{equation}
 
-Nesse cenário podemos entender que para que nosso sistema volte a operar com o `L(Alvo)` de `150`, precisamos diminuir nosso tempo de processamento `(W)` de `300ms` para `150ms`. Nesse novo formato otimizado, o sistema processa 50% mais mensagens mantendo a mesma concorrência média interna. O objetivo é que o crescimento seja absorvido estruturalmente, sem acúmulo adicional de filas ou pressão excessiva sobre recursos.
+Nesse cenário, podemos entender que, para que nosso sistema volte a operar com o `L(Alvo)` de `150`, precisamos diminuir nosso tempo de processamento `(W)` de `300ms` para `150ms`. **Nesse novo formato otimizado, o sistema processa 50% mais requisições mantendo a mesma concorrência média interna**. **O objetivo é que o crescimento seja absorvido estruturalmente, sem acúmulo adicional de filas ou pressão excessiva sobre recursos.**
+
 
 <br>
 
@@ -130,208 +131,223 @@ Nesse cenário podemos entender que para que nosso sistema volte a operar com o 
 
 ![Knee Curve](/assets/images/system-design/knee-curve.png)
 
-A Knee Curve, ou Curva do Joelho, é um conceito que demonstra a relação de utilização de um sistema e o seu ponto de degradação de capacidade. Em um [teste de carga](/load-testing/), **representa onde o tempo de resposta muda drasticamente comparado a tendência anterior**. 
+A Knee Curve, ou Curva do Joelho, é um conceito que demonstra a relação entre a utilização de um sistema e o seu ponto de degradação de capacidade. Em um [teste de carga](/load-testing/), **representa o ponto onde o tempo de resposta muda drasticamente em relação à tendência anterior**.
 
-Em termos normais, **a latência cresce de forma linear conforme a quantidade de requisições que um sistema esteja lidando aumenta**. A Curva do Joelho **revela o ponto a partir do qual o sistema deixa de se comportar de forma previsível e passa a apresentar degradação acelerada**. 
+Em termos normais, **a latência cresce de forma linear conforme a quantidade de requisições que um sistema está lidando aumenta**. A Curva do Joelho **revela o ponto a partir do qual o sistema deixa de se comportar de forma previsível e passa a apresentar degradação acelerada**.
 
 ![Knee Curve](/assets/images/system-design/knee-requests.png)
 
-Enquanto a utilização está antes da formação do "joelho", o sistema tem capacidade de operar de forma saudável e segura e absorver pequenas variações carga. Operar proximo, ou além da curva, aumentamos muito o enfileiramento interno de recursos, aumento de retries e saturação dos componentes.
+Enquanto a utilização está antes da formação do "joelho", o sistema tem capacidade de operar de forma saudável e segura e absorver pequenas variações de carga. Operar próximo ou além da curva aumenta significativamente o enfileiramento interno de recursos, o número de retries e a saturação dos componentes.
 
 ![Knee Curve](/assets/images/system-design/knee-cpu.png)
 
-Podemos aplicar o modelo para demais métricas além de requests propriamente ditos. Podemos utilizar recursos fisicos como CPU e Memória para **entender a partir de que ponto de uso nosso sistema começa a degradar de throughput e latência**, e a partir disso estimar suas devidas capacidades e automações preventivas de [auto scaling](/performance-capacidade-escalabilidade/) de forma mais assertiva.
+Podemos aplicar o modelo a outras métricas além de requests propriamente ditos. É possível utilizar recursos físicos como CPU e memória para **entender a partir de que ponto de uso o sistema começa a degradar em throughput e latência**, e, a partir disso, estimar suas capacidades e definir automações preventivas de [auto scaling](/performance-capacidade-escalabilidade/) de forma mais assertiva.
 
-Em paralelo da Teoria das Filas, a medida em que a utilização cresce e se aproxima da capacidade maxima ou passa do "Ponto Saudável" da Lei de Little, **as filas internas começam a se formar e o tempo de espera passa a ser dominante perante a todo o tempo de processamento definido**. A partir desse ponto, a latência cresce de forma não linear, frequentemente exponencial, mesmo quando o aumento de utilização a partir desse ponto é pequeno ou irrelevante.
+Em paralelo à Teoria das Filas, à medida que a utilização cresce e se aproxima da capacidade máxima ou ultrapassa o "Ponto Saudável" definido pela Lei de Little, **as filas internas começam a se formar e o tempo de espera passa a ser dominante em relação a todo o tempo de processamento definido**. A partir desse ponto, a latência cresce de forma não linear, frequentemente exponencial, mesmo quando o aumento de utilização adicional é pequeno ou aparentemente irrelevante.
 
 ![L-Alvo](/assets/images/system-design/knee-l-alvo.png)
 
-Em testes de performance, **encontrar a curva do joelho do sistema permite levantar dois pontos importantes, o "Ponto Saudável" e o "Ponto Maximo de Utilização"**. O Ponto Saudável, normalmente é uma **zona anterior a Curva do Joelho onde temos o maior equilibro operacional entre eficiência e previsibilidade**. Dentro desse intervalo, entendemos que **o throughput cresce de forma saudável e os tempos de resposta permanecem conhecidos e controlados**. 
+Em testes de performance, **encontrar a curva do joelho do sistema permite identificar dois pontos importantes: o "Ponto Saudável" e o "Ponto Máximo de Utilização"**. O Ponto Saudável, normalmente, é uma **zona anterior à Curva do Joelho onde existe o maior equilíbrio operacional entre eficiência e previsibilidade**. Dentro desse intervalo, entendemos que **o throughput cresce de forma saudável e os tempos de resposta permanecem conhecidos e controlados**.
 
-Já o **Ponto Máximo de Utilização corresponde ao limite teórico em que o sistema ainda processa requisições, porém à custa de latências elevadas, alta imprevisibilidade e risco significativo** de indisponibilidade e falhas na experiência do usuário. O ideal é que ambas as zonas se estabeleçam antes da curva do joelho definitiva. Uma para operar, outra para definir um limite máximo de risco. 
+Já o **Ponto Máximo de Utilização corresponde ao limite teórico em que o sistema ainda processa requisições**, porém à custa de latências elevadas, alta imprevisibilidade e **risco significativo de indisponibilidade e falhas na experiência do usuário**. O ideal é que ambas as zonas se estabeleçam antes da curva do joelho definitiva: uma para operação normal e outra para definição explícita do limite máximo de risco aceitável.
+
 
 <br>
 
-### Margens Seguras de Saturação 
+### Margens Seguras de Saturação
 
-Quando olhamos recursos físicos com a ótica de capacity planning, como por exemplo em utilização de CPU, não devemos interpretar os mesmos com objetivo de maximização como prioridade, mas como um recurso finito com margens de proximidades instáveis. 
+Quando olhamos para recursos físicos sob a ótica de capacity planning, como, por exemplo, a utilização de CPU, não devemos interpretá-los com o objetivo de maximização como prioridade, mas sim como recursos finitos com margens de proximidade instáveis.
 
-Quando comparamos por exemplo, CPU e Memória com outros recursos como Largura de Banda, Armazenamento, IOP's, suas saturações não se manifestam de maneira linear e representam recursos definitivamente livres parar serem alocados como um "espaço disponível", e esse fenômeno pode ser interpretado através da Teoria das Filas. Pequenos aumentos de utilizações próximos de um "Ponto Saudável" de utilização de CPU provocam crescimento de filas de forma desproporcional, sem necessariamente que esses limites sejam 100% de utilização. 
+Quando comparamos, por exemplo, CPU e memória com outros recursos como largura de banda, armazenamento e IOPs, suas saturações não se manifestam de maneira linear e não representam recursos definitivamente livres para serem alocados como um simples "espaço disponível". Esse fenômeno pode ser interpretado por meio da Teoria das Filas. **Pequenos aumentos de utilização próximos de um "Ponto Saudável" de uso de CPU provocam crescimento de filas de forma desproporcional**, sem que esses limites estejam necessariamente próximos de 100% de utilização.
 
 ![Saturação de CPU](/assets/images/system-design/knee-cpu-usage.png)
 
-Os "Ponto Saudáveis" de CPU e Memória são zonas de utilização onde o sistema consegue absorver variações de carga como spikes, bursts, jitters sem exaurir a taxa de processamento `(μ)` ou aumentar o tempo de processamento `(W)` gerando filas e gargalos. O ponto central é: Não é necessário atingir 100% de CPU para que o sistema crie e inflacione filas internas. Próximo a 80–85% de utilização, incrementos marginais de carga já produzem aumentos desproporcionais em latência e concorrência interna, tornando o sistema altamente sensível a qualquer variabilidade adicional.
+Os **"Pontos Saudáveis" de CPU e memória** são zonas de utilização onde o sistema consegue absorver variações de carga, como spikes, bursts e jitters, sem exaurir a taxa de processamento `(μ)` ou aumentar o tempo de processamento `(W)`, evitando a geração de filas e gargalos. **O ponto central é que não é necessário atingir 100% de CPU para que o sistema crie e inflacione filas internas.** Próximo de **80–85% de utilização**, incrementos marginais de carga já produzem aumentos desproporcionais em latência e conco
+
 
 <br>
 
 ## Modelagem de Carga
 
-A modelagem de carga é um dos principais requisitos para se estimar o capacity planning de um sistema. Dentro de ambientes modernos, possuimos diversas ferramentas de monitoramento e observabilidade que coletam sinais de **logs, métricas e traces emitidos pelas aplicações e seus componentes para gerar diversas dimensões de visualizações e alertas**. Quando vamos estimar a capacidade de um sistema, **precisamos análisar algumas delas de forma unificada e correlacionada**. **Transações por segundo**, **requests concorrentes** e o **payload médio** formam, em conjunto, uma representação fiel do comportamento real do que qualquer uma dessas métricas analisada de forma independente pode gerar. Juntas, essas três métricas formam a base mais sólida para uma modelagem de carga mais realista. **As Transações por Segundo descreve. o ritmo de solicitações**, a **concorrência descreve a pressão acumulada no sistema perante a chegada dessas solicitações**, e **tamanho do payload descreve o peso individual de cada transação** a nível de networking, storage, peso de serialização e memória.
+A modelagem de carga é um dos principais requisitos para se estimar o capacity planning de um sistema. Dentro de ambientes modernos, possuímos diversas ferramentas de monitoramento e observabilidade que coletam sinais de **logs, métricas e traces emitidos pelas aplicações e seus componentes para gerar diversas dimensões de visualizações e alertas**. Quando vamos estimar a capacidade de um sistema, **precisamos analisar algumas delas de forma unificada e correlacionada**.
 
-### Transações por Segundo 
+**Transações por segundo**, **requests concorrentes** e o **payload médio** formam, em conjunto, uma representação mais fiel do comportamento real do sistema do que qualquer uma dessas métricas analisada de forma independente pode gerar. **Juntas, essas três métricas formam a base mais sólida para uma modelagem de carga realista.**
 
-As Transações por Segundo, **representam a taxa de chegada de requisições ao sistema**, e representam o ponto inicial de qualquer estimativa. **Nenhuma métrica é mais importante do que a quantidade de interações que um sistema recebe, ou irá receber**. 
+**As Transações por Segundo descrevem o ritmo de solicitações**, a **concorrência descreve a pressão acumulada no sistema perante a chegada dessas solicitações**, e o **tamanho do payload descreve o peso individual de cada transação**, a nível de networking, storage, custo de serialização e consumo de memória.
 
-Mesmo dentro do mesmo segundo, um sistema ainda pode apresentar insights valiosos de burst. **Dois sistemas podem operar com o mesmo TPS médio e apresentarem comportamentos totalmente diferentes se a distribuição temporal dessas transações variar**. Um workload com 1000 TPS distribuídos de forma homogênea ao longo do segundo impõe uma pressão completamente distinta de outro com a mesma média, mas concentrado em bursts de 5–10 ms, e conhecer esse nível de granularidade pode nos ajudar a estimar com muito mais precisão a capacidade necessária para suprir as demandas de forma inteligente. 
+### Transações por Segundo
 
-### Processos Concorrentes 
+As Transações por Segundo **representam a taxa de chegada de requisições ao sistema** e constituem o ponto inicial de qualquer estimativa. **Nenhuma métrica é mais importante do que a quantidade de interações que um sistema recebe, ou irá receber.**
 
-Os requests concorrentes representam uma dimensão interna dentro do sistema que reflete a capacidade de processamento do mesmo. Diferente das Transações por Segundo que descrevem a taxa de chegada de solicitações do sistema, os Processos Concorrentes descrevem a quantidade de trabalho simultâneo que o sistema sustenta. 
+Mesmo dentro do mesmo segundo, um sistema ainda pode apresentar insights valiosos sobre bursts. **Dois sistemas podem operar com o mesmo TPS médio e apresentar comportamentos totalmente diferentes se a distribuição temporal dessas transações variar.** Um workload com `1000` TPS distribuídos de forma homogênea ao longo do segundo impõe uma pressão completamente distinta de outro com a mesma média, porém concentrado em bursts de `5–10 ms`, e conhecer esse nível de granularidade pode nos ajudar a estimar, com muito mais precisão, a capacidade necessária para suprir as demandas de forma inteligente.
 
-Em sistemas sincronos como servidores gRPC ou API's REST, isso se representa como thread ocupadas, conexões abertas e etc. Em sistemas assincronos, pode ser interpretado como mensagens em vôo, partições ocupadas, consumidores ativos e taxa de solicitações de eventos e mensagens para seus brokers. 
+### Processos Concorrentes
 
-Podemos ilustrar um exemplo  em APIs que apresentam latências aceitáveis em p95, mas mantêm concorrência interna elevada devido a pequenas degradações em dependências externas. Nesses casos, a capacidade aparente parece suficiente, enquanto o sistema já opera próximo a limites estruturais invisíveis. Precisamos ter consciência de formas de estimar e medir a concorrência interna para evitar esbarrar em "curvas do joelho" do sistema. 
+Os **requests concorrentes representam uma dimensão interna do sistema que reflete sua capacidade de processamento**. Diferentemente das **Transações por Segundo**, que descrevem a taxa de chegada de solicitações ao sistema, os **Processos Concorrentes descrevem a quantidade de trabalho simultâneo que o sistema sustenta**.
 
-### Tamanho de Payload 
+Em sistemas síncronos, como servidores gRPC ou APIs REST, isso se manifesta como **threads ocupadas, conexões abertas**, entre outros recursos concorrentes. Em sistemas assíncronos, pode ser interpretado como **mensagens em voo, partições ocupadas, consumidores ativos** e taxa de processamento de eventos e mensagens em brokers.
 
-Estimar o tamanho do payload, seja esse mensagens ou requests HTTP, é uma dimensão que é rotineiramente ignorada durante a estimativa de capacidade. Em sistemas com requisições mais homogêneas, ou seja, microserviços que possuem poucos endpoints, ou contratos bem definidos de mensagens e eventos, podem facilmente prever o tamanho desses payloads com certa precisão e estimar de forma mais confiável a pressão de tráfego de I/O que sistema irá lidar. Porém, em sistemas que possuem multiplas funcionalidades distribuídas em diversas filas e endpoints, o payload médio pode não representar uma dimensão fiel a realidade do sistema. O risco do erro da estimativa não está na média dessa variável, mas sim na dispersão em torno dessa média. 
+Podemos ilustrar esse comportamento em APIs que apresentam **latências aceitáveis em p95**, mas mantêm **concorrência interna elevada devido a pequenas degradações em dependências externas**. Nesses casos, a capacidade aparente parece suficiente, enquanto o sistema já opera **próximo a limites estruturais invisíveis**. **Ter consciência de como estimar e medir a concorrência interna é fundamental para evitar esbarrar nas "curvas do joelho" do sistema.**
 
-Payloads maiores tendem a ampliar o tempo de processamento, consumo de memória, pressão em garbage collection, uso de buffers de rede e latência de serialização. Um sistema que processa majoritariamente payloads pequenos, mas ocasionalmente recebe payloads muito maiores, pode apresentar comportamento estável na média e, ainda assim, sofrer degradações abruptas sob cenários perfeitamente válidos do ponto de vista funcional. Essa variabilidade cria caudas longas no tempo de resposta e amplifica o efeito de filas internas, mesmo sem alterações perceptíveis na TPS.
 
-Idealmente precisamos modelar sistemas e contratos que não sofram muita variação de tamanho.  Quando não for possível, estimar cada uma das funcionalidades de forma isolada e se concentrar em encontrar alguma estatística que represente mais fielmente o sistema perante suas particularidades. 
+### Tamanho de Payload
+
+Estimar o tamanho do payload, sejam eles mensagens ou requests HTTP, é uma dimensão que é rotineiramente ignorada durante a estimativa de capacidade. Em sistemas com requisições mais homogêneas, ou seja, microserviços que possuem poucos endpoints ou contratos bem definidos de mensagens e eventos, é possível prever o tamanho desses payloads com certa precisão e estimar de forma mais confiável a pressão de tráfego de I/O que o sistema irá lidar. Porém, em sistemas que possuem múltiplas funcionalidades distribuídas em diversas filas e endpoints, o payload médio pode não representar uma dimensão fiel à realidade do sistema. **O risco do erro da estimativa não está na média dessa variável, mas sim na dispersão em torno dessa média.**
+
+**Payloads maiores tendem a ampliar o tempo de processamento, o consumo de memória, a pressão em garbage collection, o uso de buffers de rede e a latência de serialização.** Um sistema que processa majoritariamente payloads pequenos, mas ocasionalmente recebe payloads muito maiores, pode apresentar comportamento estável na média e, ainda assim, sofrer degradações abruptas sob cenários perfeitamente válidos do ponto de vista funcional. **Essa variabilidade cria caudas longas no tempo de resposta e amplifica o efeito de filas internas**, mesmo sem alterações perceptíveis na TPS.
+
+Idealmente, precisamos modelar sistemas e contratos que não sofram grande variação de tamanho. Quando isso não for possível, é necessário **estimar cada uma das funcionalidades de forma isolada** e se concentrar em encontrar alguma estatística que represente de maneira mais fiel o sistema diante de suas particularidades.
+
 
 <br>
 
-### Calculos de Estimativa de Carga
+### Cálculos de Estimativa de Carga
 
-Podemos estimar matematicamente nossa modelagem de carga com uma série de equações simples que podem ser aplicadas a dimensões já conhecidas do sistema, ou fornecidas por times de produto. E a seguir, iremos abordar como dispersar ainda mais a aplicação das mesmas em diversos cenários mais específicos. 
+Podemos estimar matematicamente nossa modelagem de carga com uma série de equações simples que podem ser aplicadas a dimensões já conhecidas do sistema ou fornecidas por times de produto. **A seguir, iremos abordar como expandir ainda mais a aplicação dessas equações em cenários mais específicos.**
+
 
 #### Estimativa de Transações por Segundo
 
-Quando falamos sobre [Performance, Capacidade e Escalabilidade](/performance-capacidade-escalabilidade/) já ressaltamos o quanto o throughput é uma métrica extremamente valiosa e importante para entender todo tipo de comportamento do sistema. Essa métrica é a primeira a precisar ser levantada porque conecta diretamente o comportamento do usuário à pressão exercida sobre a arquitetura. 
+Quando falamos sobre [Performance, Capacidade e Escalabilidade](/performance-capacidade-escalabilidade/), já ressaltamos o quanto o throughput é uma métrica extremamente valiosa e importante para entender todo tipo de comportamento do sistema. **Essa métrica é a primeira a precisar ser levantada porque conecta diretamente o comportamento do usuário à pressão exercida sobre a arquitetura.**
 
-Embora simples, o TPS deve ser interpretado como um valor estatístico médio, mínimo e maximo, e não como um fluxo contínuo e uniforme. Em sistemas reais, a taxa de chegada oscila ao longo do tempo, sofre efeitos de sincronização, burstiness e correlação entre usuários ou clientes. Levantar o desvio padrão do TPS também pode fornecer insights valiosos sobre a variação do mesmo ao decorrer de certos períodos.
+Embora simples, o TPS deve ser interpretado como um valor estatístico médio, mínimo e máximo, **e não como um fluxo contínuo e uniforme**. Em sistemas reais, a taxa de chegada oscila ao longo do tempo, sofre efeitos de sincronização, burstiness e correlação entre usuários ou clientes. **Levantar o desvio padrão do TPS também pode fornecer insights valiosos sobre a variação do mesmo ao decorrer de certos períodos.**
 
 \begin{equation}
 \text{TPS} = \frac{\text{Unidades de Trabalho Processadas no Período}}{\text{Tempo em Segundos do Período}}
 \end{equation}
 
-Na prática, esse valor costuma ser extraído de métricas sazonais de séries históricas, projeções de crescimento ou metas de negócio, e posteriormente ajustado para picos, sazonalidade e eventos especiais que podem acontecer em certos períodos do mês ou ano, como promoções, ações de marketing, black friday, Natal e etc.
+Na prática, esse valor costuma ser extraído de métricas sazonais de séries históricas, projeções de crescimento ou metas de negócio, e posteriormente ajustado para picos, sazonalidade e eventos especiais que podem acontecer em certos períodos do mês ou do ano, como promoções, ações de marketing, Black Friday, Natal, entre outros.
 
-#### TPS Sistemico 
 
-O TPS Sistêmico representa a capacidade efetiva de vazão de todo o sistema, considerando não apenas a aplicação principal, mas todas as suas dependências críticas. Em arquiteturas distribuídas, o throughput observado externamente é sempre limitado pelo menor gargalo ativo no caminho de processamento.
+#### TPS Sistêmico
+
+O **TPS Sistêmico representa a capacidade efetiva de vazão de todo o sistema**, considerando não apenas a aplicação principal, mas todas as suas dependências críticas. Em arquiteturas distribuídas, **o throughput observado externamente é sempre limitado pelo menor gargalo ativo no caminho de processamento**.
 
 \begin{equation}
 \text{TPS Sistêmico} =
-\min(\text{TPS App}, \text{TPS Database}, \text{TPS Cache}, \text{TPS etc...})
+\min(\text{TPS App}, \text{TPS Database}, \text{TPS Cache}, \text{TPS etc.})
 \end{equation}
 
-Não importa o quão escalável seja a camada de aplicação se o banco de dados, o cache, o broker de mensagens ou uma API externa impõem limites mais restritivos. Além disso, o gargalo dominante pode mudar dinamicamente conforme o perfil de carga, tamanho de payload ou tipo de operação
+Não importa o quão escalável seja a camada de aplicação se o banco de dados, o cache, o broker de mensagens ou uma API externa impõem limites mais restritivos. **Além disso, o gargalo dominante pode mudar dinamicamente conforme o perfil de carga, o tamanho de payload ou o tipo de operação.**
 
-#### Estimativa de tamanho de Payload 
+#### Estimativa de Tamanho de Payload
 
-A estimativa de tamanho de payload busca quantificar o volume médio de dados trafegados por requisição, considerando tanto o corpo da mensagem quanto o overhead de protocolos de transporte, como HTTP, TLS, mTLS e etc.
+A estimativa de tamanho de payload busca quantificar o volume médio de dados trafegados por requisição, considerando tanto o corpo da mensagem quanto o overhead de protocolos de transporte, como HTTP, TLS, mTLS, entre outros.
 
 \begin{equation}
-\text{Payload_bytes} = (\text{Body_bytes} + \text{Headers_bytes})
+\text{Payload\_bytes} = (\text{Body\_bytes} + \text{Headers\_bytes})
 \end{equation}
 
-Entretanto, em sistemas reais, é necessário considerar camadas adicionais de overhead como encoding, compressão, criptografia e framing de protocolo que podem tanto ampliar quanto reduzir o tamanho efetivamente trafegado. 
+Entretanto, em sistemas reais, é necessário considerar camadas adicionais de overhead, como encoding, compressão, criptografia e framing de protocolo, que podem tanto ampliar quanto reduzir o tamanho efetivamente trafegado.
 
 \begin{equation}
-\text{Payload_bytes} = (\text{Body_bytes} + \text{Headers_bytes}) \times \text{Overhead}
+\text{Payload\_bytes} = (\text{Body\_bytes} + \text{Headers\_bytes}) \times \text{Overhead}
 \end{equation}
 
-Mais importante do que o valor médio absoluto é a variabilidade do payload, pois payloads grandes tendem a amplificar latência, consumo de memória e tempo de processamento, criando caudas longas que afetam a estabilidade do sistema mesmo quando a média parece controlada.
+**Mais importante do que o valor médio absoluto é a variabilidade do payload**, pois payloads grandes tendem a **amplificar latência, consumo de memória e tempo de processamento**, criando **caudas longas que afetam a estabilidade do sistema**, mesmo quando a média parece controlada.
+
 
 #### Estimativa de Bytes de Uma Transação
 
-Enquanto o payload representa uma única mensagem, a estimativa de bytes por transação considera o custo completo de uma interação, incluindo request e response. Essa visão é mais adequada para análises de capacidade fim a fim e para estimativas de custo e banda sob carga real.
-
+Enquanto o payload representa uma única mensagem, a **estimativa de bytes por transação considera o custo completo de uma interação**, incluindo request e response. Essa visão é mais adequada para **análises de capacidade fim a fim** e para **estimativas de custo e banda sob carga real**.
 
 \begin{equation}
-\text{Payload_médio(bytes)} = \text{Request_payload} + \text{Response_payload}
+\text{Payload\_médio(bytes)} = \text{Request\_payload} + \text{Response\_payload}
 \end{equation}
 
-Essa métrica se torna especialmente relevante em APIs verbosas, fluxos com respostas ricas em dados ou sistemas onde o volume de resposta cresce com o contexto da operação. Ignorar o payload de resposta é um erro comum que pode fazer muita diferença para entender divergências das estimativas versus o tráfego real. 
+Essa métrica se torna especialmente relevante em **APIs verbosas**, fluxos com **respostas ricas em dados** ou sistemas onde o **volume de resposta cresce com o contexto da operação**. **Ignorar o payload de resposta é um erro comum** que pode fazer muita diferença para entender **divergências entre estimativas e o tráfego real**.
 
 #### Estimativa de Banda pelo Payload e Transações por Segundo
 
-A estimativa de banda conecta diretamente throughput lógico (TPS) com consumo físico de rede. A partir do payload médio por transação, é possível estimar o volume de dados trafegados por segundo e, consequentemente, dimensionar links, limites de ingress, e custos de transferência.
+A **estimativa de banda conecta diretamente o throughput lógico (TPS) com o consumo físico de rede**. A partir do payload médio por transação, é possível estimar o volume de dados trafegados por segundo e, consequentemente, **dimensionar links, limites de ingress e custos de transferência**.
 
 \begin{equation}
-\text{Banda_bytes/s} = \text{TPS} \times \text{Payload_médio(bytes)}
+\text{Banda\_bytes/s} = \text{TPS} \times \text{Payload\_médio(bytes)}
 \end{equation}
 
-Esse cálculo fornece uma aproximação inicial que deve ser refinada com fatores como retries, retransmissões, fan-out interno e replicação de tráfego entre zonas ou regiões.
+Esse cálculo fornece uma **aproximação inicial**, que deve ser refinada com fatores como **retries, retransmissões, fan-out interno e replicação de tráfego entre zonas ou regiões**.
+
 
 <br>
 
 
 ### Perfis de Tráfego
 
-#### Perfil Diário 
+Os Perfis de Tráfego permitem compreender como a carga do sistema se distribui ao longo do tempo, revelando padrões de uso, assimetrias e variações que não aparecem em métricas agregadas. Ao analisar comportamentos diários, semanais e sazonais, é possível antecipar picos previsíveis, identificar janelas de ociosidade e planejar capacidade de forma proativa, alinhando desempenho, custo e previsibilidade, vamos explorar conceitualmente cada um deles.
 
-O Perfil Diário busca estudar o comportamento de uso do sistema ao decorrer de um dia corrido, um período fechado de 24 horas. Normalmente está associado ao hábito e rotina dos usuários e os agendamentos das integrações sistêmicas. Aqui temos análises mais granulares com agregações de poucos minutos como 1, 2, 5 e 10 minutos para análises de tendência. Podemos aqui análisar diversas estatísticas como média, p95, p99, tempo máximo e mínimo da agregação dos requests.
+#### Perfil Diário
+
+O Perfil Diário busca estudar o comportamento de uso do sistema ao decorrer de um dia corrido, um período fechado de 24 horas. Normalmente, está associado aos hábitos e à rotina dos usuários e aos agendamentos das integrações sistêmicas. Aqui temos análises mais granulares, com agregações de poucos minutos, como 1, 2, 5 e 10 minutos, para análises de tendência. Podemos, aqui, analisar diversas estatísticas, como média, p95, p99, tempo máximo e mínimo da agregação dos requests.
 
 ![Perfil Diário](/assets/images/system-design/perfil-diario.png)
 
-Em sistemas com finalidade operacional voltados a usuários finais, podemos entender em que momento do dia eles começam a operar dentro do sistema, normalmente tendo sua maior pressão de tráfego dentro das janelas de expediente, aliviando nos horarios de almoço e ficando com pouco, ou nenhum tráfego durante noite e madrugada. Em sistemas de delivery de comida, podemos presumir os maiores picos de uso minutos ou horas antes dos horarios de almoço e jantar, sistemas de carona proximos do inicio e fim do expediente e em sistemas B2B ou internos, os picos tendem a se alinhar a rotinas operacionais, fechamentos de lote ou execuções agendadas.
+Em sistemas com finalidade operacional voltados a usuários finais, podemos entender em que momento do dia eles começam a operar dentro do sistema, normalmente tendo sua maior pressão de tráfego dentro das janelas de expediente, aliviando nos horários de almoço e ficando com pouco ou nenhum tráfego durante a noite e a madrugada. Em sistemas de delivery de comida, podemos presumir os maiores picos de uso minutos ou horas antes dos horários de almoço e jantar; em sistemas de carona, próximos do início e do fim do expediente; e, em sistemas B2B ou internos, os picos tendem a se alinhar a rotinas operacionais, fechamentos de lote ou execuções agendadas.
 
-Do ponto de vista de capacity planning, o perfil diário é crítico porque define a duração dos períodos de alta utilização e os de baixa utilização. Podemos utilizar esse tipo de estudo para entender os momentos do dia em que nosso tráfego irá aumentar de forma rotineira para ajustarmos preventivamente nosso capacity, ou quando o sistema ficará subutilizado. 
+Do ponto de vista de capacity planning, **o perfil diário é crítico porque define a duração dos períodos de alta e baixa utilização**. Podemos utilizar esse tipo de estudo para entender os momentos do dia em que nosso tráfego irá aumentar de forma rotineira, ajustando preventivamente nossa capacidade, ou quando o sistema ficará subutilizado.
 
 #### Perfil Semanal
 
-O Perfil semanaal busca entender padrões de carga que se repetem durante os dias da semana, num período de tempo de 7 dias, para encontrar assim padrões e desvios de uso, erros e latência distribuídos entre os 7 dias da semana fechada, utilizando agregações de tempo maiores como 1, 2, 3 e 5 horas, ainda utilizando estatísticas de média e percentis de forma comparativa para entender desvios e comportamentos do sistema. 
+O Perfil Semanal busca entender padrões de carga que se repetem durante os dias da semana, em um período de 7 dias, para encontrar padrões e desvios de uso, erros e latência distribuídos ao longo da semana. Para isso, utilizamos agregações de tempo maiores, como 1, 2, 3 e 5 horas, ainda aplicando estatísticas de média e percentis de forma comparativa para entender desvios e comportamentos do sistema.
 
 ![Perfil Semanal](/assets/images/system-design/perfil-semanal.png)
 
-Um sistema pode operar confortavelmente abaixo do ponto saudável durante boa parte da semana e, ainda assim, entrar em regiões de saturação previsível em dias específicos. Diferente do perfil diário, que tende a ser mais suave e previsível, o perfil semanal pode introduzir assimetrias abruptas, como segundas-feiras sistematicamente mais carregadas ou sextas-feiras com picos concentrados em horários específicos, uso mais suavizado durante o restante dos dias úteis e trafego baixo durante os finais de semana. 
+Um sistema pode operar confortavelmente abaixo do ponto saudável durante boa parte da semana e, ainda assim, entrar em regiões de saturação previsível em dias específicos. Diferente do perfil diário, que tende a ser mais suave e previsível, **o perfil semanal pode introduzir assimetrias abruptas**, como segundas-feiras sistematicamente mais carregadas ou sextas-feiras com picos concentrados em horários específicos, uso mais suavizado durante o restante dos dias úteis e tráfego baixo durante os finais de semana.
 
-Esse perfil é util para entender desvios de uso do sistema e nos ajuda a projetar capacidade com base em períodos repetitivos dentro de uma semana, nos proporcionando formas de realizar warm ups preventivos ou descomissionamento de containers ou servidores em períodos de ociosidade conhecida. 
+Esse perfil é **útil para entender desvios de uso do sistema** e nos ajuda a projetar capacidade com base em períodos repetitivos dentro de uma semana, nos proporcionando formas de realizar warm-ups preventivos ou descomissionamento de contêineres ou servidores em períodos de ociosidade conhecida.
 
 #### Perfil Sazonal
 
-O perfil sazonal descreve variações de carga em escalas mais longas como semanas, meses ou anos e está  normalmente associadas a ciclos de negócio, eventos externos ou mudanças de comportamento dos usuários. Esse tipo de dimensão nos ajuda a projetar diversas estratégias valiosas de capacity. Aqui a agregação pode ser feita de periodos maiores, como dias ou semanas. 
+O Perfil Sazonal descreve variações de carga em escalas mais longas, como semanas, meses ou anos, e está normalmente associado a ciclos de negócio, eventos externos ou mudanças de comportamento dos usuários. Esse tipo de dimensão nos ajuda a projetar diversas estratégias valiosas de capacity planning. Aqui, a agregação pode ser feita em períodos maiores, como dias ou semanas.
 
 ![Perfil Sazonal](/assets/images/system-design/perfil-sazonal.png)
 
-Essa estratégia nos permite estudar o crescimento gradativo do sistema, e como ele se comporta em periodos específicos de fatias de tempo maiores. Exemplos comuns incluem períodos promocionais, datas comemorativas, ciclos fiscais, eventos regulatórios ou mesmo fatores externos como clima e calendário escolar. Podemos atingir níveis de escalabilidade adequados analizando apenas periodos mensais ou semanais, mas podemos ainda assim sofrer com falhas de capacidade em determinados períodos não estacionários do ano que não estão no padrão encontrado em um "mês comum" ou "semana comum", por exemplo e-commerces em promoções de Black Friday, onde em uma semana específica de novembro excede todos os padrões encontrados no restante do ano. 
+Essa estratégia nos permite estudar o crescimento gradativo do sistema e como ele se comporta em períodos específicos de fatias de tempo maiores. Exemplos comuns incluem períodos promocionais, datas comemorativas, ciclos fiscais, eventos regulatórios ou mesmo fatores externos, como clima e calendário escolar. Podemos atingir níveis de escalabilidade adequados analisando apenas períodos mensais ou semanais, mas, ainda assim, sofrer falhas de capacidade em determinados períodos não estacionários do ano que não seguem o padrão de um “mês comum” ou “semana comum”, como, por exemplo, e-commerces durante promoções de Black Friday, onde uma semana específica de novembro excede todos os padrões observados no restante do ano.
 
-Combinando os perfis diários para análises mais granulares, semanais para encontrar tendências e sazonais a nível de mês e ano nos permitem elevar nossa capacidade de projetar e estimar o capacity de nossos sistemas durante longos períodos de forma totalmente profissional.  
+**A combinação dos perfis diários para análises granulares, semanais para identificação de tendências e sazonais em nível de mês e ano nos permite elevar significativamente nossa capacidade de projetar e estimar a capacidade dos sistemas ao longo de longos períodos de forma profissional e estruturada.**
 
 
 <br>
 
 ### Projeção de Crescimento
 
-A projeção de crescimento é um exercício de capacity planning onde a análise deixa de ser estática e adaptativa e passa a adotar estratégias de antecipação. Diferente do tópico anterior em que as estimativas buscavam entender o sistema e compreender seus comportamentos e tendências, a projeção busca responder uma pergunta um pouco mais difícil: como a carga do meu sistema será daqui 3, 6, 12 meses? 
+A projeção de crescimento é um exercício de capacity planning no qual a análise deixa de ser estática e reativa e passa a adotar estratégias de antecipação. Diferente do tópico anterior, em que as estimativas buscavam entender o sistema e compreender seus comportamentos e tendências, a projeção busca responder a uma pergunta um pouco mais difícil: **como a carga do meu sistema será daqui a 3, 6 ou 12 meses?**
 
-Responder esse tipo de pergunta visa uma análise temporal extensa do passado para entender o crescimento natural e também uma parceria com os times de negócio para entender as expectativas e perspectivas de mercado da empresa para os produtos. A missão da engenharia é suportar as expectativas dosm produtos de forma sustentável e realista, portanto as expectativas sobre futuro do sistema deve ser de comum conhecimento entre tecnologia e negócios.
+Responder a esse tipo de pergunta exige uma análise temporal extensa do passado para entender o crescimento natural e também uma parceria com os times de negócio para compreender as expectativas e perspectivas de mercado da empresa para os produtos. **A missão da engenharia é suportar as expectativas dos produtos de forma sustentável e realista**, portanto, as expectativas sobre o futuro do sistema devem ser de conhecimento comum entre tecnologia e negócios.
 
-#### Crescimento Linear 
+#### Crescimento Linear
 
 ![Crescimento Linear](/assets/images/system-design/crescimento-linear.png)
 
-O crescimento linear assume que métricas como TPS, volume de dados ou usuários ativos aumentam de forma proporcional ao tempo. O número de usuários, licenças, transações, compras aumentam com uma tendência parecida todos os meses ou semanas. A pequena variação dessa taxa, pra mais ou pra menos, não a caracteriza como "menos linear" nesse tipo de cenário. 
+O crescimento linear assume que métricas como TPS, volume de dados ou usuários ativos aumentam de forma proporcional ao tempo. O número de usuários, licenças, transações ou compras cresce seguindo uma tendência semelhante todos os meses ou semanas. **Pequenas variações dessa taxa, para mais ou para menos, não descaracterizam esse comportamento como linear** nesse tipo de cenário.
 
-Podemos encontrar esse cenário linear em estágios iniciais de um produtos ou em sistemas muito bem estabelecidos. Cenários opostos mas que que tem sua tendência de crescimento previsível e estável. Nesse tipo de análise, entendemos por inferência que, em linhas previsíveis, dobrar a quantidade de transações ou usuários de um sistema implica diretamente em dobrar a sua capacidade. 
-
+Podemos encontrar esse padrão em estágios iniciais de um produto ou em sistemas muito bem estabelecidos — cenários opostos, mas que compartilham uma tendência de crescimento previsível e estável. Nesse tipo de análise, entendemos, por inferência, que **dobrar a quantidade de transações ou usuários de um sistema implica diretamente em dobrar sua capacidade**.
 
 #### Crescimento Não Linear
 
 ![Crescimento Não Linear](/assets/images/system-design/crescimento-nao-linear.png)
 
-Em sistemas mais variáveis, o tráfego e capacidade raramente crescem de forma linear, podendo haver crescimento não previsível por tendências no sistema, por tempos se comportando de forma linear, exponencial ou desregulares em outros períodos. 
+Em sistemas mais variáveis, o tráfego e a capacidade raramente crescem de forma linear, podendo apresentar comportamentos não previsíveis ao longo do tempo, alternando períodos lineares, exponenciais ou irregulares.
 
-O crescimento não linear invalida análises de comportamento prévias. Esses cenários podem ocorrer por modificações de comportamento e novas funcionalidades, onde pequenas variações no número de usuários ou eventos podem gerar aumentos desproporcionais em TPS, latência ou concorrência interna. Esse tipo de variação também pode acontecer por testes de estratégias de marketing e negócios que proporcionam comportamentos imprevisíveis de novos usuários e carga no sistema. 
+O crescimento não linear tende a invalidar análises de comportamento prévias. Esses cenários podem ocorrer devido a mudanças de comportamento dos usuários ou à introdução de novas funcionalidades, onde **pequenas variações no número de usuários ou eventos podem gerar aumentos desproporcionais em TPS, latência ou concorrência interna**. Esse tipo de variação também pode ocorrer em função de testes de estratégias de marketing e negócios, que provocam comportamentos imprevisíveis de novos usuários e cargas no sistema.
 
-Crescimentos não lineares e não planejados podem ser muito perigosos para sistemas que operam proximo da sua taxa de processamento máxima conhecida. 
+**Crescimentos não lineares e não planejados podem ser extremamente perigosos para sistemas que operam próximos da sua taxa máxima de processamento conhecida.**
 
-#### Crescimento Mediante a Novas Features e Eventos de Negócio
+#### Crescimento Mediante Novas Features e Eventos de Negócio
 
 ![Crescimento Mudanças](/assets/images/system-design/crescimento-mudancas.png)
 
-Uma dimensão extremamente significativa que nos possibilita trabalhar junto aos times de negócio é a **projeção de crescimento mediante a mudanças, features e eventos planejados**. **A mudança de tráfego de um sistema pode mudar de forma brusca mediante a novas funcionalidades, migrações de usuários, campanhas de marketing de conversão e etc**. Ter esses eventos alinhados com os times responsáveis, nos da a oportunidade de **trabalhar de forma planejada e preventiva para suportar essa nova entrada de carga** de forma planejada. 
+Uma dimensão extremamente significativa que nos permite atuar em conjunto com os times de negócio é a **projeção de crescimento mediante mudanças, novas features e eventos planejados**. **O perfil de tráfego de um sistema pode se alterar de forma brusca com a introdução de novas funcionalidades, migrações de usuários ou campanhas de marketing de conversão**, entre outros fatores. Ter esses eventos alinhados com os times responsáveis nos dá a oportunidade de **trabalhar de forma planejada e preventiva para suportar essa nova entrada de carga**.
 
-Uma mudança ou evento de negócio voltado a **trazer mais usuários pro sistema, ou aumentar seu uso, pode modificaros ponteiros de taxa de processamento e aproximar o sistema de sua "curva do joelho" de performance e capacidade** com as features já existentes, e **adicionar uma nova funcionalidade pode multiplicar o número de chamadas internas por requisição, aumentar significativamente o payload médio ou introduzir dependências adicionais no fluxo sistêmico**. Realizar testes de carga contemplando as características das novas features é de extrema importância para reavaliar o capacity necessário para atendê-las da melhor forma. 
+Uma mudança ou evento de negócio voltado a **atrair mais usuários para o sistema ou aumentar sua taxa de uso pode deslocar os limites de processamento**, aproximando o sistema de sua **"curva do joelho" de performance e capacidade** com as funcionalidades já existentes. Além disso, **a adição de uma nova feature pode multiplicar o número de chamadas internas por requisição, aumentar significativamente o payload médio ou introduzir dependências adicionais no fluxo sistêmico**. Realizar testes de carga contemplando as características das novas funcionalidades é fundamental para reavaliar a capacidade necessária para atendê-las de forma adequada.
 
-Nem toda mudança ou feature precisa de um novo planejamento de capacidade nos mínimos detalhes, mas aquelas que realmente tem o **objetivo de mudar o comportamento do sistema como um todo, precisam sim ser levadas em conta para maior segurança**. Levantar as estimativas e expectativas com todos os participantes dessas mudanças são necessárias para planejamentos mais assertivos. 
+Nem toda mudança ou feature exige um novo planejamento de capacidade em nível de detalhe máximo, mas aquelas que têm o **objetivo explícito de alterar o comportamento do sistema como um todo precisam, sim, ser consideradas para garantir maior segurança**. **Levantar estimativas e expectativas com todos os envolvidos nessas mudanças é essencial para planejamentos mais assertivos.**
+
 
 <br>
 
 ### Capacidade End to End (E2E)
+
+Avaliar a capacidade End to End de um fluxo, sistema ou transação nos ajuda a tomar responsabilidade sobre o encadeamento total entre os serviços que os compõe. Avaliar todas as dependências e integrações, como a soma de todas as capacidades individuais, revela onde o fluxo se limita, onde os gargalos emergem e quais sistemas podem falhar sobre carga real. Precisamos avaliar tanto o Throughput Individual de cada sistema para ter uma margem de avaliação e o sistêmico, onde vamos avaliar como todos os "steps" se comportam em cadeia.  
 
 #### Throughput individual
 
@@ -339,79 +355,87 @@ O throughput individual representa a capacidade máxima sustentável de **um com
 
 ![Throughput individual](/assets/images/system-design/tput-individual.png)
 
-Essa dimensão pode ser avaliada em dois cenários, sendo um deles o contexto de um microserviço e suas dependências diretas como caches, filas e bancos de dados, onde a dimensão individual é avaliada dentro de um domínio de serviço, ou em cada micro componente. O primeiro cenário serve pra avaliar uma pequena fragmentação de negócio como "como quanto esse sistema de emissão de boletos consegue processar", e o segundo serve para responder "quanto esse banco de dados aguenta de I/O" e seus derivados. Ambas dão muitos insights valiosos sobre capacidade de produção. 
+Essa dimensão pode ser avaliada em dois cenários. No primeiro, considera-se o contexto de um microserviço e suas dependências diretas, como caches, filas e bancos de dados, onde a capacidade individual é avaliada dentro de um domínio de serviço. No segundo, a análise ocorre em cada microcomponente de forma isolada. O primeiro cenário serve para avaliar uma fragmentação específica de negócio, como “quanto esse sistema de emissão de boletos consegue processar”, enquanto o segundo responde perguntas como “quanto esse banco de dados suporta de I/O” e métricas derivadas. **Ambos fornecem insights valiosos sobre capacidade de produção.**
 
 #### Throughput sistêmico
 
-O throughput sistemico corresponde a capacidade máxima de um sistema ou funcionalidade contemplando todas as suas dependências.  O objetivo é ser agnóstico a capacidade individual de cada um dos seus componentes, levando em consideração somente a entrada até a resposta final. Essa estratégia serve para avaliar a capacidade total da solução e encontrar oportunidades de melhoria nos quesitos de filas e gargalos. 
+O throughput sistêmico corresponde à capacidade máxima de um sistema ou funcionalidade, contemplando todas as suas dependências. **O objetivo é ser agnóstico à capacidade individual de cada componente**, levando em consideração apenas o fluxo completo, da entrada até a resposta final. Essa estratégia serve para avaliar a capacidade total da solução e identificar oportunidades de melhoria relacionadas a filas e gargalos.
 
-![Throughput Sistemico](/assets/images/system-design/tput-sistemico.png)
+![Throughput Sistêmico](/assets/images/system-design/tput-sistemico.png)
 
-Em termos prático, o throughput sistêmico busca encontrar a divergência de equilíbrio entre taxa de chegada `(λ)` e taxa de processamento `(μ)` em cada hop do fluxo, buscando encontrar qual componente está excercendo maior pressão contrária ao fluxo fim a fim. Mesmo que serviços isolados operem com folga, o sistema como um todo pode apresentar throughput limitado quando a variabilidade de throughput e latência se acumulam durante a comunicação fim a fim.  
+Em termos práticos, o throughput sistêmico busca identificar o ponto de desequilíbrio entre a taxa de chegada `(λ)` e a taxa de processamento `(μ)` em cada hop do fluxo, determinando qual componente exerce maior pressão contrária ao processamento fim a fim. Mesmo que serviços isolados operem com folga, **o sistema como um todo pode apresentar throughput limitado quando a variabilidade de throughput e latência se acumula ao longo da comunicação end to end**.
 
-Do ponto de vista de capacity planning, medir throughput sistêmico implica observar o comportamento do sistema sob carga contínua, e não apenas picos instantâneos. Um sistema pode atingir um TPS elevado por curtos períodos e ainda assim não ser capaz de sustentar essa vazão ao longo do tempo, caracterizando uma capacidade apenas nominal, não operacional.
+Do ponto de vista de capacity planning, **medir throughput sistêmico implica observar o comportamento do sistema sob carga contínua**, e não apenas picos instantâneos. Um sistema pode atingir um TPS elevado por curtos períodos e, ainda assim, não ser capaz de sustentar essa vazão ao longo do tempo, caracterizando uma capacidade apenas nominal, e não operacional.
 
-#### Dependência do Gargalo 
+#### Dependência do Gargalo
 
 ![Gargalo](/assets/images/system-design/gargalo.png)
 
-Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/performance-capacidade-escalabilidade/), gargalos são "pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual". Se para completar uma transação eu preciso da reposta de 3 microserviços, onde um deles possui uma capacidade de processar de forma saudável 400 transações por segundo, outro 600 e outro pode processar uma maior taxa de 1000 transações, meu sistema é limitado a menor taxa de processamento, ou seja, 400 transações por segundo. Exceder essa taxa pode provocar filas sistemicas e gargalo entre os processos, threads e dependências desse ponto de gargalo que exerce pressão contrária ao fluxo da dos componentes da aplicação. 
+Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/performance-capacidade-escalabilidade/), gargalos são “pontos no sistema onde o desempenho ou a capacidade são limitados devido a um componente específico que não consegue lidar eficientemente com a carga atual”. Se, para completar uma transação, é necessária a resposta de três microserviços — onde um deles consegue processar de forma saudável `400` transações por segundo, outro `600` e outro `1000` — o sistema como um todo fica limitado à menor taxa de processamento, ou seja, `400` transações por segundo. **Exceder essa taxa tende a provocar filas sistêmicas e pressão crescente sobre processos, threads e dependências associadas ao ponto de gargalo**, impactando todo o fluxo da aplicação.
 
 \begin{equation}
-\text{Gargalo} = min(s1, s2, s3, ...)
+\text{Gargalo} = \min(s_1, s_2, s_3, \ldots)
 \end{equation}
 
-O gargalo atual do sistema é representado pelo componente ou processo com a menor taxa de processamento `(μ)` de todo o fluxo. Identificar essa dependência é importante para direcionar as melhorias de forma priorizada e estratégica. Como visto anteriormente, os gargalos também se movem com o tempo. Uma otimização pode gerar um gargalo em uma outra parte subsequente do sistema. 
+O gargalo atual do sistema é representado pelo componente ou processo com a menor taxa de processamento `(μ)` em todo o fluxo. **Identificar essa dependência é fundamental para direcionar melhorias de forma priorizada e estratégica.** Como visto anteriormente, os gargalos também se movem com o tempo: **uma otimização local pode simplesmente deslocar o gargalo para outra parte subsequente do sistema.**
+
 
 
 <br>
 
 # Planejamento de Capacidade
 
-O objetivo dessa sessão é fornecer um roteiro aplicável de planejamento de capacidade levando em conta a base teórica compliada durante esse capítulo. A partir daqui, vou fornecer uma "pseudo-estrutura" de um movimento de capacity planning para que seja criado um mapa mental adaptável para diversos cenários. 
+O objetivo desta seção é fornecer um roteiro aplicável de planejamento de capacidade, levando em conta a base teórica compilada ao longo deste capítulo. A partir daqui, apresento uma “pseudo-estrutura” de um movimento de capacity planning para que seja criado um mapa mental adaptável a diversos cenários.
 
-## Delimitar o Fluxo, Funcionalidades e Componentes. 
+## Delimitar o Fluxo, Funcionalidades e Componentes
 
-O primeiro passo a ser seguido, é definir qual fluxo sistemico está sendo avaliado. Testar "o sistema" pode levar a modelagens genéricas que não podem ser tão assertivas com a realidade esperada. Então identifique as funcionalidades, contratos, quais os métodos de entrada, quais os serviços envolvidos, quais os dados e quais as respostas e onde elas serão enviadas. 
+O primeiro passo a ser seguido é definir qual fluxo sistêmico está sendo avaliado. Testar “o sistema” como um todo pode levar a modelagens genéricas que não refletem com precisão a realidade esperada. Portanto, identifique as funcionalidades, os contratos, os métodos de entrada, os serviços envolvidos, os dados manipulados, as respostas geradas e para onde elas são enviadas.
 
-Nessa fase de levantamento precisamos listar todos os microserviços, quais seus databases, filas, tópicos, quais os fluxos sincronos, quais os fluxos assíncronos e como todos eles se comunicam entre si. sse passo estabelece o escopo do throughput sistêmico, evitando análises locais desconectadas da experiência real do usuário.
+Nessa fase de levantamento, precisamos listar todos os microserviços, seus bancos de dados, filas e tópicos, bem como identificar quais fluxos são síncronos, quais são assíncronos e como todos eles se comunicam entre si. **Esse passo estabelece o escopo do throughput sistêmico**, evitando análises locais desconectadas da experiência real do usuário.
 
+## Levantar as Estimativas de Carga
 
-## Levantar as Estimativa de Carga 
+Com o fluxo definido, o próximo passo é construir a carga base, utilizando exatamente as métricas discutidas anteriormente, como o TPS médio, os picos, os perfis diários e semanais, além das datas ou períodos sazonais que indicam mudanças de comportamento e o quanto essas variações podem ocorrer.
 
-Com o fluxo definido, o próximo passo é construir a carga base, utilizando exatamente as métricas que você apresentou anteriormente, como o TPS médio, picos, perfís diários, semanais e quais as datas ou períodos sazonais de mudança de comportamento e o quanto eles podem variar. 
+Devemos estimar os payloads, seus tamanhos e o volume de banda que irão trafegar durante os perfis levantados. Aqui também surge a oportunidade, caso ainda não esteja claro, de alinhar com os times de produto e de negócio quais são as variáveis esperadas de tempo de resposta e disponibilidade. **Tornar esses indicadores explícitos é um grande facilitador para avaliar se o capacity planning está efetivamente adequado**, ou se estamos subprovisionando ou exagerando em recursos ociosos.
 
-Estimar os payloads, quais seus tamanhos e o quanto de banda eles vão trafegar durante os perfis levantados. E aqui existe a oportunidade, caso não houver de forma clara, quais são as variáveis de tempo de resposta e disponibilidade necessárias com times de produto e de negócio. Tornar esses indicadores claros são grandes facilitadores para saber se nosso capacity planning está sendo de fato efetivo ou se estamos subprovisionando ou exagerando em recursos ociosos. 
+Neste ponto, **o objetivo não é precisão absoluta, mas ordem de grandeza**. O modelo inicial serve para responder à pergunta: “em que condições meu sistema opera hoje?”, evitando projeções desconexas ou irreais.
 
-Aqui, o objetivo não é precisão absoluta, mas ordem de grandeza. O modelo inicial serve para responder "em que condições meu sistema opera hoje?" para evitar projeções desconexas ou irreais.
+## Identificação do Throughput Individual dos Componentes e Serviços
 
-## Identificação do Throughput Individual dos Componentes e Serviços 
+Antes de projetar crescimento, é necessário entender os limites individuais de cada componente relevante do fluxo, identificando quais deles podem exercer pressão contrária, agravar gargalos ou gerar “curvas do joelho” de forma prematura, e, principalmente, em que condições isso acontece.
 
-Antes de projetar crescimento, é necessário entender os limites individuais de cada componente relevante do fluxo para encontrar qual deles pode exercer uma pressão contraria ou agravar gargalos e gerar "curvas do joelho" de forma precipitada, e principalmente encontrar em que condições isso acontece. 
+Aqui lidamos com variáveis como o TPS máximo sustentável do serviço, os limites de concorrência — threads, conexões e consumers disponíveis — e a capacidade efetiva de cada uma de suas dependências, como bancos de dados, caches, brokers e APIs externas. Dependências externas podem ser mockadas em ambientes controlados para que não comprometam testes de limite operacional do serviço.
 
-Aqui podemos lidar com variáveis como o tps máximo sustentável do serviço, quais os limites de concorrência como threads, conexões, consumers possuímos e qual a capacidade efetiva de cada uma de suas dependências como databases, caches, brokers e API's externas (recurso que pode ser mockado em ambiente controlado para que os mesmos não ofendam o teste de limite operacional do serviço).
+## Derivação do Throughput Sistêmico
 
-## Derivação do Throughput Sistemico 
+A partir dos throughputs individuais, deriva-se o throughput sistêmico, aplicando explicitamente a lógica do menor gargalo. **Aqui respondemos perguntas como:** qual componente limita a vazão hoje? O gargalo é rígido ou pode lidar com escalabilidade horizontal dentro de uma determinada janela de tempo? O throughput, o tempo de resposta e a taxa de erros variam de acordo com o tempo e com as oscilações de tráfego dentro dos perfis de carga identificados?
 
-A partir dos throughput individuais, deriva-se o throughput sistêmico, aplicando explicitamente a lógica do menor gargalo. Aqui respondemos perguntas como "Qual componente limita a vazão hoje?", meu gargalo é rígido ou pode lidar com escalabilidade horizontal dentro de uma janela de tempo? O throughput, tempo de resposta e taxa de erros mudam de acordo com o tempo, variação de tráfego dentro dos perfis de carga encontrados? 
+Essa etapa é uma das mais importantes do processo, pois **a capacidade real emerge do encadeamento entre os serviços**, e não da análise isolada de componentes.
 
-Essa etapa é a mais importante do processo, pois a real capacidade é encontrada durante o encadeamento entre os serviços. 
+## Levantamento da Projeção de Crescimento
 
-## Levantamento da Projeção de Crescimento 
+Com a capacidade atual compreendida, o planejamento passa a incorporar projeções, evitando o erro clássico de assumir um único crescimento linear. Nesse momento, é fundamental incluir os times de negócio e, quando necessário, níveis executivos, para entender as expectativas futuras do sistema.
 
-Com a capacidade atual compreendida, o planejamento passa a incorporar projeções, evitando o erro clássico de assumir crescimento linear único. Aqui podemos incluir times de negócio e até C-Levels para entender as projeções esperadas do sistema. O objetivo nesse passo não é medir com precisão o futuro, mas entender até qual ponto o sistema atual consegue suportar os objetivos da empresa e validar oportunidades de melhoria para o futuro planejado do sistema, evitando assim que essa evolução seja feita de forma reativa e com experiência já degradada dos clientes. 
+O objetivo aqui não é prever o futuro com precisão, mas **entender até que ponto o sistema atual consegue suportar os objetivos da empresa** e identificar oportunidades de melhoria para o horizonte planejado, evitando que a evolução ocorra de forma reativa, já com a experiência do cliente degradada.
 
-## Avaliar o Custo e Margens Operacionais
+## Avaliar o Custo e as Margens Operacionais
 
-Neste ponto, o planejamento incorpora explicitamente custo e risco. A pergunta deixa de ser “quanto aguenta” e passa a ser sobre o "quanto aguenta com previsibilidade e custo aceitável para o negócio?" Aqui trabalhamos com dimensões como o impacto de overprovisioning vs. underprovisioning e quais as regiões de operação do "Ponto Saudável" são aceitáveis em orçamento e como isso está em relação ao "pré joelho" de throughput e latência do sistema. Aqui a capacidade passa a ser tratada como orçamento, e não como máximo técnico.
+Neste ponto, o planejamento incorpora explicitamente custo e risco. A pergunta deixa de ser “quanto o sistema aguenta” e passa a ser **“quanto ele aguenta com previsibilidade e custo aceitável para o negócio”**. Trabalhamos com dimensões como o impacto de overprovisioning versus underprovisioning, quais regiões do “Ponto Saudável” são aceitáveis do ponto de vista orçamentário e como isso se relaciona com a zona de pré-joelho de throughput e latência do sistema.
 
-## Definição dos Limites Operacionais 
+Aqui, **a capacidade passa a ser tratada como orçamento**, e não apenas como um limite técnico.
 
-O resultado do capacity planning não deve ser um número único de "quanto aguenta", mas um conjunto de limites operacionais que já abordamos como o TPS Sustentável, o `L(Alvo)`, latência maxima aceitável em termos de média e percentís, taxa de erros máxima aceitável e principalmente tornar essas definições amplamente conhecidas entre os stakeholders do produto. Isso vai ajudar também um ponto de crescimento onde a reavaliação arquitetural será necessária novamente com todos, alinhando expectativas de orçamento e planejamento estratégico. 
+## Definição dos Limites Operacionais
+
+O resultado do capacity planning não deve ser um único número de “quanto aguenta”, mas sim um conjunto de limites operacionais bem definidos, como o TPS sustentável, o `L(Alvo)`, a latência máxima aceitável (em termos de média e percentis) e a taxa de erro máxima tolerável. **Essas definições precisam ser amplamente conhecidas entre os stakeholders do produto**, pois também ajudam a identificar pontos futuros onde uma reavaliação arquitetural será necessária, alinhando expectativas de orçamento e planejamento estratégico.
 
 ## Testes de Carga e Estresse
 
-O ultimo passo é avaliar de fato, se nosso sistema se compromete com os requisitos estabelecidos e se ele possui as devidas parametrizações para escalar de forma dinâmica e estática. Aqui precisamos executar testes de Average Load, Estresse, Spikes conhecidos e os testes de Breakpoint para encontrar onde o sistema ultrapassa o `L(Alvo)` e onde ele realmente quebra após atingi-lo. Esses testes podem ser executados de forma pontual, mas o ideal é que sejam efetuados durante longos períodos de tempo para avaliar um cenário proximo do que seria verdadeiro. Precisamos aqui tirar as evidências de tudo para documentar o real capacity, e em caso de gargalos e oportunidades de melhoria, direcioná-los ao backlog para tratativa e priorização. 
+O último passo é validar, na prática, se o sistema atende aos requisitos estabelecidos e se possui as parametrizações adequadas para escalar de forma dinâmica ou estática. Aqui, devemos executar testes de carga média (Average Load), estresse, spikes conhecidos e testes de breakpoint para identificar quando o sistema ultrapassa o `L(Alvo)` e onde ele efetivamente entra em colapso.
+
+Esses testes podem ser realizados de forma pontual, mas o ideal é que sejam executados por períodos prolongados, aproximando-se de cenários reais de operação. **É fundamental coletar evidências e documentar a capacidade real**, e, quando gargalos ou oportunidades de melhoria forem identificados, direcioná-los ao backlog para tratamento e priorização.
+
+<br>
 
 ### Referências 
 
@@ -430,3 +454,5 @@ O ultimo passo é avaliar de fato, se nosso sistema se compromete com os requisi
 [The “Knee” in Performance Testing: Where Throughput Meets the Wall](https://medium.com/@lahirukavikara/the-knee-in-performance-testing-where-throughput-meets-the-wall-904f90474346)
 
 [A Capacity Planning Process for Performance Assurance of Component-Based Distributed Systems](https://dl.acm.org/doi/epdf/10.1145/1958746.1958784)
+
+[Capacity Planner - Google](https://docs.cloud.google.com/capacity-planner/docs/overview)
