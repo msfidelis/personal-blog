@@ -73,7 +73,7 @@ De acordo com o cálculo no cenário hipotético, a utilização de memória do 
 
 ### Throughput, ou Tráfego
 
-O `Throughput`, de maneira geral, descreve o **número de operações que um sistema consegue realizar dentro de um determinado período de tempo**. Ele mede quantas unidades de trabalho (como transações ou requisições) um determinado sistema ou algoritmo pode processar por unidade de tempo, **como requisições por segundo, vendas por minuto, arquivos por dia ou eventos por mês**. É uma métrica fundamental para entender a capacidade e o desempenho de aplicações. **Em sistemas projetados para lidar com protocolos web, o Throughput é contabilizado a partir de quantas requisições HTTP a aplicação recebeu e respondeu**.
+O `Throughput`, de maneira geral, descreve o **número de operações que um sistema consegue realizar dentro de um determinado período de tempo**. Ele mede quantas unidades de trabalho (como transações ou requisições) um determinado sistema ou algoritmo pode processar por unidade de tempo, **como requisições por segundo, vendas por minuto, arquivos por dia ou eventos por mês**. É uma métrica de extrema importancia para entender a capacidade e o desempenho de aplicações. **Em sistemas projetados para lidar com protocolos web, o Throughput é contabilizado a partir de quantas requisições HTTP a aplicação recebeu e respondeu**.
 
 A fórmula utilizada para calcular o throughput pode ser representada matematicamente da seguinte forma:
 
