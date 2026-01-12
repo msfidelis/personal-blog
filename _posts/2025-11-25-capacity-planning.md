@@ -1,27 +1,21 @@
 ---
 layout: post
-image: assets/images/system-design/capa-event-source.png
+image: assets/images/system-design/capa-capacity.png
 author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering ]
-title: System Design - Dimensões de Capacity Planning
+title: System Design - Capacity Planning e Teoria das Filas
 ---
 
-Passei os ultimos 3 meses do ano de 2025 procurando modelos matemáticos para me guiar nos assuntos de capacity planning e performance para minha caixa de ferramentas. Aqui, guardo um compilado dos conceitos e fórmulas mais relevantes que encontrei. 
+Passei os ultimos 3 meses do ano de 2025 procurando modelos matemáticos para me guiar nos assuntos de capacity planning e performance para minha caixa de ferramentas. Aqui, guardo um compilado dos conceitos e fórmulas mais relevantes que encontrei. Rascunhei esse capítulo logo em seguida de uma das etapas mais intensas do meu mestrado, e seu resultado final foi uma linguagem muito mais densa e teórica que os anteriores, mas gostei muito do resultado. 
+
+Capacity planning não é sobre prever o futuro com precisão absoluta. É sobre entender os limites estruturais do sistema antes que eles se tornem incidentes. A maioria dos problemas de capacidade não surge de crescimento repentino, mas da incapacidade de interpretar o comportamento do sistema sob carga real. Métricas isoladas como CPU, memória ou TPS médio raramente contam a história completa. O que realmente importa é como esses sinais se relacionam, como a concorrência interna se acumula e onde os gargalos se formam quando a carga deixa de ser uniforme.
+
+Este texto não é um guia para dimensionar servidores. É uma abordagem sistemática para modelar carga, interpretar saturação e planejar crescimento de forma estruturada. A teoria das filas, a Lei de Little e a curva do joelho não são abstrações acadêmicas, são ferramentas práticas para responder perguntas como "quanto meu sistema aguenta de forma sustentável?" e "onde ele quebra antes de eu perceber?". O objetivo é transformar capacity planning de uma reação a incidentes em uma prática de engenharia preventiva e bem fundamentada.
+
 
 {% include latex.html %}
-
-# Planejamento de Capacidade
-
-Em termos práticos, operar continuamente próximo a 100% de utilização elimina qualquer margem para absorver variações naturais da carga, transformando flutuações normais em incidentes operacionais.
-
-- Capacidade como problema probabilístico, não determinístico
-- Diferença entre capacidade nominal, efetiva e sustentável
-- Planejamento defensivo vs. planejamento ofensivo
-- Capacidade como função de risco aceitável
-- Limitações históricas de estimativas baseadas apenas em médias
-
 
 <br>
 
@@ -158,6 +152,18 @@ Já o **Ponto Máximo de Utilização corresponde ao limite teórico em que o si
 
 <br>
 
+### Margens Seguras de Saturação 
+
+Quando olhamos recursos físicos com a ótica de capacity planning, como por exemplo em utilização de CPU, não devemos interpretar os mesmos com objetivo de maximização como prioridade, mas como um recurso finito com margens de proximidades instáveis. 
+
+Quando comparamos por exemplo, CPU e Memória com outros recursos como Largura de Banda, Armazenamento, IOP's, suas saturações não se manifestam de maneira linear e representam recursos definitivamente livres parar serem alocados como um "espaço disponível", e esse fenômeno pode ser interpretado através da Teoria das Filas. Pequenos aumentos de utilizações próximos de um "Ponto Saudável" de utilização de CPU provocam crescimento de filas de forma desproporcional, sem necessariamente que esses limites sejam 100% de utilização. 
+
+![Saturação de CPU](/assets/images/system-design/knee-cpu-usage.png)
+
+Os "Ponto Saudáveis" de CPU e Memória são zonas de utilização onde o sistema consegue absorver variações de carga como spikes, bursts, jitters sem exaurir a taxa de processamento `(μ)` ou aumentar o tempo de processamento `(W)` gerando filas e gargalos. O ponto central é: Não é necessário atingir 100% de CPU para que o sistema crie e inflacione filas internas. Próximo a 80–85% de utilização, incrementos marginais de carga já produzem aumentos desproporcionais em latência e concorrência interna, tornando o sistema altamente sensível a qualquer variabilidade adicional.
+
+<br>
+
 ## Modelagem de Carga
 
 A modelagem de carga é um dos principais requisitos para se estimar o capacity planning de um sistema. Dentro de ambientes modernos, possuimos diversas ferramentas de monitoramento e observabilidade que coletam sinais de **logs, métricas e traces emitidos pelas aplicações e seus componentes para gerar diversas dimensões de visualizações e alertas**. Quando vamos estimar a capacidade de um sistema, **precisamos análisar algumas delas de forma unificada e correlacionada**. **Transações por segundo**, **requests concorrentes** e o **payload médio** formam, em conjunto, uma representação fiel do comportamento real do que qualquer uma dessas métricas analisada de forma independente pode gerar. Juntas, essas três métricas formam a base mais sólida para uma modelagem de carga mais realista. **As Transações por Segundo descreve. o ritmo de solicitações**, a **concorrência descreve a pressão acumulada no sistema perante a chegada dessas solicitações**, e **tamanho do payload descreve o peso individual de cada transação** a nível de networking, storage, peso de serialização e memória.
@@ -249,14 +255,6 @@ A estimativa de banda conecta diretamente throughput lógico (TPS) com consumo f
 \end{equation}
 
 Esse cálculo fornece uma aproximação inicial que deve ser refinada com fatores como retries, retransmissões, fan-out interno e replicação de tráfego entre zonas ou regiões.
-
-<br>
-
-### Distribuição Estatística da Carga
-- Cargas uniformes e poissonianas
-- Cargas bursty e heavy-tailed
-- Impacto das caudas longas em filas e latência
-- Correlação temporal e efeitos acumulativos
 
 <br>
 
@@ -365,17 +363,6 @@ Como discutido no capítulo sobre [performance, capacidade e escalabilidade](/pe
 
 O gargalo atual do sistema é representado pelo componente ou processo com a menor taxa de processamento `(μ)` de todo o fluxo. Identificar essa dependência é importante para direcionar as melhorias de forma priorizada e estratégica. Como visto anteriormente, os gargalos também se movem com o tempo. Uma otimização pode gerar um gargalo em uma outra parte subsequente do sistema. 
 
-<br>
-
-
-
-## Custos e Trade-offs de Capacidade
-### Custo por Transação
-- Custo marginal vs. custo médio
-- Elasticidade e eficiência econômica
-- Impacto do overprovisioning e underprovisioning
-- Custo por Transação
-
 
 <br>
 
@@ -421,6 +408,10 @@ Neste ponto, o planejamento incorpora explicitamente custo e risco. A pergunta d
 ## Definição dos Limites Operacionais 
 
 O resultado do capacity planning não deve ser um número único de "quanto aguenta", mas um conjunto de limites operacionais que já abordamos como o TPS Sustentável, o `L(Alvo)`, latência maxima aceitável em termos de média e percentís, taxa de erros máxima aceitável e principalmente tornar essas definições amplamente conhecidas entre os stakeholders do produto. Isso vai ajudar também um ponto de crescimento onde a reavaliação arquitetural será necessária novamente com todos, alinhando expectativas de orçamento e planejamento estratégico. 
+
+## Testes de Carga e Estresse
+
+O ultimo passo é avaliar de fato, se nosso sistema se compromete com os requisitos estabelecidos e se ele possui as devidas parametrizações para escalar de forma dinâmica e estática. Aqui precisamos executar testes de Average Load, Estresse, Spikes conhecidos e os testes de Breakpoint para encontrar onde o sistema ultrapassa o `L(Alvo)` e onde ele realmente quebra após atingi-lo. Esses testes podem ser executados de forma pontual, mas o ideal é que sejam efetuados durante longos períodos de tempo para avaliar um cenário proximo do que seria verdadeiro. Precisamos aqui tirar as evidências de tudo para documentar o real capacity, e em caso de gargalos e oportunidades de melhoria, direcioná-los ao backlog para tratativa e priorização. 
 
 ### Referências 
 
