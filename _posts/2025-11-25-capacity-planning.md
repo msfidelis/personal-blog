@@ -13,7 +13,7 @@ title: System Design - Capacity Planning e a Teoria das Filas
 
 Passei os últimos 3 meses do ano de 2025 procurando modelos matemáticos para me guiar nos assuntos de capacity planning e performance para minha caixa de ferramentas. Aqui, guardo um compilado dos conceitos e fórmulas mais relevantes que encontrei. Rascunhei este capítulo logo em seguida a uma das etapas mais intensas do meu mestrado, e seu resultado final foi uma linguagem muito mais densa e teórica do que os anteriores, mas gostei muito do resultado.
 
-**Este texto não é um guia para dimensionar servidores.** É uma abordagem sistemática para modelar carga, interpretar saturação e planejar crescimento de forma estruturada. A teoria das filas, a Lei de Little e a curva do joelho não são abstrações acadêmicas, são ferramentas práticas para responder perguntas como "quanto meu sistema aguenta de forma sustentável?" e "onde ele quebra antes de eu perceber?". **O objetivo é transformar capacity planning de uma reação a incidentes em uma prática de engenharia preventiva e bem fundamentada.**
+**Este texto não é um guia para dimensionar servidores.** É uma abordagem sistemática para modelar carga, interpretar saturação e planejar crescimento de forma estruturada. A teoria das filas, a Lei de Little e a curva do joelho não são apenas abstrações acadêmicas, são ferramentas práticas para responder perguntas como "quanto meu sistema aguenta de forma sustentável?" e "onde ele quebra antes de eu perceber?". **O objetivo é transformar capacity planning de uma reação a incidentes em uma prática de engenharia preventiva e bem fundamentada.**
 
 
 
