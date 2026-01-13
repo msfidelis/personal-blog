@@ -8,9 +8,32 @@ categories: [ system-design, engineering ]
 title: System Design - O Sumário e o Prefácio (Comece por aqui)
 ---
 
-# Prefácio
+# Prefácio 
 
-> Em breve
+### Dissolver e Coagular: O conhecimento de uma vida, até agora...
+
+Desde sempre, eu me considero uma pessoa de sorte dentro da área de tecnologia. Tive a sorte de poder contar com muita gente boa no meu caminho. Pessoas que confiaram em mim (até mais do que eu mesmo) para estar no lugar certo e aproveitar as melhores oportunidades de encarar desafios sistêmicos que, na maioria dos casos, eu nem estava preparado. **Não tenho palavras para descrever como todas essas pessoas e desafios me moldaram e me prepararam para ser quem eu sempre quis ser (até agora).** E este livro é, de muitas formas, uma homenagem a todas elas.
+
+Este livro é uma tentativa de **compilar o conhecimento de uma vida. Da minha vida até agora**. Não como um repositório definitivo, nem como um manifesto fechado, mas como um recorte sincero do que foi possível compreender até determinado ponto da minha caminhada.
+
+**Dissolver e coagular.** É um movimento que se repete ao longo de toda uma vida dedicada a aprender, errar, reaprender e compartilhar. Dissolver certezas antigas. Coagular ideias mais maduras. Desmontar modelos que já não explicam o mundo. Reconstruir estruturas mais honestas, mais simples e, sobretudo, mais verdadeiras. Desde o meu primeiro blogpost em 2013. Desde o meu primeiro commit de algo útil em produção. 
+
+Nesse caminho, aprendi que **carregar demais atrasa**. Ideias acumuladas pesam. E todo o conhecimento compilado aqui é a minha forma de esvaziar as malas com tudo o que foi acumulado até agora, para poder ir mais rápido daqui pra frente. E, sinceramente, eu estou muito curioso para saber que tipo de coisas vou colocar nelas agora.
+
+Aqui, eu te prometo **convicções fortes**, mas ainda mais **dúvidas abertas** e **muitas imperfeições assumidas**. E isso é intencional. Conhecimento precisa ser vivo e honesto. Esses capítulos falam de escolhas, de limites, de responsabilidade, de consequências e, acima de tudo, de pessoas. **De você principalmente.**
+
+Não pretendo te ensinar verdades absolutas, nem oferecer atalhos fáceis (muito pelo contrário, eu acho...). É um convite para entender tecnologia por “baixo do capô”, termo usado nas primeiras turmas do treinamento de System Design, e um convite à reflexão e ao diálogo sobre como cada coisa realmente funciona em essência e que problemas elas de fato resolvem. **Um registro honesto do que foi aprendido até aqui e uma declaração aberta da minha ansiedade pelo quanto ainda há para aprender.** E espero, do fundo do meu coração, despertar isso em você.
+
+Há mais de um século, alguém cometeu o “terrível crime” de afirmar ao mundo que **todo homem e toda mulher são, por si, estrelas**. Cada um em sua totalidade e plenitude. Todos possuem direito a um céu para brilhar. Refleti sobre essa frase por muito tempo. Com o passar dos anos, percebi que minha verdadeira vontade não está apenas em fazer a minha própria estrela brilhar, mas em **descobrir formas de permitir que a estrela do próximo também encontre sua própria luz**. Compartilhar conhecimento é, para mim, um ato de alinhamento com esse propósito. 
+
+Entrego a você, algo que vem da minha alma. Algo sincero. Uma parte de mim. Cada palavra aqui, eu coloquei cuidado e carinho. Relendo esses textos pra escrever esse prefácio, posso afirmar com siceridade que eu escrevi o livro que eu sempre quis ler.
+
+Todos esses artigos são minha mais genuína forma de rebeldia pra gerar o mais alto nível de conhecimento livre e gratuito na minha lingua materna que eu fui capaz (até o momento). Coisas que não existiam compiladas e ilustradas com linguagem acessível pra todos (até o momento). Espero que seja uma semente. Mais uma... 
+ 
+
+> Palavras emocionais demais pra um livro técnico, eu sei... Vou corrigir isso a seguir. Te desejo boa sorte... 
+
+<br>
 
 # Sumário 
 
