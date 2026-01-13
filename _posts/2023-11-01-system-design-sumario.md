@@ -20,7 +20,7 @@ Este livro é uma tentativa de **compilar o conhecimento de uma vida. Da minha v
 
 Nesse caminho, aprendi que **carregar demais atrasa**. Ideias acumuladas pesam. E todo o conhecimento compilado aqui é a minha forma de esvaziar as malas com tudo o que foi acumulado até agora, para poder ir mais rápido daqui pra frente. E, sinceramente, eu estou muito curioso para saber que tipo de coisas vou colocar nelas daqui em diante.
 
-Aqui, eu te prometo **convicções fortes**, mas ainda mais **dúvidas abertas** e **muitas imperfeições assumidas**. E isso é intencional. Conhecimento precisa ser vivo e honesto. Esses capítulos falam de escolhas, de limites, de responsabilidade, de consequências e, acima de tudo, de pessoas. **De você principalmente.**
+Aqui, eu te prometo **convicções fortes** de alguma forma, mas ainda mais **dúvidas abertas** e **muitas imperfeições assumidas**. E isso é intencional. Conhecimento precisa ser vivo e honesto, próprio pra ser adaptado pra diversas realidades e necessidadades diferentes do mundo real. Esses capítulos falam de escolhas, de limites, de responsabilidade, de consequências e, acima de tudo, de pessoas. **De você principalmente.**
 
 Não pretendo te ensinar verdades absolutas, nem oferecer atalhos fáceis (muito pelo contrário, eu acho...). É um convite para entender tecnologias e conceitos por “baixo do capô”, termo usado nas primeiras turmas do treinamento de System Design, e um convite à reflexão e ao diálogo sobre como cada coisa realmente funciona em essência e que problemas elas de fato resolvem. **Um registro honesto do que foi aprendido até aqui e uma declaração aberta da minha ansiedade pelo quanto ainda há para aprender.** E espero, do fundo do meu coração, despertar isso em você.
 
