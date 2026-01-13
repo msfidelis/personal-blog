@@ -12,7 +12,7 @@ title: System Design - O Sumário e o Prefácio (Comece por aqui)
 
 ### Dissolver e Coagular: O conhecimento de uma vida, até agora...
 
-Desde sempre, eu me considero uma pessoa de sorte dentro da área de tecnologia. Tive a sorte de poder contar com muita gente boa no meu caminho. Pessoas que confiaram em mim (até mais do que eu mesmo) para estar no lugar certo e aproveitar as melhores oportunidades de encarar desafios sistêmicos e pessoais que, na maioria dos casos, eu nem estava preparado. **Não tenho palavras para descrever como todas essas pessoas e desafios me moldaram e me prepararam para ser quem eu sempre quis ser (até agora).** Pessoas que hoje orgulhosamente posso chamar de amigos, e família. E este livro é, de muitas formas, uma homenagem a todas elas. 
+Desde sempre, eu me considero uma pessoa de sorte dentro da área de tecnologia. Tive a sorte de poder contar com muita gente boa no meu caminho. Pessoas que confiaram em mim (até mais do que eu mesmo) para estar no lugar certo e aproveitar as melhores oportunidades de encarar os mais variados desafios sistêmicos e pessoais que, na maioria dos casos, eu nem estava preparado. **Não tenho palavras para descrever como todas essas pessoas e desafios me moldaram e me prepararam para ser quem eu sempre quis ser (até agora).** Pessoas que hoje orgulhosamente posso chamar de amigos, e família. E este livro é, de muitas formas, uma homenagem a todas elas. 
 
 Este livro é uma tentativa de **compilar o conhecimento de uma vida. Da minha vida. Até agora.** Não como um repositório definitivo, nem como um manifesto fechado, mas como um recorte sincero do que foi possível compreender até determinado ponto da minha caminhada.
 
