@@ -18,7 +18,7 @@ Este livro é uma tentativa de **compilar o conhecimento de uma vida. Da minha v
 
 **Dissolver e coagular.** É um movimento que se repete ao longo de toda uma vida dedicada a aprender, errar, reaprender e compartilhar. Dissolver certezas antigas. Coagular ideias mais maduras. Desmontar modelos que já não explicam o mundo. Reconstruir estruturas mais honestas, mais simples e, sobretudo, mais verdadeiras. Desde o meu primeiro blogpost em 2013. Desde o meu primeiro commit de algo útil em produção. 
 
-Nesse caminho, aprendi que **carregar demais atrasa**. Ideias acumuladas pesam. E todo o conhecimento compilado aqui é a minha forma de esvaziar as malas com tudo o que foi acumulado até agora, para poder ir mais rápido daqui pra frente. E, sinceramente, eu estou muito curioso para saber que tipo de coisas vou colocar nelas agora.
+Nesse caminho, aprendi que **carregar demais atrasa**. Ideias acumuladas pesam. E todo o conhecimento compilado aqui é a minha forma de esvaziar as malas com tudo o que foi acumulado até agora, para poder ir mais rápido daqui pra frente. E, sinceramente, eu estou muito curioso para saber que tipo de coisas vou colocar nelas daqui em diante.
 
 Aqui, eu te prometo **convicções fortes**, mas ainda mais **dúvidas abertas** e **muitas imperfeições assumidas**. E isso é intencional. Conhecimento precisa ser vivo e honesto. Esses capítulos falam de escolhas, de limites, de responsabilidade, de consequências e, acima de tudo, de pessoas. **De você principalmente.**
 
