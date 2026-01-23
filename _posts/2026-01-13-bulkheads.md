@@ -21,6 +21,8 @@ O termo Bulkhead tem sua origem na engenharia naval. Dentro dela, bulkheads são
 
 ## Bulkheads e a Arquitetura de Software 
 
+![Bulkhead Tradicional](/assets/images/system-design/bulkhead-tradicional.png)
+
 O Bulkhead Pattern é um padrão de design de resiliência aplicado em microsserviços que tem como objetivo isolar falhas e impedir que um problema em um componente derrube todo o sistema, e na arquitetura de software, um bulkhead representa uma separação explicita e delimitada de recursos e de destino de execução de transação. A ideia é segregar pools de recursos específicos para evitar que a saturação ou falha de um componente afete outros domínios ou segmentações de clientes de todo o sistema. 
 
 O bulkhead pode ser aplicado em diferentes dimensões, como pools de thread, filas, tópicos, pools de conexão, bandos de dados, VM's, containers, clusters ou shards. Se dois fluxos compartilham os mesmos recursos, as mesmas conexões ou databases, os mesmos não possuem bulkheads, pois a falha de um fluxo inevitávelmente se propaga para os outros. 
@@ -31,13 +33,19 @@ O bulkhead pode ser aplicado em diferentes dimensões, como pools de thread, fil
 
 Bulkheads podem ser implementados em diferentes níveis da arquitetura, mas todos compartilham o mesmo objetivo: impedir que a saturação de um recurso consuma a capacidade global do sistema. A implementação correta exige clareza sobre quais recursos são finitos e como eles devem ser particionados.
 
+![Contenção](/assets/images/system-design/Scale-Bulkhead-Falhas.png)
+
 ## Recursos Lógicos
 
 Bulkheads lógicos atuam sobre recursos de execução e concorrência, como threads, filas, conexões e limites de requisição. São os mais comuns e, ao mesmo tempo, os mais frequentemente mal implementados. Um exemplo é o uso de thread pools dedicados para diferentes tipos de operação. Sem bulkhead, uma operação lenta ou bloqueante pode consumir todas as threads disponíveis e gerando gargalos e filas internas, acarretando em uma saturação e problemas de performance. Com pools dedicados, a falha fica confinada ao fluxo que a originou. Outro exemplo são filas e tópicos independentes por domínio, evitando que um pico de mensagens em um fluxo impeça o processamento de eventos críticos em outro.
 
 ## Recursos Físicos 
 
+![Bulkhead Fisico](/assets/images/system-design/bulkhead-types.png)
+
 Bulkheads físicos envolvem a separação concreta de infraestrutura, como nós, instâncias, zonas de disponibilidade ou até regiões. Aqui, o isolamento deixa de ser apenas lógico e passa a ser estrutural. Por exemplo, alocar workloads críticos e não críticos nos mesmos nós de um cluster cria um shared fate implícito. A saturação de CPU ou memória por um workload pode derrubar todos os outros. Separar esses workloads em pools de nós distintos cria um bulkhead físico que protege o sistema como um todo. Esse tipo de isolamento é mais caro, mas fornece garantias mais fortes, especialmente em sistemas de alta criticidade.
+
+![Bulkhead Cluster](/assets/images/system-design/bulkhead-cluster.png)
 
 ## Bulkheads em Camadas Diferentes da Arquitetura
 
@@ -47,7 +55,11 @@ Bulkheads físicos envolvem a separação concreta de infraestrutura, como nós,
 
 ## Sharding Funcional 
 
+![Sharding Funcional](/assets/images/system-design/bulkhead-funcional.png)
+
 ## Sharding Operacional 
+
+![Sharding Operacional](/assets/images/system-design/bulkhead-operacional.png)
 
 <br>
 
@@ -77,3 +89,5 @@ Esse problema é especialmente crítico em plataformas SaaS e ambientes multi-te
 [Building a fault tolerant architecture with a Bulkhead Pattern on AWS App Mesh](https://aws.amazon.com/blogs/containers/building-a-fault-tolerant-architecture-with-a-bulkhead-pattern-on-aws-app-mesh/)
 
 [Bulkhead Pattern](https://www.geeksforgeeks.org/system-design/bulkhead-pattern/)
+
+[Failsafe - Bulkhead Go](https://failsafe-go.dev/bulkhead/)
