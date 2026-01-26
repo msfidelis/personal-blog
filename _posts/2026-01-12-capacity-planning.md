@@ -162,7 +162,7 @@ Quando comparamos, por exemplo, CPU e memória com outros recursos como largura 
 
 ![Saturação de CPU](/assets/images/system-design/knee-cpu-usage.png)
 
-Os **"Pontos Saudáveis" de CPU e memória** são zonas de utilização onde o sistema consegue absorver variações de carga, como spikes, bursts e jitters, sem exaurir a taxa de processamento `(μ)` ou aumentar o tempo de processamento `(W)`, evitando a geração de filas e gargalos. **O ponto central é que não é necessário atingir 100% de CPU para que o sistema crie e inflacione filas internas.** Próximo de **80–85% de utilização**, incrementos marginais de carga já produzem aumentos desproporcionais em latência e conco
+Os **"Pontos Saudáveis" de CPU e memória** são zonas de utilização onde o sistema consegue absorver variações de carga, como spikes, bursts e jitters, sem exaurir a taxa de processamento `(μ)` ou aumentar o tempo de processamento `(W)`, evitando a geração de filas e gargalos. **O ponto central é que não é necessário atingir 100% de CPU para que o sistema crie e inflacione filas internas.** Próximo de **80–85% de utilização**, incrementos marginais de carga já produzem aumentos desproporcionais em latência e concorrência. 
 
 
 <br>
