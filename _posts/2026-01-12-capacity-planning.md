@@ -162,7 +162,7 @@ Quando comparamos, por exemplo, CPU e memória com outros recursos como largura 
 
 ![Saturação de CPU](/assets/images/system-design/knee-cpu-usage.png)
 
-Os **"Pontos Saudáveis" de CPU e memória** são zonas de utilização onde o sistema consegue absorver variações de carga, como spikes, bursts e jitters, sem exaurir a taxa de processamento `(μ)` ou aumentar o tempo de processamento `(W)`, evitando a geração de filas e gargalos. **O ponto central é que não é necessário atingir 100% de CPU para que o sistema crie e inflacione filas internas.** Próximo de **80–85% de utilização**, incrementos marginais de carga já produzem aumentos desproporcionais em latência e conco
+Os **"Pontos Saudáveis" de CPU e memória** são zonas de utilização onde o sistema consegue absorver variações de carga, como spikes, bursts e jitters, sem exaurir a taxa de processamento `(μ)` ou aumentar o tempo de processamento `(W)`, evitando a geração de filas e gargalos. **O ponto central é que não é necessário atingir 100% de CPU para que o sistema crie e inflacione filas internas.** Próximo de **80–85% de utilização**, incrementos marginais de carga já produzem aumentos desproporcionais em latência e concorrência. 
 
 
 <br>
@@ -281,7 +281,7 @@ O Perfil Diário busca estudar o comportamento de uso do sistema ao decorrer de 
 
 ![Perfil Diário](/assets/images/system-design/perfil-diario.png)
 
-Em sistemas com finalidade operacional voltados a usuários finais, **podemos entender em que momento do dia eles começam a operar dentro do sistema**, normalmente tendo sua maior pressão de **tráfego dentro das janelas de expediente**, aliviando nos horários de almoço e ficando com pouco ou nenhum tráfego durante a noite e a madrugada. Em sistemas de delivery de comida, **podemos presumir os maiores picos de uso minutos ou horas antes dos horários de almoço e jantar**; em sistemas de carona, **próximos do início e do fim do expediente**; e, em sistemas B2B ou internos, os picos tendem a se alinhar a** rotinas operacionais, fechamentos de lote ou execuções agendadas**.
+Em sistemas com finalidade operacional voltados a usuários finais, **podemos entender em que momento do dia eles começam a operar dentro do sistema**, normalmente tendo sua maior pressão de **tráfego dentro das janelas de expediente**, aliviando nos horários de almoço e ficando com pouco ou nenhum tráfego durante a noite e a madrugada. Em sistemas de delivery de comida, **podemos presumir os maiores picos de uso minutos ou horas antes dos horários de almoço e jantar**; em sistemas de carona, **próximos do início e do fim do expediente**; e, em sistemas B2B ou internos, os picos tendem a se alinhar a **rotinas operacionais, fechamentos de lote ou execuções agendadas**.
 
 Do ponto de vista de capacity planning, **o perfil diário é crítico porque define a duração dos períodos de alta e baixa utilização**. Podemos utilizar esse tipo de estudo para entender os **momentos do dia em que nosso tráfego irá aumentar de forma rotineira**, ajustando preventivamente nossa capacidade, ou quando o sistema ficará subutilizado.
 
