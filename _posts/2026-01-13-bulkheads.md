@@ -8,6 +8,10 @@ categories: [ system-design, engineering ]
 title: System Design - Bulkhead Pattern
 ---
 
+O Termo "Bulkhead" foi amplamente discutido em vários capitulos desta série de artigos, e o objetivo deste é ilustrar as nuancias focadas nesse pattern em sua totalidade. Quando discutimos bulkheads, discutimos uma ampla gama de implementações e possibilidades, desde as mais internas a nível de runtimes quanto a amplas aplicações arquiteturais e segmentações de operações e clientes. 
+
+O objetivo desse artigo é ilustrar as principais capacidades desse tipo de pattern, e que tipo de vantagens e desvantagens em discussão. 
+
 
 # Definindo Bulkheads 
 
@@ -63,13 +67,34 @@ No dia a dia, isso aparece de forma clara em clusters Kubernetes, ambientes de v
 
 Bulkheads físicos surgem como resposta a esse tipo de risco. Separar workloads críticos em pools de nós dedicados, usar clusters distintos para domínios com SLOs incompatíveis ou até isolar componentes por região são decisões que aumentam custo, mas reduzem drasticamente o blast radius.
 
-## Bulkheads em Camadas Diferentes da Arquitetura
+
+## Distribuição de Bulkheads e Blast Radiusm
+
+A forma como shards são definidos, roteados e balanceados determina, de maneira explícita, o tamanho do blast radius, o comportamento sob sobrecarga e a previsibilidade da degradação. Em arquiteturas avançadas, sharding deixa de ser um detalhe de armazenamento ou roteamento e passa a ser um mecanismo primário de isolamento operacional.
+
+Cada shard representa, na prática, um bulkhead completo ou parcial. Ele possui capacidade própria, limites próprios e uma curva de degradação própria. A distribuição correta desses shards permite transformar falhas sistêmicas em falhas estatisticamente localizadas. Um pico extremo deixa de ser um evento binário de “o sistema caiu”, e passa a ser um evento probabilístico “X% do sistema foi impactado”.
+
+| Bulkheads | Blast Radius | Disponibilidade | Impacto     |
+|--------: |-------------:|----------------:|-------------|
+| 1       | 100%         | 0%              | Total       |
+| 2       | 50%          | 50%             | Muito alto  |
+| 3       | 33%          | 66%             | Alto        |
+| 5       | 20%          | 80%             | Moderado    |
+| 10      | 10%          | 90%             | Moderado    |
+| 20      | 5%           | 95%             | Baixo       |
+| 50      | 2%           | 98%             | Muito Baixo |
+| 100     | 1%           | 99%             | Mínimo      |
+
+
+Quanto maior o número de shards, menor o blast radius, mas maior a complexidade operacional. O ponto central não é apenas quantos shards existem, mas como o tráfego é distribuído entre eles. Distribuições mal balanceadas, chaves de particionamento enviesadas ou algoritmos de roteamento instáveis podem concentrar carga excessiva em poucos shards, anulando completamente o efeito do bulkhead.
 
 <br>
 
 # Bulkheads e Shardings 
 
 Sharding é uma das formas mais poderosas e perigosas de implementar bulkheads. Quando bem aplicado, oferece isolamento estrutural, e quando mal projetado, cria acoplamentos invisíveis que só se manifestam sob estresse e acabam não impedindo a propagação de falha de um recurso isolado. Aqui precisamos segregar todos os recursos fisicos que podem compor o bulkhead, como balanceadores de carga, aplicações, bancos de dados, tópicos, filas e afins e criar réplicas literais dedicadas apenas para aquele bulkhead, de forma que os fluxos iniciados em uma segmentação do bulkhead permaneça no mesmo até o fim da execução, e assim não ofereça risco de performance e disponibilidade por conta de saturação de uso daquela partição específica do sistema. Outros bulkheads devem estar aptos para executar as mesmas funções porém com capacidade isolada para outros tipos de públicos e operações. 
+
+Eles são especialmente relevantes para **lidar com comportamentos não lineares de sistemas sob carga crescente**. Em regimes próximos à saturação, pequenas variações de tráfego podem provocar aumentos desproporcionais de latência, consumo de memória, lock contention ou pressão sobre o scheduler. Sem bulkheads, esse comportamento não linear tende a se espalhar por todo o sistema, criando um efeito dominó onde fluxos originalmente saudáveis passam a degradar por compartilharem os mesmos recursos finitos. Tratá-los como complemento a alternativas de sharding, tendem a sanar e elevar os níveis de performance e disponibilidade. 
 
 ## Sharding Funcional 
 
@@ -81,6 +106,11 @@ Por exemplo, separar processamento de pagamentos, consultas e relatórios em sha
 É razoavelmente comum segregar bulkheads específicos para operações transacionais e just-in-time e uma separação dedicada para processamento de lotes e batches. Inserir uma quantidade gigante de processos em repouso para concorrer com fluxos que possuem SLO's e contratos de tempos de resposta e disponibilidade transacionais podem acabar gerando saturação e ofendendo os indicadores, desse modo podemos ter infraestrutura dedicada dentro do possível para direcionar as solicitações em batch ou de sincronização agendadas de outros domínios e parceiros e outra segregada para as operações convencionais do sistema. 
 
 Outra estratégia é ter infraestrutura dedicada para diversas prioridades de processamento do mesmo tipo de transação, tendo formas de dedicar capacidade exclusiva para transações prioritárias, normais e de baixa prioridade, de forma que se em caso de um spike ou burst de solicitações normais ou de baixa prioridade chegem ao sistema, não comprometam as solicitações enviadas para o bulkhead de alta prioridade. 
+
+## Noisy Neighbor e Bulkheads 
+
+O problema do "noisy neighbor", ou vizinho barulhento, surge quando múltiplos tenants compartilham os mesmos recursos físicos e lógicos e o comportamento de um impacta negativamente os demais. Sem bulkheads, basta um tenant com desvio de comportamento e saturação acima do previsto para degradar toda a plataforma.
+Esse problema é especialmente crítico em plataformas SaaS e ambientes multi-tenant de alta escala. 
 
 ## Sharding Operacional 
 
@@ -99,25 +129,6 @@ Podemos ter replicas inteiras de toda a infraestrutura dedicada para cada um dos
 
 No mundo real, é comum observar plataformas que isolam dados, mas compartilham integralmente threads, filas e infraestrutura. O resultado é que um único cliente com comportamento anômalo pode comprometer toda a experiência da plataforma. Bulkheads por tenant transformam esse risco em um problema localizado, onde a degradação é previsível, mensurável e, principalmente, negociável do ponto de vista de negócio.
 
-### Noisy Neighbor
-
-O problema do "noisy neighbor", ou vizinho barulhento, surge quando múltiplos tenants compartilham os mesmos recursos físicos e lógicos e o comportamento de um impacta negativamente os demais. Sem bulkheads, basta um tenant com desvio de comportamento e saturação acima do previsto para degradar toda a plataforma.
-Esse problema é especialmente crítico em plataformas SaaS e ambientes multi-tenant de alta escala. 
-
-<br>
-
-# Distribuição de Bulkheads 
-
-| Bulkheads | Blast Radius | Disponibilidade | Impacto     |
-|--------: |-------------:|----------------:|-------------|
-| 1       | 100%         | 0%              | Total       |
-| 2       | 50%          | 50%             | Muito alto  |
-| 3       | 33%          | 66%             | Alto        |
-| 5       | 20%          | 80%             | Moderado    |
-| 10      | 10%          | 90%             | Moderado    |
-| 20      | 5%           | 95%             | Baixo       |
-| 50      | 2%           | 98%             | Muito Baixo |
-| 100     | 1%           | 99%             | Mínimo      |
 
 
 <br>
