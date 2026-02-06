@@ -63,7 +63,7 @@ Espero que sua caminhada seja proveitosa e divertida. Obrigado pela confiança. 
 * [22. Patterns de Resiliência (Idempotencia, Circuit Breakers, Retries, Fallbacks, Timeouts e etc)](/resiliencia/)
 * [23. Monitoramento e Observabilidade (em breve)]()
 * [24. Confiabilidade de Sistemas (em breve)]()
-* [25. Bulkhead Pattern (Em Breve)]()
+* [25. Bulkhead Pattern](/bulkheads/)
 * [26. Cell Based Pattern (Em Breve)]()
 * [27. Modelos de Deployment (Blue/Green, Canary, Feature Toggles e etc)](/deployment-strategies/)
 * [28. Capacity Planning e Teoria das Filas](/capacity-planning/)
