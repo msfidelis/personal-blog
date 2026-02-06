@@ -109,7 +109,7 @@ Eles são especialmente relevantes para **lidar com comportamentos não lineares
 
 ## Bulkheads de Sharding Funcional 
 
-**No sharding funcional, o sistema é dividido por domínio de negócio**. Cada shard atende a um conjunto específico de funcionalidades, com recursos próprios e limites bem definidos.  
+**No sharding funcional, o sistema ou domínio de negócio é dividido por funcionalidades e padrões de uso**. Cada shard atende a um conjunto específico de funcionalidades, com recursos próprios e limites bem definidos.  
 Por exemplo, separar processamento de pagamentos, consultas e relatórios em shards distintos evita que um pico analítico degrade operações críticas de transação. **Aqui, o bulkhead é alinhado ao valor de negócio**.
 
 ![Sharding Funcional](/assets/images/system-design/bulkhead-funcional.png)
