@@ -8,9 +8,13 @@ categories: [ system-design, engineering ]
 title: System Design - Cell-Based Architecture
 ---
 
-A arquitetura celulas é um tema particilarmente especial pra mim, olhando para o próximo passo de sistemas distribuídos de ambientes criticos, o tema é particularmente fascinante. 
+A arquitetura celular é um tema particilarmente especial pra mim, olhando para o próximo passo de sistemas distribuídos de ambientes criticos, o tema é particularmente fascinante. 
 
-A arquitetura celular é o tema da minha pesquisa de mestrado, e depois de bastante tempo tentando consolidar o tema academicamente.  Fui introduzido ao termo há ao menos 4 anos anteriores a escrita desse texto através de uma iniciativa interna da empresa na qual trabalho como uma proposta de alavancar os níveis de alta disponibilidade, e quando fui confrontado pelo tema da minha pesquisa de mestrado, tive a ideia de alavancar um conceito emergente de mercado academicamente. Baita desafio. Precisei consolidar conceitos já firmados como replicação, bulkheads, isolamento de falhas e demais tecnologias cloud native para sustentar o termo. Esse texto se baseia em uma alternativa mais legal, e menos formal de abordar o tema. 
+Esse foi o tema da minha pesquisa de mestrado, e depois de bastante tempo tentando consolidar o tema academicamente, decidi que tenho material o suficiente pra compor mais um capitulo dessa série de artigos com o tema.  
+
+Fui introduzido ao conceito há pelo menos 4 anos antes da escrita desse texto através de uma iniciativa interna da empresa na qual trabalho como uma proposta de alavancar os níveis de alta disponibilidad. Quando fui confrontado por "qual seria o tema da minha pesquisa de mestrado", tive a ideia de alavancar um conceito emergente de mercado academicamente, e Arquitetura Celular e seus arredores serviram como uma luva. Baita desafio. Precisei consolidar conceitos já firmados em mercado e academia como replicação, bulkheads, isolamento de falhas e demais tecnologias cloud native para sustentar o termo. 
+
+Esse texto se baseia em uma alternativa mais legal, e menos formal de abordar o tema. 
 
 <br>
 
