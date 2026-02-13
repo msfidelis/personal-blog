@@ -8,7 +8,7 @@ categories: [ system-design, engineering ]
 title: System Design - Cell-Based Architecture
 ---
 
-A arquitetura celular é um tema particilarmente especial pra mim, olhando para o próximo passo de sistemas distribuídos de ambientes criticos, o tema é particularmente fascinante. 
+A arquitetura celular é um tema particularmente especial pra mim, olhando para o próximo passo de sistemas distribuídos de ambientes criticos, o tema é particularmente fascinante. 
 
 Esse foi o tema da minha pesquisa de mestrado, e depois de bastante tempo tentando consolidar o tema academicamente, decidi que tenho material o suficiente pra compor mais um capitulo dessa série de artigos com o tema.  
 
