@@ -1,0 +1,28 @@
+sequenceDiagram
+    autonumber
+    participant C as Client
+    participant G as Cell Gateway
+    participant TM as Coordinator (2PC)
+    participant A as Cell A (Active)
+    participant B as Cell B (Passive)
+
+    C->>G: POST /command (customerId=123123)
+    G->>TM: Begin tx(customerId=123123)
+
+    TM->>A: PREPARE(txId, customerId=123123, payload)
+    A-->>TM: VOTE_COMMIT
+
+    TM->>B: PREPARE(txId, customerId=123123, payload)
+    B-->>TM: VOTE_COMMIT
+
+    alt All VOTE_COMMIT
+        TM->>A: COMMIT(txId)
+        TM->>B: COMMIT(txId)
+        TM-->>G: 200 OK
+        G-->>C: 200 OK
+    else Any failure/timeout
+        TM->>A: ABORT(txId)
+        TM->>B: ABORT(txId)
+        TM-->>G: Error
+        G-->>C: Error
+    end
