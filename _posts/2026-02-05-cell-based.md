@@ -46,6 +46,28 @@ O princípio fundamental é que toda requisição deve ser roteada para uma cél
 
 ## Células e segmentação de carga
 
+A segmentação de carga na Arquitetura Celular é uma decisão estrutural de como os dados serão divididos e replicados entre as celulas. Isso vai muito além de um particionamento horizontal de de dispersar throughput entre vários estanques isolados de capacidade. Em arquiteturas tradicionais, o [load balancer]() distribui requisições de maneira estatística através de vários algoritmos como round robin, least connection e afins, mas o estado permanece logicamente compartilhado. Já em uma arquitetura celular, a segmentação é determinística e vinculada a uma chave de negócio estável, podendo ser tratado de forma cadastral e mapeamento intencional, ou distribuído estatisticamente através de algoritmos de hashing e hashing consistente. Isso significa que cada célula absorve um subconjunto fixo e deterministico da carga total, e essa distribuição não varia dinamicamente conforme a pressão momentânea do sistema.
+
+## Células Sincronas 
+
+No contexto síncrono, o roteamento ocorre no caminho crítico da requisição. HTTP, gRPC ou mesmo protocolos binários proprietários são direcionados para uma célula específica antes da execução do fluxo transacional.
+
+![HTTP Layer](/assets/images/system-design/cell-http-layer.png)
+
+Aqui presumimos um gateway de borda que recebe todas as requisições de domínio. Esse gateway tem a função de atuar como um proxy de encaminhamento inteligente, como um roteador que sabe identificar deterministicamente através de chaves conhecidas como ids de clientes, tennants, usuários e direcionar para a celula, ou conjunto de celulas correspondente. Esse mecanismo de roteamento e proxy pode operar baseado em DNS, Hashing Consistente, Roteamento via Service Mesh ou de forma cadastral consultando fontes externas para determinar onde o cliente será direcionado. 
+
+Em cenários síncronos, a latência da célula é diretamente percebida pelo usuário. Portanto, cada célula deve ser dimensionada como unidade autônoma de performance. CPU, memória, conexões de banco, thread pools e limites de rate limiting devem ser configurados por célula, não globalmente. Cada celula precisa ser seu capacity isolado e independente. 
+
+
+## Células Assincronas
+
+Quando entramos no domínio assíncrono, a arquitetura celular assume ainda mais capacidade e estratégia de desacoplamento estrutural. Em cenários de arquitetura celular que são acionadas por eventos em tópicos ou mensagens em filas, cada celula consome apenas as mensagens e eventos pertencentes a seu contexto. 
+
+![Async Layer](/assets/images/system-design/cell-async-layer.png)
+
+Podemos presumir um consumidor de borda que consome alguma fila ou tópico de domínio e republica as mensagens ou eventos para tópicos e filas segmentados da celula, atuando como um filtro roteador da mensagem em contexto para sua celula específica, que por sua vez só conhece seus próprios mecanismos de mensageria. A consequência é a eliminação do acoplamento temporal entre células. Uma célula pode atrasar processamento, sofrer backpressure ou mesmo ficar indisponível sem bloquear o restante do sistema.
+
+
 <br>
 
 # Replicação Celular
@@ -92,6 +114,8 @@ A principal característica da arquitetura celular, quando combinada com replica
 Como vimos no exemplo dos Bulkheads, se uma carga de trabalho é distribuída igualmente entre 10 shards e uma delas falha, 90% dos usuários ou recursos permanecem operacionais e inalterados. Quando confrontamos com a proposta da Arquitetura Celular com replicacão.
 
 A literatura clássica de sistemas distribuídos mostra que a replicação é um mecanismo chave para garantir disponibilidade e continuidade operacional, permitindo que o sistema mantenha o serviço mesmo diante de falhas de nós ou partições de rede. 
+
+Do ponto de vista matemático, se temos N células e roteamento uniforme por hashing consistente, cada célula tende a absorver aproximadamente 1/N da carga total. Isso permite modelar blast radius como função direta da cardinalidade de células.
 
 Do ponto de vista conceitual, células podem ser compreendidas como domínios de falha isolados, alinhados ao padrão arquitetural de bulkheads, cujo objetivo é compartimentalizar o impacto de incidentes. Quando trabalhamos com a replicação celular, e temos a capacidade de redirecionar nossos clientes para celulas passivas para o dado do mesmo, conseguimos adicionais ainda mais camadas de disponibilidade na experiência do cliente. 
 
