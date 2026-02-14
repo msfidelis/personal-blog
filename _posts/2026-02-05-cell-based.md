@@ -84,9 +84,9 @@ Esse foi o tema da minha pesquisa de mestrado, e depois de bastante tempo tentan
 
 ![HTTP Layer](/assets/images/system-design/cell-http-layer.png)
 
-**Aqui presumimos um gateway de borda que recebe todas as requisições de domínio.** Esse gateway tem a função de atuar como um proxy de encaminhamento inteligente, como um roteador que sabe identificar deterministicamente, através de chaves conhecidas como ids de clientes, tenants, usuários, e direcionar para a célula, ou conjunto de células correspondente. Esse mecanismo de roteamento e proxy pode operar baseado em DNS, Hashing Consistente, roteamento via Service Mesh ou de forma cadastral, consultando fontes externas para determinar onde o cliente será direcionado. 
+**Aqui presumimos um gateway de borda que recebe todas as requisições de domínio.** Esse gateway tem a função de atuar como um proxy de encaminhamento inteligente, como um roteador que sabe identificar deterministicamente, através de **chaves conhecidas como ids de clientes, tenants, usuários, e direcionar para a célula, ou conjunto de células correspondente**. Esse mecanismo de roteamento e proxy pode operar baseado em DNS, Hashing Consistente, roteamento via Service Mesh ou de forma cadastral, consultando fontes externas para determinar onde o cliente será direcionado. 
 
-**Em cenários síncronos, a latência da célula é diretamente percebida pelo usuário.** Portanto, cada célula deve ser dimensionada como unidade autônoma de performance. CPU, memória, conexões de banco, thread pools e limites de rate limiting devem ser configurados por célula, não globalmente. Cada célula precisa ter sua capacity isolada e independente.  
+**Em cenários síncronos, a latência da célula é diretamente percebida pelo usuário.** Portanto, **cada célula deve ser dimensionada como unidade autônoma de performance**. CPU, memória, conexões de banco, thread pools e limites de rate limiting devem ser configurados por célula, não globalmente. Cada célula precisa ter sua capacity isolada e independente.  
 
 
 
