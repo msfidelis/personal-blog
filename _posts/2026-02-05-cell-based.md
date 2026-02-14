@@ -98,7 +98,7 @@ Esse foi o tema da minha pesquisa de mestrado, e depois de bastante tempo tentan
 
 **Podemos presumir um consumidor de borda que consome alguma fila ou tópico de domínio e republica as mensagens ou eventos para tópicos e filas segmentados da célula, atuando como um filtro roteador da mensagem em contexto para sua célula específica, que por sua vez só conhece seus próprios mecanismos de mensageria.** 
 
-**A consequência é a eliminação do acoplamento temporal entre células.** Uma célula pode atrasar processamento, sofrer backpressure ou mesmo ficar indisponível sem bloquear o restante do sistema. Ao segmentar tópicos e filas por célula, eliminamos o risco de backpressure global. Uma célula pode acumular backlog sem afetar a taxa de processamento das demais.
+**A consequência é a eliminação do acoplamento temporal entre células.** Uma célula pode atrasar processamento, sofrer backpressure ou mesmo ficar indisponível sem bloquear o restante do sistema. Ao segmentar tópicos e filas por célula, eliminamos o risco de backpressure global. **Uma célula pode acumular backlog sem afetar a taxa de processamento das demais.**
 
 
 
