@@ -168,7 +168,7 @@ Esse foi o tema da minha pesquisa de mestrado, e depois de bastante tempo tentan
 
 A literatura clássica de sistemas distribuídos mostra que a replicação é um mecanismo-chave para garantir disponibilidade e continuidade operacional, permitindo que o sistema mantenha o serviço mesmo diante de falhas de nós ou partições de rede. 
 
-**Do ponto de vista conceitual, células podem ser compreendidas como domínios de falha isolados, alinhados ao padrão arquitetural de bulkheads, cujo objetivo é compartimentalizar o impacto de incidentes.** Quando trabalhamos com a replicação celular e temos a capacidade de redirecionar nossos clientes para células passivas que contenham seus dados, conseguimos adicionar ainda mais camadas de disponibilidade na experiência do cliente. O impacto de uma partição indisponível deixa de ser a métrica estatística apropriada, pois um shard indisponível pode ser suprido por sua versão passiva. Nesse caso, em níveis de replicação, passamos a estimar o impacto a partir de um conjunto maior de células indisponíveis, trabalhando com a probabilidade de um cliente estar alocado no conjunto todo que falhou. 
+**Do ponto de vista conceitual, células podem ser compreendidas como domínios de falha isolados, alinhados ao padrão arquitetural de bulkheads, cujo objetivo é compartimentalizar o impacto de incidentes.** Quando trabalhamos com a replicação celular e temos a capacidade de redirecionar nossos clientes para células passivas que contenham seus dados, conseguimos adicionar ainda mais camadas de disponibilidade na experiência do cliente. O impacto de uma partição indisponível deixa de ser a métrica estatística apropriada, pois um shard indisponível pode ser suprido por sua versão passiva. Nesse caso, em níveis de replicação, passamos a estimar o impacto a partir de um conjunto maior de células indisponíveis, trabalhando com a **probabilidade de um cliente estar alocado no conjunto todo que falhou.** 
 
 O cálculo se baseia em células em status de falha (f) dividido pelo número total de células (N), elevado ao número de réplicas virtuais (k) do Shuffle Sharding. 
 
@@ -176,7 +176,7 @@ O cálculo se baseia em células em status de falha (f) dividido pelo número to
 P(\text{impacto}) \approx \left( \frac{f}{N} \right)^k
 \end{equation}
 
-Em exemplo, presumindo que trabalhamos com 20 células, 2 réplicas em shuffle, onde o mesmo dado de um cliente é alocado em 2 células, em caso de downtime de 2 células aleatórias, conseguimos calcular a probabilidade de um mesmo cliente estar alocado justamente nessas 2 células; nesse caso, 1% de probabilidade. Comparado ao exemplo dos bulkheads, onde para ter 1% de impacto determinístico, precisaríamos de 100 bulkheads ou shards computacionais para ter o mesmo resultado de 20 células com fator de replicação de 2. 
+Em exemplo, presumindo que trabalhamos com 20 células, 2 réplicas em shuffle, onde o mesmo dado de um cliente é alocado em 2 células, em caso de downtime de 2 células aleatórias, conseguimos calcular a probabilidade de um mesmo cliente estar alocado justamente nessas 2 células. **Nesse caso, 1% de probabilidade. Comparado ao exemplo dos bulkheads, onde para ter 1% de impacto determinístico, precisaríamos de 100 bulkheads ou shards computacionais para ter o mesmo resultado de 20 células com fator de replicação de 2**. 
 
 \begin{equation}
 P(\text{impacto}) \approx \left( \frac{2}{20} \right)^2
