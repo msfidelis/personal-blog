@@ -16,11 +16,13 @@ Fui introduzido ao conceito há pelo menos 4 anos antes da escrita desse texto a
 
 Esse texto se baseia em uma alternativa mais legal, e menos formal de abordar o tema. 
 
+{% include latex.html %}
+
 <br>
 
 # Definindo a Arquitetura Celular
 
-O modelo de Arquitetura Celular é um modelo de arquitetura descentralizada onde as capacidades de uma organização são estruturadas em uma rede de células independentes e auto-contidas, como uma evolução do que entendemos pelo [Bulkhead Pattern](/bulkheads).
+O modelo de Arquitetura Celular é um modelo de arquitetura descentralizada onde as capacidades de uma organização são estruturadas em uma rede de células independentes e auto-contidas, como uma evolução do que entendemos pelo [Bulkhead Pattern](/bulkheads). Uma distinção importante que vale reforçar é que a Arquitetura Celular não é simplesmente uma técnica de particionamento horizontal sofisticado, ela é um pattern avançado na forma como modelamos domínios de falha.
 
 O conceito que conecta os bulkheads a arquitetura celular em sistemas complexos é a proposta de criar fronteiras de isolamento de falhas, garantindo que o impacto de um erro seja restrito a um número limitado de componentes, sem afetar o restante do ecossistema, com o adicional de componentes de replicação de dados entre células para conter ainda mais o escopo de uma eventual falha isolada. 
 
@@ -28,9 +30,15 @@ O conceito que conecta os bulkheads a arquitetura celular em sistemas complexos 
 
 # Unidades Celulares 
 
+Uma célula não é apenas um agrupamento técnico de serviços. Ela representa uma segmentação arquitetural explícita. Essa segmentação deve existir em múltiplas dimensões simultaneamente, como segmentacão de  de execução (capacidade computacional e capacidade de escalabilidade horizontal isolada e autocontida, segmentação de persistência, isolando databases independentes, segmentação de observabilidade isolando métricas, logs e traces segmentados por contextos celulares, segmentação de deploy, possuindo pipelines complexas de deployment para atualizar celulas sem impacto direto ao seu público e segmentação de falha, onde temos blast radius mensuráveis e segmentadas. 
+
+O compartilhamento de componentes globais como filas, tópicos, caches e databases compartulhados invalidam esse isolamento. Caso exista a necessidade, por exemplo tópicos de comando e resposta por domínio e API Gateways centralizados, eles devem ser intermediados por outros componentes celulares de borda. 
+
 ## Dimensão estrutural de uma celula
 
 Uma célula é um compilado de um ou mais componentes (microsserviços, funções, databases, gateways, etc.) agrupados desde o design até a implementação e implantação. Estruturalmente, ela possui as características de isolamento e independência, onde cada celula, ou conjunto de celulas, é responsável por atender uma parcela determinada do publico de forma autocontida, e toda comunicação externa deve ocorrer obrigatoriamente através de um gateway de borda ou proxy, que expõe APIs, eventos ou streams de dados. 
+
+![Estrutura Celular](/assets/images/system-design/cell-estrutura.png)
 
 Os componentes internos comunicam-se de forma contínua intra-celular, enquanto dependências externas são mediadas pelo gateway da célula. Os componentes internos da celula só podem conhecer e se comunicar com componentes da propria célula, nunca de outra. Cada célula possui um nome e um identificador de versão único, facilitando o gerenciamento de dependências no ecossistema distribuído e resiliente. 
 
@@ -38,7 +46,9 @@ Os componentes internos comunicam-se de forma contínua intra-celular, enquanto 
 
 Uma característica deterministica da implementação da arquitetura celular, é que as células não compartilham estado com outras células de forma primária, apenas por replicação passiva. Em termos de persistência, uma célula pode conter seus próprios clusters de bancos de dados relacionais, sistemas de arquivos locais ou repositórios de dados necessários para cumprir sua função de negócio. 
 
-Cada unidade é independente e lida com um subconjunto específico das requisições totais do sistema, e pode ter unidades passivas que assumem a liderança dos dados replicados em caso de falha da celula principal. 
+Cada unidade é independente e lida com um subconjunto específico das requisições totais do sistema, e pode ter unidades passivas que assumem a liderança dos dados replicados em caso de falha da celula principal. No mais, cada celula deve possuir seus próprios microserviços, seus próprios bancos de dados, camadas de cache, consumidores de filas e eventos e demais componentes que forma que sejam autocontidas e independentes entre si. 
+
+Esse modelo permite inclusive estratégias diferenciadas por célula. Uma célula pode operar com parâmetros de tuning diferentes, versões distintas de runtime ou até estratégias experimentais de feature rollout sem impactar o restante do ecossistema. Podemos isolar clientes de teste, pilotos e publicos sintéticos para experimentação antes de propagar versões para as demais celulas produtivas. 
 
 <br>
 
@@ -46,11 +56,21 @@ Cada unidade é independente e lida com um subconjunto específico das requisiç
 
 O princípio fundamental é que toda requisição deve ser roteada para uma célula específica com base em uma chave estável, como customerId, accountId ou tenantId. Esse roteamento pode ocorrer em múltiplas camadas: DNS, API Gateway, proxies de borda ou service mesh.
 
-É fundamental que o algoritmo de roteamento seja determinístico, garantindo que requisições relacionadas ao mesmo estado sempre atinjam a mesma célula ativa. Em cenários de failover, o roteador deve ser capaz de redirecionar para a célula passiva correspondente sem que o cliente perceba a transição.
+É fundamental que o algoritmo de roteamento seja determinístico, garantindo que requisições relacionadas ao mesmo estado sempre atinjam a mesma célula ativa. Em cenários de failover, o roteador deve ser capaz de redirecionar para a célula passiva correspondente sem que o cliente perceba a transição. Se um cliente hoje está na célula X, amanhã ele deve continuar na célula X, independentemente de picos de tráfego. Mudanças no algoritmo de hashing ou no número de células devem ser cuidadosamente orquestradas, pois podem causar remapeamento massivo (rehash storm).
+
+## Edge Cells - Celulas de Borda
+
+A camada de roteamento que intercepta as comunicações dos clientes e realiza o redirecionamento para a celula, ou grupo de celulas correto, é conhecida como "Edge Cells", ou "Celulas de Borda", uma camada de roteamento inteligente que deve ser capaz de realizar de forma mais performática possível a interceptacão das solicitações, sejam elas vindas de qualquer protocólo conhecido e redirecionar de maneira correta para a celula disponível responsável por atender a solicitacão. 
+
+É preferível que esta camada seja o mais stateless possível, mas é possível que a mesma mantenha um estado cadastral em alguma camada de dados adicional.  Aqui vamos além de um proxy basico como um Nginx, Envoy e Haproxy, é uma aplicação inteligente e agnóstica para uso celular que deve ser capaz de absorver alto tráfego e gerenciar o capacity global das camadas celulares de aplicação. Ela precisa ser extremamente resiliente e, paradoxalmente, altamente distribuída para não se tornar o novo ponto único de falha.
 
 ## Células e segmentação de carga
 
-A segmentação de carga na Arquitetura Celular é uma decisão estrutural de como os dados serão divididos e replicados entre as celulas. Isso vai muito além de um particionamento horizontal de de dispersar throughput entre vários estanques isolados de capacidade. Em arquiteturas tradicionais, o [load balancer]() distribui requisições de maneira estatística através de vários algoritmos como round robin, least connection e afins, mas o estado permanece logicamente compartilhado. Já em uma arquitetura celular, a segmentação é determinística e vinculada a uma chave de negócio estável, podendo ser tratado de forma cadastral e mapeamento intencional, ou distribuído estatisticamente através de algoritmos de hashing e hashing consistente. Isso significa que cada célula absorve um subconjunto fixo e deterministico da carga total, e essa distribuição não varia dinamicamente conforme a pressão momentânea do sistema.
+A segmentação de carga na Arquitetura Celular é uma decisão estrutural de como os dados serão divididos e replicados entre as celulas. Já abordamos esse tema profundamente no capitulo de [sharding e particionamento](/sharding). Isso vai muito além de um particionamento horizontal de de dispersar throughput entre vários estanques isolados de capacidade. Em arquiteturas tradicionais, o [load balancer](load-balancing/) distribui requisições de maneira estatística através de vários algoritmos como round robin, least connection e afins, mas o estado permanece logicamente compartilhado. 
+
+Já em uma arquitetura celular, a segmentação é determinística e vinculada a uma chave de negócio estável, podendo ser tratado de forma cadastral e mapeamento intencional, ou distribuído estatisticamente através de algoritmos de hashing e hashing consistente. Isso significa que cada célula absorve um subconjunto fixo e deterministico da carga total, e essa distribuição não varia dinamicamente conforme a pressão momentânea do sistema, os mesmos clientes sempre serão atendidos pela mesma celula, ou conjunto de celulas.  
+
+
 
 ## Células Sincronas 
 
@@ -69,7 +89,9 @@ Quando entramos no domínio assíncrono, a arquitetura celular assume ainda mais
 
 ![Async Layer](/assets/images/system-design/cell-async-layer.png)
 
-Podemos presumir um consumidor de borda que consome alguma fila ou tópico de domínio e republica as mensagens ou eventos para tópicos e filas segmentados da celula, atuando como um filtro roteador da mensagem em contexto para sua celula específica, que por sua vez só conhece seus próprios mecanismos de mensageria. A consequência é a eliminação do acoplamento temporal entre células. Uma célula pode atrasar processamento, sofrer backpressure ou mesmo ficar indisponível sem bloquear o restante do sistema.
+Podemos presumir um consumidor de borda que consome alguma fila ou tópico de domínio e republica as mensagens ou eventos para tópicos e filas segmentados da celula, atuando como um filtro roteador da mensagem em contexto para sua celula específica, que por sua vez só conhece seus próprios mecanismos de mensageria. 
+
+A consequência é a eliminação do acoplamento temporal entre células. Uma célula pode atrasar processamento, sofrer backpressure ou mesmo ficar indisponível sem bloquear o restante do sistema. Ao segmentar tópicos e filas por célula, eliminamos o risco de backpressure global. Uma célula pode acumular backlog sem afetar a taxa de processamento das demais.
 
 
 <br>
@@ -81,6 +103,9 @@ No modelo celular a replicação é direcionada para a criação de células pas
 ![Replicação](/assets/images/system-design/cell-replication.png)
 
 O foco na replicação para células passivas garante que falhas críticas como bugs, erros de deploy ou as chamadas poison pill requests (requisições corrompidas que derrubam o serviço) sejam contidas dentro da fronteira da célula afetada, mas que o cliente seja redirecionado para uma celula passiva para qual seus dados estejam sendo replicados de forma transparente. Como cada célula atende a apenas um subconjunto das requisições totais, assumindo um roteamento forte por chave de partição, a perda de uma célula principal não resulta em um apagão da experiência do cliente. 
+
+Isso muda completamente a forma como modelamos risco sistêmico. Em vez de perguntar: *“Qual o impacto da falha de um shard?”*, Passamos a perguntar: *“Qual a probabilidade de um cliente estar alocado exatamente no subconjunto de células que falhou simultaneamente?”*.
+
 
 ## Replicação Assincrona entre Células
 
@@ -115,19 +140,50 @@ Quando uma célula falha, apenas os clientes cujo conjunto inclui aquela célula
 
 A principal característica da arquitetura celular, quando combinada com replicação, é a previsibilidade do impacto de falhas.
 
-Como vimos no exemplo dos Bulkheads, se uma carga de trabalho é distribuída igualmente entre 10 shards e uma delas falha, 90% dos usuários ou recursos permanecem operacionais e inalterados. Quando confrontamos com a proposta da Arquitetura Celular com replicacão.
-
-A literatura clássica de sistemas distribuídos mostra que a replicação é um mecanismo chave para garantir disponibilidade e continuidade operacional, permitindo que o sistema mantenha o serviço mesmo diante de falhas de nós ou partições de rede. 
+Como vimos no exemplo dos Bulkheads, se uma carga de trabalho é distribuída igualmente entre 10 shards e uma delas falha, 90% dos usuários ou recursos permanecem operacionais e inalterados. Quando confrontamos com a proposta da Arquitetura Celular com replicação. O numero de bulkheads ou shards computacionais, se presumirmos uma segmentação uniforme de carga, impacta diretamente a porcentagem de indisponibilidade em caso da falha de uma parcela isolada dessa segmentação. 
 
 Do ponto de vista matemático, se temos N células e roteamento uniforme por hashing consistente, cada célula tende a absorver aproximadamente 1/N da carga total. Isso permite modelar blast radius como função direta da cardinalidade de células.
 
-Do ponto de vista conceitual, células podem ser compreendidas como domínios de falha isolados, alinhados ao padrão arquitetural de bulkheads, cujo objetivo é compartimentalizar o impacto de incidentes. Quando trabalhamos com a replicação celular, e temos a capacidade de redirecionar nossos clientes para celulas passivas para o dado do mesmo, conseguimos adicionais ainda mais camadas de disponibilidade na experiência do cliente. 
+| Bulkheads | Blast Radius | Disponibilidade |
+|--------: |-------------:|----------------:|
+| 1       | 100%         | 0%              |
+| 2       | 50%          | 50%             |
+| 3       | 33%          | 66%             |
+| 5       | 20%          | 80%             |
+| 10      | 10%          | 90%             |
+| 20      | 5%           | 95%             |
+| 50      | 2%           | 98%             |
+| 100     | 1%           | 99%             |
+
+<br>
+
+A literatura clássica de sistemas distribuídos mostra que a replicação é um mecanismo chave para garantir disponibilidade e continuidade operacional, permitindo que o sistema mantenha o serviço mesmo diante de falhas de nós ou partições de rede. 
+
+Do ponto de vista conceitual, células podem ser compreendidas como domínios de falha isolados, alinhados ao padrão arquitetural de bulkheads, cujo objetivo é compartimentalizar o impacto de incidentes. Quando trabalhamos com a replicação celular, e temos a capacidade de redirecionar nossos clientes para celulas passivas para o dado do mesmo, conseguimos adicionais ainda mais camadas de disponibilidade na experiência do cliente.  O impacto de uma partição indisponível deixa de ser a ferramenta estatística apropriada, pois um shard indisponível pode ser suprido por sua versão passiva. Nesse caso, em níveis de replicação, passamos a estimar o impacto a partir de um conjunto maior de celulas indisponíveis, trabalhando com a probabilidade de um cliente estar alocado no conjunto todo que falhou. 
+
+O calculo se baseia em células em status de falha (f) dividido pelo número de total de células (N) elevado ao número de réplicas virtuais (f) do Shuffle Sharding. 
+
+\begin{equation}
+P(\text{impacto}) \approx \left( \frac{f}{N} \right)^k
+\end{equation}
+
+Em exemplo, presumindo que trabalhamos com 20 celulas, 2 replicas em shuffle, onde o mesmo dado de um cliente é alocado em 2 celulas, em caso do downtime de 2 celulas aleatórias, conseguimos calcular a probabilidade de um mesmo cliente estar alocado justamente nessas 2 celulas, nesse caso, 1% de probabilidade. Comparado ao exemplo dos bulkheads, onde para ter 1% de impacto deterministico, precisariamos de 100 bulkheads ou shards computacionais para ter o mesmo resultado de 20 celulas com fator de replicação de 2. 
+
+\begin{equation}
+P(\text{impacto}) \approx \left( \frac{2}{20} \right)^2
+\end{equation}
+
+\begin{equation}
+P(\text{impacto}) = \text{1%}
+\end{equation}
+
+Quando ajustamos o numero de replicas em shuffle, diminuimos ainda mais a probabilidade de impacto, pois para existir um downtime total de um cliente, precisariamos presumir uma quantidade cada vez maior de celulas inativas. 
 
 | Células Totais | Células Indisponíveis | Réplicas em Shuffle | Probabilidade de Impacto do Cliente|
 |----------------|-----------------------|---------------------|--------------------------|
 | 20             | 2                     | 2                   | 1%                       |
-| 20             | 2                     | 3                   | 0.1%                     |
-| 20             | 2                     | 5                   | 0.001%                   |
+| 20             | 3                     | 3                   | 0.33%                     |
+| 20             | 5                     | 5                   | 0.009%                   |
 
 <br>
 <br>
