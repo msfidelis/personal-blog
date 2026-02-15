@@ -66,6 +66,8 @@ Esse foi o tema da minha pesquisa de mestrado, e depois de bastante tempo tentan
 
 ## Edge Cells - Células de Borda
 
+![Edge Cells](/assets/images/system-design/cell-edge-cells.png)
+
 **A camada de roteamento que intercepta as comunicações dos clientes e realiza o redirecionamento para a célula, ou grupo de células correto, é conhecida como "Edge Cells", ou "Células de Borda"**, uma camada de roteamento inteligente que deve ser capaz de realizar, da forma mais performática possível, a interceptação das solicitações, sejam elas vindas de qualquer protocolo conhecido, e **redirecionar de maneira correta para a célula disponível responsável por atender a solicitação.** 
 
 **É preferível que esta camada seja o mais stateless possível, mas é possível que a mesma mantenha um estado cadastral em alguma camada de dados adicional.** Aqui vamos além de um proxy básico como um Nginx, Envoy e Haproxy; é uma aplicação inteligente e agnóstica para uso celular que deve ser capaz de absorver alto tráfego e gerenciar o capacity global das camadas celulares de aplicação. Ela precisa ser extremamente resiliente e, paradoxalmente, altamente distribuída para não se tornar o novo ponto único de falha.
