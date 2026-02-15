@@ -18,6 +18,7 @@ group :jekyll_plugins do
     gem 'jekyll-archives'
     gem 'jekyll-linkpreview'
     gem 'jekyll-embed-urls'
+    gem 'jekyll-mermaid'
     gem 'kramdown'
     gem 'rouge'
     gem "rss"

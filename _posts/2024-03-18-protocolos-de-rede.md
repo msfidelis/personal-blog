@@ -6,6 +6,10 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Protocolos e Comunicação de Rede
+seo_title: System Design — Protocolos de Comunicação em Redes e Arquiteturas Distribuídas
+seo_description: Explore os principais protocolos de rede, como TCP, UDP e HTTP, sob a ótica de System Design. Entenda como decisões na camada de rede impactam performance, escalabilidade e resiliência em sistemas modernos.
+excerpt: Neste artigo, mergulhamos nos protocolos fundamentais de rede, como TCP, UDP e HTTP, explicando seu papel na construção de sistemas distribuídos modernos e como impactam diretamente o desempenho e a arquitetura das aplicações.
+
 ---
 
 Neste capítulo, abordaremos de forma simplificada os **conceitos essenciais dos principais tópicos de comunicação de rede** sob a perspectiva de System Design. Compreender os protocolos de comunicação é de extremo valor, e pode representar um divisor de águas para aprimorar tópicos de [performance](/performance-capacidade-escalabilidade/) e [resiliência](). Entender os fundamentos de protocolos como TCP e UDP, assim como outros que são desenvolvidos a partir deles, nos **capacita a tomar decisões arquiteturais, projetar estratégias eficazes, melhorar níveis de performance e tempo de resposta ao aplicar suas características mais vantajosas de maneira adequada**.
@@ -204,6 +208,8 @@ Quando um resolver DNS (geralmente operado por seu provedor de internet) precisa
 ### DHCP - Dynamic Host Configuration Protocol
 
 O **Protocolo de Configuração Dinâmica de Host** (*Dynamic Host Configuration Protocol*) é um protocolo de rede que permite a servidores com essa responsabilidade **designar automaticamente um endereço IP e outras informações a dispositivos que se conectam na rede.** O **DHCP é usado para a gestão de endereços IP em redes grandes e pequenas**, facilitando a conectividade e **reduzindo conflitos de endereços**. É utilizado principalmente em projetos de networking que possibilitam a entrada e saída de hosts com certa frequência, sem a necessidade de alocar IP's fixos e evitar conflitos de 2 dispositivos tentarem utilizar o mesmo IP.
+
+![DHCP](/assets/images/system-design/dhcp.png)
 
 Quando um dispositivo - cliente DHCP - se conecta a uma rede, ele solicita informações de configuração de rede a um servidor DHCP. O processo segue quatro etapas básicas, conhecidas como **DORA** (*Discovery, Offer, Request, Acknowledgment*).
 

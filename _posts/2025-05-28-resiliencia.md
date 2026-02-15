@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Padrões de Resiliência
+seo_title: Padrões de Resiliência em System Design — Estratégias para Sistemas Tolerantes a Falhas
+seo_description: Entenda como projetar sistemas resilientes com padrões como Retry, Circuit Breaker, Fallback, Idempotência e Backpressure. Aprenda estratégias de tolerância a falhas aplicadas a sistemas distribuídos modernos.
+excerpt: Neste artigo, exploramos os principais padrões de resiliência em System Design, como Retry, Fallback, Circuit Breaker, Backpressure e outros, aplicados ao contexto de sistemas distribuídos tolerantes a falhas.
 ---
 
 Nesse capítulo, iremos revisitar praticamente tudo o que já foi visto e dar pequenos spoilers de capítulos que ainda virão, porém com algumas óticas adicionais. A maioria, ou praticamente todos os tópicos já foram tratados em capítulos anteriores, o que mudará aqui será somente a perspectiva. Então, caso você tenha sentido falta de uma maior profundidade conceitual, recomendo fortemente voltar alguns passos atrás e reler os materiais.

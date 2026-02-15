@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Performance, Capacidade e Escalabilidade
+seo_title: Performance, Capacidade e Escalabilidade — Fundamentos para o System Design
+seo_description: Entenda os conceitos de performance, capacidade e escalabilidade aplicados a sistemas distribuídos. Explore suas diferenças, impactos e como tratá-los no planejamento de arquiteturas modernas.
+excerpt: Este artigo explora os pilares fundamentais de performance, capacidade e escalabilidade sob a ótica de System Design, trazendo definições claras, distinções práticas e implicações arquiteturais em sistemas modernos.
 ---
 
 Esse é mais um artigo da série sobre System Design. Nele, vamos abordar três tópicos: **Capacidade**, **Performance** e **Escalabilidade** (*não necessariamente nessa ordem*), sempre com uma perspectiva conceitual de System Design. Ao escrever este capítulo, me questionei se deveria dividí-lo em três textos separados. Contudo, fiquei tão satisfeito com o resultado que não consegui tomar essa decisão. À medida que criava tópicos, estudava e coletava referências, uma estranha sensação de querer que este capítulo nunca terminasse surgiu. Com base nisso, levantei muitos outros tópicos para explorar e abordar nos próximos artigos.
@@ -24,7 +27,7 @@ A performance deve ser considerada em relação aos requisitos funcionais e não
 
 ![Metricas de Performance](/assets/images/system-design/performance-metricas.png)
 
-É crucial entender como o desempenho do sistema varia sob diferentes condições, como picos de carga, falhas de componentes ou mudanças no padrão de uso.
+É de extrema importancia entender como o desempenho do sistema varia sob diferentes condições, como picos de carga, falhas de componentes ou mudanças no padrão de uso.
 
 A avaliação de performance de um sistema ou algoritmo **requer mecanismos de monitoramento de indicadores chave**, também conhecidos como KPIs, Service Levels, entre outros. **Observar essas métricas de forma sequencial e contínua por vários períodos de tempo pode trazer ideias valiosas sobre como o sistema está operando** e dar autonomia para os times de engenharia tomarem decisões sobre design, manutenção e operação do mesmo, além de fornecer dados para identificar tendências, fazer comparação de benchmarks, projetar e prever capacidade e identificar e priorizar quais partes precisam de melhoria de forma mais urgente.
 
@@ -63,14 +66,14 @@ Vamos imaginar um caso em que precisamos analisar o uso de memória alocada para
 \text{Utilização de Memória} = 50\%
 \end{equation}
 
-De acordo com o cálculo no cenário hipotético, a utilização de memória do sistema está em 50% da capacidade disponível. Um recurso pode estar saturado e começar a afetar o desempenho do sistema mesmo antes da utilização chegar a 100%. Analisar a utilização de recursos é crucial para otimizar o desempenho de um serviço e fornecer informações necessárias para criar sistemas mais econômicos, eficientes e performáticos.
+De acordo com o cálculo no cenário hipotético, a utilização de memória do sistema está em 50% da capacidade disponível. Um recurso pode estar saturado e começar a afetar o desempenho do sistema mesmo antes da utilização chegar a 100%. Analisar a utilização de recursos é importante para otimizar o desempenho de um serviço e fornecer informações necessárias para criar sistemas mais econômicos, eficientes e performáticos.
 
 
 <br>
 
 ### Throughput, ou Tráfego
 
-O `Throughput`, de maneira geral, descreve o **número de operações que um sistema consegue realizar dentro de um determinado período de tempo**. Ele mede quantas unidades de trabalho (como transações ou requisições) um determinado sistema ou algoritmo pode processar por unidade de tempo, **como requisições por segundo, vendas por minuto, arquivos por dia ou eventos por mês**. É uma métrica fundamental para entender a capacidade e o desempenho de aplicações. **Em sistemas projetados para lidar com protocolos web, o Throughput é contabilizado a partir de quantas requisições HTTP a aplicação recebeu e respondeu**.
+O `Throughput`, de maneira geral, descreve o **número de operações que um sistema consegue realizar dentro de um determinado período de tempo**. Ele mede quantas unidades de trabalho (como transações ou requisições) um determinado sistema ou algoritmo pode processar por unidade de tempo, **como requisições por segundo, vendas por minuto, arquivos por dia ou eventos por mês**. É uma métrica de extrema importancia para entender a capacidade e o desempenho de aplicações. **Em sistemas projetados para lidar com protocolos web, o Throughput é contabilizado a partir de quantas requisições HTTP a aplicação recebeu e respondeu**.
 
 A fórmula utilizada para calcular o throughput pode ser representada matematicamente da seguinte forma:
 
@@ -174,7 +177,7 @@ Um design de sistema que não distribui a carga de maneira eficiente pode, invar
 \text{Gargalo} = \text{Demanda} > \text{Capacidade}
 \end{equation}
 
-Identificar e resolver gargalos é crucial para otimizar a performance e a escalabilidade de sistemas de software. Isso geralmente envolve monitoramento detalhado, testes de desempenho e ajustes finos do sistema. Em ambientes de nuvem e sistemas distribuídos, a identificação de gargalos também pode incluir a análise da distribuição de carga e a escalabilidade dinâmica.
+Identificar e resolver gargalos é o ponto chave para otimizar a performance e a escalabilidade de sistemas de software. Isso geralmente envolve monitoramento detalhado, testes de desempenho e ajustes finos do sistema. Em ambientes de nuvem e sistemas distribuídos, a identificação de gargalos também pode incluir a análise da distribuição de carga e a escalabilidade dinâmica.
 
 Um ponto importante de se lembrar é que, ao resolver um ponto de gargalo a carga sobre os sistemas após esse ponto irão receber mais carga, o que pode gerar um novo gargalo. Portanto a análise e busca de gargalos na capacidade do sistema é um processo dinâmico e contínuo.
 
@@ -230,7 +233,7 @@ Uma forma lúdica de exemplificar a escalabilidade é considerar um sistema de a
 
 ## Importância da Escalabilidade em Sistemas Modernos
 
-A escalabilidade permite que os sistemas se adaptem rapidamente a mudanças no volume de tráfego ou demanda de recursos, garantindo um desempenho consistente mesmo sob carga variável. Em ambientes de negócios dinâmicos, a capacidade de escalar recursos conforme necessário é crucial para manter a continuidade e a eficiência operacional. Além disso, permite manter tempos de resposta rápidos e desempenho confiável, mesmo sob cargas leves, médias e pesadas, resultando em uma experiência de usuário mais satisfatória.
+A escalabilidade permite que os sistemas se adaptem rapidamente a mudanças no volume de tráfego ou demanda de recursos, garantindo um desempenho consistente mesmo sob carga variável. Em ambientes de negócios dinâmicos, a capacidade de escalar recursos conforme necessário é necessário para manter a continuidade e a eficiência operacional. Além disso, permite manter tempos de resposta rápidos e desempenho confiável, mesmo sob cargas leves, médias e pesadas, resultando em uma experiência de usuário mais satisfatória.
 
 Sistemas escaláveis também podem ser mais econômicos, pois permitem dimensionar recursos de forma mais eficiente. Isso significa pagar apenas pelos recursos que são usados, reduzindo o desperdício e otimizando os custos operacionais. Também podem facilitar a implementação de novas funcionalidades e a expansão de negócios sem a necessidade de reestruturar completamente a infraestrutura existente já projetada.
 

@@ -5,3 +5,6 @@
 
 _site/
 _cache/
+vendor
+.bundle
+.image_optim.yml

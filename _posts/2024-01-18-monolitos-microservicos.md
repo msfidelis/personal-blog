@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Microsserviços, Monolitos e Domínios
+seo_title: Microsserviços vs Monolitos — Arquiteturas, Domínios e a Lei de Conway no System Design
+seo_description: Entenda as diferenças entre monolitos e microsserviços, suas vantagens, desvantagens, impacto da Lei de Conway e como modelar domínios com DDD para arquiteturas escaláveis e evolutivas.
+excerpt: Este artigo apresenta uma análise completa sobre as arquiteturas de monólitos e microsserviços, abordando suas características, benefícios, desafios e o papel da modelagem de domínios e da Lei de Conway no System Design moderno.
 ---
 
 Este é o quarto artigo da série sobre System Design, e estou muito satisfeito com a direção que este material está tomando. Analisando o artigo depois de finalizado, acho sinceramente que este deveria ter sido o primeiro. Até o momento, ele pode ser considerado o mais "alto nível". Neste artigo, não pretendo explorar os componentes complexos por baixo do capô" dos temas; o foco está em trabalhar com tópicos e definições conceituais. Muitos dos pontos mencionados aqui serão detalhados em artigos dedicados futuramente, abordando tópicos como escalabilidade, resiliência e protocolos de comunicação, que neste momento serão apenas citados.
@@ -144,7 +147,7 @@ Este exemplo pode ser utilizado tanto para elaborar um diagrama de classes e mó
 
 Um dos maiores desafios no design de microsserviços é identificar corretamente os limites de serviço. Com o DDD, os serviços são organizados em torno de limites de contexto delimitado, onde cada serviço gerencia um conjunto distinto de entidades e lógicas de negócio. Isso ajuda a manter os serviços pequenos, focados e independentes.
 
-Em ambientes de alta complexidade, com muitas equipes e serviços, a modelagem de negócios e arquitetura a nível de domínio auxilia no mapeamento dos responsáveis por cada funcionalidade, evitando a duplicação de soluções e promovendo a reutilização de componentes existentes. Em grandes corporações, é crucial evitar a criação de sistemas diferentes, desenvolvidos por equipes distintas, que executam funções similares de forma redundante.
+Em ambientes de alta complexidade, com muitas equipes e serviços, a modelagem de negócios e arquitetura a nível de domínio auxilia no mapeamento dos responsáveis por cada funcionalidade, evitando a duplicação de soluções e promovendo a reutilização de componentes existentes. Em grandes corporações, é necessário evitar a criação de sistemas diferentes, desenvolvidos por equipes distintas, que executam funções similares de forma redundante.
 
 <br>
 

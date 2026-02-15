@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ opiniao, livres ]
 title: Teoria das Janelas Quebradas e a Engenharia de Software
+seo_title: Teoria das Janelas Quebradas na Engenharia de Software — Cultura, Código e Degradação
+seo_description: Uma analogia entre a Teoria das Janelas Quebradas e os efeitos de negligência em times de engenharia de software. Entenda como pequenos desvios impactam código, cultura e produtividade.
+excerpt: Este artigo faz uma analogia entre a Teoria das Janelas Quebradas e o desenvolvimento de software, refletindo sobre como a negligência técnica e cultural pode degradar projetos, processos e times inteiros ao longo do tempo.
 ---
 
 > Este artigo é um exercício de um curso de escrita que eu estou fazendo. O objetivo era produzir um artigo abstrato e de opinião. Inicialmente ele não seria publicado, mas achei o resultado divertido. Não levem tão a sério.

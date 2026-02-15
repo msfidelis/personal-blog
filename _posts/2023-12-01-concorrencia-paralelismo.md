@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, golang, engineering ]
 title: System Design - Paralelismo, Concorrência e Multithreading
+seo_title: Concorrência e Paralelismo — Diferenças e Aplicações em System Design
+seo_description: Entenda as diferenças entre concorrência e paralelismo, como elas impactam o desempenho de sistemas modernos, e como projetar arquiteturas que aproveitam essas abordagens de forma eficiente.
+excerpt: Neste artigo, exploramos os conceitos de concorrência e paralelismo sob a perspectiva de System Design, discutindo suas distinções, aplicações práticas e implicações em sistemas de alta performance.
 ---
 
 Este artigo é o primeiro de uma série sobre **System Design**. Esta série tem como objetivo explicar conceitos complexos de programação de maneira simples e objetiva para todos os tipos de profissionais, independentemente do nível de senioridade ou tempo de experiência, contribuindo para a fixação de conceitos de ciências da computação e arquitetura.
@@ -57,13 +60,20 @@ Agora que já exploramos alguns conceitos teóricos importantes, podemos seguir 
 
 # Concorrência 
 
+
+**Concorrência é sobre lidar com muitas tarefas ao mesmo tempo**, mas não de forma simultânea. É a habilidade de uma aplicação gerenciar múltiplas tarefas e instruções em segundo plano no mesmo núcleo do processador, mesmo que essas instruções não estejam sendo processadas ao mesmo tempo, ou executadas em outros núcleos diferentes. 
+
+![Concorrencia](/assets/images/system-design/concorrencia.drawio.png)
+
+Em outras palavras, um sistema concorrente gerencia a interleaving (intercalação) de múltiplas unidades de execução — threads ou processos — permitindo que diferentes partes de um programa progridam de maneira independente no mesmo core do processador. O CPU alterna rapidamente entre todos os processos e threads existentes, alternando entre as tarefas (context switching). 
+
 ![Concorrência Robô](/assets/images/system-design/concurrency-example.png)
+
 
 Imagine que você está preparando um churrasco sozinho. Você é responsável por organizar a geladeira, fazer os cortes de carne, preparar os vegetais para os amigos vegetarianos, fazer caipirinhas e gelar a cerveja. Você alterna entre essas tarefas, trabalhando um pouco em cada uma, apesar de ser responsável por todas elas.
 
 Este cenário é um exemplo de concorrência, onde você está gerenciando várias tarefas, mas não necessariamente trabalhando em mais de uma delas simultaneamente. Você se alterna entre as tarefas, criando a impressão de que tudo está progredindo ao mesmo tempo.
 
-**Concorrência é sobre lidar com muitas tarefas ao mesmo tempo**, mas não de forma simultânea. É a habilidade de uma aplicação gerenciar múltiplas tarefas e instruções em segundo plano, mesmo que essas instruções não estejam sendo processadas ao mesmo tempo, ou executadas em outros núcleos do processador.
 
 
 <br>
@@ -335,7 +345,7 @@ O paralelismo pode ser dividido em duas categorias: **interno** e **externo**.
 
 ### Paralelismo Interno
 
-O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, ocorre dentro de uma **processo**. É o paralelismo que você **implementa no código da sua aplicação** quando precisa dividir tarefas ou itens em memória entre várias sub-tarefas que podem ser processadas simultaneamente. **Basicamente, é o paralelismo que você cria via código para ser executado dentro do seu container ou servidor**.
+O **paralelismo interno**, também conhecido como **paralelismo intrínseco**, ocorre dentro de um **processo**. É o paralelismo que você **implementa no código da sua aplicação** quando precisa dividir tarefas ou itens em memória entre várias sub-tarefas que podem ser processadas simultaneamente. **Basicamente, é o paralelismo que você cria via código para ser executado dentro do seu container ou servidor**.
 
 ### Paralelismo Externo
 
@@ -386,7 +396,9 @@ Starvation, ou inanição, ocorre quando uma ou mais threads não conseguem aces
 
 Imagine que você está organizando outro churrasco com seus amigos. Desta vez, há apenas uma churrasqueira disponível para grelhar todos os alimentos. Vocês precisam preparar picanha, maminha, legumes, abacaxi, linguiça, pão de alho e mais. A churrasqueira é pequena e só permite assar um tipo de alimento por vez. Aqui, a churrasqueira representa um recurso compartilhado, e uma **Race Condition** (condição de corrida) pode surgir se todos os alimentos forem preparados para assar simultaneamente.
 
-Uma **Race Condition** é um fenômeno comum quando um recurso compartilhado é acessado e modificado por várias tarefas ou threads em paralelo. O estado final desse recurso pode depender da ordem em que as modificações são realizadas, que pode variar a cada execução. Por exemplo, considere o seguinte algoritmo:
+Uma **Race Condition** é um fenômeno comum quando um recurso compartilhado é acessado e modificado por várias tarefas ou threads em paralelo. O estado final desse recurso pode depender da ordem em que as modificações são realizadas, que pode variar a cada execução. 
+
+Por exemplo, considere o seguinte algoritmo:
 
 - Inicialmente, temos um número definido de itens (como `100`) disponíveis para serem grelhados.
 - Temos um contador que registra o número de itens que foram grelhados.
@@ -462,6 +474,21 @@ Total de itens grelhados na churrasqueira: 99
 
 <br>
 
+### Race Conditions e Last-Write-Wins 
+
+Em sistemas distribuídos, uma race condition pode ocorrer quando temos eventos que precisam ser processados em uma sequencia definida, são recebidos ou aplicados fora de ordem, resultando em um estado inconsistente no sistema. Diferente do contexto tradicional de paralismo interno de threads competindo por um recurso de memória compartilhada, nas arquiteturas distribuídas a race condition ocorre entre **mensagens, eventos ou atualizações de estado que trafegam por canais assíncronos**, onde a entrega, a ordem e a latência não são determinísticas.
+
+![Race Condition](/assets/images/system-design/race-condition.drawio.png)
+
+Considere um sistema de pagamentos que se comunica com um sistema de pedidos por meio de uma message broker, **após o processamento de uma transação o sistema de pagamento publica dois eventos sequenciais**, o `Pagamento_Pendente` e em sequencia o evento `Pago` com a confirmação do pagamento. No fluxo ideal, o **consumidor do sistema de pedidos deveria processar esses eventos na ordem de emissão**, transicionando o estado do pedido de “aguardando pagamento” para “pago”. No entanto, como o barramento de mensagens não garante entrega ordenada existindo a possibilidade de que o evento `Pago` seja consumido em pequenos instantes antes de `Pagamento_Pendente`. 
+
+Esse fenômeno, comum em sistemas distribuídos, caracteriza uma **race condition interprocessual**. Esse comportamento é agravado quando a arquitetura não adota o modelo de “last-write-wins”, no qual o **sistema não verifica a coerência temporal ou causal das atualizações, aplicando simplesmente o último evento recebido como a verdade vigente** sem checagens temporal da emissão das solicitações. 
+
+O Last-Write-Wins é uma **estratégia de resolução de conflitos usada em sistemas distribuídos para determinar qual atualização deve prevalecer quando há escritas concorrentes sobre o mesmo dado**. Quando duas ou mais réplicas modificam o mesmo registro quase ao mesmo tempo e **o sistema precisa decidir qual versão manter como “a correta”**. Para isso as requisições precisam ser **enriquecidas com timestamps atômicos da solicitação**, para que seja possivel realizar esse tipo de verificação de forma sistemica. 
+
+
+<br>
+
 ## Mutex
 
 ![Robô Mutex](/assets/images/system-design/mutex.png)
@@ -473,6 +500,8 @@ Como a churrasqueira é um recurso compartilhado, essa pessoa atuará como uma "
 "Mutex" é a abreviação de **Mutual Exclusion** (Exclusão Mútua) e é uma estratégia eficiente para controlar o acesso a um recurso compartilhado em ambientes de multithreading, paralelismo ou concorrência. Ela possibilita um acesso sequencial e organizado aos recursos, sendo uma das principais ferramentas para programação concorrente e paralela.
 
 O principal objetivo do Mutex é evitar **Race Conditions**, como visto anteriormente, garantindo que apenas uma thread por vez possa acessar um recurso. As operações básicas de um Mutex são "lock", para bloquear o acesso ao recurso, e "unlock", para liberá-lo para a próxima thread.
+
+![Mutex Fluxo](/assets/images/system-design/mutex-fluxo.drawio.png)
 
 Estas operações de **lock/unlock** também devem respeitar uma certa prioridade, ou seja, apenas a thread que bloqueou o recurso pode desbloqueá-lo.
 
@@ -568,6 +597,8 @@ Total de itens grelhados na churrasqueira: 100
 Já exploramos o uso de Mutex no modelo de paralelismo interno, onde o controle de paralelismo é implementado via código. É igualmente importante entender a aplicação dessa lógica no paralelismo externo, em cenários arquiteturais diversos como o consumo de **mensagens de uma fila**, **eventos de um tópico do Kafka**, tratamento de **solicitações HTTP** e outras situações que demandam **idempotência**, **atomicidade** e **exclusividade** em determinados processos.
 
 Desenvolver um Mutex para sistemas distribuídos apresenta uma série de desafios, mas em alguns aspectos, é mais facilitado do que os Mutexes em cenários de paralelismo interno com memória compartilhada. Entre os possíveis problemas que podemos encontrar estão a **comunicação entre componentes, latência de rede e falhas gerais nos serviços**.
+
+![Mutex Centralizado](/assets/images/system-design/mutex-distribuido-example.drawio.png )
 
 Para funcionar eficientemente, esses sistemas geralmente dependem de uma **base de dados centralizada** para manter o estado dos processos compartilhados entre todas as réplicas dos consumidores de mensagens. Isso é crucial para lidar com duplicidade de mensagens, eventos ou solicitações devido a cenários imprevistos.
 
@@ -672,7 +703,7 @@ Caso outro processo tentasse acessar o recurso 12345 durante a execução do pri
 Mutex travado para o recurso 12345
 ```
 
-Esse é um exemplo simples pra entendimento do algoritmo que não trata todos os cenários de um ambiente produto. Para isso eu recomendo o uso de alguma biblioteca especifica para locks no Redis como [RedisLock](https://github.com/bsm/redislock)
+Esse é um exemplo simples pra entendimento do algoritmo que não trata todos os cenários de um ambiente produtivo. Para isso eu recomendo o uso de alguma biblioteca especifica para locks no Redis como [RedisLock](https://github.com/bsm/redislock)
 
 <br>
 
@@ -917,16 +948,20 @@ O churrasco terminou :/
 
 Existem dois tipos principais de semáforos: o **Semáforo Binário**, que é similar ao **Mutex** já discutido, e o **Semáforo Contador**, que vamos abordar agora.
 
+Um **semáforo** é outro mecanismo de sincronização usado em programação paralela para controlar o acesso a recursos compartilhados e evitar **Race Conditions** e inconsistências de dados. Ele se baseia em operações atômicas, que incluem:
+
+- **Wait (Ocupar um recurso)**: Utilizada para adquirir um recurso. Por exemplo, em um semáforo com 10 posições, podemos ter no máximo 10 threads trabalhando simultaneamente. Ao executar `Wait()`, o número disponível é decrementado, indicando que uma posição está ocupada.
+- **Signal (Liberar um recurso)**: O oposto de `Wait`, a operação `Signal()` incrementa o contador do semáforo até o limite especificado. Quando um processo em `Wait()` conclui, ele chama `Signal()` para liberar um espaço, permitindo que outra thread ocupe esse lugar.
+
+Os semáforos são eficientes para trabalhar com **Worker Pools**, que são conjuntos de threads dedicadas executando tarefas de forma controlada em quantidade. Esse padrão é útil quando há muitas tarefas a serem realizadas, mas é necessário limitar o número de threads em execução simultânea. Na nossa analogia, o **Worker Pool** seria o número de alimentos que a grelha pode acomodar.
+
+![Semaforo Exemplo](/assets/images/system-design/semaforo-exemplo.drawio.png)
+
+Em um sistema hipotético de consumo de mensagens, cada **réplica da nossa aplicação trabalha com um semaforo de 10 posição**. Dessa forma, entedemos que **iremos processar apenas 10 mensagens por vez em cada replica**. Cada vez que chega uma mensagem a ser processada, **enfileiramos ela em memória e verificamos se existem espaços livres para serem ocupados no semáforo**. Caso 3 processos tenham terminado, o semaforo estará no **status "aberto", permitindo que novas mensagens sejam processadas**. Iremos alocar as 3 mensagens novas no semaforo e após isso, **ao atingir seu tamanho de 10 posições, o mesmo irá entrar em status "fechado"** e as mensagens enfileiradas irão ficar travadas para processamento até que outros processos sejam liberados. 
+
 Imagine um churrasco com uma grelha maior, capaz de comportar um número definido de alimentos simultaneamente. A grelha representa um recurso compartilhado, e a capacidade máxima de alimentos que ela pode assar por vez ilustra o conceito de **semáforo contador**.
 
 Suponha que a grelha possa acomodar até 3 pedaços de carne de cada vez. Cada alimento colocado na grelha ocupa um espaço do semáforo, decrementando seu valor até atingir 0, indicando que a grelha está completamente ocupada. Quando um alimento é retirado da grelha, o contador é incrementado, indicando que há espaço para mais um alimento ser assado.
-
-Um **semáforo** é outro mecanismo de sincronização usado em programação paralela para controlar o acesso a recursos compartilhados e evitar **Race Conditions** e inconsistências de dados. Ele se baseia em operações atômicas, que incluem:
-
-- **Wait (Ocupar um recurso)**: Utilizada para adquirir um recurso. Por exemplo, em um semáforo com 3 posições, podemos ter no máximo 3 threads trabalhando simultaneamente. Ao executar `Wait()`, o número disponível é decrementado, indicando que uma posição está ocupada.
-- **Signal (Liberar um recurso)**: O oposto de `Wait`, a operação `Signal()` incrementa o contador do semáforo até o limite especificado. Quando um processo em `Wait()` conclui, ele chama `Signal()` para liberar um espaço, permitindo que outra thread ocupe esse lugar.
-
-Os semáforos são eficientes para trabalhar com **Worker Pools**, que são conjuntos de threads executando tarefas de forma controlada. Esse padrão é útil quando há muitas tarefas a serem realizadas, mas é necessário limitar o número de threads em execução simultânea. Na nossa analogia, o **Worker Pool** seria o número de alimentos que a grelha pode acomodar.
 
 ### Exemplo de Implementação: 
 
@@ -1031,7 +1066,6 @@ Essa foi uma implementação manual que pode ou não ser utilizada pra resolver 
 * [Jessica](https://twitter.com/whatever_jess)
 * [Luiz Aoqui, o revisor universal da comunidade](https://twitter.com/luiz_aoqui)
 
-> Imagens geradas pelo DALL-E
 
 <br>
 

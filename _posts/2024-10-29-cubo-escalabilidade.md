@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Scale Cube
+seo_title: Scale Cube no System Design — Modelo Conceitual de Escalabilidade em Três Eixos
+seo_description: Entenda o Scale Cube e como os eixos X, Y e Z — escalabilidade horizontal, decomposição funcional e particionamento de dados — ajudam a projetar sistemas escaláveis e resilientes desde o início.
+excerpt: O artigo explora o Scale Cube como modelo conceitual de escalabilidade, abordando os eixos X (horizontal), Y (funcional) e Z (particionamento) para guiar a evolução de sistemas distribuídos robustos e prontos para grandes cargas.
 ---
 
 > Texto extra da série de System Design. Esse texto foi resultado de uma revisão bibliográfica - não cientifica - que fiz para arquivo pessoal. 

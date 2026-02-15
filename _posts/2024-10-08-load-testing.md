@@ -6,6 +6,10 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Testes de Carga e Estresse
+seo_title: Load Testing em System Design — Testes de Carga, Estresse e Capacidade
+seo_description: Aprenda as diferenças entre Load Testing, Stress Testing e Capacity Testing, e como aplicá-los no ciclo de vida de sistemas distribuídos para garantir resiliência e performance sob alta demanda.
+excerpt: Este artigo aborda os principais tipos de testes de carga aplicados a sistemas distribuídos — Load, Stress e Capacity Testing — com foco em performance, limites operacionais e preparação para picos de tráfego reais.
+
 ---
 
 > Artigo extra escrito para a aula ao vivo sobre testes de performance da turma de Arquitetura de Containers na AWS. 

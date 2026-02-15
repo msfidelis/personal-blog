@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Mensageria, Eventos, Streaming e Arquitetura Assincrona
+seo_title: Arquitetura Orientada a Eventos — Mensageria, Streaming e Comunicação Assíncrona
+seo_description: Conheça os conceitos essenciais da arquitetura orientada a eventos, incluindo filas, brokers, mensagens, eventos e streams, aplicados à construção de sistemas distribuídos escaláveis e desacoplados.
+excerpt: Neste artigo, exploramos a comunicação assíncrona em sistemas distribuídos, abordando conceitos de filas, eventos, mensageria, brokers e streamings sob o ponto de vista de System Design moderno.
 ---
 
 Arquiteturas assíncronas derivadas do uso de mensageria e eventos são recursos muito valiosos quando arquitetamos soluções complexas de sistemas distribuídos. Assim como os dois capítulos anteriores, onde falamos sobre [protocolos e padrões de rede](/protocolos-de-rede/) e [padrões de comunicação síncronos](/padroes-de-comunicacao-sincronos/) em sistemas, esse tópico também visa detalhar comunicações entre componentes de um sistema, mas com uma **abordagem de comunicação assíncrona**. Vamos detalhar e diferenciar alguns tópicos importantes, como **Mensagens e Eventos**, e como utilizá-los para resolver problemas de comunicação em larga escala utilizando protocolos como **MQTT**, **AMQP**, **comunicação assíncrona over-TCP com o Kafka**, entender conceitos e suas vantagens e limitações.

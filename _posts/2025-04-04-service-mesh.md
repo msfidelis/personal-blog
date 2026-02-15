@@ -5,6 +5,9 @@ featured: false
 published: true
 categories: [system-design, engineering, cloud]
 title: System Design -  Service Mesh
+seo_title: Service Mesh no System Design — Entenda o Padrão, Componentes e Benefícios
+seo_description: Descubra o que é um Service Mesh, como funciona o Control Plane e o Data Plane, e quais benefícios como resiliência, segurança, observabilidade e roteamento inteligente ele traz para sistemas distribuídos.
+excerpt: Este artigo explica o conceito de Service Mesh como padrão de comunicação em sistemas distribuídos, abordando seus componentes, modelos de implementação e benefícios como segurança, resiliência e telemetria nativa.
 ---
 
 Esse capítulo, assim como vários outros que seguem uma linha mais concisa e resumida, surgiu a partir de um resumo de uma aula que dei sobre o tema. As inúmeras propostas e abordagens do mercado sobre o que se espera — ou não — de um service mesh me motivaram a reunir esta revisão bibliográfica conceitual, com a proposta, mais uma vez, de **colocar os pés no chão e retornar às origens dos patterns de engenharia**.

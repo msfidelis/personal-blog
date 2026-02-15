@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Replicação de Dados
+seo_title: Replicação de Dados em System Design — Modelos, Estratégias e Padrões Arquiteturais
+seo_description: Explore as principais estratégias de replicação de dados em sistemas distribuídos, incluindo modelos síncronos, assíncronos, por logs, multi-master, Event-Carried State Transfer, CDC e CRDTs.
+excerpt: Neste artigo, mergulhamos nos fundamentos da replicação de dados em sistemas distribuídos, discutindo modelos como primary-replica e multi-master, estratégias como replicação síncrona e assíncrona, e padrões como CDC, Event-Carried State Transfer e CRDTs.
 ---
 
 Neste capítulo da nossa série de System Design, vamos explorar os conceitos de escalabilidade de aplicações críticas, com foco especial na replicação de dados. Este tema está diretamente relacionado ao capítulo anterior sobre [Sharding e Particionamento de Dados](/sharding/), já que esses conceitos costumam ser usados em conjunto em diversas abordagens arquiteturais. Nosso objetivo é **apresentar diferentes padrões e estratégias de replicação, demonstrando como esses conceitos podem melhorar a disponibilidade, confiabilidade e performance de sistemas distribuídos**.

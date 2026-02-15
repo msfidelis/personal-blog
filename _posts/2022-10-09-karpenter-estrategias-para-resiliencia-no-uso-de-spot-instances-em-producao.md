@@ -5,7 +5,7 @@ image: assets/images/capa-spot.png
 title: Karpenter — Estratégias para resiliência no uso de Spot Instances em produção
 canonical_url: https://medium.com/@fidelissauro/karpenter-estrat%C3%A9gias-para-resili%C3%AAncia-no-uso-de-spot-instances-em-produ%C3%A7%C3%A3o-398c7bff2cdc?source=rss-fc2fda5e9bc2------2
 author: matheus
-featured: true
+featured: false
 categories: [ aws, arquitetura, kubernetes, terraform, karpenter ]
 ---
 
@@ -25,7 +25,6 @@ Caso você não tenha visto ainda, fiz um artigo sobre uma PoC onde descrevo **c
 
 
 {% linkpreview "https://medium.com/@fidelissauro/provisionando-um-cluster-de-eks-sem-node-groups-com-karpenter-4d302b32b620" %}
-
 
 Caso você não tenha visto ainda, te convido para ler um artigo que eu escrevi sobre como utilizar o **Istio para sobreviver a cenários de caos**. Não tem nada a ver com o tema, mas eu acho que você vai gostar. #Confia.
 

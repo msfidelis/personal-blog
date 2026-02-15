@@ -32,7 +32,22 @@ plugins:
   - jekyll-gist
   - jekyll-embed-urls
   - jekyll-linkpreview
+  - jekyll-mermaid
   # - jekyll-compress-images
+
+whitelist:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-archives
+  - jekyll-gist
+  - jekyll-embed-urls
+  - jekyll-linkpreview
+  # - jekyll-compress-images
+
+gist:
+  noscript: false
 
 # compress_images:
 #   images_path: "assets/images/**/*.{gif,png,jpg,jpeg,svg}"
@@ -51,6 +66,9 @@ paginate_path: /page:num/
     
 # Other
 markdown: kramdown
+
+mermaid:
+  src: 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs'
 
 kramdown:
   input: GFM
