@@ -19,7 +19,6 @@ Um Single Point of Failure, SPoF, ou "Ponto Único de Falha", é um termo usado 
 
 Imagine que uma cidade só possua como forma de acesso uma unica ponte. Essa ponte seria no mundo real, um ponto único de falha. Por mais que ainda exista possibilidade de acesso de barco, helicoptero ou balça, não seriam todas as pessoas que teriam acesso e a entrada e saída, e o envio de recursos e afins estaria ainda gravemente impactado. Isso seria um Ponto Único de Falha que gera uma indisponibilidade total ou parcial de acesso a região. 
 
-
 São raros os sistemas que não possuam nenhum tipo de Pontos Únicos de Falha, a partir disso podemos assumir algumas premissas, como a que quando um SPoF falha, o sistema pode entrar em modo degradado no melhor dos casos, ou parar completamente no pior. Logo, quanto maior a responsabilidade de um componente, maior o impacto de sua falha caso não existam [Fluxos de Fallback](). Outra característica importante é que recuperações manuais ou rebuilds desses componentes levam tempo e podem causar perdas significativas. 
 
 <br>
@@ -79,21 +78,25 @@ Failover automático depende de monitoramento confiável, critérios claros de d
 
 ![Ativo / Ativo](/assets/images/system-design/ativo-ativo.drawio.png)
 
-Arquiteturas ativo-ativo permitem que múltiplas regiões ou clusters recebam tráfego simultaneamente, elevando significativamente a disponibilidade global. Contudo, essa abordagem amplia drasticamente a complexidade da consistência distribuída.
+Arquiteturas ativo-ativo permitem que múltiplas regiões ou clusters recebam tráfego simultaneamente, elevando significativamente a disponibilidade global. Contudo, essa abordagem amplia drasticamente a complexidade da consistência distribuída. 
 
-Modelos multi-master exigem estratégias explícitas de resolução de conflitos, como last write wins ou estruturas convergentes como CRDTs. A disponibilidade aumentada vem acompanhada de maior esforço operacional e complexidade cognitiva.
+Modelos multi-master exigem estratégias explícitas de resolução de conflitos, como last write wins ou estruturas convergentes como CRDTs. A disponibilidade aumentada vem acompanhada de maior esforço operacional e complexidade cognitiva. Em muitos casos, o ativo-ativo distribui o risco, mas não o elimina; apenas torna o impacto menos concentrado.
 
 ## Ativo-Passivo
 
 ![Ativo / Passivo](/assets/images/system-design/ativo-passivo.drawio.png)
 
-O modelo ativo-passivo mantém uma região primária processando tráfego enquanto outra permanece preparada para assumir em caso de desastre. Essa abordagem equilibra simplicidade e resiliência. Embora menos complexa que o ativo-ativo, ainda protege contra falhas regionais significativas.
+O modelo ativo-passivo mantém uma região primária processando tráfego enquanto outra permanece preparada para assumir em caso de desastre. Essa abordagem equilibra simplicidade e resiliência. Embora menos complexa que o ativo-ativo, ainda protege contra falhas regionais significativas. 
+
+Esse modelo equilibra custo e resiliência, sendo amplamente utilizado em ambientes regulados ou que exigem consistência forte. No entanto, a sincronização contínua de dados precisa ser validada regularmente, e em momento de chaveamento, a região passiva pode lidar com consistencia eventual de dados até que os mecanismos de sincronização estejam atualizados. 
 
 ## Pilot Light (Luz Piloto)
 
 ![Pilot Light](/assets/images/system-design/pilot-light.drawio.png)
 
 No modelo Pilot Light, apenas os componentes essenciais permanecem ativos na região secundária, como bancos de dados replicando continuamente. Os demais recursos são provisionados sob demanda durante o desastre. Essa estratégia reduz custos operacionais, mas aumenta o tempo de recuperação, pois parte da infraestrutura precisa ser ativada e escalada após o evento.
+
+O modelo Pilot Light assume explicitamente que desastres regionais são eventos raros e que parte da infraestrutura pode ser provisionada sob demanda caso ocorram. Ele reduz custo operacional, mas aumenta o tempo de recuperação. O sucesso dessa estratégia depende muito do nível de automação para acionar o mesmo em caso de falhas, necessitando uma quantidade significativa de testes e simulações de desastres para validar que o warm-up dos recursos em stand-by serão provisionados de forma suficiente e em tempo hábil para chaveamento do tráfego sem impactar demais a experiência de uso do cliente. 
 
 ### Referencias 
 
