@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/capa-bulkheads.png
+image: assets/images/system-design/capa-cell-based.png
 author: matheus
 featured: false
 published: true
