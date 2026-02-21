@@ -11,6 +11,8 @@ title: System Design - Single Point of Failure e Disaster Recovery
 
 Em sistemas ditribuidos, a confiabilidade é um dos temas de maior importância na construção de serviços. Existem infinitas possibilidades que podem acarretar em alta disponibilidade ou problemas de disponibilidade de um sistema, e uma das formas de identificar oportunidades de otimização de [resiliência](), além de [encontrar gargalos](), é identificar os Pontos Unicos de Falha entre os componentes. Nesse rápido capítulo, vamos explorar de forma simples esse conceito e treinar o olhar crítico para identificar possíveis riscos e oportunidades.
 
+{% include latex.html %}
+
 <br>
 
 # Definindo um Single Point of Failure
@@ -74,6 +76,10 @@ Se a falha não for detectada rapidamente ou se a promoção for manual e lenta,
 
 Failover automático depende de monitoramento confiável, critérios claros de decisão e mecanismos transparentes de redirecionamento de tráfego.
 
+# Disaster Recovery 
+
+## Definindo Disaster Recovery
+
 ## Ativo-Ativo
 
 ![Ativo / Ativo](/assets/images/system-design/ativo-ativo.drawio.png)
@@ -98,6 +104,135 @@ No modelo Pilot Light, apenas os componentes essenciais permanecem ativos na reg
 
 O modelo Pilot Light assume explicitamente que desastres regionais são eventos raros e que parte da infraestrutura pode ser provisionada sob demanda caso ocorram. Ele reduz custo operacional, mas aumenta o tempo de recuperação. O sucesso dessa estratégia depende muito do nível de automação para acionar o mesmo em caso de falhas, necessitando uma quantidade significativa de testes e simulações de desastres para validar que o warm-up dos recursos em stand-by serão provisionados de forma suficiente e em tempo hábil para chaveamento do tráfego sem impactar demais a experiência de uso do cliente. 
 
+<br>
+
+# Métricas e KPI's de Recuperação
+
+Quando colocamos o marco de que, tanto a eliminação de desastres quanto a inexistência completa de Single Point of Failures são de fato impossíveis, e o trabalho de projetar sistemas de alta disponibilidade operacional passa a ser sobre criar camadas de resiliência e contenção desses eventuais impactos, precisamos metrificar a efetividade das estratégias empregadas ao longo do tempo para comparações, para que identificar se estamos degradando ou melhorando a experiência do sistema. 
+
+Para elaborar essa discussão, precisamos sair do campo qualitativo das estratégias e nos focar nos aspectos quantitativo, governando as estratégias por métricas. As principais métricas que iremos abordar serão o MTTD, MTBF, MTTR, RTO e RPO. Elas não são independentes, e sim formam um sistema matematicamente interligado que determina disponibilidade, risco e impacto das falhas de sistemas de forma mais profissional e embasada. 
+
+## MTTD - Mean Time to Detect
+
+O MTTD (Mean Time to Detect) representa o tempo médio entre o início de uma falha e sua detecção pelo sistema ou equipe operacional, é uma métrica que mede o tempo médio que leva para uma equipe ou sistema identificar que um incidente ou falha ocorreu. Imagine um serviço de e-commerce que sofre um problema na sua base de dados, causando lentidão nas transações dos clientes. O MTTD seria o tempo desde o início dessa lentidão até o momento em que a equipe responsável é acionada para intervenção.
+
+O calculo do MTTD é a soma das diferenças entre a deteção e inicio dos incidentes ao decorrer do tempo dividido pelo numero de incidentes no mesmo período. 
+
+\begin{equation}
+MTTD = \frac{\text{Diferença Entre O Inicio e Detecção dos Incidentes}}{\text{Numero De Incidentes}}
+\end{equation}
+
+Por exemplo, temos a tabela dos ultimos incidentes de uma aplicação durante um período
+
+| Hora Inicio   | Hora da Deteção   | Tempo Total   |
+|---------------|-------------------|---------------|
+| 11:00 AM      |  12:00 AM         | 60 min        |
+| 05:12 AM      |  05:30 AM         | 18 min        |
+| 03:40 PM      |  04:00 PM         | 20 min        |
+| 10:12 PM      |  10:33 PM         | 21 min        |
+| 09:11 AM      |  10:02 PM         | 51 min        |
+
+<br>
+
+Podemos calcular o MTTD do sistema da seguinte forma:
+
+\begin{equation}
+MTTD = \frac{(60 + 18 + 20 + 21 + 51)}{5}
+\end{equation}
+
+\begin{equation}
+MTTD = \text{34 minutos}
+\end{equation}
+
+Ele está diretamente ligado ao investimento de tempo e inteligência de engenharia em observabilidade sistemica, contemplando logs, métricas, traces e alertas que garantam que o time esteja sempre monitorando os indicadores corretos e recebendo notificações com antecedência. 
+
+Um MTTD alto indica ausência de observabilidade em pontos importantes da solução. Em sistemas distribuídos complexos, falhas raramente são binárias no âmbito disponível e não disponível, e sim degradam progressivamente, como aumentos de latência, formação de filas internas, saturação, erros intermitentes e timeouts em cascata. Um MTTD baixo é importante, pois quanto mais rápido uma falha é detectada, mais cedo o processo de recuperação pode ser iniciado. 
+
+## MTTR - Mean Time to Repair
+
+O Mean Time to Repair (MTTR) é o tempo médio necessário para reparar uma falha e restaurar o sistema à operação normal de forma completa, uma métrica que acompanha diretamente o MTTD. Em estratégias de recuperação de desastres, minimizar o MTTR é o indicador que traduz operacionalmente se estamos trabalhando com os pontos de falhas e reduzir o impacto no usuário final.
+
+
+O calculo do MTTR é a soma das diferenças de tempo entre a recuperação do incidente e deteção do mesmo dividido pelo numero de incidentes no mesmo período.
+
+\begin{equation}
+MTTR = \frac{\text{Diferença Entre a Detecção e a Resolução dos Incidentes}}{\text{Numero De Incidentes}}
+\end{equation}
+
+Por exemplo: 
+
+| Hora da Deteção   | Hora da Recuperação   | Tempo Total   |
+|-------------------|-----------------------|---------------|
+| 12:00 AM          |  13:30 AM             |  90 min       |
+| 05:30 AM          |  07:15 AM             |  105 min      |
+| 04:00 PM          |  04:00 PM             |  132 min      |
+| 10:33 PM          |  10:55 PM             |  22 min       |
+| 11:02 PM          |  14:15 PM             |  193 min      |
+
+
+<br>
+
+Podemos calcular o MTTR do sistema da seguinte forma:
+
+\begin{equation}
+MTTR = \frac{(90 + 105 + 132 + 22 + 193)}{5}
+\end{equation}
+
+\begin{equation}
+MTTR = \text{108 minutos}
+\end{equation}
+
+Um MTTR baixo significa que o time de operação sabe lidar com as falhas conhecidas e reestabelecer os serviços de forma eficiênte e coordenada de uma forma rápida. Um MTTR alto significa o inverso, que times levam muito tempo para reestabelecer os serviços, sejam pela complexidade operacional envolvida, ou pela inexistência de processos bem definidos e documentados para recuperação de falhas.  
+
+Para reduzir o MTTR, o time de engenharia precisa focar em documentações, runbooks, automações de tarefas de recuperação e self-healing, scripts de rollback, reinicio de serviços, as mesmas ferramentas de diagnótiscos que dão suporte ao MTTD e processos de escalonamento de incidentes e comunicações corporativas fortes e disseminadas culturalmente. 
+
+## MTBF - Mean Time Between Failures
+
+O Mean Time Between Failures (MTBF) é uma métrica que indica o tempo médio esperado entre duas falhas de um mesmo sistema. Basicamente a diferença de tempo entre dois acionamentos graves. É um dos indicadores de confiabilidade mais importantes, pois quanto maior o MTBF, mais confiabilidade temos no sistema em questão, 
+
+Diferente das métricas anteriores, o MTBF considera o intervalo entre o término de um incidente e o início do próximo.
+
+\begin{equation}
+MTBF = \frac{\text{Soma dos Tempos de Operação Saudável}}{\text{Número de Falhas}}
+\end{equation}
+
+| Ordem | Recuperação Anterior | Próximo Início          | Intervalo    |
+| ----- | -------------------- | ----------------------- | ---------    |
+| 1     | 07:15 AM             | 09:11 AM                | 116 min      |
+| 2     | 02:15 PM             | 03:40 PM                | 85 min       |
+| 3     | 06:12 PM             | 10:12 PM                | 240 min      |
+| 4     | 10:55 PM             | 05:12 AM (dia seguinte) | 377 min      |
+
+<br>
+
+Podemos calcular o MTBF do sistema da seguinte forma:
+
+\begin{equation}
+MTBF = \frac{(116 + 85 + 240 + 377)}{4}
+\end{equation}
+
+\begin{equation}
+MTBF = 204{,}5 \text{ minutos}
+\end{equation}
+
+Um MTBF alto sugere que um sistema é mais estável e exige menos intervenções do time técnico em ambiente produtivo. Um MTBF baixo sugere que existem muitos componentes frágeisou estratégias que precisam de revisão. Esta métrica é fundamental para o planejamento de capacidade, manutenção preventiva e avaliação da qualidade de hardware e software.
+
+## RTO - Recovery Time Objective
+
+O Recovery Time Objective (RTO) é o tempo máximo aceitável que um sistema ou serviço pode ficar indisponível após a detecção de uma falha ou desastre. Esse numero tem interesse contratual, pois vão determinar qual o ferramental, estratégias e investimentos seão necessários para garantir a continuidade operacional. Soluções mais rápidas de recuperação geralmente são mais caras e complexas de implementar. Um RTO de "zero" significa que o sistema deve ser recuperado instantaneamente e os clientes não tem apetite para falhas em nenhum aspecto, o que é extremamente difícil e caro de alcançar. Atingir o RTO envolve projetar sistemas com redundância, automação de failover, backups eficientes e processos de restauração bem testados, identificando e criando fallbacks para o maior numero possível de SPoF's conhecidos.
+
+
+Uma aplicação bancária transacional pode ter um RTO de 1 hora, significando que, após qualquer tipo de desastre, ela deve estar completamente operacional em no máximo 60 minutos. Já um blog pessoal, site instituciona ou pequenos ecommerces podem ter um RTO de 12, 24 ou 48 horas, pois o impacto de uma indisponibilidade, por mais que exista, é menor. Os dois exemplos guiariam por exemplo, o nível de investimento e engenharia que deve ser inserido na estratégia. Garantir ambientes celulares, multiplos shardings, arquiteturas multi-datacenters, multi-região e multi-cloud em sistemas que possuem RTO's menos exigentes não faz sentido financeiramente. Já ao contrário, pode justiticar o investimento e complexidade. 
+
+## RPO - Recovery Point Objective
+
+O RPO (Recovery Point Objective) define a quantidade máxima de dados que pode ser perdida após um desastre, normalmente é uma métrica relacionada a defasagem entre os dados primários e os backups e lags de replicação. Ela, assim como o RTO, é uma métrica contratual. Essa métrica guia o nível de investimento necessário em backups e estratégias de replicação de dados. Se backups ocorrem a cada 12 horas, tenho um RPO de 12 horas minutos. Se possuo 15 minutos de lag de replicação entre os dados de um sistema primário e secundário, meu RPO é 5 minutos.
+
+Um RPO baixos ou proximos de zero significa que a perda de dados deve ser mínima ou inexistente, exigindo soluções de replicação contínua ou backups muito frequentes. Um RPO de "zero" normalmente implica em replicação síncrona ou soluções de banco de dados distribuídos altamente consistentes entre todas as zonas e regiões secundárias do dado. 
+
+O nível de criticidade do dado guia a necessidade do RPO.  Sistemas financeiros, transacionais, hospitalares de aviação precisam ter acordos de RPO's mais criteriosos. Sistemas como redes sociais, sistemas institucionais e afins, podem lidar com opções mais flexíveis. 
+
+
 ### Referencias 
 
 [Single Point of Failure (SPOF) in System Design](https://levelup.gitconnected.com/single-point-of-failure-spof-in-system-design-c8bbac5af993)
@@ -109,3 +244,9 @@ O modelo Pilot Light assume explicitamente que desastres regionais são eventos 
 [Why a Single Point of Failure (SPOF) is Scary](https://www.anomali.com/blog/why-single-point-of-failure-is-scary)
 
 [Understanding Single Point Failures: A Guide to System Resilience](https://bryghtpath.com/single-point-failures/)
+
+[Qual a diferença entre MTTR, MTBF, MTTD e MTTF?](https://www-logicmonitor-com.translate.goog/blog/whats-the-difference-between-mttr-mttd-mttf-and-mtbf?_x_tr_sl=en&_x_tr_tl=pt&_x_tr_hl=pt&_x_tr_pto=tc)
+
+[What Is MTTD? The Mean Time to Detect Metric, Explained](https://www.splunk.com/en_us/blog/learn/mean-time-to-detect-mttd.html)
+
+[What Is MTTD (Mean Time to Detect)? A Detailed Explanation](https://www.sentinelone.com/blog/mttd-mean-time-to-detect-detailed-explanation/)
