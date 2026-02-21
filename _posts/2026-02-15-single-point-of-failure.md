@@ -78,7 +78,11 @@ Failover automático depende de monitoramento confiável, critérios claros de d
 
 # Disaster Recovery 
 
-## Definindo Disaster Recovery
+O Disaster Recovery é um conjunto de estratégias, processos, arquiteturas e automações projetadas para restaurar sistemas após eventos de grande impacto que ultrapassam o escopo de falhas locais que são corriqueiras para a aplicação. Desastres não são falhas normais. São eventos de grande escala que ultrapassam os limites aceitáveis de operação de um produto, como por exemplo quedas de Cloud Providers, incidentes climáticos, downtimes de componentes críticos e centralizados e etc. 
+
+Diferente da mitigação de SPoFs, que normalmente atua em nível de componente, o Disaster Recovery opera no nível de produto com escopo amplamente sistemico e até mesmo regional. Um SPoF pode derrubar um serviço específico. Um desastre pode comprometer um datacenter inteiro, uma região de nuvem ou até múltiplos serviços simultaneamente. Incêndios, falhas elétricas, corrupção massiva de dados, erros humanos em larga escala, ataques cibernéticos ou falhas generalizadas de provedores são exemplos comuns.
+
+Existem alguns modos de operação de DR's que podemos avaliar para implementar em necessidades do tipo. 
 
 ## Ativo-Ativo
 
