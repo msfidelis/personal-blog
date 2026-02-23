@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/capa-resiliencia.png
+image: assets/images/system-design/capa-spof.png
 author: matheus
 featured: false
 published: true
