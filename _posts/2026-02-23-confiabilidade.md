@@ -53,13 +53,47 @@ Resumindo, monitoramento está diretamente ligado a identificar e alertar sobre 
 
 # Três Pilares da Observabilidade
 
-## Logs 
+## Métricas
 
-Logs são registros textuais de eventos que ocorrem em um sistema. São a saída do runtime que representam algo que ocorreu. Eles capturam informações detalhadas sobre ações, erros e estados em momentos específicos, como timestamps, mensagens de erro ou transações de usuários
+Métricas são aspectos quantitativos e estatísticos do software que tem o objetivo de medir comportamentos, desempenho e demais estados de um sistema a longo do tempo. Métricas por si só tem características temporais e fornecem uma visão de tendências durante períodos do dia. Métricas podem operar tanto no nível técnico quanto no de negócio. Existem métricas técnicas como tempo de resposta, quantidade de sucessos, quantidade de erros, contadores de status code, métricas de status de circuit breakers abertos e fechados, acionamentos de fallbacks e etc. As métricas de negócio operam num nível mais característico e especifico da aplicação, e podem ser variações de quantidade de vendas, quantidade de pagamentos aceitos, pagamentos recusados, quantidade de transações autorizadas, negadas, quantidade de vezes recusas por falta de saldo e demais validações. 
+
+### Contadores 
+
+Um valor que só aumenta (ou reseta para zero, como na reinicialização de um serviço). É útil para contar o número de eventos, como requisições totais, erros, itens processados.
+
+### Gauges 
+
+Representa um valor numérico que pode aumentar ou diminuir. É perfeito para medir valores pontuais, como uso de CPU, memória em uso, número de conexões ativas ou a temperatura atual.
+
+### Histogramas
+
+Amostra observações (como durações de requisições ou tamanhos de resposta) e as agrupa em baldes (buckets) configuráveis. Ele permite calcular quantis e percentis (ex: "99% de todas as requisições foram concluídas em menos de 300ms").
 
 ## Traces
 
-## Métricas
+Em ambientes distribuídos de microserviços, uma unica transação pode passar por dezenas de serviços diferentes para ser considerada concluída. Traces tem o objetivo de capturar amostras de solicitações detalhando as mesmas de fim a fim, catalogando todas as entradas e saídas de uma transação através de multiplos componentes de um sistema distribuído. Eles mostram o campinho fim a fim da transação, incluindo tempos de precessamento, latência, erros de chamada entre serviços e etc. Diferente dos logs, que são isolados, traces conectam eventos em uma narrativa coesa, revelando como diferentes partes do sistema interagem.
+
+Traces são utilizados para entender erros e desvios de tempos de resposta de uma transação, e facilita entender o "porquê" de um problema em contextos complexos.. Num trace fim a fim podemos compreender o tempo de execução a nível de funções, métodos, queries de bancos de dados, clientes HTTP de todas as aplicações que interagem durante o funcionamento de uma transação. 
+
+
+## Logs 
+
+Logs são registros textuais de eventos que ocorrem em um sistema. São a saída do runtime que representam algo que ocorreu.  Um log é um registro imutável vindo da aplicação que o emitiu de um evento discreto que ocorreu em um ponto específico no tempo dentro de uma aplicação ou sistema, e normalmente vem acompanhado de metadados e um timestamp para comparação e ordenação histórica para ser correlacionado numa linha de tempo isoladamente ou com outras aplicações quando estruturado.
+
+Eles capturam informações detalhadas sobre ações, erros e estados em momentos específicos, mensagens de erro, dados da transação, informação dos payloads ou dados do usuário usuários. Em essência, logs funcionam como um diário detalhado do sistema, permitindo que exita uma investigacão funcional de problemas, e diferente dos traces ele possui uma característica de troubleshooting funcional, onde nem todo "problema" do software é necessariamente um "erro" ou um "desvio". Ele nos ajuda a responder coisas como "O que aconteceu com a transação xxx?", "O que um usuário específico fez?", "Qual foi o erro exato que causou a falha desta requisição?", "Quais foram os parâmetros de uma função quando ela foi chamada e qual foi seu retorno?". 
+
+### Níveis de Severidade
+
+### Estruturação e Indexação de Logs
+
+O maior desafio da ingestão de logs, está em essência em custo. Aplicações podem gerar gigabytes ou terabytes de logs por dia, tornando o armazenamento e a análise uma tarefa muito complicada. Podem conter uma variedade imensa de informações e valores únicos e despadronizados como IDs de usuário, IDs de requisição, mensagens de erro detalhadas, stack traces gigantes, que são sim dados úteis, mas quando trabalhamos por indexação utilizando os valores desses campos, podemos sofrer com alguns problemas relacionados a performance e custo. 
+
+Logs de texto puro são difíceis de analisar em escala. Logs estruturados e padronizados, por exemplo, em JSON permitem que ferramentas de agregação de logs realize a indexação por campos específicos mais buscados, filtros e agregações de forma menos custoza computacionalmente e financeiramente. 
+
+
+
+<br>
+
 
 ## Agregados dos Pilares 
 
