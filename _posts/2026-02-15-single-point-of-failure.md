@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Single Point of Failure e Disaster Recovery
+title: System Design - Single Point of Failure, Disaster Recovery e KPI's de Falha
 ---
 
 
@@ -55,11 +55,11 @@ No entanto, externalizar o estado desloca a responsabilidade de resiliência par
 
 ![Ativa](/assets/images/system-design/spof-ativa.drawio.png)
 
-**Uma redundância ou replicação ativa é um modelo no qual todas as instâncias e réplicas de um serviço trabalham simultaneamente para receber e processar as requisições da carga de trabalho.** Resumidamente, nenhuma das réplicas tem como objetivo ficar ociosa aguardando uma falha geral para que assuma o processamento primário das requisições. Esse arranjo arquitetural pode ser encontrado em réplicas de aplicações atrás de balanceadores de carga, onde todas são verificadas quanto à integridade e recebem carga quase que uniformemente mediante a solicitação do serviço, ou em sistemas de mensageria, onde todas as réplicas estão conectadas aos tópicos/filas e podem receber mensagens e eventos para processar. No geral, esse tipo de arquitetura, quando trabalhada sem estado, permite que, na falha eventual de pequenas quantidades de réplicas, o sistema continue operando e consiga se recuperar sem gerar grandes danos — ou nenhum dano — à experiência do cliente.
+**Uma redundância ou replicação ativa é um modelo no qual todas as instâncias e réplicas de um serviço trabalham simultaneamente para receber e processar as requisições da carga de trabalho.** Resumidamente, nenhuma das réplicas tem como objetivo ficar ociosa aguardando uma falha geral para que assuma o processamento primário das requisições. Esse arranjo arquitetural pode ser encontrado em réplicas de aplicações atrás de balanceadores de carga, onde todas são verificadas quanto à integridade e recebem carga quase que uniformemente mediante a solicitação do serviço, ou em sistemas de mensageria, onde todas as réplicas estão conectadas aos tópicos/filas e podem receber mensagens e eventos para processar. No geral, esse tipo de arquitetura, **quando trabalhada sem estado, permite que, na falha eventual de pequenas quantidades de réplicas, o sistema continue operando e consiga se recuperar sem gerar grandes danos** (ou de preferência, nenhum dano) à experiência do cliente.
 
 Na replicação ativa, todas as instâncias operam simultaneamente processando carga real. **Esse modelo dilui o impacto da falha de uma ou mais réplicas, pois as demais continuam absorvendo requisições.** Balanceadores de carga distribuindo tráfego uniformemente e consumidores paralelos processando mensagens em tópicos são exemplos mais básicos dessa abordagem.
 
-Esse modelo também pode ser encontrado em réplicas de leitura de bancos de dados que possuam estado transacional, contendo todos os dados escritos nas réplicas primárias. Além de possuir um viés de disponibilidade, onde essa réplica é capaz de assumir o papel de escrita em caso de falha na réplica principal, pode exercer funcionalidades ativas na segregação de escrita e leitura em diferentes instâncias.
+Esse modelo também pode ser encontrado em réplicas de leitura de bancos de dados que possuam estado transacional, contendo todos os dados escritos nas réplicas primárias. Além de possuir um viés de disponibilidade, onde essa **réplica é capaz de assumir o papel de escrita em caso de falha na réplica principal**, pode exercer funcionalidades ativas na segregação de escrita e leitura em diferentes instâncias.
 
 **Esse modelo, entretanto, exige mecanismos consistentes de sincronização de dados, especialmente quando há escrita concorrente.** Em bancos de dados com réplicas de leitura promovíveis, a replicação ativa pode tanto aumentar a disponibilidade quanto melhorar a performance por meio da segregação de leitura e escrita.
 
@@ -68,7 +68,7 @@ Esse modelo também pode ser encontrado em réplicas de leitura de bancos de dad
 
 ![Passiva](/assets/images/system-design/spof-passiva.drawio.png)
 
-**Na replicação passiva, apenas uma instância atua como primária, enquanto outra permanece em standby, aguardando falha para assumir.** Esse modelo reduz a complexidade quando comparado ao ativo-ativo, mas introduz dependência crítica nos mecanismos de detecção e promoção.
+**Na replicação passiva, apenas uma instância atua como primária, enquanto outra permanece em standby, aguardando falha para assumir.** Esse modelo reduz a complexidade quando comparado ao ativo-ativo somente em termos de replicação e latência, mas introduz dependência crítica nos mecanismos de detecção e promoção, e nos faz assumir que precisamos ter ambientes altamente replicados que estejam disponíveis para assumir um chaveamento brusco ou gradual sem piorar a experiência do cliente ou criar inconsistências irrecuperáveis. 
 
 Se a falha não for detectada rapidamente ou se a promoção for manual e lenta, o tempo de indisponibilidade pode ser significativo.
 
