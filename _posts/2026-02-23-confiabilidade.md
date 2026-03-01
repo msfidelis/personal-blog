@@ -71,7 +71,9 @@ Amostra observações (como durações de requisições ou tamanhos de resposta)
 
 ## Traces
 
-Em ambientes distribuídos de microserviços, uma unica transação pode passar por dezenas de serviços diferentes para ser considerada concluída. Traces tem o objetivo de capturar amostras de solicitações detalhando as mesmas de fim a fim, catalogando todas as entradas e saídas de uma transação através de multiplos componentes de um sistema distribuído. Eles mostram o campinho fim a fim da transação, incluindo tempos de precessamento, latência, erros de chamada entre serviços e etc. Diferente dos logs, que são isolados, traces conectam eventos em uma narrativa coesa, revelando como diferentes partes do sistema interagem.
+Em ambientes distribuídos de microserviços, uma unica transação pode passar por dezenas de serviços diferentes para ser considerada concluída. Traces tem o objetivo de capturar amostras de solicitações detalhando as mesmas de fim a fim, catalogando todas as entradas e saídas de uma transação através de multiplos componentes de um sistema distribuído. 
+
+Eles mostram o campinho fim a fim da transação, incluindo tempos de precessamento, latência, erros de chamada entre serviços e etc. Diferente dos logs, que são isolados, traces conectam eventos em uma narrativa coesa, revelando como diferentes partes do sistema interagem.
 
 Traces são utilizados para entender erros e desvios de tempos de resposta de uma transação, e facilita entender o "porquê" de um problema em contextos complexos.. Num trace fim a fim podemos compreender o tempo de execução a nível de funções, métodos, queries de bancos de dados, clientes HTTP de todas as aplicações que interagem durante o funcionamento de uma transação. 
 
@@ -83,6 +85,57 @@ Logs são registros textuais de eventos que ocorrem em um sistema. São a saída
 Eles capturam informações detalhadas sobre ações, erros e estados em momentos específicos, mensagens de erro, dados da transação, informação dos payloads ou dados do usuário usuários. Em essência, logs funcionam como um diário detalhado do sistema, permitindo que exita uma investigacão funcional de problemas, e diferente dos traces ele possui uma característica de troubleshooting funcional, onde nem todo "problema" do software é necessariamente um "erro" ou um "desvio". Ele nos ajuda a responder coisas como "O que aconteceu com a transação xxx?", "O que um usuário específico fez?", "Qual foi o erro exato que causou a falha desta requisição?", "Quais foram os parâmetros de uma função quando ela foi chamada e qual foi seu retorno?". 
 
 ### Níveis de Severidade
+
+Quando tratamos os logs como "diário detalhado" do sistema, a classificação de severidade é o componente semântico que traduz um fluxo textual qualquer em um componente de telemetria "interrogável". Os níveis de severidade classificam os registros imutáveis de log em criticidade e contexto que diz “o que esse evento significa” e “o que alguém deve fazer a respeito”. Os níveis mais comuns (TRACE, DEBUG, INFO, WARN, ERROR e FATAL/CRITICAL) existem para representar intenções diferentes, não só gravidade do ocorrido. Nesta sessão iremos abordar os critérios de classificação claros de cada um deles. 
+
+| Level            | Intenção                                                                 |
+|------------------|---------------------------------------------------------------------------|
+| TRACE            | Rastrear passos internos muito finos para investigação pontual |
+| DEBUG            | Explicar decisões internas e facilitar troubleshooting         |
+| INFO             | Registrar fatos relevantes do fluxo e do domínio                 |
+| WARN             | Registrar um desvio recuperável                   |
+| ERROR            | Falha de operação    |
+| FATAL / CRITICAL | Falha terminal a nível de runtime                   |
+
+<br>
+
+#### Nível TRACE
+
+TRACE é o nível de microscopia. Ele existe para quando você precisa observar o caminho exato que o código percorreu, com granularidade alta e verbosa, tipicamente em investigações pontuais, como ordem de decisões internas, branchs condicionais, parâmetros intermediários, transformações de payload, detalhes de serialização/deserialização, e qualquer nuance que ajude a reproduzir um comportamento que não aparece em logs mais altos, podendo ir até na verbosidade do protocolo de uma comunicação. 
+
+#### Nível DEBUG
+
+O Debug trabalha a nível de diagnóstico. Ele fica abaixo do “contar a história” e acima do “registrar absolutamente tudo”. A intenção do DEBUG é explicar o porquê de uma decisão do sistema, dando visibilidade a variáveis e estados relevantes para troubleshooting, como escolhas de fallback, printar parâmetros que levaram a uma regra de negócio a seguir por um caminho, identificação de dependências chamadas e seus tempos, composição de requests para serviços downstream, resultados de validações, e checkpoints do fluxo que ajudam a localizar o ponto exato de divergência. Geralmente utilizado durante períodos de crise para tratar condicionais muito específicas que levam a desvios não tão obvios, muito útil para sistemas que possuem multiplos fluxos e uma visão "não tão" deterministica a nível de conhecimento do time técnico e de multiplas condicionais internas. 
+
+#### Nível INFO
+
+O INFO trabalha num aspecto narrativo da transação. Ele registra eventos relevantes do ponto de vista do sistema e do domínio, de modo que, quando você costura o fluxo por um correlationId, você consegue ler uma história. O objetivo do INFO é rastrear uma transação de forma consistente e cronológica, como quando uma requisição entrou, quem é a entidade forte dela, se uma operação foi aceita/recusada, se um estado mudou, quando job iniciou e finalizou, quando e como um evento de domínio foi publicado, como e quando uma transação completou com todas as informações relevantes para tratar um `Correlation` a nível de um agregado forte. 
+
+#### Nível WARN
+
+O WARN é o nível do desvio com continuidade. É quando algo saiu do ideal, mas o sistema ainda conseguiu seguir adiante, como uma dependência que respondeu de forma mais lenta e um retry foi necessário, um fallback foi acionado, um circuito abriu por proteção, um timeout quase estourou, uma fila começou a crescer, uma validação marginal foi aceita por regra de tolerância, um cache miss inesperado elevou latência, uma operação precisou degradar para manter disponibilidade. Um bom WARN é acionável deve carregar contexto para permitir triagem, e pode ser utilizado para confiabilidade porque ele frequentemente aparece antes do incidente. 
+
+#### Nível ERROR
+
+ERROR é falha de operação. Aqui a execução não atingiu o resultado esperado do ponto de vista daquela transação. A requisição falhou e retornou erro, um critério de domínio foi violado e o comando foi rejeitado, uma dependência falhou sem compensação possível, uma transação abortou, uma transação no banco de dados não foi concluída, uma conexão não conseguiu ser fechada, uma mensagem não pôde ser processada e foi para DLQ, um dado essencial estava ausente, ou um estado ficou inconsistente a ponto de impedir continuidade.
+
+Um ERROR precisa ser pensado como “log de triagem” e deve dizer o que falhou, por que falhou junto com usa possível causa, onde falhou e em qual componente, e como correlacionar com o resto do fluxo respeitando Correlation ID's. 
+
+#### Nível FATAL
+
+FATAL (ou CRITICAL, dependendo do ecossistema) é falha terminal, aquela que compromete a continuidade do processo ou do serviço. É quando o runtime não consegue seguir, o processo cai, o serviço não inicia, uma configuração essencial é inválida, um recurso crítico não está acessível na inicialização, ou uma condição irrecuperável foi atingida e a única resposta segura é encerrar. Como por exemplo um NullPointer crítico, uma dependência crítica que não pode ser acessada, falta de variáveis e parametrizações necessárias para iniciar a aplicação e etc. Logs FATAL são geralmente associados a operações de runtime, e que impedem da aplicação de funcionar. 
+
+<br>
+
+### Correlação de Logs 
+
+A principal função dos logs está no seu nível de detalhes úteis. Uma métrica pode mostrar a quantidade de erros dentro de um período específico, porém um log tem o objetivo de mostrar os outputs da aplicação que indicam quais erros, exceções e em que cenários aqueles erros aconteceram. Em ambientes cada vez mais distribuídos com multiplos serviços dentro de uma mesma transação, podemos estabelecer padrões de campos que se repetem em todos os serviços pelos quais uma determinada transação passa, para que seja possível correlacionar os logs de diversas aplicações e gerar uma "história" de uma transação. 
+
+![Log Correlation Search](/assets/images/system-design/log-correlation-search-min.png)
+
+![Log Correlation Result](/assets/images/system-design/log-correlation-result.png)
+
+**Os Logs para terem valor, precisam contar uma história**. Conceitualmente, **trabalhamos uma transação como um agregado, e as linhas de log como itens decorrentes desse agregado.** Quando bem estruturado, esse padrão nos permite através de identificadores únicos como `trace_id`, `correlation_id`, `order_id` e através dos mesmos correlacionar os logs de diversas fontes para explicar como uma determinada transação ocorreu, como o extrato de uma história. **Talvez esse seja o cenário onde, os logs vão de fato, gerar todo o seu potencial e justificar seus altos custos de ingestão, armazenamento e retenção.**
 
 ### Estruturação e Indexação de Logs
 
