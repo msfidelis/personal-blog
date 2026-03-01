@@ -73,6 +73,8 @@ Amostra observações (como durações de requisições ou tamanhos de resposta)
 
 Em ambientes distribuídos de microserviços, uma unica transação pode passar por dezenas de serviços diferentes para ser considerada concluída. Traces tem o objetivo de capturar amostras de solicitações detalhando as mesmas de fim a fim, catalogando todas as entradas e saídas de uma transação através de multiplos componentes de um sistema distribuído. 
 
+![trace](/assets/images/system-design/trace.png)
+
 Eles mostram o campinho fim a fim da transação, incluindo tempos de precessamento, latência, erros de chamada entre serviços e etc. Diferente dos logs, que são isolados, traces conectam eventos em uma narrativa coesa, revelando como diferentes partes do sistema interagem.
 
 Traces são utilizados para entender erros e desvios de tempos de resposta de uma transação, e facilita entender o "porquê" de um problema em contextos complexos.. Num trace fim a fim podemos compreender o tempo de execução a nível de funções, métodos, queries de bancos de dados, clientes HTTP de todas as aplicações que interagem durante o funcionamento de uma transação. 
