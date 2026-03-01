@@ -59,11 +59,11 @@ Métricas são aspectos quantitativos e estatísticos do software que tem o obje
 
 ### Contadores 
 
-Um valor que só aumenta (ou reseta para zero, como na reinicialização de um serviço). É útil para contar o número de eventos, como requisições totais, erros, itens processados.
+Um valor que só aumenta (ou reseta para zero, como na reinicialização de um serviço). É útil para contar o número de eventos, como requisições totais, erros, itens processados com sucesso, itens processados com erro, circuitos abertos e etc
 
 ### Gauges 
 
-Representa um valor numérico que pode aumentar ou diminuir. É perfeito para medir valores pontuais, como uso de CPU, memória em uso, número de conexões ativas ou a temperatura atual.
+Representa um valor numérico que pode aumentar ou diminuir. É perfeito para medir valores pontuais, como uso de CPU, memória em uso, número de conexões ativas, tempos de resposta e etc.
 
 ### Histogramas
 
@@ -160,9 +160,15 @@ Logs de texto puro são difíceis de analisar em escala. Logs estruturados e pad
 
 ## Four Golden Signals
 
+![Four Golden Signals](/assets/images/system-design/four-golden-signals.png)
+
 ## RED Method
 
+![RED](/assets/images/system-design/red-metrics.png)
+
 ## USE Method 
+
+![USED](/assets/images/system-design/use-resources.png)
 
 <br>
 
