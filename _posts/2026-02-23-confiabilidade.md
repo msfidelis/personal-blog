@@ -8,6 +8,8 @@ categories: [ system-design, engineering ]
 title: System Design - Observabilidade e Monitoramento
 ---
 
+{% include latex.html %}
+
 # Definindo Confiabilidade
 
 ## Disponibilidade, Durabilidade e Resiliência
@@ -176,13 +178,41 @@ Logs de texto puro são difíceis de analisar em escala. Logs estruturados e pad
 
 # Service Levels
 
-## SLA
+Os Service Levels são o principal framework de mercado para engenharia de confiabilidade. Tendo seu Inicio na Engenharia da Google, eles nos dão direcionamentos simples de como trasformar métricas técnicas em "estrelas guia" de produto que são capazes de serem interpretadas por diversos níveis de uma empresa. Na prática, eles viram a interface comum de linguagem entre engenharia e negócio, onde encontramos um comum acordo claro de  **qual é a experiência mínima aceitável**, **quais são as tolerâncias operacionais** e **qual é o custo de sustentar esse patamar desejado**.
 
-## SLO
+Um sistema pode ter dashboards extramamente detalhadas e ainda assim operar no escuro, se não houver um referencial explícito de “normalidade” e “aceitável” para a jornada do usuário, e é exatamente esse vácuo que SLA, SLO, SLI e Error Budget preenchem em sistemas maduros.
 
-## SLI
+## SLI - Service Level Indicator
+
+O SLI, ou Service Level Indicator, é o indicador mensurável que materializa o SLA e o SLO. O SLI é o dado que será observado, como por exemplo Availability/Uptime, Latency, Throughput, Error Rate, Saturation, Recovery Time e etc e etc. Ele indica qual será a métrica observada em ambos os casos. A escolha e a maturidade de um SLI deve ser bem criteriosa e evolutiva junto aos times de engenharia e junto aos próprios SLO's e SLA's. Podem tanto ser métricas técnicas como as citadas como também métricas de negócio ou específicas de um produto, como por exemplo acurácia de um modelo, taxas de aprovação de transações, redução de fraudes e etc. 
+
+## SLA - Service Level Agreement
+
+O SLA, ou Service Level Agreement, é o indicador mais importante a nível do cliente. O SLA é um **compromisso contratual** de nível de serviço, normalmente formalizado com clientes, áreas internas ou parceiros. Esse compromisso atua na esfera contratual de um provedor de algum servico, seja interno ou externo. 
+
+Quando contratamos algum serviço seja ele IaaS, SaaS ou PaaS, ele está inerente a um contrato de disponibilidade. Quando esse contrato é quebrado, podem existir consequencias juridicas ao prestador do serviço.  Por isso, SLA não é o lugar para “fidelidade técnica” e sim para **accountability**, ele tende a ser mais estável, mais conservador e menos granular, porque precisa ser mensurável, auditável e defendível. Ele está além de uma métrica do time técnico, que deve trabalhar com margens menores que o SLA como um objetivo operacional.  
+
+Um SLA está inerente a tudo que permeia a operação do cliente final, pode ser considerado a partir de disponibilidade, tempo de resposta, tempo de recuperação de desastre e etc. Os SLA's podem ser definidos como "Ter 99.99% de uptime, 99.9% de disponibilidade nas requisições, responder uma transação de cartão de crédito em menos de 600ms, ter um data-loss de no máximo 2h em RPO, ter um tempo de recuperacão de falhas de até 1h" e etc.
+
+Quando estabelecemos SLA's de disponibilidade, a definição dessa métrica nunca deve ser 100%, pois qualquer variação ou desvio pode comprometer o contrato. Ao invés disso, adicionamos "9's" ao mesmo, como por exemplo 99%, 99.9%, 99.99% e etc, mas nunca 100%. 
+
+Os SLAs precisam ser declados e conhecidos por todas as camadas do produto, times técnicos, negócios, marketing e suporte, e deve ter um escopo claro, como disponibilidade mensal, disponibilidade anual, disponibilidade diária, tempos de resposta e etc. O SLA inclusive, pode ser granular a nível de serviço ou feature do sistema, medido de forma isolada em uma jornada, endpoint e etc. 
+
+
+## SLO - Service Level Objective 
+
+O SLO, Service Level Objective, é o seu “contrato interno” de confiabilidade. O SLO sim, é uma métrica inerente ao time técnico, o critério que o time de engenharia usa para operar, decidir e tomar riscos. 
+
+Um SLO pode ser "responder em menos de 600ms em p99 e 500ms em p95. Garantir replicação de dados em 3 fatores. Ter uma média diária de error rate abaixo de 1% ou herdar diretamente os critérios do SLA. 
+
+Caso os SLI's dos SLO's forem os mesmos do SLA, eles devem ser mais apertados que o SLA, pois o mesmo também considera uma blindagem técnica do contrato. Por exemplo, se o SLA estabelecido por contrato é de uma disponibilidade mensal de 99.9% com um tempo de resposta de p99 de 800ms, o SLO precisa ser mais apertado, considerando em exemplo 99.95% de disponibilidade e um p99 de 500ms. A longo prazo, o objetivo de um SLO deveria virar o SLA do produto, e apertar ainda mais os critérios do time técnico com objetivo de excelência operacional. 
 
 ## Error Budget
+
+O Error Budget é o orçamento de erros a respeito de um contrato. Se o SLO define “quanto erro é aceitável”, o Error Budget define “quanto erro você ainda pode gastar antes de entrar em risco". Se nosso SLO é 99.95% de disponibilidade e nossos SLI's apontam para 99.98% de disponibilidade, isso significa que temos 00.03% de margem para erros dentro do sistema. 
+
+O objetivo do error budget, além de mostrar o quanto de margem ainda temos para errar dentro das metas técnicas, funciona como um indicador de feedback loop dentro das releases de software. Quando o budget está saudável e possuem margens consideráveis, você pode acelerar mudanças e deploys em produção, ao inverso disso, quando o budget está sendo consumido e muito proximo de atingir o limite, você desacelera, prioriza correções, reduz blast radius e aumenta rigor de release e revisões. Se o budget estourou, você **congela releases não essenciais**, direciona capacidade para estabilidade e direciona war rooms de observabilidade e acompanhamento.
+
 
 <br>
 
@@ -221,6 +251,8 @@ Observabilidade implica geração massiva de dados de telemetria, o que exige de
 
 [What is observability?](https://www.redhat.com/en/topics/devops/what-is-observability)
 
+[What are SLOs, SLIs, and SLAs? ](https://newrelic.com/blog/observability/what-are-slos-slis-slas)
+
 [Time, Clocks, and the Ordering of Events in a Distributed System](https://lamport.azurewebsites.net/pubs/time-clocks.pdf)
 
 [Conceitos OpenTelemetry - Ezzio Moreira](https://dev.to/ezziomoreira/conceitos-opentelemetry-9k0)
@@ -244,3 +276,5 @@ Observabilidade implica geração massiva de dados de telemetria, o que exige de
 [SLOs: a guide to setting and benefiting from service level objectives](https://grafana.com/blog/slos-a-guide-to-setting-and-benefiting-from-service-level-objectives/)
 
 [What Are Feedback Loops?](https://www.splunk.com/en_us/blog/learn/feedback-loops.html)
+
+[SLI's, SLA's e SLO's :: Não sabe por onde começar com suas métricas? Comece por aqui! ](https://www.nanoshots.com.br/2019/12/sre-slo-slis-nao-sabe-por-onde-comecar.html)
