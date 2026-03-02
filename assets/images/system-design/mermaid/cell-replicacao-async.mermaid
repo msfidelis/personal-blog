@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    participant C as Client
+    participant G as Cell Gateway (Active)
+    participant A as Cell A (Active)
+    participant O as Outbox / CDC Log
+    participant B as Broker (Topic/Queue)
+    participant P as Cell B (Passive)
+    participant R as Cell Gateway (Passive)
+    
+    C->>G: POST /command (customerId=123123)
+    G->>A: Route(K) -> Cell A
+    A->>A: Validação + Commits
+    A->>O: Append event (Outbox/CDC)
+    A-->>G: 200 OK (ack imediata)
+    G-->>C: 200 OK
+
+    Note over O,B: Replicação assincrona
+    O-->>B: Publish DomainEvent(123123, valor)
+    B-->>P: Deliver DomainEvent(123123, valor)
+    P->>P: Idempotency check + Apply
+    P-->>R: Update projections / caches
+
+    alt Falha na célula ativa após ack
+        Note over C,A: O cliente recebeu OK, celula passiva com consistencia eventual
+        R-->>C: Reads podem observar lag até convergir
+    end
