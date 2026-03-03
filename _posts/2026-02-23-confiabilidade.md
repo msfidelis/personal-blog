@@ -162,17 +162,48 @@ Logs de texto puro são difíceis de analisar em escala. Logs estruturados e pad
 
 # Frameworks de Mercado
 
+<br>
+
 ## Four Golden Signals
 
 ![Four Golden Signals](/assets/images/system-design/four-golden-signals.png)
+
+<br>
+
+## USE Method 
+
+![USED](/assets/images/system-design/use-resources.png)
+
+O USE Method surge no contexto de engenharia de performance de sistemas, popularizado e formalizado pelo Brendan Gregg no artigo "Thinking Methodically about Performance" como uma estratégia de checagem sistemática e padronizada da “saúde” de recursos físicos alocados. 
+
+O objetivo do Metodo Use é dar visibilidade para cada recurso como CPU, memória, disco, rede, e outros recursos como filas e pools e observar os mesmos em três dimensões principais: Utilization, Saturation e Errors. Esses recursos como  podem ser recursos alocados para aplicações dentro de containers ou servidores quanto de suas dependências como Databases, Caches, Filas e etc.
+
+Ele descreve o USE como um método para começar uma investigação de queda de performance de forma simples e objetiva para monitorar sinais vitais e identificar gargalos sistêmicos com velocidade.
+
+### Utilization (Utilização)
+
+Utilization é quanto do recurso está sendo consumido em um intervalo de tempo. Em CPU pode ser percentual de tempo em execução, ou percentual utilizado perante ao alocado. Em memória pode ser o alocado perante ao provisionado, em disco pode ser busy time / throughput perante ao limite de IOPs, em rede pode ser bandwidth consumida perante ao total permitido, em pools pode ser conexões em uso perante ao limite do banco e afins. Utilization é um indicador de carga e tendência. Ele é útil para capacity planning, para detecção de regressão e para “contextualizar” saturação. 
+
+
+### Saturation (Saturação)
+
+### Errors (Erros)
+
+<br>
 
 ## RED Method
 
 ![RED](/assets/images/system-design/red-metrics.png)
 
-## USE Method 
+O RED Method nasce da necessidade equivalente ao USE, mas para serviços e aplicações. Como vimos, o USE foi concebido para recursos e infraestrutura, enquanto microserviços pedem uma visão de métricas direcionadas para experiência e o comportamento do serviço em produção através de três dimensões básicas. O termo é associado a Tom Wilkie e Grafana  através de diversos artigos e apresentações técnicas direcionadas a instrumentação e e monitoramento de serviços, principalmente em sistemas distribuídos. 
 
-![USED](/assets/images/system-design/use-resources.png)
+O RED busca simplificar sinais vitais mais importantes para qualquer aplicações Web, sendo eles Rate, Errors e Duration. Em caso de duvidas do que monitorar, a base será isso. 
+
+### Rate (Request Rate / Throughput)
+
+### Errors (Error Rate)
+
+### Duration (Request Duration / Latency)
 
 <br>
 
@@ -263,6 +294,8 @@ Observabilidade implica geração massiva de dados de telemetria, o que exige de
 
 [Service Level Objective](https://sre.google/sre-book/service-level-objectives/)
 
+[Thinking Methodically about Performance](https://queue.acm.org/detail.cfm?id=2413037)
+
 [4 SRE Golden Signals (What they are and why they matter) ](https://firehydrant.com/blog/4-sre-golden-signals-what-they-are-and-why-they-matter/)
 
 [USE and RED Method](https://pagertree.com/learn/devops/what-is-observability/use-and-red-method)
@@ -278,3 +311,5 @@ Observabilidade implica geração massiva de dados de telemetria, o que exige de
 [What Are Feedback Loops?](https://www.splunk.com/en_us/blog/learn/feedback-loops.html)
 
 [SLI's, SLA's e SLO's :: Não sabe por onde começar com suas métricas? Comece por aqui! ](https://www.nanoshots.com.br/2019/12/sre-slo-slis-nao-sabe-por-onde-comecar.html)
+
+[The RED Method: How to Instrument Your Services](https://grafana.com/blog/the-red-method-how-to-instrument-your-services/)
