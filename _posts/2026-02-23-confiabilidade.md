@@ -12,9 +12,14 @@ title: System Design - Observabilidade e Monitoramento
 
 # Definindo Confiabilidade
 
-## Disponibilidade, Durabilidade e Resiliência
+Confiabilidade, é a propriedade de um sistema **entregar comportamento correto ao longo do tempo**, sob condições esperadas e sob uma fração representativa de condições adversas. Confiabilidade vai muito além de uma aplicação “ficar de pé”, e não é sinônimo direto de “alta disponibilidade”. Um sistema pode estar tecnicamente disponível e ainda assim ser pouco confiável se responde com dados errados, se degrada de forma caótica, se apresenta latência imprevisível ou se não consegue manter invariantes essenciais do domínio quando pressionado. 
 
-## Confiabilidade e Feedback Loops
+Confiabilidade portanto agrega o conceito de continuidade de serviço, integridade e previsibilidade em termos operacionais. 
+
+A utilidade dessa definição é que ela coloca confiabilidade no lugar certo: como uma **restrição arquitetural** e um **contrato operacional**, e não como um “atributo desejável”. A partir daqui, todos os termos que irão ser abordados nesse capítulo como SLIs/SLOs, error budget, Four Golden Signals, RED, USE e demais estratégias abordadas em outros capítulos como estratégias de redundância, padrões de resiliência e práticas de incident response passam a ser consequência de um objetivo de reduzir a probabilidade e o impacto de comportamentos incorretos, reduzir o tempo para detectar e recuperar, e limitar o blast radius quando algo inevitavelmente falhar. 
+
+A Confiabilidade então, é um conjunto de práticas e disciplinas da engenharia e arquitetura de software que busca atingir níveis cada vez maiores e auditáveis de continuidade operacional. 
+
 
 <br>
 
@@ -162,11 +167,10 @@ Logs de texto puro são difíceis de analisar em escala. Logs estruturados e pad
 
 # Frameworks de Mercado
 
-<br>
+Antes de entrar nos frameworks de mercado, vale estabelecer o porquê eles existem e qual problema real eles resolvem. Pois a princio, perante a vários cases de uso complexos com multiplos níveis de observabilidade e operação, de primeiro momento eles podem parecer bem simplistas. Mas não são. O objetivo dos frameworks de mercado é dar "estrelas guia" simplificadas para os times de engenharia e produto. Dentro de produtos de tecnologia, a maior parte das discussões operacionais degrada por dois caminhos previsíveis: ou o time se afoga em centenas de métricas desconexas, sem conseguir distinguir sintoma de causa, ou se apega a uma ou duas métricas “fáceis” como CPU média, 5xx, latência média e toma decisões erradas com muita confiança. 
 
-## Four Golden Signals
+O objetivo dos frameworks como Four Golden Signals, RED e USE sugerem métricas simples e fácilmente entendiveis que vão atuar como bussolas de navegação do sistema em produção. Usar eles, de forma alguma, descaracteriza a necessidade de observar dimensões mais detalhadas, apenas simplifica o entendimento da saúde do serviço através de métricas direcionadas. 
 
-![Four Golden Signals](/assets/images/system-design/four-golden-signals.png)
 
 <br>
 
@@ -187,7 +191,14 @@ Utilization é quanto do recurso está sendo consumido em um intervalo de tempo.
 
 ### Saturation (Saturação)
 
+A Saturação é o estado de superalocação de um recurso computacional como CPU, Memória, Thread Pools e Connection Pools. Geralmente é monitorado pela utilização percentual atual de um recurso alocado. Por exemplo, "quantos % das CPUs disponíveis estão sendo utilizada agora". Quando esse recurso começa a degradar por operar próximo da sua totalidade, ou em sua totalidade, entendemos que esse recurso está saturado. 
+
+Em CPU, saturação pode aparecer como run queue (processos esperando CPU), como throttling de cgroup, e o comumente usado load average. Em memória, pode aparecer como swapping, Garbage Collector em excesso, alocação falhando e etc. Em disco, aparece como filas de I/O, iowait, latência de I/O, backlog de flush. Em rede, aparece como drops, retransmissões, filas no kernel e afins. 
+
 ### Errors (Erros)
+
+Errors no USE são falhas diretamente associadas ao recurso monitorado. Em CPU, falhas por starvation, ou erros de scheduling. Em memória, OOMKills, allocation failures, crashes por falta de heap, evictions. Em disco, I/O errors, timeouts, corrupções, falhas de mount. Em rede, connection resets, TLS handshakes falhando por exaustão de recursos, packet loss, DNS failures. Em pools, “too many connections”, “thread pool exhausted”, “queue full”, “rate limit exceeded”. O valor desses erros é o sinal necessário para dizer que o recurso provisionado e alocado não está sendo suficiente para suportar a quantidade de trabalho. 
+
 
 <br>
 
@@ -199,11 +210,61 @@ O RED Method nasce da necessidade equivalente ao USE, mas para serviços e aplic
 
 O RED busca simplificar sinais vitais mais importantes para qualquer aplicações Web, sendo eles Rate, Errors e Duration. Em caso de duvidas do que monitorar, a base será isso. 
 
+
 ### Rate (Request Rate / Throughput)
+
+O Rate representa a pressão de demanda sobre o serviço e a sua capacidade efetiva de processar demanda. Ele evidencia quantas transações estão chegando no sistema em um determinado agrupamento de tempo, com o "transações por segundo", "requests por minuto" e etc. Ele representa o quando do sistema está sendo requisitado pelos clientes. 
+
+Essa métrica pode ser medida em um contexto global do sistema todo mas além disso deve ser medida de forma granular também a nível de endpoint e funcionalidade, como requisições por segundo por rota, por operação (GET/POST), por tenant, por região, por versão (canary vs stable) e etc. 
+
+O request rate é a primeira métrica a ser monitorada, pois o aumento do rate de uma aplicação e funcionalidade pode acarretar em saturação e aumento proporcional de erros e filas internas caso não trabalhem com escalabilidade horizontal de forma responsiva. Ela também nos ajuda a identificar picos e tendências de uso do sistema, que podem ser insights valiosos para Capacity Planning e aplicar estratégias de autoscaling. 
 
 ### Errors (Error Rate)
 
+Os Errors são diretamente ligadas ao Request Rate, pois tem o objetivo de demonstrar a porcentagem das requisições que estão chegando para o sistema estão falhando. A métrica tem o critério de medir falhas observáveis do ponto de vista do consumidor, mas ele só é útil se “erro” for definido de forma semântica. 
+
+É comum que essa semantica considere apenas erros “HTTP 5xx”. Isso é insuficiente por dois motivos: primeiro porque 4xx pode representar degradação com base em desvios, como autenticação falhando por clock skew, validações quebradas por mudança de contrato, “429” por rate limit excessivo e etc. Em confiabilidade, erro é tudo aquilo que viola a expectativa de sucesso do consumidor: falha de autorização indevida, timeout, resposta inválida, inconsistência, idempotência quebrada, duplicidade, e até sucesso tardio quando o usuário já desistiu. 
+
+Resumindo, todos os códigos de erro, sejam eles 4xx e 5xx devem ser monitorados e considerados, porém nem todos precisam ser considerados como SLO's, apenas observados a nível de serviço. 
+
+
 ### Duration (Request Duration / Latency)
+
+Duration mede o tempo para completar uma operação do ponto de vista do consumidor. É o critério mais fácil de medir e o mais fácil de medir errado. O primeiro ponto de atenção, é o uso apenas da média da latência em sistemas complexos. A média pode ser deturpada quando estamos tendo problemas de tempos de resposta em uma distribuição de cauda longa, e as caudas são onde a experiência degrada, os timeouts disparam e o retry começa a amplificar carga. Duration precisa ser analisada em percentis (p50/p95/p99) e, idealmente, com histogramas para ver a forma da distribuição. Quando aplicados também a nível granular por métodos ou endpoints, podemos entender quais as funcionalidades que estão apresentando desvios de tempos de resposta para acelerar o troubleshotting e o tempo de recuperação. 
+
+<br>
+
+## Four Golden Signals
+
+![Four Golden Signals](/assets/images/system-design/four-golden-signals.png)
+
+Os Four Golden Signals são uma forma direcionada e simpliificada de descrever a saúde operacional de um sistema user-facing, evitando o caos de métricas infinitas. O conceito foi popularizado pela literatura do Google a respeito de Site Reliability Engineering e tem o objetivo de realizar uma recomendação explicita de quatro métricas principais, os Sinais de Ouro, ou Sinais Dourados. Esses quatro sinais tem o objetivo até mesmo de indicar métricas de SLO's de forma simples.
+
+O objetivo é padronizar métricas em escopos pequenos, médios e grandes, evitando o fenômeno de “monitoramento por acúmulo”, em que times passam a colecionar uma quantidade muito grande de métricas e dashboards, mas sem um modelo mental coeso, e mesmo com grande quantidade de ferramental acabam incapazes de responder rapidamente à perguntas simples como “o sistema está saudável do ponto de vista do usuário?", "quais os sistemas degradados agora?" e etc. 
+
+Os quatro sinais são Latency, Traffic, Errors e Saturation. 
+
+### Latency
+
+A Latência nos Four Golden Signals corresponde ao tempo que um sistema, transação ou funcionalidade leva pra responder uma requisição. No modelo, isso inclui tanto resposta bem-sucedidas quando respostas com erro, porque para uma experiência de usuário, "rápido e errado" ainda é um comportamento observável que tem muita importância, tanto quanto "lento e correto". 
+
+A latência, assim como outras leituras de outros frameworks de mercado, também não deve considerar apenas a média, e precisam levar em consideração a leitura de percentís que podem dar visão a comportamentos escondidos de outliers, como p99, p95, p90, p50 e etc. 
+
+
+### Traffic 
+
+O Traffic, Trafego ou Throughput busca dar visibilidade na quantidade de solicitações que o sistema está recebendo dentro de um contexto de tempo, e pode ser ilustrado como Requisições por Segundo, Transações por Segundo, Queries por Segundo, Bytes, Mensagens e etc, ilustrando o "quanto de trabalho" está chegando ao sistema.  
+
+Aqui o objetivo também é dar visibilidade para comportamentos causais, como quando o tráfego sobe, você precisa separar crescimento legítimo de uso do sistema das demandas de amplificação por mecanismos internos como retries, fanout, reprocessamento, loops, cache miss em massa, ou abuso indevido do serviço.
+
+### Errors
+
+Os Errors é a taxa de falhas percebidas perante ao Traffic. Na definição do livro do Google, erros podem aparecer como códigos de erros internos como 5xx, mas também como falhas explícitas de protocolo e falhas semânticas de resultado, dependendo do que faz sentido para o sistema. A principio também é necessáro monitorar erros do cliente 4xx para entender comportamentos e desvios. 
+
+
+### Saturation
+
+Saturation é um sinal de proximidade de esgotamento dos recursos provisionados para a aplicação. Responde o quanto o sistema está “no limite” de algum recurso crítico, e, principalmente, o quanto trabalho está acumulando porque o recurso não consegue acompanhar. Por exemplo, o quanto do nosso tráfego está se aproximando dos níveis de rate limit estabelecidos na API, o quanto do uso das CPU's da aplicação está proximo de um limite de risco e etc. 
 
 <br>
 
@@ -244,33 +305,6 @@ O Error Budget é o orçamento de erros a respeito de um contrato. Se o SLO defi
 
 O objetivo do error budget, além de mostrar o quanto de margem ainda temos para errar dentro das metas técnicas, funciona como um indicador de feedback loop dentro das releases de software. Quando o budget está saudável e possuem margens consideráveis, você pode acelerar mudanças e deploys em produção, ao inverso disso, quando o budget está sendo consumido e muito proximo de atingir o limite, você desacelera, prioriza correções, reduz blast radius e aumenta rigor de release e revisões. Se o budget estourou, você **congela releases não essenciais**, direciona capacidade para estabilidade e direciona war rooms de observabilidade e acompanhamento.
 
-
-<br>
-
-# Modelagem de Telemetria
-
-Observabilidade implica geração massiva de dados de telemetria, o que exige decisões arquiteturais sobre amostragem, retenção, cardinalidade e agregação.
-
-## Modelagem de Transporte e Coleta (Push & Pull)
-
-## Cardinalidade de Métricas
-
-## Estruturação de Logs 
-
-## Correlation ID's 
-
-## Context Propagation
-
-## Sampling (Head, Tail, Adaptative)
-
-
-<br>
-
-# Observabilidade em Arquiteturas Modernas
-
-## Microservices 
-
-## Event Driven Architectures
 
 <br>
 
