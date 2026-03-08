@@ -344,10 +344,6 @@ O objetivo do error budget, além de mostrar o quanto de margem ainda temos para
 
 <br>
 
-# Single Pane of Glass 
-
-<br>
-
 ### Referências
 
 [What is observability?](https://www.redhat.com/en/topics/devops/what-is-observability)
