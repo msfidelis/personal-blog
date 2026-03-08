@@ -31,6 +31,8 @@ A Teoria do Controle é um ramo da engenharia e da matemática que estuda como m
 
 A observabilidade em sistemas de software depende de saídas, registros e métricas de desempenho para cumprir esse papel. Trata-se da capacidade de compreender o estado interno de um sistema complexo a partir dos eventos e sinais externos que ele emite. 
 
+![Observability](/assets/images/system-design/observability.png)
+
 Esses eventos e sinais podem ser traduzidos inicialmente nos três pilares da observabilidade, como logs, traces e métricas. O objetivo é entender comportamento, padrões e construir estruturas que sejam "interrogáveis" através de padrões e dimensões conhecidas e não conhecidas. Podemos presumir que: **uma vez que conseguimos correlacionar logs, traces e métricas para elaborar questionamentos complexos sobre o sistema, temos observabilidade.** E ainda mais, **se podemos utilizar logs, traces e métricas para conduzir análises exploratórias, temos observabilidade**.  
 
 Por mais que seja altamente dependente, a observabilidade é uma propriedade estrutural de um sistema, não um conjunto de ferramentais. É altamente possível de que empresas, produtos e estruturas inteiras disponham de ferramentais altamente complexos e caros, e mesmo assim não possuam observabilidade em essência. 
@@ -52,13 +54,28 @@ Resumindo, monitoramento está diretamente ligado a identificar e alertar sobre 
 
 ### Monitoramento como Detecção de Sintomas 
 
+Monitoramento é, em essência, a disciplina de detectar sintomas conhecidos de degradação, falha ou risco operacional. Antes de qualquer coisa, só monitoramos o que é claro e conhecido. Ter clareza sobre esse conceito é muito importante para a diferenciação do mesmo. Ele parte do princípio de que já sabemos, com algum grau de clareza, quais sinais merecem ser acompanhados e quais desvios dos mesmos representa uma ameaça à saúde do sistema. O monitoramento trabalha com métricas, eventos e thresholds previamente definidos, observando comportamentos esperados e disparando alertas quando algo sai da normalidade conhecida.
+
+Quando configuramos alertas para dimensões conhecidas como o aumento de taxa de erro, aumento de latência, saturação de CPU e memória, filas ou tópicos acumulando mensagens e eventos, locks em banco de dados ou falha em health checks, estamos modelando sintomas de que algo pode estar errado. Não estamos necessariamente explicando a causa do problema, mas detectando que algo não está de acordo.
+
+Monitoramento pode ter sinais padronizados dentro de uma organização, mas é de extrema importância entender que o mesmo é evolutivo e amadurece junto ao sistema e ao time de engenharia. Sintomas conhecidos dependem de conhecimento prévio. Monitoramos aquilo que já aprendemos a medir, aquilo que já sabemos que pode falhar, ou aquilo que já identificamos historicamente como importante, e revisitamos esses critérios sempre que algo estrutural muda. 
+
 ### Observabilidade como Comportamento
 
-### Sistemas Determinísticos vs Sistemas Distribuídos
+Como vimos, o monitoramento está orientado a sintomas conhecidos. A observabilidade, por sua vez, está orientada a comportamento. Ela é a capacidade de explorar os sinais emitidos por um sistema de forma correlacionada para compreender como ele está se comportando internamente, mesmo quando o problema ainda não foi previamente modelado como uma condição de alerta. Enquanto o monitoramento pergunta “algo conhecido saiu do normal?”, a observabilidade permite perguntar “o que está acontecendo dentro do sistema para que esse comportamento esteja acontecido agora?”.
+
+Em sistemas distribuídos, uma degradação pode nascer em um ponto e se manifestar em outro. Uma causa pequena pode produzir um efeito grande dependendo da carga, da topologia e das dependências envolvidas. A observabilidade nos ajuda a correlacionar logs, métricas e traces emitidas por vários serviços envolvidos numa transação para encontrar a origem do comportamento com desvio. 
+
+Por isso, dizer que observabilidade está ligada a comportamento é dizer que ela se interessa menos por valores isolados e mais pela forma como o sistema reage ao longo do tempo, sob diferentes condições.
+
 
 <br>
 
 # Três Pilares da Observabilidade
+
+A observabilidade é a correlação direta de três pilares principais, sendo eles Métricas, Logs e Traces. Ambos possuem valor individual e seu contexto sistemico, porém quando somados e correlacionados, podemos extender esses sinais de forma isolada para uma visão de comportamento ampla de ambientes complexos. Quando nessa sessão, temos o objetivo de abordar cada um dos três, e explorar seus agregados como Alerting e APM. 
+
+<br>
 
 ## Métricas
 
@@ -66,15 +83,21 @@ Métricas são aspectos quantitativos e estatísticos do software que tem o obje
 
 ### Contadores 
 
-Um valor que só aumenta (ou reseta para zero, como na reinicialização de um serviço). É útil para contar o número de eventos, como requisições totais, erros, itens processados com sucesso, itens processados com erro, circuitos abertos e etc
+![Counters](/assets/images/system-design/counters.png)
+
+Contadores são valores que só aumentam (ou reseta para zero, como na reinicialização de um serviço). É útil para contar o número de eventos, como requisições totais, erros, itens processados com sucesso, itens processados com erro, circuitos abertos e etc. Durante a coleta, esses valores podem ser agregados em linhas temporais para entender comportamentos de utilização e picos. 
 
 ### Gauges 
 
-Representa um valor numérico que pode aumentar ou diminuir. É perfeito para medir valores pontuais, como uso de CPU, memória em uso, número de conexões ativas, tempos de resposta e etc.
+![Gauges](/assets/images/system-design/gauges.png)
+
+Um gauge representa um valor numérico que pode aumentar ou diminuir. É perfeito para medir valores pontuais, como uso de CPU, memória em uso, número de conexões ativas, tempos de resposta e etc. Ao contrário dos contadores, os gauges representam registros de valores absolutos que podem variar durante o tempo. 
 
 ### Histogramas
 
-Amostra observações (como durações de requisições ou tamanhos de resposta) e as agrupa em baldes (buckets) configuráveis. Ele permite calcular quantis e percentis (ex: "99% de todas as requisições foram concluídas em menos de 300ms").
+![Gauges](/assets/images/system-design/histogram.png)
+
+Os histogramas agregam observações (como durações de requisições ou tamanhos de resposta) e as agrupa em baldes (buckets) configuráveis. Ele permite calcular quantis e percentis (ex: "99% de todas as requisições foram concluídas em menos de 300ms") e etc. Ele nos ajuda a explorar agregações de métricas de forma mais complexa e aprofundadas analisando dispersão dos dados através de várias dimensões como média, mediana, percentis, desvio padrão e etc. 
 
 ## Traces
 
@@ -86,6 +109,7 @@ Eles mostram o campinho fim a fim da transação, incluindo tempos de precessame
 
 Traces são utilizados para entender erros e desvios de tempos de resposta de uma transação, e facilita entender o "porquê" de um problema em contextos complexos.. Num trace fim a fim podemos compreender o tempo de execução a nível de funções, métodos, queries de bancos de dados, clientes HTTP de todas as aplicações que interagem durante o funcionamento de uma transação. 
 
+<br>
 
 ## Logs 
 
@@ -148,9 +172,11 @@ A principal função dos logs está no seu nível de detalhes úteis. Uma métri
 
 ### Estruturação e Indexação de Logs
 
-O maior desafio da ingestão de logs, está em essência em custo. Aplicações podem gerar gigabytes ou terabytes de logs por dia, tornando o armazenamento e a análise uma tarefa muito complicada. Podem conter uma variedade imensa de informações e valores únicos e despadronizados como IDs de usuário, IDs de requisição, mensagens de erro detalhadas, stack traces gigantes, que são sim dados úteis, mas quando trabalhamos por indexação utilizando os valores desses campos, podemos sofrer com alguns problemas relacionados a performance e custo. 
+O maior desafio da ingestão de logs, está em custo. Aplicações podem gerar gigabytes ou terabytes de logs por dia, tornando o armazenamento e a análise uma tarefa muito complicada. Podem conter uma variedade imensa de informações e valores únicos e despadronizados como IDs de usuário, IDs de requisição, mensagens de erro detalhadas, stack traces gigantes, que são sim dados úteis, mas quando trabalhamos por indexação utilizando os valores desses campos, podemos sofrer com alguns problemas relacionados a performance e custo. 
 
-Logs de texto puro são difíceis de analisar em escala. Logs estruturados e padronizados, por exemplo, em JSON permitem que ferramentas de agregação de logs realize a indexação por campos específicos mais buscados, filtros e agregações de forma menos custoza computacionalmente e financeiramente. 
+![Logs](/assets/images/system-design/log-json.png)
+
+Logs de texto puro são difíceis de analisar em escala. Logs estruturados e padronizados, por exemplo, em JSON permitem que ferramentas de agregação de logs realize a indexação por campos específicos mais buscados, filtros e agregações de forma menos custoza computacionalmente e financeiramente. Podemos indexar a partir de correlation ID's, ID's de conta, level de criticidade e afins. Ter um formato e campos padronizados, pode ser sim um desafio em ambientes maiores, porém torna o pilar de logs altamente mais eficiente em custos de armazenamento, escala e busca. 
 
 
 
@@ -159,9 +185,19 @@ Logs de texto puro são difíceis de analisar em escala. Logs estruturados e pad
 
 ## Agregados dos Pilares 
 
+Além dos três pilares, temos dois outros termos que nos ajudam a agregar confiabilidade de sistemas, sendo eles os alerting e APM. 
+
 ### Alerting 
 
+Alerting, ou Alertas, são os mecanismos que transformam os números e dimensões já conhecidos de degradação de um sistema em sinais para intervenção humana. É a disciplina responsável por observar sinais emitidos por logs, métricas, traces ou agregados desses pilares e decidir quando uma condição saiu do campo da simples medição e foi para um campo onde será necessária uma intervenção. É uma forma de saber de forma automatizada que um determinado comportamento do sistema atingiu um nível de risco, desvio ou impacto e que o mesmo merece reação humana ou automatizada.
+
+Do ponto de vista de confiabilidade, o maior valor do alerting está em acelerar feedback loops sobre o comportamento do sistema. Quanto mais cedo um comportamento degradado é percebido pelo time de engenharia responsável, menor tende a ser o tempo de detecção, menor a chance de amplificação do dano para o cliente e maior a possibilidade de contenção do impacto antes de um impacto sistêmico maior pra todo o ambiente. Alertas bem definidos reduzem MTTD (Mean Time To Detect), ajudam a proteger o error budget, orientam war rooms e criam um senso de prioridade operacional.
+
 ### APM 
+
+APM, ou Application Performance Monitoring, é a camada de observabilidade voltada a compreender como uma aplicação se comporta durante a execução de trabalho útil visando entender a experiência do cliente. Enquanto métricas de infraestrutura ajudam a enxergar o estado de recursos alocados, métricas de aplicação a entender o estado operacional de negócio e os traces ajudam a reconstruir o caminho de uma transação fim a fim, o APM organiza esses sinais ao redor da experiência da própria aplicação, destacando operações, endpoints, dependências, tempos de resposta, throughput, taxas de erro e fragmentos relevantes de execução para que seja possível observar a saúde do software com mais proximidade do uso real. 
+
+O APM tenta responder perguntas como "quais operações estão mais lentas agora", "quais delas regrediram após uma mudança", "quais endpoints concentram mais erro", "quais dependências estão consumindo mais tempo da transação", "onde estão os gargalos de latência", "qual parte do fluxo ficou mais cara sob carga" e "quais jornadas estão sofrendo de forma mais perceptível". Ele busca agregar todos os sinais de observabilidade através de um guarda-chuva de experiência de uso. 
 
 <br>
 
