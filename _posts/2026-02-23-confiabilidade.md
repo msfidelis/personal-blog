@@ -8,6 +8,10 @@ categories: [ system-design, engineering ]
 title: System Design - Observabilidade e Monitoramento
 ---
 
+Após elaborarmos diversos tópicos como [Performance, Capacidade, Escalabilidade](/performance-capacidade-escalabilidade/), [Métricas de Continuidade de Negócio](/single-point-of-failure) e diversos outros assuntos relacionados, esse capítulo tem o objetivo de fazer um "recap" de alguns conceitos de forma simplificada, dando o ponto de vista final de Observabilidade, Monitoramento e Confiabilidade. Nele vamos conceituar algumas pontas soltas referentes a Logs, Métricas, Traces, Alerting, APM e principalmente como utilizar a simplicidade de diversos frameworks de mercado como USE, RED e os Four Golden Signals alinhados a negócio para encontrar métricas comuns, de fácil entendimento e principalmente alinhadas entre times técnicos e de negócio. 
+
+Aqui, vamos elucidar principalmente como os temas de Observabilidade, Monitoramento e Confiabilidade se correlacionam e se complementam entre si. Vamos entender cada um dos pilares da observabilidade e que tipo de entendimento estratégico precisamos ter sobre cada um deles. 
+
 {% include latex.html %}
 
 # Definindo Confiabilidade
