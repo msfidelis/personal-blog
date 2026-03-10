@@ -5,7 +5,7 @@ author: matheus
 featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
-title: System Design - Single Point of Failure, Disaster Recovery e KPI's de Falha
+title: System Design - Single Point of Failure, Disaster Recovery e Continuidade Operacional
 ---
 
 
