@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering, cloud ]
 title: System Design - Single Point of Failure, Disaster Recovery e Continuidade Operacional
+excerpt: Entenda o que é Single Point of Failure (SPoF) e como projetar sistemas resilientes utilizando redundância, replicação, failover automático e estratégias de Disaster Recovery. Explore também métricas essenciais de confiabilidade como MTTD, MTTR, MTBF, RTO e RPO.
+seo_title: Single Point of Failure - SPoF, Disaster Recovery, Failover e Métricas de Confiabilidade
+seo_description: Um guia completo sobre Single Point of Failure (SPoF) em System Design. Aprenda como identificar pontos únicos de falha, aplicar estratégias de redundância e failover, e estruturar planos de Disaster Recovery utilizando métricas essenciais como MTTD, MTTR, MTBF, RTO e RPO para sistemas distribuídos resilientes.
 ---
 
 
