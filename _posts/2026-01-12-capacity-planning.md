@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering ]
 title: System Design - Capacity Planning e a Teoria das Filas
+excerpt: Um guia aprofundado de Capacity Planning em sistemas distribuídos, explorando Teoria das Filas, Lei de Little, Knee Curve e modelagem de carga para entender limites de throughput, latência e concorrência antes que gargalos se tornem incidentes.
+seo_title: Capacity Planning em Sistemas Distribuídos Teoria das Filas, Lei de Little e Knee Curve
+seo_description: Aprenda a planejar capacidade em sistemas distribuídos usando conceitos fundamentais como Queueing Theory, Little’s Law e Knee Curve. Entenda como modelar carga, analisar throughput, concorrência e latência para identificar gargalos, prever saturação e projetar crescimento sustentável em arquiteturas modernas.
 ---
 
 
