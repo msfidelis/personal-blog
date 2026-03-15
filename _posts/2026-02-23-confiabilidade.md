@@ -76,7 +76,7 @@ Por isso, **dizer que observabilidade está ligada a comportamento é dizer que 
 
 # Três Pilares da Observabilidade
 
-**A observabilidade é a correlação direta de três pilares principais**, sendo eles **Métricas, Logs e Traces**. Ambos possuem valor individual e seu contexto **sistêmico**, porém, quando somados e correlacionados, podemos **estender** esses sinais de forma isolada para uma visão de comportamento ampla de ambientes complexos. **Nesta seção, temos o objetivo de abordar cada um dos três e explorar seus agregados, como Alerting e APM.**
+**A observabilidade é a correlação direta de três pilares principais**, sendo eles **Métricas, Logs e Traces**. Todos eles possuem valor individual e seu contexto **sistêmico**, porém, quando somados e correlacionados, podemos **estender** esses sinais de forma isolada para uma visão de comportamento ampla de ambientes complexos. **Nesta seção, temos o objetivo de abordar cada um dos três e explorar seus agregados, como Alerting e APM.**
 
 <br>
 
