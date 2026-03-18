@@ -41,7 +41,7 @@ Imagine, por exemplo, uma aplicação responsável por gerenciar o backoffice de
 
 <br>
 
-### Vantagens de uma Arquitetura Monolítica
+## Vantagens de uma Arquitetura Monolítica
 
 Ao considerar uma arquitetura monolítica, percebemos benefícios como maior simplicidade na gestão de dependências e interações entre funcionalidades do sistema. Isso elimina a necessidade de protocolos e estratégias de comunicação adicionais, como *HTTP*, *gRPC*, *Webhooks* e *mensageria*. Além disso, é mais fácil construir novas funcionalidades, visto que os processos de desenvolvimento, teste e implantação são unificados — considerando, é claro, o melhor cenário possível.
 
@@ -56,7 +56,7 @@ No que diz respeito aos ciclos de vida dos produtos, essa abordagem também ofer
 Investir em testes unitários, de integração e seguir padrões de projeto consolidados no mercado pode garantir uma **vida útil mais longa e qualidade** para um sistema monolítico. A facilidade na implementação de testes de integração possibilita testar o comportamento do sistema de ponta a ponta.
 
 
-### Desvantagens de uma Arquitetura Monolítica
+## Desvantagens de uma Arquitetura Monolítica
 
 À medida que uma aplicação monolítica cresce, os desafios relacionados à sua escala e manutenção se tornam cada vez mais evidentes no dia a dia dos times de engenharia e produto, representando um fluxo "natural" no ciclo de vida da engenharia de software.
 
@@ -94,7 +94,7 @@ A construção de microsserviços também se torna comum com o aumento significa
 
 
 
-### Vantagens de uma Arquitetura de Microsserviços
+## Vantagens de uma Arquitetura de Microsserviços
 
 A vantagem citada com mais frequência em relação aos microsserviços é a **descentralização**. Isso se manifesta de diversas formas, como a capacidade de diferentes serviços serem desenvolvidos com distintas linguagens, tecnologias, frameworks, componentes e bancos de dados, cada um otimizado para atender às necessidades específicas de uma funcionalidade. Por exemplo, um microserviço que exige recursos de transações, onde a acurácia e a segurança dos dados são cruciais, pode ser projetado para usar bancos de dados que garantam propriedades [ACID](/teorema-cap/). Outro, focado em realizar buscas textuais, como uma busca de produtos em um e-commerce, pode ser desenvolvido com tecnologias adequadas para *full-text search*, como Elasticsearch e MongoDB.
 
@@ -106,7 +106,7 @@ Idealmente, em uma arquitetura de microsserviços, o **"Blast Radius" – ou "Ra
 
 
 
-### Desvantagens de uma Arquitetura de Microsserviços
+## Desvantagens de uma Arquitetura de Microsserviços
 
 Gerenciar múltiplos microsserviços é, sem dúvida, **mais complexo do que lidar com uma única aplicação monolítica**. Essa complexidade se estende a áreas como implantação, monitoramento e gerenciamento de falhas.
 
