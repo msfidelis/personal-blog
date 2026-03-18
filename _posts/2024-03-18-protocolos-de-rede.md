@@ -166,7 +166,7 @@ Se, devido a alguma necessidade específica de tecnologia, você precisa impleme
 
 <br>
 
-### DNS - Domain Name Service
+### DNS - Domain Name System
 
 O **Sistema de Nomes de Domínio**, ou **Domain Name System (DNS)**, é uma premissa fundamental da internet, atuando como uma "lista telefônica" da internet e da sua rede interna. Sem o DNS, teríamos que memorizar os endereços IP complexos para acessar sites, o que seria impraticável tanto em IPv4 quanto praticamente impossível em IPv6. Em vez disso, o DNS nos permite digitar nomes de domínio amigáveis, como `fidelissauro.dev`, e automaticamente encontrar o endereço IP correto para se conectar ao site ou host desejado.
 
