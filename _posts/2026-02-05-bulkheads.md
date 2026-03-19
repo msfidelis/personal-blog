@@ -43,7 +43,7 @@ Quando aplicado de forma correta, **o sistema deixa de ser visto como um bloco �
 
 # Implementações e Contenção de Falhas 
 
-**Bulkheads podem ser implementados em diferentes níveis da arquitetura**, mas todos compartilham o mesmo objetivo: impedir que a saturação de um recurso consuma a capacidade global do sistema. **A implementação correta exige clareza sobre quais recursos são finitos e como eles devem ser particionados**. Para uma melhor implementação, a estratégia de bulkheads exige clareza sobre quais recursos são finitos, quais são críticos e como eles devem ser particionados, e assim definir formas de identificar, redirecionar, redistribuir e monitorar o tráfego e as operações nesses compartimentos distintos. 
+**Bulkheads podem ser implementados em diferentes níveis da arquitetura**, mas todos compartilham o mesmo objetivo: impedir que a saturação de um recurso consuma a capacidade global do sistema. **A implementação correta exige clareza sobre quais recursos são finitos e como eles devem ser particionados**. Para direcionar a estratégia de forma correta, precisamos pontuar de forma objetiva quais recursos são finitos no sistema, quais são críticos e como eles devem ser segmentados, e assim definir formas de identificar, redirecionar, redistribuir e monitorar o tráfego e as operações nesses compartimentos distintos. 
 
 ![Contenção](/assets/images/system-design/Scale-Bulkhead-Falhas.png)
 
