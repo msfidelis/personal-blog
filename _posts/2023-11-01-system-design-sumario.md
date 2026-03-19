@@ -61,7 +61,7 @@ Espero que sua caminhada seja proveitosa e divertida. Obrigado pela confiança. 
 * [20. Saga Pattern](/saga-pattern/)
 * [21. Event Sourcing Pattern](/event-sourcing/)
 * [22. Patterns de Resiliência (Idempotencia, Circuit Breakers, Retries, Fallbacks, Timeouts e etc)](/resiliencia/)
-* [23. Monitoramento e Observabilidade](/confiabilidade)
+* [23. Monitoramento e Observabilidade](/observabilidade)
 * [24. Bulkhead Pattern](/bulkheads/)
 * [25. Cell Based Pattern](/cell-based)
 * [26. Modelos de Deployment (Blue/Green, Canary, Feature Toggles e etc)](/deployment-strategies/)
