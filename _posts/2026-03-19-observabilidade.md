@@ -170,7 +170,7 @@ A principal função dos logs está no seu nível de detalhe útil. Uma métrica
 
 ![Log Correlation Search](/assets/images/system-design/log-correlation-search-min.png)
 
-![Log Correlation Result](/assets/images/system-design/log-correlation-result.png)
+![Log Correlation Result](/assets/images/system-design/log-correlation.png)
 
 **Os logs, para terem valor, precisam contar uma história**. Conceitualmente, **trabalhamos uma transação como um agregado, e as linhas de log como itens decorrentes desse agregado**. Quando bem estruturado, esse padrão nos permite, por meio de identificadores únicos como `trace_id`, `correlation_id`, `order_id`, correlacionar os logs de diversas fontes para explicar como uma determinada transação ocorreu, como o extrato de uma história. **Talvez esse seja o cenário em que os logs vão, de fato, gerar todo o seu potencial e justificar seus altos custos de ingestão, armazenamento e retenção.**
 
