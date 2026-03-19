@@ -160,10 +160,6 @@ Além disso, os CRDTs **garantem consistência eventual**, ou seja, todos os nó
 
 * [Clayton Cavaleiro](https://bsky.app/profile/claytoncavaleiro.bsky.social)
 
-
->> Imagens geradas pelo DALL-E
-
-
 <br>
 
 ### Referências
