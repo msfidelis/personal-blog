@@ -42,7 +42,7 @@ Para ilustrar o conceito de multithreading, pense em seu **restaurante favorito*
 <br>
 
 
-# Concorrência 
+## Concorrência 
 
 **Concorrência é sobre lidar com muitas tarefas ao mesmo tempo**, mas não de forma simultânea. É a habilidade de uma aplicação gerenciar múltiplas tarefas e instruções em segundo plano no mesmo núcleo do processador, mesmo que essas instruções não estejam sendo processadas ao mesmo tempo ou executadas em outros núcleos diferentes.
 
@@ -149,7 +149,7 @@ costela foi preparado.
 
 <br>
 
-# Paralelismo 
+## Paralelismo 
 
 ![Paralelismo Robô](/assets/images/system-design/paralelism-example.png)
 
@@ -325,7 +325,7 @@ Já o paralelismo externo refere-se à **execução simultânea de múltiplas ta
 
 <br>
 
-# Paralelismo vs Concorrência
+## Paralelismo vs Concorrência
 
 Após uma análise detalhada, conseguimos distinguir conceitualmente **concorrência** de **paralelismo**. A **concorrência** lida com a execução de várias tarefas ao mesmo tempo, permitindo que um sistema execute múltiplas operações aparentemente simultâneas. Já o **paralelismo** envolve a execução literal de várias operações ou tarefas ao mesmo tempo.
 
@@ -339,7 +339,7 @@ Paralelismo, em geral, é concorrente, mas nem toda concorrência é paralela.
 
 <br>
 
-# Lidando com Paralelismo e Concorrência
+## Lidando com Paralelismo e Concorrência
 
 Agora que já detalhamos de forma lúdica e conceitual a definição de programação paralela e concorrente, é hora de explorar os desafios e ferramentas existentes para trabalhar com essas estratégias. Embora abordagens paralelas e concorrentes ofereçam várias vantagens, como melhoria de performance, escalabilidade e otimização de recursos, elas também trazem desafios significativos. Estes incluem questões de coordenação, condições de corrida, deadlocks, starvation e balanceamento de carga de trabalho, entre outros. Vamos agora definir conceitualmente alguns desses termos para facilitar seu entendimento e capacidade de explicá-los no futuro.
 
@@ -359,7 +359,7 @@ Starvation, ou inanição, ocorre quando uma ou mais threads não conseguem aces
 
 <br>
 
-## Race Conditions - Condições de Corrida
+### Race Conditions - Condições de Corrida
 
 ![Robô Race Condition](/assets/images/system-design/race-condition.png)
 
@@ -554,7 +554,7 @@ Total de itens grelhados na churrasqueira: 100
 
 <br>
 
-## Mutex Distribuído 
+### Mutex Distribuído 
 
 ![Robô Mutex Distribuído](/assets/images/system-design/mutex-distribuido.png)
 
@@ -570,7 +570,7 @@ Algumas estratégias comuns utilizam bancos de dados otimizados para operações
 
 No exemplo a seguir, em que utilizamos o Redis para apresentar um fluxo lógico de um algoritmo de Mutex, ao receber uma pseudo-mensagem, verificamos se já existe um lock para ela no Redis. Se o lock existir, descartamos o processamento da mensagem. Se não existir, criamos o lock, processamos a mensagem e, em seguida, liberamos o lock.
 
-### Exemplo de Implementação
+#### Exemplo de Implementação
 
 ```go
 package main
@@ -671,7 +671,7 @@ Esse é um exemplo simples pra entendimento do algoritmo que não trata todos os
 
 <br>
 
-## Mutex Distribuído - Zookeeper
+### Mutex Distribuído - Zookeeper
 
 Uma alternativa elegante ao Redis para gerenciar locks distribuídos é o uso do **Apache Zookeeper**. Embora a lógica fundamental seja semelhante ao exemplo anterior, o Zookeeper apresenta algumas peculiaridades interessantes.
 
@@ -687,7 +687,7 @@ Segue a lógica para o uso do Zookeeper na gestão de locks:
 - **Processamento da Solicitação**: Realizar as operações necessárias enquanto o lock está ativo.
 - **Remoção do Lock**: Após o processamento bem-sucedido, remover o lock para liberar o recurso.
 
-### Exemplo de Implementação
+#### Exemplo de Implementação
 
 
 ```go
