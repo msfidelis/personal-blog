@@ -11,12 +11,11 @@ seo_description: Entenda como projetar sistemas resilientes com padrões como Re
 excerpt: Neste artigo, exploramos os principais padrões de resiliência em System Design, como Retry, Fallback, Circuit Breaker, Backpressure e outros, aplicados ao contexto de sistemas distribuídos tolerantes a falhas.
 ---
 
-Nesse capítulo, iremos revisitar praticamente tudo o que já foi visto e dar pequenos spoilers de capítulos que ainda virão, porém com algumas óticas adicionais. A maioria, ou praticamente todos os tópicos já foram tratados em capítulos anteriores, o que mudará aqui será somente a perspectiva. Então, caso você tenha sentido falta de uma maior profundidade conceitual, recomendo fortemente voltar alguns passos atrás e reler os materiais.
+Nesse capítulo, iremos revisitar praticamente tudo o que já foi visto e dar pequenos spoilers de capítulos que ainda virão, porém com algumas óticas adicionais. A maioria, ou praticamente todos os tópicos, **já foram tratados em capítulos anteriores**, o que mudará aqui será somente a perspectiva. Então, caso você tenha sentido falta de uma maior profundidade conceitual, recomendo fortemente voltar alguns passos atrás e reler os materiais.
 
-Este material talvez seja um dos mais importantes desta série, porque, além de tratar de um dos temas centrais em sistemas distribuídos, apresenta minha proposta principal, que é entender conceitualmente algo e ser capaz de remoldar esse conceito para diferentes pontos de vista. Veremos que, a partir dessa linha, tudo o que veremos será abordado sob a ótica da resiliência, mas mesmo assim não perderá em nada seu propósito original de implementação.
+Este material talvez seja um dos mais importantes desta série, porque, além de tratar de um dos temas centrais em sistemas distribuídos, **apresenta minha proposta principal**, que é entender conceitualmente algo e ser capaz de remoldar esse conceito para diferentes pontos de vista. Veremos que, a partir dessa linha, tudo o que veremos será abordado sob a **ótica da resiliência**, mas, mesmo assim, não perderá em nada seu propósito original de implementação.
 
-Esta talvez seja a lição mais valiosa pela qual estou me esforçando para transmitir neste livro: um grande exercício para mim, como escritor, e para você, como leitor.
-
+Esta talvez seja a lição mais valiosa pela qual estou me esforçando para transmitir neste livro: **um grande exercício para mim, como escritor, e para você, como leitor.**
 
 {% include latex.html %}
 
@@ -24,9 +23,9 @@ Esta talvez seja a lição mais valiosa pela qual estou me esforçando para tran
 
 # Definindo Resiliência
 
-Resiliência é um termo muito comum em arquitetura e engenharia de software, que **refere-se à capacidade dos sistemas, processos e componentes de suportar uma ampla variedade de cenários de falhas e manter sua operação**, seja de forma total ou parcial. **Esse conceito está diretamente relacionado a diversas disciplinas e tópicos de engenharia**, sempre com o objetivo de elevar os níveis de eficiência e segurança operacional das funcionalidades das aplicações e das jornadas dos clientes dentro dos sistemas. Se olharmos com muito critério **tudo desenvolvido e implementado com a devida qualidade pode ser uma prática de resiliência**. 
+Resiliência é um termo muito comum em arquitetura e engenharia de software, que **refere-se à capacidade de sistemas, processos e componentes de suportar uma ampla variedade de cenários de falhas e manter sua operação**, seja de forma total ou parcial. **Esse conceito está diretamente relacionado a diversas disciplinas e tópicos de engenharia**, sempre com o objetivo de elevar os níveis de eficiência e segurança operacional das funcionalidades das aplicações e das jornadas dos clientes dentro dos sistemas. Se olharmos com muito critério, **tudo desenvolvido e implementado com a devida qualidade pode ser uma prática de resiliência**.
 
-A preocupação com resiliência é recorrente no dia a dia dos times de desenvolvimento e de operações responsáveis por funcionalidades críticas, e a maneira mais simples de explicá-la de forma rotineira é dizendo que, **quando algum serviço ou ponto específico do sistema falhar, o mesmo deve possuir mecanismos para contornar a situação e minimizar o impacto no funcionamento geral**.
+A preocupação com resiliência é recorrente no dia a dia dos times de desenvolvimento e de operações responsáveis por funcionalidades críticas, e a maneira mais simples de explicá-la, de forma rotineira, é dizendo que, **quando algum serviço ou ponto específico do sistema falhar, ele deve possuir mecanismos para contornar a situação e minimizar o impacto no funcionamento geral**.
 
 <br>
 
@@ -47,10 +46,9 @@ Neste capítulo, abordaremos diversos cenários e mecanismos de resiliência e, 
 
 Uma grande variedade de métricas pode ser utilizada para avaliar a disponibilidade e resiliência de aplicações. Muitas delas já foram discutidas em capítulos anteriores, como em [Performance, Capacidade e Escalabilidade](/performance-capacidade-escalabilidade/).
 
-
 ### Métrica de Disponibilidade de Uso
 
-A forma mais comum de medir a disponibilidade de sistemas é tomando como régua seu uso. Podemos calcular essa disponibilidade usando como base a **taxa de erros dos mesmos**. Isso basicamente consiste em dividir dois contadores: um **referente à quantidade de erros ocorridos dentro do período e outro representando a soma total das requisições** que ocorreram, independentemente do resultado (sucesso ou falha). Isso nos diz de maneira clara e simple **qual a porcentagem de vezes que aquele sistema foi requisitado e não respondeu de acordo**. 
+A forma mais comum de medir a disponibilidade de sistemas é tomando como régua seu uso. Podemos calcular essa disponibilidade usando como base a **taxa de erros dos mesmos**. Isso basicamente consiste em dividir dois contadores: um **referente à quantidade de erros ocorridos dentro do período e outro representando a soma total das requisições** que ocorreram, independentemente do resultado (sucesso ou falha). Isso nos diz, de maneira clara e simples, **qual a porcentagem de vezes que aquele sistema foi requisitado e não respondeu de acordo**.
 
 \begin{equation}
 \text{Taxa de Erros} = \left( \frac{\text{Número de Erros}}{\text{Número Total de Tentativas ou Eventos}} \right) \times 100
@@ -82,12 +80,11 @@ A partir da taxa de erros, a disponibilidade pode ser calculada subtraindo esse 
 
 Esse método **é utilizado para medir a disponibilidade com base no uso**. Ele é **especialmente adequado para indicar quantas chamadas resultaram em sucesso ou falha**. Essa é uma estratégia simples e faz sentido para sistemas com um modelo de uso inconstante ou muito variado, onde não é prático medir a disponibilidade baseada em tempo.
 
-
 ### Métrica de Disponibilidade de Uptime
 
 O modelo mais tradicional para **medir a disponibilidade considera o tempo que o sistema permaneceu disponível**, conhecido como Uptime ou Tempo de Atividade. **O tempo de "indisponibilidade" pode ser total ou parcial**, dependendo da duração de um incidente. Assim, **se o sistema estiver sujeito a um alarme crítico ou incidente operacional, esse tempo até a resolução é desconsiderado no cálculo da disponibilidade**.
 
-A equação para calcular o uptime, ou tempo de atividade, é simples: **basta dividir o tempo operacional pelo tempo total de atividade esperado**. O tempo operacional é calculado subtraindo o tempo total de atividade pela soma de todos os períodos de downtime, incidentes e afins.
+A equação para calcular o uptime, ou tempo de atividade, é simples: **basta dividir o tempo operacional pelo tempo total de atividade esperado**. O tempo operacional é calculado subtraindo-se o tempo total de atividade pela soma de todos os períodos de downtime, incidentes e afins.
 
 \begin{equation}
 \text{Tempo Operacional} = \left( \text{Tempo Total} - (\text{Incidente 1} + \text{Incidente 2} + \text{...}) \right)
@@ -131,10 +128,9 @@ O Blast Radius é um **conceito originalmente bélico** que **descreve, de forma
 
 ![Blast Radius](/assets/images/system-design/blast-radius.png)
 
-Embora tenha origens militares e aparente contradição, o conceito também é utilizado em discussões de arquitetura de sistemas e engenharia de confiabilidade para **estimar o impacto da falha de um componente em um sistema distribuído**. Esse termo é aplicado para **identificar pontos críticos e oportunidades de melhoria na resiliência**, e sugere, por meio de **exercícios de simulação de falhas** ou **“perguntas provocativas” em revisões arquiteturais**, estimar os **impactos das falhas nesses pontos críticos**. A partir dessas estimativas, busca-se discutir como **minimizar os danos nesses cenários** por meio de fallbacks, aplicação de estratégias e implementação de padrões de resiliência, entre outros.
+Embora tenha origens militares e aparente contradição, o conceito também é utilizado em discussões de arquitetura de sistemas e engenharia de confiabilidade para **estimar o impacto da falha de um componente em um sistema distribuído**. Esse termo é aplicado para **identificar pontos críticos e oportunidades de melhoria na resiliência** e sugere, por meio de **exercícios de simulação de falhas** ou **“perguntas provocativas” em revisões arquiteturais**, estimar os **impactos das falhas nesses pontos críticos**. A partir dessas estimativas, busca-se discutir como **minimizar os danos nesses cenários** por meio de fallbacks, aplicação de estratégias e implementação de padrões de resiliência, entre outros.
 
-Os questionamentos utilizados para estimar esses danos podem vir na forma de **“Se o componente X parar, o que acontece?”**, avançar para **“Se esse componente ficar indisponível, outro continuará funcionando?”** e até perguntas como **“Se essa API cair, o que deixa de funcionar? O que continua funcionando parcialmente? O que permanece funcionando normalmente? Em quanto tempo me recupero se ela voltar? Gero inconsistências em alguma parte do meu processo?”**. O ponto que destaco é que **essas “perguntas provocativas” devem ser feitas sempre que possível**. É essencial criar um ambiente seguro e aberto para que esses questionamentos ocorram sem barreiras ou cerimônias. Considero essa prática uma das mais dinâmicas e eficientes para partir do zero para algo concreto em uma revisão arquitetural de resiliência, e recomendo sua experimentação a todos.
-
+Os questionamentos utilizados para estimar esses danos podem vir na forma de **“Se o componente X parar, o que acontece?”**, avançar para **“Se esse componente ficar indisponível, outro continuará funcionando?”** e até perguntas como **“Se essa API cair, o que deixa de funcionar? O que continua funcionando parcialmente? O que permanece funcionando normalmente? Em quanto tempo me recupero se ela voltar? Gero inconsistências em alguma parte do meu processo?”**. O ponto que destaco é que **essas “perguntas provocativas” devem ser feitas sempre que possível**. É essencial criar um ambiente seguro e aberto para que esses questionamentos ocorram sem barreiras ou cerimônias. Considero essa prática uma das mais dinâmicas e eficientes para partir do zero a algo concreto em uma revisão arquitetural de resiliência e recomendo sua experimentação a todos.
 
 
 <br>
@@ -145,7 +141,7 @@ A seguir, catalogaremos não todas, mas as principais estratégias e padrões de
 
 ## Replicação de Serviços, Balanceamento de Carga e Healthchecks
 
-A principal e mais simples estratégia de resiliência é revisitar os conceitos de [Distribuição e Balanceamento de Carga](/load-balancing/) e [Escalabilidade Horizontal](/performance-capacidade-escalabilidade/). Escalar e distribuir a carga é, talvez, a estratégia que mais **reflete resiliência e desempenho a curto prazo**. Mecanismos de balanceamento **devem operar em conjunto com mecanismos de auto-scaling**, para que seja possível adicionar e remover réplicas sob demanda com a máxima segurança e disponibilidade, permitindo que as aplicações se adaptem a cargas variáveis.
+A principal e mais simples estratégia de resiliência é revisitar os conceitos de [Distribuição e Balanceamento de Carga](/load-balancing/) e [Escalabilidade Horizontal](/performance-capacidade-escalabilidade/). Escalar e distribuir a carga é, talvez, a estratégia que mais **reflete resiliência e desempenho a curto prazo**. Mecanismos de balanceamento **devem operar em conjunto com mecanismos de auto scaling**, para que seja possível adicionar e remover réplicas sob demanda com a máxima segurança e disponibilidade, permitindo que as aplicações se adaptem a cargas variáveis.
 
 As aplicações, independentemente de seu protocolo principal, **devem expor URLs de healthcheck que reflitam seu estado** e, caso ocorra alguma falha ou mau funcionamento, essa URL deve indicar o status por meio de códigos de resposta que possam ser monitorados periodicamente.
 
@@ -153,7 +149,7 @@ As aplicações, independentemente de seu protocolo principal, **devem expor URL
 
 Os **balanceadores também devem verificar essas URLs regularmente** para liberar ou restringir o tráfego às réplicas do pool, de acordo com as respostas obtidas nos healthchecks. Ou seja, **se uma réplica começar a responder com erros ou não responder dentro do tempo limite, o balanceador deve considerá-la inativa ou incapaz de receber tráfego**.
 
-Os balanceadores são responsáveis por garantir o paralelismo externo de requisições **síncronas**, a fim de dispersar o tráfego das chamadas e maximizar o aproveitamento de recursos, aumentando assim a resiliência e reduzindo a probabilidade de falhas graves decorrentes da indisponibilidade de um único host do pool.
+Os balanceadores são responsáveis por garantir o paralelismo externo de requisições **síncronas**, a fim de dispersar o tráfego das chamadas e maximizar o aproveitamento de recursos, aumentando, assim, a resiliência e reduzindo a probabilidade de falhas graves decorrentes da indisponibilidade de um único host do pool.
 
 
 <br>
@@ -170,7 +166,7 @@ O processo de idempotência precisa se **apoiar em dados específicos da requisi
 
 ![Idempotência Fluxo](/assets/images/system-design/patterns-idempotencia.png)
 
-Vamos ilustrar com uma API de pagamentos, em que o cliente **realiza uma solicitação de cobrança por diferentes métodos de pagamento**. Se o cliente reenviar a solicitação devido a uma falha — no cliente ou no servidor — **a operação idempotente garante que o valor seja cobrado apenas uma vez**. Para isso, o cliente envia, via cabeçalhos HTTP ou parâmetros, uma chave de idempotência única, que é verificada e armazenada antes do processamento. Essa chave pode ser gerada no cliente ou derivada de valores presentes na requisição.
+Vamos ilustrar com uma API de pagamentos, em que o cliente **realiza uma solicitação de cobrança por diferentes métodos de pagamento**. Se o cliente reenviar a solicitação devido a uma falha — no cliente ou no servidor —, **a operação idempotente garante que o valor seja cobrado apenas uma vez**. Para isso, o cliente envia, via cabeçalhos HTTP ou parâmetros, uma chave de idempotência única, que é verificada e armazenada antes do processamento. Essa chave pode ser gerada no cliente ou derivada de valores presentes na requisição.
 
 Esse padrão assegura que a mesma solicitação seja repetida diversas vezes de forma segura. Sem idempotência, o cliente poderia ser cobrado múltiplas vezes, gerando inconsistências e falhas financeiras graves.
 
@@ -217,7 +213,7 @@ Essa é a estratégia mais simples de retentativas síncronas. Apesar de apresen
 
 Uma das formas mais conhecidas e eficientes de implementar retentativas é por meio de processos assíncronos. Essa estratégia pode assumir diversas variações. A **comunicação assíncrona, por si só, já oferece níveis adicionais de resiliência ao permitir um desacoplamento facilitado**. Quando combinada com técnicas de retentativa, torna-se uma solução poderosa e extensível.
 
-Um exemplo é o uso de retentativas em cenários em que as **requisições começam de forma síncrona, mas são concluídas de forma assíncrona**. Nesse caso, o sistema pode trocar o status code definitivo — por exemplo, substituir `201 Created` por `202 Accepted` — para indicar que a solicitação não foi concluída imediatamente, mas será processada e re-tentada sem que o cliente precise aguardar.
+Um exemplo é o uso de retentativas em cenários em que as **requisições começam de forma síncrona, mas são concluídas de forma assíncrona**. Nesse caso, o sistema pode trocar o status code definitivo — por exemplo, substituir `201 Created` por `202 Accepted` — para indicar que a solicitação não foi concluída imediatamente, mas será processada e retentada sem que o cliente precise aguardar.
 
 ![Async](/assets/images/system-design/patterns-retries-async-semi-sync.png)
 
@@ -248,7 +244,7 @@ O backoff exponencial **pode ser aplicado tanto em fluxos síncronos quanto ass�
 
 A estratégia de **jitter é uma alternativa avançada ao backoff exponencial**. A ideia do jitter é **introduzir intervalos de tempo aleatórios entre as retentativas, dispersando-as e reduzindo ainda mais o risco de gargalos e sobrecarga**. Esse método é especialmente útil em cenários com **alto volume de tráfego, nos quais muitas retentativas podem ser iniciadas simultaneamente** durante uma falha.
 
-Existem várias formas de aplicar jitter. Uma abordagem simples atribui a cada retentativa um valor aleatório entre 0 e o tempo máximo definido para o backoff. Também é possível configurar jitter incremental, em que os intervalos aumentam a cada retentativa: por exemplo, a primeira pode variar entre 0 e 4 segundos, a segunda entre 2 e 6 segundos, a terceira entre 6 e 10 segundos, e assim por diante.
+Existem várias formas de aplicar jitter. Uma abordagem simples atribui a cada retentativa um valor aleatório entre 0 e o tempo máximo definido para o backoff. Também é possível configurar jitter incremental, em que os intervalos aumentam a cada retentativa: por exemplo, a primeira pode variar entre 0 e 4 segundos; a segunda, entre 2 e 6 segundos; a terceira, entre 6 e 10 segundos; e assim por diante.
 
 ![Jitter](/assets/images/system-design/patterns-retry-jitter.png)
 
@@ -266,7 +262,7 @@ A implementação de um Circuit Breaker normalmente envolve três estados: **fec
 
 ![Closed](/assets/images/system-design/circuit-closed-1.drawio.png)
 
-Se **limites configurados de tempo de espera ou de erros forem ultrapassados**, o circuito muda para o estado **aberto**. Nesse estado, o **disjuntor “desarma”**, bloqueando todas as comunicações com o serviço ou dependência, evitando que novas requisições sobrecarreguem recursos já comprometidos.
+Se **limites configurados de tempo de espera ou de erros forem ultrapassados**, o circuito muda para o estado **aberto**. Nesse estado, o **disjuntor “desarma”**, bloqueando todas as comunicações com o serviço ou dependência e evitando que novas requisições sobrecarreguem recursos já comprometidos.
 
 ![Open](/assets/images/system-design/circuit-open-2.drawio.png)
 
@@ -274,7 +270,7 @@ O circuito **permanece aberto por um período configurado** (período de resfria
 
 ![Half-Open](/assets/images/system-design/circuit-half-open-3.drawio.png)
 
-Essa estratégia é de extrema importância em sistemas distribuídos, pois **mantém a estabilidade ao controlar o impacto de falhas temporárias**, evitando que uma dependência instável degrade ainda mais desempenho ou disponibilidade. Há quem relacione Circuit Breakers a um mecanismo de “erro rápido”, mas podemos **implementar verificações proativas dos estados para acionar fallbacks sem depender de exceções**, redirecionando automaticamente as requisições para fluxos alternativos. Essa abordagem avançada estende o padrão, ativando fallbacks em vez de simplesmente permitir ou negar chamadas, e pode enriquecer significativamente a arquitetura de resiliência.
+Essa estratégia é de extrema importância em sistemas distribuídos, pois **mantém a estabilidade ao controlar o impacto de falhas temporárias**, evitando que uma dependência instável degrade ainda mais o desempenho ou a disponibilidade. Há quem relacione Circuit Breakers a um mecanismo de “erro rápido”, mas podemos **implementar verificações proativas dos estados para acionar fallbacks sem depender de exceções**, redirecionando automaticamente as requisições para fluxos alternativos. Essa abordagem avançada estende o padrão, ativando fallbacks em vez de simplesmente permitir ou negar chamadas, e pode enriquecer significativamente a arquitetura de resiliência.
 
 
 <br>
@@ -285,8 +281,7 @@ Os conceitos de **throttling** e **rate limiting** são abordados em profundidad
 
 O **rate limiting especifica o número máximo de requisições permitidas em um dado intervalo de tempo**, por exemplo, **100 requisições por minuto, 10 transações por segundo ou 1 milhão de transações por mês**. Quando esse limite é ultrapassado, as políticas de _throttling_ entram em ação e **as requisições adicionais são rejeitadas ou atrasadas, retornando uma resposta que indica que o limite foi atingido**.
 
-Essas técnicas **podem ser aplicadas isoladamente ou em conjunto para garantir que os limites conhecidos dos sistemas não sejam excedidos**, evitando problemas maiores. Uma boa implementação desses **padrões** **exige que as equipes de engenharia compreendam bem os pontos de limitação dos sistemas envolvidos**. Normalmente, esses limites são definidos com base em [testes práticos de carga e estress](/load-testing/).
-
+Essas técnicas **podem ser aplicadas isoladamente ou em conjunto para garantir que os limites conhecidos dos sistemas não sejam excedidos**, evitando problemas maiores. Uma boa implementação desses **padrões exige que as equipes de engenharia compreendam bem os pontos de limitação dos sistemas envolvidos**. Normalmente, esses limites são definidos com base em [testes práticos de carga e estresse](/load-testing/).
 
 <br>
 
@@ -316,8 +311,7 @@ Para ilustrar, abordaremos a solução do primeiro cenário: **diante da indispo
 
 ![Fallback Snapshot](/assets/images/system-design/fallback-snapshot.png)
 
-Se nossa aplicação utiliza [bancos de dados transacionais](/teorema-cap/) e o serviço estiver indisponível, podemos **criar uma camada de snapshot atualizada periodicamente e realizar checagens simplificadas**, **sacrificando consistência forte por consistência eventual**, mas ainda assim evitando que compras ultrapassem muito os limites durante o período de indisponibilidade. Nesse cenário, **aceitamos um risco calculado de aprovar algumas transações além do limite permitido, em troca de manter o sistema em operação**.
-
+Se nossa aplicação utiliza [bancos de dados transacionais](/teorema-cap/) e o serviço estiver indisponível, podemos **criar uma camada de snapshot atualizada periodicamente e realizar checagens simplificadas**, **sacrificando consistência forte por consistência eventual**, mas, ainda assim, evitando que compras ultrapassem muito os limites durante o período de indisponibilidade. Nesse cenário, **aceitamos um risco calculado de aprovar algumas transações além do limite permitido, em troca de manter o sistema em operação**.
 
 
 ### Exemplo: Fallback com Fluxos Assíncronos
@@ -338,7 +332,6 @@ Imagine que, em sua solução hipotética, exista um sistema parceiro que oferec
 
 Esse segundo parceiro, **embora não seja a opção mais viável financeiramente**, representa um **fallback contratual válido**. Em caso de falha no sistema principal, a integração pode ser **redirecionada temporariamente para essa segunda opção**. Mesmo sendo mais caro, ele garante que o serviço **continue disponível até que a funcionalidade principal seja restabelecida**.
 
-
 <br>
 
 ### Acionamento de Fallback Proativo
@@ -348,7 +341,6 @@ A estratégia de acionar um fallback de forma reativa — em resposta a erros e 
 ![Fallback Proativo](/assets/images/system-design/fallback-proativo.png)
 
 Não é incomum que **fallbacks acionados raramente se tornem pontos de falha quando ativados de forma repentina**. Para mitigar esse risco, podemos **acionar proativamente os fluxos de fallback alternativos, direcionando uma porcentagem mínima de tráfego a eles** — seja por meio de injeção de falhas, seja por roteamento intencional, conforme definido pelo algoritmo. Dessa forma, **asseguramos que nossos fallbacks permaneçam saudáveis e prontos para atuar quando necessário**.
-
  
 <br>
 
@@ -372,7 +364,7 @@ Para ilustrar, considere um gateway de pagamento que oferece **PIX, crédito, d�
 
 Ao adotar [fluxos assíncronos](mensageria-eventos-streaming/) em nossa arquitetura, **presumimos lidar com um throughput muito alto de requisições**. Embora não seja uma regra absoluta, **escalamos o processamento de grandes volumes de dados e transações com paralelismo externo de forma muito mais eficiente do que usando apenas métodos síncronos e bloqueantes**, como [chamadas de APIs REST ou implementações de gRPC](/padroes-de-comunicacao-sincronos/). O **ciclo de vida dessas transações pode ser híbrido**, incluindo **chamadas HTTP mesmo em fluxos assíncronos para lidar com dependências externas ou produzindo mensagens para outros sistemas** que finalizam a transação iniciada de forma assíncrona. Porém, fluxos de alto volume com uso intensivo de I/O podem causar indisponibilidade repentina em sistemas downstream.
 
-Quando abordamos [backpressure](/performance-capacidade-escalabilidade/) pela primeira vez, entendemos esse conceito como uma **“força contrária” que gera um gargalo no fluxo de transações**. Em termos de resiliência, o **backpressure ativo e intencional permite desacelerar a produção ou a integração com outros serviços**, **diminuindo o ritmo de consumo ou enfileirando o processamento em memória** para **proteger componentes downstream de sobrecargas**. Em resumo, implementações de backpressure **permitem que o sistema envie sinais ativos de degradação e desaceleração, preservando a integridade dos componentes posteriores e evitando picos de latência ou falhas em cascata**.
+Quando abordamos [backpressure](/performance-capacidade-escalabilidade/) pela primeira vez, entendemos esse conceito como uma **“força contrária” que gera um gargalo no fluxo de transações**. Em termos de resiliência, o **backpressure ativo e intencional permite desacelerar a produção ou a integração com outros serviços**, **diminuindo o ritmo de consumo ou enfileirando o processamento em memória para proteger componentes downstream de sobrecargas**. Em resumo, implementações de backpressure **permitem que o sistema envie sinais ativos de degradação e desaceleração, preservando a integridade dos componentes posteriores e evitando picos de latência ou falhas em cascata**.
 
 ![Backpressure ativo](/assets/images/system-design/backpressure-resiliencia.drawio.png)
 
@@ -419,7 +411,7 @@ Ao **consultar o cache em vez da origem**, o número de acessos ao backend ou ao
 
 Recomendo a releitura do capítulo sobre estratégias de cache, revisitando padrões como **Write-Behind, Write-Through, Lazy Loading** e **cache distribuído**, agora sob a perspectiva de resiliência.
 
-Quando **cache e fonte original são mantidos sincronizados com as mesmas versões**, ambas camadas tornam-se altamente redundantes.
+Quando **cache e fonte original são mantidos sincronizados com as mesmas versões**, ambas as camadas tornam-se altamente redundantes.
 
 ![Cache Error](/assets/images/system-design/cache-error.drawio.png)
 
@@ -437,14 +429,14 @@ O objetivo de segregar um grande conjunto de dados em grupos menores é, por si 
 
 ![Sharding](/assets/images/system-design/sharding.drawio.png)
 
-A estratégia de **particionar tanto os dados quanto as cargas de trabalho** em **dimensões significativas** — como clientes, lojas ou inquilinos (tenants) —, de modo a isolar completamente cada fragmento num único shard, é essencial. Embora essa abordagem possa gerar **partições quentes ocasionais**, ela permite testar novas funcionalidades com controle mais granular, sem propagá-las a todos os clientes. Além disso, esse particionamento **ajuda a reduzir o blast radius** de componentes de um shard, isolando impactos e elevando a resiliência do sistema.
+A estratégia de **particionar tanto os dados quanto as cargas de trabalho** em **dimensões significativas** — como clientes, lojas ou inquilinos (tenants) —, de modo a isolar completamente cada fragmento em um único shard, é essencial. Embora essa abordagem possa gerar **partições quentes ocasionais**, ela permite testar novas funcionalidades com controle mais granular, sem propagá-las a todos os clientes. Além disso, esse particionamento **ajuda a reduzir o blast radius** de componentes de um shard, isolando impactos e elevando a resiliência do sistema.
 
 
 <br>
 
 ## Bulkhead Pattern
 
-O **Bulkhead** é um padrão fortemente relacionado a conceitos como **sharding**, **hashing consistente**, **arquitetura celular** e **estabilidade estática**. O termo origina-se do transporte marítimo, em que os **compartimentos de um navio são isolados** de modo que, caso haja dano em uma seção, **as demais permaneçam intactas**, prevenindo inundação por falhas sucessivas.
+O **Bulkhead** é um padrão fortemente relacionado a conceitos como **sharding**, **hashing consistente**, **arquitetura celular** e **estabilidade estática**. O termo origina-se do transporte marítimo, em que os **compartimentos de um navio são isolados**, de modo que, caso haja dano em uma seção, **as demais permaneçam intactas**, prevenindo inundação por falhas sucessivas.
 
 ![Bulkhead Primeiro Exemplo](/assets/images/system-design/bulkhead.drawio.png)
 
@@ -473,7 +465,7 @@ O leasing acontece quando **um recurso inicia uma conexão com uma dependência*
 
 Se o cliente não renovar dentro do prazo, o lease expira e o recurso é automaticamente liberado para outro processo.
 
-Em pools de conexão a bancos de dados, **cada cliente ou thread recebe um lease para uma conexão**. Se não houver renovação por meio de heartbeat ou liberação explícita ao término do uso, o lease expira e a conexão é **devolvida ao pool**, evitando que recursos fiquem monopolizados por clientes inativos. Esse mecanismo é fundamental em bancos transacionais, onde o número de conexões simultâneas é limitado e, ultrapassado esse limite, novas solicitações são rejeitadas até que haja leases disponíveis.
+Em pools de conexão a bancos de dados, **cada cliente ou thread recebe um lease para uma conexão**. Se não houver renovação por meio de heartbeat ou liberação explícita ao término do uso, o lease expira e a conexão é **devolvida ao pool**, evitando que recursos fiquem monopolizados por clientes inativos. Esse mecanismo é fundamental em bancos transacionais, nos quais o número de conexões simultâneas é limitado e, ultrapassado esse limite, novas solicitações são rejeitadas até que haja leases disponíveis.
 
 
 <br>
