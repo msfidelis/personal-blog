@@ -68,6 +68,6 @@ Espero que sua caminhada seja proveitosa e divertida. Obrigado pela confiança. 
 * [27. Modelos de Deployment (Blue/Green, Canary, Feature Toggles e etc)](/deployment-strategies/)
 * [28. Capacity Planning e Teoria das Filas](/capacity-planning/)
 * [29. Testes de Carga e Estresse](/load-testing/)
-* [30. Single Point of Failure (Em Breve)]()
+* [30. Single Point of Failure](/single-point-of-failure)
 * [21. Autenticação, Autorização e Zero-Trust (Em Breve)]()
   

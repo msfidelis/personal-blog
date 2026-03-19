@@ -6,6 +6,9 @@ featured: false
 published: true
 categories: [ system-design, engineering ]
 title: System Design - Cell-Based Architecture
+excerpt: Um guia profundo sobre Cell-Based Architecture e como projetar sistemas distribuídos resilientes utilizando células independentes, replicação de dados, shuffle sharding e isolamento de falhas para reduzir blast radius em larga escala.
+seo_title: Cell-Based Architecture - Isolamento de Falhas, Shuffle Sharding e Alta Disponibilidade
+seo_description: Entenda como funciona a Cell-Based Architecture em sistemas distribuídos. Explore conceitos como células independentes, edge cells, roteamento determinístico, replicação entre células e shuffle sharding para reduzir blast radius e aumentar a disponibilidade em arquiteturas cloud modernas.
 ---
 
 **A arquitetura celular é um tema particularmente especial pra mim, olhando para o próximo passo de sistemas distribuídos de ambientes críticos; o tema é particularmente fascinante.**
