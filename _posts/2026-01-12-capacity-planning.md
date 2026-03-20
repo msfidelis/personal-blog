@@ -11,13 +11,11 @@ seo_title: Capacity Planning em Sistemas Distribuídos Teoria das Filas, Lei de 
 seo_description: Aprenda a planejar capacidade em sistemas distribuídos usando conceitos fundamentais como Queueing Theory, Little’s Law e Knee Curve. Entenda como modelar carga, analisar throughput, concorrência e latência para identificar gargalos, prever saturação e projetar crescimento sustentável em arquiteturas modernas.
 ---
 
-
 **Capacity planning não é sobre prever o futuro com precisão absoluta.** É sobre entender os limites estruturais do sistema antes que eles se tornem incidentes. A maioria dos problemas de capacidade não surge de crescimento repentino, mas da incapacidade de interpretar o comportamento do sistema sob carga real. Métricas isoladas, como CPU, memória ou TPS médio, raramente contam a história completa. **O que realmente importa é como esses sinais se relacionam, como a concorrência interna se acumula e onde os gargalos se formam quando a carga deixa de ser uniforme.**
 
 Passei os últimos 3 meses do ano de 2025 procurando modelos matemáticos para me guiar nos assuntos de capacity planning e performance para minha caixa de ferramentas. Aqui, guardo um compilado dos conceitos e fórmulas mais relevantes que encontrei. Rascunhei este capítulo logo em seguida a uma das etapas mais intensas do meu mestrado, e seu resultado final foi uma linguagem muito mais densa e teórica do que os anteriores, mas gostei muito do resultado.
 
 **Este texto não é um guia para dimensionar servidores.** É uma abordagem sistemática para modelar carga, interpretar saturação e planejar crescimento de forma estruturada. A teoria das filas, a Lei de Little e a curva do joelho não são apenas abstrações acadêmicas, são ferramentas práticas para responder perguntas como "quanto meu sistema aguenta de forma sustentável?" e "onde ele quebra antes de eu perceber?". **O objetivo é transformar capacity planning de uma reação a incidentes em uma prática de engenharia preventiva e bem fundamentada.**
-
 
 
 {% include latex.html %}

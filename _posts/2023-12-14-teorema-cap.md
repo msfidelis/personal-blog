@@ -11,24 +11,23 @@ seo_description: Entenda o que é o Teorema CAP, como ele impacta o design de si
 excerpt: Neste artigo, descomplicamos o Teorema CAP, explicando como os princípios de consistência, disponibilidade e tolerância à partições afetam a arquitetura e as decisões técnicas em sistemas distribuídos modernos.
 ---
 
-Esse é mais um artigo da série de **System Design**, que está se mostrando extremamente prazerosa de escrever. Tem sido muito gratificante me desafiar a entender temas densos e complexos e simplificar suas explicações. Da ultima vez falamos sobre [Concorrência, Paralelismo e Multithreading](), hoje não consegui gerar exemplos tão didáticos para o mundo real quando nesse artigo, mas ainda assim espero de coração que você ainda saia com algum conhecimento bacana daqui. 
 
-Hoje vamos abordar alguns tópicos muito importantes relacionados à arquitetura de bancos de dados. Discutiremos o Teorema CAP, desde sua concepção até outros tópicos que tangenciam este tema, e, por fim, reavaliaremos a evolução do teorema muitos anos após sua publicação, comparando-o com soluções modernas e a evolução contínua da engenharia de software.
+Neste capítulo vamos abordar alguns tópicos muito importantes relacionados à arquitetura de bancos de dados. Discutiremos o Teorema CAP, desde sua concepção até outros tópicos que tangenciam esse tema e, por fim, reavaliaremos a evolução do teorema muitos anos após sua publicação, comparando-o com soluções modernas e a evolução contínua da engenharia de software.
 
 
 # O Teorema CAP 
 
-O Teorema CAP é uma sigla para **Consistency, Availability, and Partition Tolerance** (Consistência, Disponibilidade e Tolerância a Partições), e representa um princípio fundamental para compreender a arquitetura e as limitações na escolha de uma base de dados.
+O Teorema CAP é uma sigla para **Consistency, Availability, and Partition Tolerance** (Consistência, Disponibilidade e Tolerância a Partições) e representa um princípio fundamental para compreender a arquitetura e as limitações na escolha de uma base de dados.
 
-Esse modelo foi proposto por **Eric Brewer** da **Universidade da Califórnia** durante uma conferência no ano 2000. O teorema foi de extrema importancia para influenciar escolhas arquiteturais em bancos de dados distribuídos.
+Esse modelo foi proposto por **Eric Brewer**, da **Universidade da Califórnia**, durante uma conferência no ano 2000. O teorema foi de extrema importância para influenciar escolhas arquiteturais em bancos de dados distribuídos.
 
 ![CAP](/assets/images/system-design/cap.drawio.png)
 
-O teorema propõe que, na perspectiva de sistemas distribuídos, um banco de dados só pode entregar dois dos três atributos descritos no CAP. Isso é análogo à máxima popular de ***"Escolha 2: Bom, Rápido e Barato"***. Se for **Bom e Barato, não vai Rápido**. Se for **Rápido e Bom não vai ser Barato**. Se for **Barato e Rápido não vai ser Bom**. A proposta inicial segue essa lógica. 
+O teorema propõe que, na perspectiva de sistemas distribuídos, um banco de dados só pode entregar dois dos três atributos descritos no CAP. Isso é análogo à máxima popular de ***"Escolha 2: Bom, Rápido e Barato"***. Se for **Bom e Barato, não vai ser Rápido**. Se for **Rápido e Bom, não vai ser Barato**. Se for **Barato e Rápido, não vai ser Bom**. A proposta inicial segue essa lógica. 
 
-Ele fornece uma base para entender as limitações inerentes a qualquer sistema de banco de dados distribuído e ajuda a esclarecer por que não é possível atingir todas as três propriedades simultaneamente. Vamos explorar o modelo proposto comparando com abordagens mais modernas ao longo deste artigo.
+Ele fornece uma base para entender as limitações inerentes a qualquer sistema de banco de dados distribuído e ajuda a esclarecer por que não é possível atingir todas as três propriedades simultaneamente. Vamos explorar o modelo proposto comparando-o com abordagens mais modernas ao longo deste artigo.
 
-Para entender a concepção completa de todas as propriedades do terema CAP, precisamos explorar alguns conceitos que irão ajudar na sua compreensão. Antes de detalhar o que significa cada item do CAP, é necessário entender os conceitos de **ACID** e **BASE** e compreender como funcionam transações e operações dentro dos bancos de dados. 
+Para entender a concepção completa de todas as propriedades do teorema CAP, precisamos explorar alguns conceitos que irão ajudar na sua compreensão. Antes de detalhar o que significa cada item do CAP, é necessário entender os conceitos de **ACID** e **BASE** e compreender como funcionam transações e operações dentro dos bancos de dados.
 
 <br>
 
@@ -36,13 +35,13 @@ Para entender a concepção completa de todas as propriedades do terema CAP, pre
 
 Nas disciplinas de bancos de dados, dois conjuntos de conceitos são fundamentais para guiar o design e a gestão das transações e/ou consultas: **ACID** e **BASE**.
 
-Entender a diferença entre ambos é de extrema importancia para qualquer pessoa que trabalhe com engenharia ou arquitetura, e que deseje trabalhar de forma eficiente com bancos de dados distribuídos, além da escolha de uma tecnologia específica.
+Entender a diferença entre ambos é de extrema importância para qualquer pessoa que trabalhe com engenharia ou arquitetura e que deseje trabalhar de forma eficiente com bancos de dados distribuídos, além de auxiliar na escolha de uma tecnologia específica.
 
 Vamos começar detalhando sobre ACID. 
 
 ## Modelo ACID - Atomicity, Consistency, Isolation, Durability
 
-Quando falamos sobre ACID, um acrônimo para **Atomicidade**, **Consistência**, **Isolamento** e **Durabilidade**, estamos nos referindo a bancos de dados que **proporcionam operações transacionais processadas de forma atômica e confiável**, em troca, talvez, de outras propriedades possíveis em requisitos diferentes. É o caso dos bancos de dados SQL tradicionais, onde a consistência e o commit das transações de escrita são priorizados em detrimento da performance e disponibilidade.
+Quando falamos sobre ACID, um acrônimo para **Atomicidade**, **Consistência**, **Isolamento** e **Durabilidade**, estamos nos referindo a bancos de dados que **proporcionam operações transacionais processadas de forma atômica e confiável**, em troca, talvez, de outras propriedades possíveis em requisitos diferentes. É o caso dos bancos de dados SQL tradicionais, onde a consistência e o commit das transações de escrita são priorizados em detrimento da performance e da disponibilidade.
 
 Os itens do ACID são definidos da seguinte forma: 
 
@@ -50,7 +49,7 @@ Os itens do ACID são definidos da seguinte forma:
 
 A **atomicidade assegura que cada transação seja tratada como uma unidade indivisível**, ou seja, **todas as operações de escrita dentro de uma transação devem ser concluídas com sucesso; caso contrário, nenhuma delas será efetivada.**
 
-Uma transação pode conter uma ou mais queries que correspondem a uma lógica ou funcionalidade de negócio específica. Por exemplo, imagine um **sistema simples que registra vendas de um e-commerce**. Recebemos um evento fictício que representa a venda de um produto qualquer, no qual precisamos decrementar o estoque desse produto e registrar a venda. Nesse caso, seriam duas operações: **decrementar o contador de estoque** do produto numa tabela chamada `estoque` e, em seguida, **fazer um INSERT** em uma tabela chamada `vendas`. Ambas as operações precisam ser concluídas de forma dependente, pois tanto atualizar o estoque sem registrar a venda quanto registrar a venda sem atualizar o estoque podem gerar problemas de consistência logística e contábil para o e-commerce, além de transtornos para o cliente. Esse é o real benefício das transações, que garantem a atomicidade no modelo ACID.
+Uma transação pode conter uma ou mais queries que correspondem a uma lógica ou funcionalidade de negócio específica. Por exemplo, imagine um **sistema simples que registra vendas de um e-commerce**. Recebemos um evento fictício que representa a venda de um produto qualquer, no qual precisamos decrementar o estoque desse produto e registrar a venda. Nesse caso, seriam duas operações: **decrementar o contador de estoque** do produto em uma tabela chamada `estoque` e, em seguida, **fazer um INSERT** em uma tabela chamada `vendas`. Ambas as operações precisam ser concluídas de forma dependente, pois tanto atualizar o estoque sem registrar a venda quanto registrar a venda sem atualizar o estoque podem gerar problemas de consistência logística e contábil para o e-commerce, além de transtornos para o cliente. Esse é o real benefício das transações, que garantem a atomicidade no modelo ACID.
 
 
 ```go
@@ -108,28 +107,28 @@ func main() {
 
 A consistência em um banco de dados refere-se à **garantia de que todas as transações conduzam o banco de dados de um estado consistente para outro estado igualmente consistente**. Esta definição, embora elegante, pode ser difícil de compreender inicialmente. Em termos práticos, a **consistência nos assegura a integridade dos dados, evitando dados corrompidos ou inválidos**. Isso significa que, em nenhum momento, o banco de dados operará com dados desatualizados ou indisponíveis na visão do cliente.
 
-O nível de consistência também **garante a validação das transações, conforme discutido no tópico de atomicidade**, além de respeitar restrições e condições impostas durante a modelagem dos dados. Na prática, isso se traduz na **garantia de que todas as foreign keys, especificações de nullabilidade, triggers e tipos sejam respeitados em todo momento**. Por exemplo, uma tentativa de inserir uma string em um campo do tipo decimal resultará em um erro de validação, ou a garantia de que um valor nunca será menor que zero ou excederá um determinado tamanho.
+O nível de consistência também **garante a validação das transações, conforme discutido no tópico de atomicidade**, além de respeitar restrições e condições impostas durante a modelagem dos dados. Na prática, isso se traduz na **garantia de que todas as foreign keys, especificações de nulabilidade, triggers e tipos sejam respeitados em todos os momentos**. Por exemplo, uma tentativa de inserir uma string em um campo do tipo decimal resultará em um erro de validação, ou a garantia de que um valor nunca será menor que zero ou excederá um determinado tamanho.
 
 ### Isolamento
 
-O isolamento, em nível transacional nos bancos de dados no modelo ACID, refere-se à capacidade de uma transação operar independentemente de outras transações simultâneas, ou seja, a garantia de que várias transações ocorrendo ao mesmo tempo não interfiram umas nas outras.
+O isolamento, em nível transacional nos bancos de dados no modelo ACID, refere-se à capacidade de uma transação operar independentemente de outras transações simultâneas, ou seja, à garantia de que várias transações ocorrendo ao mesmo tempo não interfiram umas nas outras.
 
-Existem diversos níveis de isolamento, mas todos visam prevenir situações como **Dirty Reads**, onde uma transação de leitura acessa dados que foram inseridos ou modificados por outra transação ainda não confirmada; **Non-repeatable Reads**, onde a mesma transação lê os mesmos dados mais de uma vez e obtém resultados diferentes devido a outra transação de escrita concluída entre essas leituras; e **Phantom Reads**, onde a re-execução da mesma leitura em uma transação recupera dados que não existiam na primeira leitura, devido ao mesmo motivo.
+Existem diversos níveis de isolamento, mas todos visam prevenir situações como **Dirty Reads**, em que uma transação de leitura acessa dados que foram inseridos ou modificados por outra transação ainda não confirmada; **Non-repeatable Reads**, em que a mesma transação lê os mesmos dados mais de uma vez e obtém resultados diferentes devido a outra transação de escrita concluída entre essas leituras; e **Phantom Reads**, em que a reexecução da mesma leitura em uma transação recupera dados que não existiam na primeira leitura, devido ao mesmo motivo.
 
-O maior desafio a nível arquitetural é encontrar o equilíbrio certo entre isolamento e desempenho no design de sistemas de banco de dados. Níveis mais altos de isolamento tendem a reduzir a concorrência e podem afetar o desempenho, enquanto níveis mais baixos podem aumentar a concorrência, mas com riscos de inconsistência.
+O maior desafio em nível arquitetural é encontrar o equilíbrio certo entre isolamento e desempenho no design de sistemas de banco de dados. Níveis mais altos de isolamento tendem a reduzir a concorrência e podem afetar o desempenho, enquanto níveis mais baixos podem aumentar a concorrência, mas com riscos de inconsistência.
 
 ### Durabilidade
 
-A durabilidade, no modelo ACID, é o pilar que garante que, uma vez confirmada, uma transação permanecerá assim permanentemente. Isso significa que, após a confirmação de uma operação de escrita, ela não será perdida mesmo diante de diversas possibilidades de falha, assegurando a persistência dos dados em uma fonte não volátil, como disco rígido, e não apenas em armazenamento volátil, como memória, que pode ser perdida caso o servidor desligue.
+A durabilidade, no modelo ACID, é o pilar que garante que, uma vez confirmada, uma transação permanecerá assim permanentemente. Isso significa que, após a confirmação de uma operação de escrita, ela não será perdida mesmo diante de diversas possibilidades de falha, assegurando a persistência dos dados em uma fonte não volátil, como disco rígido, e não apenas em armazenamento volátil, como memória, que pode ser perdida caso o servidor seja desligado.
 
-Ela é fundamental para a confiabilidade do sistema, especialmente em aplicações onde a perda de dados pode ter consequências sérias.
+Ela é fundamental para a confiabilidade do sistema, especialmente em aplicações nas quais a perda de dados pode ter consequências sérias.
 
 
 <br>
 
 ## Modelo BASE - Basically Available, Soft State, Eventual Consistency
 
-Enquanto o ACID foca na precisão e confiabilidade, o BASE, um acrônimo para **Basicamente Disponível**, **Soft State** e **Eventualmente Consistente**, adota uma abordagem com níveis de **flexibilidade mais adequados para lidar com sistemas distribuídos modernos**, onde a disponibilidade e a tolerância a falhas são prioridades. Assim como o Teorema CAP, o **BASE** também foi proposto por Brewer junto a um grupo de pesquisadores. 
+Enquanto o ACID foca na precisão e confiabilidade, o BASE, um acrônimo para **Basicamente Disponível**, **Soft State** e **Eventualmente Consistente**, adota uma abordagem com níveis de **flexibilidade mais adequados para lidar com sistemas distribuídos modernos**, onde a disponibilidade e a tolerância a falhas são prioridades. Assim como o Teorema CAP, o **BASE** também foi proposto por Brewer, junto a um grupo de pesquisadores. 
 
 ### Basicamente Disponível
 
@@ -137,39 +136,38 @@ O termo **Basicamente Disponível** implica que o sistema é projetado para maxi
 
 Para alcançar essa disponibilidade, os dados são frequentemente particionados e replicados em múltiplos servidores. Isso permite que, mesmo se uma parte do sistema falhar, outras partes continuem funcionando.
 
-Bancos de dados NoSQL, como Dynamo, Cassandra ou MongoDB, empregam estratégias de replicação e particionamento para garantir que os dados estejam disponíveis mesmo quando alguns nós do cluster falham.
+Bancos de dados NoSQL, como Dynamo, Cassandra ou MongoDB, empregam estratégias de replicação e particionamento para garantir que os dados estejam disponíveis, mesmo quando alguns nós do cluster falham.
 
 Essa abordagem é ideal para ambientes de larga escala e alta demanda, onde a capacidade de lidar com falhas parciais e a necessidade de manter a operação contínua são mais críticas do que manter uma consistência estrita dos dados em todos os momentos.
 
-
 ### Soft State
 
-O conceito de **Soft State** se refere à ideia de que o estado do sistema pode mudar ao longo do tempo, mesmo sem uma entrada externa ou uma intervenção intencional. Em um sistema operando sob o princípio de "Soft State", os dados podem expirar ou ser atualizados automaticamente, e não há garantia de que as informações permaneçam consistentes se não forem atualizadas ou verificadas periodicamente. Esse princípio reconhece que manter a consistência rigorosa em todos os momentos pode ser impraticável ou desnecessária para certos tipos de aplicações e dados.
+O conceito de **Soft State** se refere à ideia de que o estado do sistema pode mudar ao longo do tempo, mesmo sem uma entrada externa ou uma intervenção intencional. Em um sistema operando sob o princípio de "Soft State", os dados podem expirar ou ser atualizados automaticamente, e não há garantia de que as informações permaneçam consistentes se não forem atualizadas ou verificadas periodicamente. Esse princípio reconhece que manter a consistência rigorosa em todos os momentos pode ser impraticável ou desnecessário para certos tipos de aplicações e dados.
 
-Em sistemas que aplicam o Soft State, os dados podem se autogerenciar, autodeletar e autoatualizar. Essa abordagem é comum em sistemas de cache distribuído, como **Memcached**, **Redis**, onde os dados armazenados são frequentemente considerados como tendo um "Soft State". Eles podem ser substituídos ou expirar com o tempo para refletir mudanças no estado dos dados originais.
+Em sistemas que aplicam o Soft State, os dados podem se autogerenciar, autodeletar e autoatualizar. Essa abordagem é comum em sistemas de cache distribuído, como **Memcached** e **Redis**, onde os dados armazenados são frequentemente considerados como tendo um "Soft State". Eles podem ser substituídos ou expirar com o tempo para refletir mudanças no estado dos dados originais.
 
 ### Eventualmente Consistente
 
-A **Consistência Eventual** descreve que as escritas realizadas em um determinado dado em um sistema de banco de dados distribuído serão replicadas para todos os nós de forma assíncrona. Isso significa que, por algum tempo, diferentes nós podem ter versões diferentes dos mesmos dados. O termo "eventual" nesse contexto é a garantia de que, se nenhuma nova alteração for feita em um dado por um certo período, todos os dados distribuídos entre os nós se tornarão consistentes em algum momento.
+A **Consistência Eventual** descreve que as escritas realizadas em um determinado dado em um sistema de banco de dados distribuído serão replicadas para todos os nós de forma assíncrona. Isso significa que, por algum tempo, diferentes nós podem ter versões diferentes dos mesmos dados. O termo "eventual", nesse contexto, é a garantia de que, se nenhuma nova alteração for feita em um dado por um certo período, todos os dados distribuídos entre os nós se tornarão consistentes em algum momento.
 
 Este modelo é adequado para sistemas que operam em redes com latência significativa ou onde falhas de nós são comuns, permitindo que o sistema continue operacional apesar de inconsistências temporárias.
 
-A consistência eventual é crucial para sistemas que precisam escalar para lidar com grandes volumes de tráfego ou grandes conjuntos de dados. Ela permite uma operação mais eficiente em larga escala, por isso muitos bancos de dados NoSQL, projetados para esse tipo de demanda, como Cassandra e DynamoDB, utilizam a consistência eventual para proporcionar alta disponibilidade e escalabilidade, sendo especialmente útil em aplicações web de larga escala.
+A consistência eventual é crucial para sistemas que precisam escalar para lidar com grandes volumes de tráfego ou grandes conjuntos de dados. Ela permite uma operação mais eficiente em larga escala; por isso, muitos bancos de dados NoSQL, projetados para esse tipo de demanda, como Cassandra e DynamoDB, utilizam a consistência eventual para proporcionar alta disponibilidade e escalabilidade, sendo especialmente útil em aplicações web de larga escala.
 
 
 <br>
 
 # Explicação dos Componentes do CAP
 
-Agora que já exploramos os conceitos e aplicações de **ACID** e **BASE**, podemos traçar um paralelo mais claro com as combinações de funcionalidades propostas no Teorema CAP. Vamos detalhar cada um dos componentes da sigla tentando gerar familiaridade com ambos os conceitos:
+Agora que já exploramos os conceitos e aplicações de **ACID** e **BASE**, podemos traçar um paralelo mais claro com as combinações de funcionalidades propostas no Teorema CAP. Vamos detalhar cada um dos componentes da sigla, tentando gerar familiaridade com ambos os conceitos:
 
 ## Consistency / Consistência (C)
 
 O nível de **Consistência** refere-se à garantia de que todos os nós de um banco de dados distribuído exibam os mesmos dados simultaneamente. Isso significa que, independentemente de qual nó seja consultado, todos retornarão sempre a versão mais recente dos dados.
 
-Imagine uma situação onde uma operação de escrita precise aguardar a confirmação de replicação de todos os nós para concluir a transação e liberar o dado para consulta.
+Imagine uma situação em que uma operação de escrita precise aguardar a confirmação de replicação de todos os nós para concluir a transação e liberar o dado para consulta.
 
-A consistência é essencial em aplicações onde a atomicidade e a atualização dos dados são partes críticas da solução, como em sistemas financeiros e registros hospitalares.
+A consistência é essencial em aplicações nas quais a atomicidade e a atualização dos dados são partes críticas da solução, como em sistemas financeiros e registros hospitalares.
 
 <br>
 
@@ -179,18 +177,17 @@ O nível de **Disponibilidade** assegura que todas as solicitações feitas ao s
 
 Quando a disponibilidade é priorizada em uma escolha arquitetural, geralmente se presume que o dado retornado pode não ser o mais recente, desde a operação de escrita até a de leitura.
 
-Isso significa que as operações de escrita e leitura podem atuar de forma independente uma das outras. Ou seja, a solicitação de escrita pode ser concluída antes de todo o processo de replicação entre os nós estar completo.
+Isso significa que as operações de escrita e leitura podem atuar de forma independente umas das outras. Ou seja, a solicitação de escrita pode ser concluída antes de todo o processo de replicação entre os nós estar completo.
 
 Este atributo é particularmente valioso em sistemas que exigem alta performance, volumosa ingestão de dados e tempos de resposta rápidos, como em fluxos de streaming e análise de dados (analytics).
 
 Os sistemas alcançam a disponibilidade dos dados normalmente através da replicação, que consiste em "duplicar" as informações entre os nós disponíveis.
 
-
 <br>
 
 ## Partition Tolerance / Tolerância a Partições (P)
 
-O nível de **Tolerância a Partições** refere-se à capacidade de um banco de dados distribuído continuar operacional, apesar de falhas que "particionem" a rede e duas ou mais partes que não conseguem mais se comunicar.
+O nível de **Tolerância a Partições** refere-se à capacidade de um banco de dados distribuído continuar operacional, apesar de falhas que "particionem" a rede em duas ou mais partes que não conseguem mais se comunicar.
 
 Em ambientes distribuídos, é cada vez mais necessário assumir que falhas de rede, hardware, atualizações programadas e de segurança emergencial feitas pelos provedores podem ocorrer a qualquer momento. Um sistema tolerante a partições é capaz de oferecer um certo nível de continuidade do serviço em caso de falhas parciais.
 
@@ -198,11 +195,11 @@ Esse atributo é particularmente valioso em aplicações distribuídas geografic
 
 ### O que é uma Partição de Rede?
 
-O termo "partição" pode gerar confusão, especialmente quando já estamos familiarizados com outros termos de Bancos de Dados. Porém, no contexto de "CAP" e "Tolerância a Partições", **Partição de Rede** refere-se a uma situação onde ocorre uma falha sistêmica de rede entre dois ou mais nós do banco de dados, impedindo que eles permaneçam sincronizados e gerando uma inconsistência temporária. Isso se torna mais complexo quando a escrita é distribuída entre os nós.
+O termo "partição" pode gerar confusão, especialmente quando já estamos familiarizados com outros termos de bancos de dados. Porém, no contexto de "CAP" e "Tolerância a Partições", **Partição de Rede** refere-se a uma situação em que ocorre uma falha sistêmica de rede entre dois ou mais nós do banco de dados, impedindo que eles permaneçam sincronizados e gerando uma inconsistência temporária. Isso se torna mais complexo quando a escrita é distribuída entre os nós.
 
 ![Partição de Rede](/assets/images/system-design/pacelc-particao.drawio.png)
 
-Frequentemente, em um cluster otimizado para tolerância a partições, é **possível isolar um nó do restante do cluster para executar manutenção, troubleshooting, adição de recursos ou atualização**. Após a conclusão, **esse nó é reintegrado ao cluster, passando por um processo de sincronização para retomar a operação consistente com os demais**. Podemos entender que, mediante a uma falha de comunicação de rede entre um ou mais nós que recebem requisições de escita, quando esse problema de comunicação for resolvido, o meu banco de dados terá a capacidade de realizar a [replicação e resolução de conflitos das operacões](/replicacao) entre todos os nodes do cluster.
+Frequentemente, em um cluster otimizado para tolerância a partições, é **possível isolar um nó do restante do cluster para executar manutenção, troubleshooting, adição de recursos ou atualização**. Após a conclusão, **esse nó é reintegrado ao cluster, passando por um processo de sincronização para retomar a operação consistente com os demais**. Podemos entender que, mediante a uma falha de comunicação de rede entre um ou mais nós que recebem requisições de escrita, quando esse problema de comunicação for resolvido, o banco de dados terá a capacidade de realizar a [replicação e resolução de conflitos das operações](/replicacao) entre todos os nós do cluster.
 
 
 <br>
@@ -213,9 +210,9 @@ Frequentemente, em um cluster otimizado para tolerância a partições, é **pos
 
 Nesta configuração, o sistema prioriza a consistência e a tolerância a partições, sacrificando a disponibilidade.
 
-O sistema mantém a consistência através de todos os nós que continuam operando em caso de falhas de rede ou partições. Quando uma partição ocorre entre dois ou mais nós, o sistema deve ter a capacidade de desativar os nós inconsistentes, tornando-os indisponíveis até que a consistência seja restaurada.
+O sistema mantém a consistência em todos os nós que continuam operando em caso de falhas de rede ou partições. Quando uma partição ocorre entre dois ou mais nós, o sistema deve ter a capacidade de desativar os nós inconsistentes, tornando-os indisponíveis até que a consistência seja restaurada.
 
-Esta abordagem é mais utilizada em situações onde a precisão dos dados é crítica e a atomicidade transacional é inegociável, como em sistemas financeiros, calculadores de crédito, sistemas de controle de estoque, entre outros.
+Esta abordagem é mais utilizada em situações nas quais a precisão dos dados é crítica e a atomicidade transacional é inegociável, como em sistemas financeiros, calculadores de crédito, sistemas de controle de estoque, entre outros.
 
 ### Exemplos
 
@@ -224,7 +221,6 @@ Esta abordagem é mais utilizada em situações onde a precisão dos dados é cr
 * [Couchbase](https://www.couchbase.com/)
 * [Etcd](https://etcd.io/)
 * [Consul](https://www.consul.io/)
-
 
 <br>
 
@@ -243,12 +239,11 @@ Essa abordagem é empregada quando a continuidade da operação é mais importan
 * [Cassandra - Sob Determinadas Configurações](https://cassandra.apache.org/)
 * [SimpleDB](https://aws.amazon.com/simpledb/)
 
-
 <br>
 
 ## CA (Consistência e Disponibilidade)
 
-Nesta configuração, **o sistema prioriza a consistência e a disponibilidade das solicitações, mas torna-se sensível a partições de dados**. Em outras palavras, **se ocorrer uma falha de rede ou partição, o sistema pode ficar completamente inoperante.**
+Nesta configuração, **o sistema prioriza a consistência e a disponibilidade das solicitações, mas torna-se sensível a partições de rede**. Em outras palavras, **se ocorrer uma falha de rede ou partição, o sistema pode ficar completamente inoperante.**
 
 Este tipo de sistema é menos comum em ambientes distribuídos, pois a maioria deles é projetada para lidar com falhas de rede, partições e inconsistências.
 
@@ -307,9 +302,9 @@ A simplificação excessiva das compensações revelou-se limitante nas escolhas
 
 Ao considerar consistência, disponibilidade e tolerância a partições, é mais produtivo pensar nelas como **propriedades contínuas**, em vez de **estados binários**. Por exemplo, a disponibilidade pode variar de 0 a 100%, e existem muitos níveis de consistência que podem ser explorados em sistemas modernos.
 
-As partições de rede, embora críticas, são eventos relativamente raros em muitos workloads. A interpretação original do teorema sugere que as decisões de design devem presumir a presença constante de partições. Na prática, porém, a maior parte do tempo, os sistemas de bancos de dados operam em um estado não particionado, permitindo que consistência e disponibilidade sejam otimizadas conjuntamente.
+As partições de rede, embora críticas, são eventos relativamente raros em muitos workloads. A interpretação original do teorema sugere que as decisões de design devem presumir a presença constante de partições. Na prática, porém, na maior parte do tempo, os sistemas de bancos de dados operam em um estado não particionado, permitindo que consistência e disponibilidade sejam otimizadas conjuntamente.
 
-Em resumo, o teorema CAP é útil para compreensões e discussões iniciais sobre design e escolhas arquiteturais. No entanto, é uma simplificação enganosa, uma vez que "2 de 3" não são necessariamente exclusivos, permitindo a existência de níveis de consistência e disponibilidade além de um estado binário de "consistente/não consistente", "disponível/não disponível", como demonstrado no modelo **BASE**.
+Em resumo, o teorema CAP é útil para compreensões e discussões iniciais sobre design e escolhas arquiteturais. No entanto, é uma simplificação enganosa, uma vez que "2 de 3" não são necessariamente exclusivos, permitindo a existência de níveis de consistência e disponibilidade além de um estado binário de "consistente/não consistente" e "disponível/não disponível", como demonstrado no modelo **BASE**.
 
 <br>
 
