@@ -12,7 +12,7 @@ seo_description: Um guia completo sobre Single Point of Failure (SPoF) em System
 ---
 
 
-**Em sistemas distribuídos, a confiabilidade é um dos temas de maior importância na construção de serviços.** Existem infinitas possibilidades que podem acarretar alta disponibilidade ou problemas de disponibilidade de um sistema, e uma das formas de identificar oportunidades de otimização de [resiliência](/resiliencia/), além de [encontrar gargalos](/capacity-planning/), é identificar os Pontos Únicos de Falha entre os componentes. 
+**Em sistemas distribuídos, a confiabilidade é um dos temas de maior importância na construção de serviços.** Existem infinitas possibilidades que podem acarretar alta disponibilidade ou problemas de disponibilidade em um sistema, e uma das formas de identificar oportunidades de otimização de [resiliência](/resiliencia/), além de [encontrar gargalos](/capacity-planning/), é identificar os Pontos Únicos de Falha entre os componentes.
 
 **Neste rápido capítulo, vamos explorar de forma simples esse conceito e treinar o olhar crítico para identificar possíveis riscos e oportunidades.** Vamos aproveitar também o gancho para elaborar um próximo passo: detalhar as estratégias de Disaster Recovery de mercado.
 
@@ -22,9 +22,9 @@ seo_description: Um guia completo sobre Single Point of Failure (SPoF) em System
 
 # Definindo um Single Point of Failure
 
-**Um Single Point of Failure (SPoF), ou "Ponto Único de Falha", é um termo usado para se referir a qualquer componente, serviço ou recurso centralizado cuja falha provoca a indisponibilidade total ou parcial de um ou mais sistemas.** Um Ponto Único de Falha pode representar um [Banco de Dados](/databases/), um [Balanceador de Carga](/load-balancing/), um [API Gateway](/api-gateway/), um broker de mensageria ou até mesmo outro microserviço que, em caso de queda, não exista nenhum caminho alternativo para que as requisições sejam estabelecidas.
+**Um Single Point of Failure (SPoF), ou "Ponto Único de Falha", é um termo usado para se referir a qualquer componente, serviço ou recurso centralizado cuja falha provoca a indisponibilidade total ou parcial de um ou mais sistemas.** Um Ponto Único de Falha pode representar um [Banco de Dados](/databases/), um [Balanceador de Carga](/load-balancing/), um [API Gateway](/api-gateway/), um broker de mensageria ou até mesmo outro microserviço que, em caso de queda, não possua nenhum caminho alternativo para que as requisições sejam estabelecidas.
 
-Imagine que uma cidade só possua como forma de acesso uma única ponte. Essa ponte seria, no mundo real, um ponto único de falha. Por mais que ainda exista possibilidade de acesso de barco, helicóptero ou balsa, não seriam todas as pessoas que teriam acesso, e a entrada e saída, bem como o envio de recursos e afins, estariam ainda gravemente impactados. **Isso seria um Ponto Único de Falha que gera uma indisponibilidade total ou parcial de acesso à região.**
+Imagine que uma cidade possua como única forma de acesso uma ponte. Essa ponte seria, no mundo real, um ponto único de falha. Por mais que ainda exista a possibilidade de acesso por barco, helicóptero ou balsa, não seriam todas as pessoas que teriam acesso, e a entrada e saída, bem como o envio de recursos e afins, ainda estariam gravemente impactados. **Isso seria um Ponto Único de Falha que gera uma indisponibilidade total ou parcial de acesso à região.**
 
 **São raros os sistemas que não possuam nenhum tipo de Ponto Único de Falha.** A partir disso, podemos assumir algumas premissas, como a de que, quando um SPoF falha, o sistema pode entrar em modo degradado, no melhor dos casos, ou parar completamente, no pior. Logo, quanto maior a responsabilidade de um componente, maior o impacto de sua falha caso não existam [Fluxos de Fallback](/resiliencia/). Outra característica importante é que recuperações manuais ou rebuilds desses componentes levam tempo e podem causar perdas significativas.
 
@@ -36,7 +36,7 @@ Imagine que uma cidade só possua como forma de acesso uma única ponte. Essa po
 
 ![SPOF](/assets/images/system-design/spof-identiticacao.drawio.png)
 
-Durante esse mapeamento, é **necessário desenhar um "fluxo feliz" de cada transação dessas funcionalidades críticas**, **mapear todos os atores, desde a requisição de fato até a resposta para o usuário**. Em seguida, é necessário inspecionar **quais desses componentes não possuam réplicas](/replicacao/), [implementem padrões de resiliência](/resiliencia/), fallbacks e mecanismos que consigam assumir esses fluxos alternativos automaticamente**. São nesses atores que são encontrados **candidatos a se tornarem pontos únicos de falha** em um fluxo crítico.
+Durante esse mapeamento, é **necessário desenhar um "fluxo feliz" de cada transação dessas funcionalidades críticas**, **mapear todos os atores, desde a requisição de fato até a resposta para o usuário**. Em seguida, é necessário inspecionar **quais desses componentes não possuem réplicas (/replicacao/), implementam padrões de resiliência (/resiliencia/), fallbacks e mecanismos que consigam assumir esses fluxos alternativos automaticamente**. São nesses atores que são encontrados **candidatos a se tornarem pontos únicos de falha** em um fluxo crítico.
 
 **A identificação de "Pontos Únicos de Falha" não é uma tarefa pontual ou fácil; necessita de constante revisão arquitetural e esforço corporativo para que seja realmente efetiva**, ainda mais se começarmos a descer o nível de abstração de virtualização, networking, replicação entre provedores etc.
 
@@ -46,7 +46,7 @@ Durante esse mapeamento, é **necessário desenhar um "fluxo feliz" de cada tran
 
 **Existem estratégias comuns que podem nos auxiliar a corrigir e, principalmente, evitar a criação de SPoFs; nesta seção, iremos identificar, de forma macro, como endereçar algumas delas.** Lidar com SPoFs não significa simplesmente duplicar componentes indiscriminadamente. **O objetivo central é reduzir o blast radius, aumentar a previsibilidade sob falha e diminuir o tempo de recuperação.** Toda estratégia de mitigação envolve trade-offs entre custo, complexidade, latência e consistência.
 
-**A eliminação completa de SPoFs é praticamente impossível em sistemas reais**, especialmente quando consideramos limitações físicas, econômicas e organizacionais. A discussão deve considerar o custo-benefício da redundância perante as necessidades e o momento da empresa. Às vezes, é muito mais benéfico aceitar a falha momentânea perante um incidente de infraestrutura global do que lidar com os custos extensivos de manter múltiplos ambientes e redundâncias para lidar com desastres momentâneos.
+**A eliminação completa de SPoFs é praticamente impossível em sistemas reais**, especialmente quando consideramos limitações físicas, econômicas e organizacionais. A discussão deve considerar o custo-benefício da redundância perante as necessidades e o momento da empresa. Às vezes, é muito mais benéfico aceitar a falha momentânea diante de um incidente de infraestrutura global do que lidar com os custos extensivos de manter múltiplos ambientes e redundâncias para lidar com desastres momentâneos.
 
 ## Design Stateless de Aplicação
 
@@ -58,7 +58,7 @@ No entanto, externalizar o estado desloca a responsabilidade de resiliência par
 
 ![Ativa](/assets/images/system-design/spof-ativa.drawio.png)
 
-**Uma redundância ou replicação ativa é um modelo no qual todas as instâncias e réplicas de um serviço trabalham simultaneamente para receber e processar as requisições da carga de trabalho.** Resumidamente, nenhuma das réplicas tem como objetivo ficar ociosa aguardando uma falha geral para que assuma o processamento primário das requisições. Esse arranjo arquitetural pode ser encontrado em réplicas de aplicações atrás de balanceadores de carga, onde todas são verificadas quanto à integridade e recebem carga quase que uniformemente mediante a solicitação do serviço, ou em sistemas de mensageria, onde todas as réplicas estão conectadas aos tópicos/filas e podem receber mensagens e eventos para processar. No geral, esse tipo de arquitetura, **quando trabalhada sem estado, permite que, na falha eventual de pequenas quantidades de réplicas, o sistema continue operando e consiga se recuperar sem gerar grandes danos** (ou de preferência, nenhum dano) à experiência do cliente.
+**Uma redundância ou replicação ativa é um modelo no qual todas as instâncias e réplicas de um serviço trabalham simultaneamente para receber e processar as requisições da carga de trabalho.** Resumidamente, nenhuma das réplicas tem como objetivo ficar ociosa aguardando uma falha geral para que assuma o processamento primário das requisições. Esse arranjo arquitetural pode ser encontrado em réplicas de aplicações atrás de balanceadores de carga, onde todas são verificadas quanto à integridade e recebem carga quase que uniformemente mediante solicitação do serviço, ou em sistemas de mensageria, onde todas as réplicas estão conectadas aos tópicos/filas e podem receber mensagens e eventos para processar. No geral, esse tipo de arquitetura, **quando trabalhada sem estado, permite que, na falha eventual de pequenas quantidades de réplicas, o sistema continue operando e consiga se recuperar sem gerar grandes danos** (ou, de preferência, nenhum dano) à experiência do cliente.
 
 Na replicação ativa, todas as instâncias operam simultaneamente processando carga real. **Esse modelo dilui o impacto da falha de uma ou mais réplicas, pois as demais continuam absorvendo requisições.** Balanceadores de carga distribuindo tráfego uniformemente e consumidores paralelos processando mensagens em tópicos são exemplos mais básicos dessa abordagem.
 
@@ -71,7 +71,7 @@ Esse modelo também pode ser encontrado em réplicas de leitura de bancos de dad
 
 ![Passiva](/assets/images/system-design/spof-passiva.drawio.png)
 
-**Na replicação passiva, apenas uma instância atua como primária, enquanto outra permanece em standby, aguardando falha para assumir.** Esse modelo reduz a complexidade quando comparado ao ativo-ativo somente em termos de replicação e latência, mas introduz dependência crítica nos mecanismos de detecção e promoção, e nos faz assumir que precisamos ter ambientes altamente replicados que estejam disponíveis para assumir um chaveamento brusco ou gradual sem piorar a experiência do cliente ou criar inconsistências irrecuperáveis. 
+**Na replicação passiva, apenas uma instância atua como primária, enquanto outra permanece em standby, aguardando falha para assumir.** Esse modelo reduz a complexidade quando comparado ao ativo-ativo somente em termos de replicação e latência, mas introduz dependência crítica nos mecanismos de detecção e promoção e nos faz assumir que precisamos ter ambientes altamente replicados que estejam disponíveis para assumir um chaveamento brusco ou gradual, sem piorar a experiência do cliente ou criar inconsistências irrecuperáveis.
 
 Se a falha não for detectada rapidamente ou se a promoção for manual e lenta, o tempo de indisponibilidade pode ser significativo.
 
@@ -79,7 +79,7 @@ Se a falha não for detectada rapidamente ou se a promoção for manual e lenta,
 
 ![Circuit Breaker](/assets/images/system-design/spof-circuit-breaker.drawio.png)
 
-**Failover automático depende de monitoramento confiável, critérios claros de decisão e mecanismos transparentes de redirecionamento de tráfego.** A estratégia é empregar mecanismos como [Circuit Breakers](/resiliencia) ou feature toggles que saibam detectar padrões de falha do sistema e realizar "chaveamentos" para fluxos alternativos. Esses fluxos podem tanto envolver o redirecionamento do tráfego para uma zona passiva, a desativação de uma zona ativa-ativa, quanto assumir sistemas secundários de contingência que cumpram os mesmos objetivos com taxas menores, enfileiramentos maiores ou parceiros secundários.
+**Failover automático depende de monitoramento confiável, critérios claros de decisão e mecanismos transparentes de redirecionamento de tráfego.** A estratégia é empregar mecanismos como [Circuit Breakers](/resiliencia) ou feature toggles que saibam detectar padrões de falha do sistema e realizar "chaveamentos" para fluxos alternativos. Esses fluxos podem tanto envolver o redirecionamento do tráfego para uma zona passiva, a desativação de uma zona ativo-ativa quanto assumir sistemas secundários de contingência que cumpram os mesmos objetivos com taxas menores, enfileiramentos maiores ou parceiros secundários.
 
 <br>
 
@@ -103,7 +103,7 @@ Modelos multi-master exigem estratégias explícitas de resolução de conflitos
 
 **O modelo ativo-passivo mantém uma região primária processando tráfego, enquanto outra permanece preparada para assumir em caso de desastre.** Essa abordagem equilibra simplicidade e resiliência. Embora menos complexa que o ativo-ativo, ainda protege contra falhas regionais significativas.
 
-Esse modelo equilibra custo e resiliência, sendo amplamente utilizado em ambientes regulados ou que exigem consistência forte. No entanto, a sincronização contínua de dados precisa ser validada regularmente e, no momento de chaveamento, a região passiva pode lidar com consistência eventual de dados até que os mecanismos de sincronização estejam atualizados.
+Esse modelo equilibra custo e resiliência, sendo amplamente utilizado em ambientes regulados ou que exigem consistência forte. No entanto, a sincronização contínua de dados precisa ser validada regularmente e, no momento do chaveamento, a região passiva pode lidar com consistência eventual de dados até que os mecanismos de sincronização estejam atualizados.
 
 ## Pilot Light (Luz Piloto)
 
@@ -119,7 +119,7 @@ O modelo Pilot Light assume explicitamente que desastres regionais são eventos 
 
 **Quando estabelecemos que tanto a eliminação de desastres quanto a inexistência completa de Single Points of Failure são, de fato, impossíveis, o trabalho de projetar sistemas de alta disponibilidade operacional passa a ser sobre criar camadas de resiliência e contenção desses eventuais impactos.** Nesse contexto, precisamos metrificar a efetividade das estratégias empregadas ao longo do tempo para comparações, a fim de identificar se estamos degradando ou melhorando a experiência do sistema.
 
-Para elaborar essa discussão, precisamos sair do campo qualitativo das estratégias e nos focar nos aspectos quantitativos, governando as decisões por métricas. **As principais métricas que iremos abordar serão o MTTD, MTBF, MTTR, RTO e RPO.** Elas não são independentes; formam um sistema matematicamente interligado que determina disponibilidade, risco e impacto das falhas de sistemas de forma mais profissional e embasada.
+Para elaborar essa discussão, precisamos sair do campo qualitativo das estratégias e nos focar nos aspectos quantitativos, governando as decisões por métricas. **As principais métricas que iremos abordar são MTTD, MTBF, MTTR, RTO e RPO.** Elas não são independentes; formam um sistema matematicamente interligado que determina disponibilidade, risco e impacto das falhas de sistemas de forma mais profissional e embasada.
 
 <br>
 
@@ -127,7 +127,7 @@ Para elaborar essa discussão, precisamos sair do campo qualitativo das estraté
 
 **O MTTD (Mean Time to Detect) representa o tempo médio entre o início de uma falha e sua detecção pelo sistema ou equipe operacional.** É uma métrica que mede o tempo médio que leva para uma equipe ou sistema identificar que um incidente ou falha ocorreu. Imagine um serviço de e-commerce que sofre um problema em sua base de dados, causando lentidão nas transações dos clientes. O MTTD seria o tempo desde o início dessa lentidão até o momento em que a equipe responsável é acionada para intervenção.
 
-**O cálculo do MTTD é a soma das diferenças entre a detecção e o início dos incidentes ao decorrer do tempo, dividida pelo número de incidentes no mesmo período.**
+**O cálculo do MTTD é a soma das diferenças entre a detecção e o início dos incidentes ao longo do tempo, dividida pelo número de incidentes no mesmo período.**
 
 \begin{equation}
 MTTD = \frac{\text{Diferença Entre O Início e a Detecção dos Incidentes}}{\text{Número de Incidentes}}
@@ -157,7 +157,7 @@ MTTD = \text{34 minutos}
 
 **Ele está diretamente ligado ao investimento de tempo e inteligência de engenharia em observabilidade sistêmica**, contemplando logs, métricas, traces e alertas que garantam que o time esteja sempre monitorando os indicadores corretos e recebendo notificações com antecedência.
 
-Um MTTD alto indica ausência de observabilidade em pontos importantes da solução. Em sistemas distribuídos complexos, falhas raramente são binárias no âmbito de disponível e não disponível, e sim degradam progressivamente, como aumentos de latência, formação de filas internas, saturação, erros intermitentes e timeouts em cascata. **Um MTTD baixo é importante, pois quanto mais rápido uma falha é detectada, mais cedo o processo de recuperação pode ser iniciado.**
+Um MTTD alto indica ausência de observabilidade em pontos importantes da solução. Em sistemas distribuídos complexos, falhas raramente são binárias no âmbito de disponível e indisponível, e sim degradam progressivamente, como aumentos de latência, formação de filas internas, saturação, erros intermitentes e timeouts em cascata. **Um MTTD baixo é importante, pois quanto mais rápido uma falha é detectada, mais cedo o processo de recuperação pode ser iniciado.**
 
 <br>
 
@@ -165,7 +165,7 @@ Um MTTD alto indica ausência de observabilidade em pontos importantes da soluç
 
 **O Mean Time to Repair (MTTR) é o tempo médio necessário para reparar uma falha e restaurar o sistema à operação normal de forma completa.** É uma métrica que acompanha diretamente o MTTD. Em estratégias de recuperação de desastres, minimizar o MTTR é o indicador que traduz operacionalmente se estamos trabalhando corretamente os pontos de falha e reduzindo o impacto no usuário final.
 
-**O cálculo do MTTR é a soma das diferenças de tempo entre a detecção e a recuperação do incidente, dividida pelo número de incidentes no mesmo período.**
+**O cálculo do MTTR é a soma das diferenças de tempo entre a detecção e a recuperação dos incidentes, dividida pelo número de incidentes no mesmo período.**
 
 \begin{equation}
 MTTR = \frac{\text{Diferença Entre a Detecção e a Resolução dos Incidentes}}{\text{Número de Incidentes}}
@@ -201,7 +201,7 @@ Para reduzir o MTTR, o time de engenharia precisa focar em documentação, runbo
 
 ## MTBF - Mean Time Between Failures
 
-**O Mean Time Between Failures (MTBF) é uma métrica que indica o tempo médio esperado entre duas falhas de um mesmo sistema.** Basicamente, é a diferença de tempo entre dois acionamentos graves. É um dos indicadores de confiabilidade mais importantes, pois, quanto maior o MTBF, maior a confiabilidade do sistema em questão.
+**O Mean Time Between Failures (MTBF) é uma métrica que indica o tempo médio esperado entre duas falhas de um mesmo sistema.** Basicamente, é o intervalo de tempo entre dois acionamentos graves. É um dos indicadores de confiabilidade mais importantes, pois, quanto maior o MTBF, maior a confiabilidade do sistema em questão.
 
 Diferentemente das métricas anteriores, o MTBF considera o intervalo entre o término de um incidente e o início do próximo.
 
@@ -234,7 +234,7 @@ MTBF = 204{,}5 \text{ minutos}
 
 ## RTO - Recovery Time Objective
 
-**O Recovery Time Objective (RTO) é o tempo máximo aceitável que um sistema ou serviço pode ficar indisponível após a detecção de uma falha ou desastre.** Esse número tem interesse contratual, pois vai determinar qual ferramental, estratégias e investimentos serão necessários para garantir a continuidade operacional. Soluções mais rápidas de recuperação geralmente são mais caras e complexas de implementar. Um RTO de "zero" significa que o sistema deve ser recuperado instantaneamente e os clientes não têm apetite para falhas em nenhum aspecto, o que é extremamente difícil e caro de alcançar. Atingir o RTO envolve projetar sistemas com redundância, automação de failover, backups eficientes e processos de restauração bem testados, identificando e criando fallbacks para o maior número possível de SPoFs conhecidos.
+**O Recovery Time Objective (RTO) é o tempo máximo aceitável que um sistema ou serviço pode ficar indisponível após a detecção de uma falha ou desastre.** Esse número tem interesse contratual, pois vai determinar quais ferramentas, estratégias e investimentos serão necessários para garantir a continuidade operacional. Soluções mais rápidas de recuperação geralmente são mais caras e complexas de implementar. Um RTO de "zero" significa que o sistema deve ser recuperado instantaneamente e os clientes não têm apetite para falhas em nenhum aspecto, o que é extremamente difícil e caro de alcançar. Atingir o RTO envolve projetar sistemas com redundância, automação de failover, backups eficientes e processos de restauração bem testados, identificando e criando fallbacks para o maior número possível de SPoFs conhecidos.
 
 Uma aplicação bancária transacional pode ter um RTO de 1 hora, significando que, após qualquer tipo de desastre, ela deve estar completamente operacional em, no máximo, 60 minutos. Já um blog pessoal, site institucional ou pequenos e-commerces podem ter um RTO de 12, 24 ou 48 horas, pois o impacto de uma indisponibilidade, por mais que exista, é menor. **Os dois exemplos guiariam, por exemplo, o nível de investimento e engenharia que deve ser inserido na estratégia.** Garantir ambientes celulares, múltiplos shardings, arquiteturas multi-datacenter, multi-região e multi-cloud em sistemas que possuem RTOs menos exigentes não faz sentido financeiramente. Já no cenário oposto, pode justificar o investimento e a complexidade.
 
@@ -242,7 +242,7 @@ Uma aplicação bancária transacional pode ter um RTO de 1 hora, significando q
 
 ## RPO - Recovery Point Objective
 
-**O RPO (Recovery Point Objective) define a quantidade máxima de dados que pode ser perdida após um desastre.** Normalmente, é uma métrica relacionada à defasagem entre os dados primários e os backups e aos lags de replicação. Ela, assim como o RTO, é uma métrica contratual. Essa métrica guia o nível de investimento necessário em backups e estratégias de replicação de dados. Se backups ocorrem a cada 12 horas, tenho um RPO de 12 horas. Se possuo 5 minutos de lag de replicação entre os dados de um sistema primário e secundário, meu RPO é 5 minutos.
+**O RPO (Recovery Point Objective) define a quantidade máxima de dados que pode ser perdida após um desastre.** Normalmente, é uma métrica relacionada à defasagem entre os dados primários e os backups e aos lags de replicação. Ela, assim como o RTO, é uma métrica contratual. Essa métrica guia o nível de investimento necessário em backups e estratégias de replicação de dados. Se backups ocorrem a cada 12 horas, tenho um RPO de 12 horas. Se possuo 5 minutos de lag de replicação entre os dados de um sistema primário e secundário, meu RPO é de 5 minutos.
 
 Um RPO baixo ou próximo de zero significa que a perda de dados deve ser mínima ou inexistente, exigindo soluções de replicação contínua ou backups muito frequentes. Um RPO de "zero" normalmente implica replicação síncrona ou soluções de banco de dados distribuídos altamente consistentes entre todas as zonas e regiões secundárias do dado.
 
