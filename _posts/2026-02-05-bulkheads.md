@@ -14,26 +14,25 @@ seo_description: Um guia completo sobre o Bulkhead Pattern em arquitetura de sof
 O termo **"Bulkhead"** foi amplamente discutido em vários capítulos desta série de artigos, e o objetivo deste é ilustrar as nuances focadas nesse pattern em sua totalidade. **Quando discutimos bulkheads, abordamos uma ampla gama de implementações e possibilidades**, desde as mais internas, em nível de runtimes, até amplas aplicações arquiteturais e segmentações de operações e clientes. **O objetivo deste artigo é ilustrar as principais capacidades desse tipo de pattern**, bem como os tipos de vantagens e desvantagens em discussão.
 
 
-
 # Definindo Bulkheads 
 
 **O Bulkhead Pattern é um padrão arquitetural de contenção de falhas**, mas cujo objetivo central não é evitar que falhas aconteçam, e sim garantir que uma eventual adversidade em uma parte do sistema não se propague e o comprometa por inteiro. Ele parte do pressuposto de que falhas são inevitáveis em sistemas distribuídos e, portanto, **devem ser estruturalmente esperadas, limitadas e absorvidas em diversas dimensões**.  
 
-**A essência do Bulkhead não está em mecanismos de retry, timeout ou fallbacks**, mas na separação explícita de destinos operacionais. Quando corretamente aplicado, **o sistema deixa de ser um bloco homogêneo e passa a se comportar como um conjunto de compartimentos independentes**, cada um com capacidade, escalabilidade, limites e impacto bem definidos.
+**A essência do Bulkhead não está em mecanismos de retry, timeout ou fallbacks**, mas na separação explícita de domínios operacionais. Quando corretamente aplicado, **o sistema deixa de ser um bloco homogêneo e passa a se comportar como um conjunto de compartimentos independentes**, cada um com capacidade, escalabilidade, limites e impacto bem definidos.
 
 
 ## Bulkheads e a Engenharia Naval 
 
 ![Bulkhead Naval](/assets/images/system-design/bulkhead-naval.jpg)
 
-O termo **Bulkhead** tem sua origem na engenharia naval. Dentro dela, bulkheads são paredes estruturais internas que dividem o casco de um navio em compartimentos isolados, para que, se por ventura ocorrer um dano no casco e um compartimento for perfurado, apenas aquela seção se encha de água, preservando a flutuabilidade do restante da embarcação. **O objetivo dessa estratégia não é impedir que o dano aconteça, mas impedir sua propagação** e, por sua vez, o naufrágio completo da embarcação. **Esse mesmo raciocínio se aplica a sistemas críticos de larga escala**, e então foi portado para a engenharia de software como um conceito a ser estudado e entendido.
+O termo **Bulkhead** tem sua origem na engenharia naval. Dentro dela, bulkheads são paredes estruturais internas que dividem o casco de um navio em compartimentos isolados, para que, se por ventura ocorrer um dano no casco e um compartimento for perfurado, apenas aquela seção se encha de água, preservando a flutuabilidade do restante da embarcação. **O objetivo dessa estratégia não é impedir que o dano aconteça, mas impedir sua propagação** e, por sua vez, o naufrágio completo da embarcação. **Esse mesmo raciocínio se aplica a sistemas críticos de larga escala** e então foi portado para a engenharia de software como um conceito a ser estudado e entendido.
 
 
 ## Bulkheads e a Arquitetura de Software 
 
 ![Bulkhead Tradicional](/assets/images/system-design/bulkhead-tradicional.png)
 
-**O Bulkhead Pattern é um padrão de design de resiliência aplicado em microsserviços**, cujo objetivo é isolar falhas e impedir que um problema em um componente derrube todo o sistema. Na arquitetura de software, **um bulkhead representa uma separação explícita e delimitada de recursos e de destinos de execução de transações**. A ideia é segregar pools de recursos específicos para evitar que a saturação ou falha de um componente afete outros domínios ou segmentações de clientes de todo o sistema, e representa uma separação explícita de recursos e destinos de execução.  
+**O Bulkhead Pattern é um padrão de design de resiliência aplicado em microsserviços**, cujo objetivo é isolar falhas e impedir que um problema em um componente derrube todo o sistema. Na arquitetura de software, **um bulkhead representa uma separação explícita e delimitada de recursos e de destinos de execução de transações**. A ideia é segregar pools de recursos específicos para evitar que a saturação ou falha de um componente afete outros domínios ou segmentações de clientes de todo o sistema, e **representa uma separação explícita de recursos e destinos de execução**.  
 
 **Um erro conceitual recorrente é imaginar que bulkheads precisam existir em apenas uma camada do sistema**. Na prática, sistemas resilientes aplicam o mesmo princípio de isolamento de forma consistente ao longo da stack. É comum observar separação no nível de aplicação, mas não no banco de dados ou no isolamento de infraestrutura, mantendo, por exemplo, compartilhamento de filas ou tópicos.
 
@@ -46,7 +45,7 @@ Quando aplicado de forma correta, **o sistema deixa de ser visto como um bloco �
 
 # Implementações e Contenção de Falhas 
 
-**Bulkheads podem ser implementados em diferentes níveis da arquitetura**, mas todos compartilham o mesmo objetivo: impedir que a saturação de um recurso consuma a capacidade global do sistema. **A implementação correta exige clareza sobre quais recursos são finitos e como eles devem ser particionados**. Para direcionar a estratégia de forma correta, precisamos pontuar de forma objetiva quais recursos são finitos no sistema, quais são críticos e como eles devem ser segmentados, e assim definir formas de identificar, redirecionar, redistribuir e monitorar o tráfego e as operações nesses compartimentos distintos. 
+**Bulkheads podem ser implementados em diferentes níveis da arquitetura**, mas todos compartilham o mesmo objetivo: impedir que a saturação de um recurso consuma a capacidade global do sistema. **A implementação correta exige clareza sobre quais recursos são finitos e como eles devem ser particionados**. Para direcionar a estratégia de forma correta, precisamos pontuar de forma objetiva quais recursos são finitos no sistema, quais são críticos e como eles devem ser segmentados e, assim, definir formas de identificar, redirecionar, redistribuir e monitorar o tráfego e as operações nesses compartimentos distintos.
 
 ![Contenção](/assets/images/system-design/Scale-Bulkhead-Falhas.png)
 
@@ -72,7 +71,7 @@ No dia a dia de um time de engenharia, isso se traduz em decisões como pools de
 
 ![Bulkhead Cluster](/assets/images/system-design/bulkhead-cluster.png)
 
-No dia a dia, isso aparece de forma clara em clusters Kubernetes, ambientes de virtualização ou até mesmo em servidores *bare metal*. Um workload mal dimensionado, com vazamento de memória ou comportamento não linear sob carga, pode pressionar o kernel, o scheduler ou o hypervisor, afetando todos os serviços alocados por tabela. **Nesse ponto, nenhum thread pool ou fila dedicada é suficiente para conter a falha; é necessária uma segregação física dos recursos**. O critério utilizado para isso pode e deve variar, como, por exemplo, tipos de clientes, segmentos, prioridade, criticidade, hashing consistente, identificadores etc.
+No dia a dia, isso aparece de forma clara em clusters Kubernetes, ambientes de virtualização ou até mesmo em servidores *bare metal*. Um workload mal dimensionado, com vazamento de memória ou comportamento não linear sob carga pode pressionar o kernel, o scheduler ou o hypervisor, afetando todos os serviços alocados por tabela. **Nesse ponto, nenhum thread pool ou fila dedicada é suficiente para conter a falha; é necessária uma segregação física dos recursos**. O critério utilizado para isso pode e deve variar, como, por exemplo, tipos de clientes, segmentos, prioridade, criticidade, hashing consistente, identificadores etc.
 
 **Bulkheads físicos surgem como resposta a esse tipo de risco**. Separar workloads críticos em pools de nós dedicados, usar clusters distintos para domínios com SLOs incompatíveis ou até isolar componentes por região são decisões que aumentam o custo, mas **reduzem drasticamente o blast radius**.
 
@@ -83,6 +82,7 @@ No dia a dia, isso aparece de forma clara em clusters Kubernetes, ambientes de v
 **A forma como shards são definidos, roteados e balanceados determina, de maneira explícita, o tamanho do blast radius**, o comportamento sob sobrecarga e a previsibilidade da degradação. Em arquiteturas avançadas, **sharding deixa de ser um detalhe de armazenamento ou roteamento e passa a ser um mecanismo primário de isolamento operacional**.
 
 Cada shard representa, na prática, **um bulkhead completo ou parcial**. Ele possui capacidade própria, limites próprios e uma curva de degradação própria. **A distribuição correta desses shards permite transformar falhas sistêmicas em falhas estatisticamente localizadas**. Um pico extremo deixa de ser um evento binário de “o sistema caiu” e passa a ser um evento probabilístico: “X% do sistema foi impactado”.
+
 
 | Bulkheads | Blast Radius | Disponibilidade | Impacto     |
 |--------: |-------------:|----------------:|-------------|
@@ -99,12 +99,11 @@ Cada shard representa, na prática, **um bulkhead completo ou parcial**. Ele pos
 
 **Quanto maior o número de shards, menor o blast radius, mas maior a complexidade operacional**. O ponto central não é apenas quantos shards existem, mas **como o tráfego é distribuído entre eles**. Distribuições mal balanceadas, chaves de particionamento enviesadas ou algoritmos de roteamento instáveis podem concentrar carga excessiva em poucos shards, **anulando completamente o efeito do bulkhead**.
 
-
 <br>
 
 # Bulkheads e Shardings 
 
-**Sharding é uma das formas mais poderosas e perigosas de implementar bulkheads**. Quando bem aplicado, oferece isolamento estrutural; quando mal projetado, cria acoplamentos invisíveis que só se manifestam sob estresse e acabam não impedindo a propagação de falhas de um recurso isolado. Aqui, é necessário segregar todos os recursos físicos que podem compor o bulkhead, como balanceadores de carga, aplicações, bancos de dados, tópicos, filas e afins, e criar réplicas literais dedicadas apenas para aquele bulkhead, de forma que os fluxos iniciados em uma segmentação do bulkhead permaneçam no mesmo até o fim da execução e, assim, não ofereçam risco de performance e disponibilidade por conta da saturação de uso daquela partição específica do sistema. **Outros bulkheads devem estar aptos a executar as mesmas funções**, porém com capacidade isolada para outros tipos de públicos e operações. 
+**Sharding é uma das formas mais poderosas e perigosas de implementar bulkheads**. Quando bem aplicado, oferece isolamento estrutural; quando mal projetado, cria acoplamentos invisíveis que só se manifestam sob estresse e acabam não impedindo a propagação de falhas de um recurso isolado. Aqui, é necessário segregar todos os recursos físicos que podem compor o bulkhead, como balanceadores de carga, aplicações, bancos de dados, tópicos, filas e afins, e criar réplicas literais dedicadas apenas para aquele bulkhead, de forma que os fluxos iniciados em uma segmentação do bulkhead permaneçam nele até o fim da execução e, assim, não ofereçam risco de performance e disponibilidade por conta da saturação de uso daquela partição específica do sistema. **Outros bulkheads devem estar aptos a executar as mesmas funções**, porém com capacidade isolada para outros tipos de públicos e operações. 
 
 Eles são especialmente relevantes para **lidar com comportamentos não lineares de sistemas sob carga crescente**. Em regimes próximos à saturação, pequenas variações de tráfego podem provocar aumentos desproporcionais de latência, consumo de memória, *lock contention* ou pressão sobre o scheduler. **Sem bulkheads, esse comportamento não linear tende a se espalhar por todo o sistema**, criando um efeito dominó em que fluxos originalmente saudáveis passam a degradar por compartilharem os mesmos recursos finitos. **Tratados como complemento às estratégias de sharding**, tendem a elevar os níveis de performance e disponibilidade.
 
@@ -134,7 +133,7 @@ Por exemplo, separar processamento de pagamentos, consultas e relatórios em sha
 
 # Arquiteturas de Bulkheads
 
-**Nesta sessão vamos ilustrar algumas das possibilidades de segregação estrutural de bulkheads dentro da arquitetura de software**, onde serão apresentadas estratégias para dedicar e isolar capacidade para diferentes tipos de contextos comuns presentes no dia a dia. Muitos deles já foram vistos e citados, **mas aqui serão reabordados com uma recapitulação estruturada das estratégias**.
+**Nesta seção vamos ilustrar algumas das possibilidades de segregação estrutural de bulkheads dentro da arquitetura de software**, onde serão apresentadas estratégias para dedicar e isolar capacidade para diferentes tipos de contextos comuns presentes no dia a dia. Muitos deles já foram vistos e citados, **mas aqui serão reabordados com uma recapitulação estruturada das estratégias**.
 
 
 ## Bulkheads por Priorização
