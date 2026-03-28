@@ -1,6 +1,6 @@
 ---
 layout: post
-image: assets/images/system-design/escalabilidade-capa.png
+image: assets/images/system-design/capa-spof.png
 author: matheus
 featured: false
 published: true
@@ -8,7 +8,32 @@ categories: [ system-design, engineering, cloud ]
 title: System Design - Autenticação e Autorização
 ---
 
-### Bearer JSON Web Tokens (JWT)
+# Autenticação e Autorização 
+
+## Conceitos Fundamentais
+### Identidade
+### Credenciais
+### Autenticação
+### Autorização
+
+# Sessão 
+
+# Autenticação Stateless 
+
+## Gestão de Sessão e Ciclo de Vida de Tokens
+### Expiração
+### Revogação
+### Rotação
+### Refresh Tokens
+### Sliding sessions
+
+# Padrões de Mercado
+
+
+## Basic Auth
+
+
+## Bearer JSON Web Tokens (JWT)
 
 Os Bearer JSON Web Tokens, ou JWT, são tokens que representam uma série de informações que podem ser lidas e validadas entre cliente e servidor. Os JWTs são uma forma eficiente e performática de implementar capacidades de autenticação e autorização em API's Stateless. Os JWTs possuem informações autocontidas, ou seja, quando abertos, possuem todas as informações necessárias para autenticar os usuários.
 
@@ -40,12 +65,10 @@ Decodificando cada um dos campos, ou *"abrindo o JWT"*, podemos ver todas as inf
 
 É importante ressaltar que todas as informações utilizadas para compor o JWT podem ser facilmente abertas ao decodificar o base64, então é altamente não recomendado utilizar dados sensíveis para gerar os mesmos.
 
-### OAuth 2.0 & OpenID Connect
+## OAuth 2.0 & OpenID Connect
 
-### Basic Auth
+### OAuth 2.0 e PKCE
 
-### Certificados de Cliente e mTLS
+## Certificados de Cliente e mTLS
 
-### SAML (Security Assertation Markup Language)
-
-### API Keys Customizadas
+## SAML (Security Assertation Markup Language)
