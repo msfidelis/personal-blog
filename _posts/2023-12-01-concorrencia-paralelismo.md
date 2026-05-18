@@ -455,6 +455,31 @@ O Last-Write-Wins é uma **estratégia de resolução de conflitos usada em sist
 
 <br>
 
+## Locks 
+
+
+Após entender problemas como **Race Conditions**, **Deadlocks**, **Starvation** e o papel de mecanismos como **Mutexes** e **Semáforos**, fica mais fácil compreender o conceito mais amplo de **Locks**.
+
+De forma simples, um **Lock** é uma estratégia de sincronização utilizada para **controlar o acesso a um recurso compartilhado**, garantindo que múltiplas threads, processos ou serviços não manipulem o mesmo dado de maneira conflitante ao mesmo tempo. O objetivo e estratégia principal de um lock é preservar a **integridade**, a **consistência** e, em muitos casos, a **ordem lógica** das operações.
+
+Em termos práticos, sempre que duas ou mais unidades de execução podem **ler, alterar ou gravar o mesmo estado compartilhado**, surge a necessidade de algum mecanismo de coordenação. Esse mecanismo pode ser um `mutex`, um semáforo, um lock distribuído em Redis, uma trava em banco de dados, uma linha bloqueada por transação SQL, uma versão de registro validada por timestamp, entre várias outras abordagens.
+
+Em sistemas, esse tipo de abordagem é muito comum, e podem ser encontradas em atualização de saldo bancário, reserva de assento em companhias de viagem, baixa de estoque em e-commerce, controlar e evitar o processamento de uma mesma mensagem por consumidores diferentes, atualização concorrente de um cadastro por múltiplos usuários ou serviços e etc. 
+
+Sem locks, ou sem mecanismos equivalentes de coordenação, o sistema pode apresentar comportamentos incorretos, como **duplicidade de processamento**, **perda de atualização**, **sobrescrita indevida**, **venda de estoque inexistente** e **inconsistências temporais** difíceis de diagnosticar.
+
+Do ponto de vista arquitetural, locks podem ser aplicados em diferentes camadas, como  **em memória**, para coordenar threads dentro do mesmo processo, **no banco de dados**, para controlar concorrência sobre registros e linhas com transações, **na infraestrutura** com recursos centrais de coordenação, para impedir que múltiplas réplicas processem o mesmo trabalho ao mesmo tempo e tanbém **na lógica de domínio**, combinados com versionamento, timestamps, idempotência e máquinas de estado com escritas condicionais e checks de versão. 
+
+De maneira geral, existem duas grandes estratégias conceituais para trabalhar com locks sobre dados compartilhados: os **Locks Pessimistas** e os **Locks Otimistas**. Ambos buscam preservar consistência, mas partem de premissas bem diferentes sobre o comportamento da concorrência na aplicação. 
+
+
+### Locks Pessimistas
+
+
+### Locks Otimistas
+
+<br>
+
 ## Mutex
 
 ![Robô Mutex](/assets/images/system-design/mutex.png)
