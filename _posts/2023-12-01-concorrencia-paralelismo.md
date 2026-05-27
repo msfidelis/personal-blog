@@ -453,6 +453,49 @@ Esse fenômeno, comum em sistemas distribuídos, caracteriza uma **race conditio
 
 O Last-Write-Wins é uma **estratégia de resolução de conflitos usada em sistemas distribuídos para determinar qual atualização deve prevalecer quando há escritas concorrentes sobre o mesmo dado**. Quando duas ou mais réplicas modificam o mesmo registro quase ao mesmo tempo, **o sistema precisa decidir qual versão manter como “a correta”**. Para isso, as requisições precisam ser **enriquecidas com timestamps atômicos da solicitação**, para que seja possível realizar esse tipo de verificação de forma sistêmica.
 
+#### Exemplo de LWW com Versão no Banco de Dados
+
+A forma mais comum de implementar Last-Write-Wins em nível de banco de dados é enriquecer cada evento com um **número de versão ou timestamp gerado no momento da emissão**, e utilizá-lo como critério de escrita condicional. A regra é simples: **só aplique a atualização se o evento que está chegando for mais recente do que o estado já persistido**.
+
+Voltando ao exemplo do sistema de pagamentos: ao publicar os eventos `Pagamento_Pendente` e `Pago`, o sistema emissor enriquece cada um com um `event_version` sequencial ou um `event_timestamp` atômico. O consumidor, ao tentar aplicar a atualização, inclui essa informação na cláusula `WHERE`, garantindo que eventos mais antigos não sobrescrevam estados mais recentes.
+
+```sql
+-- Tabela com campo de versão para controle de causalidade
+CREATE TABLE pedidos (
+    id          UUID PRIMARY KEY,
+    status      VARCHAR(50),
+    event_version BIGINT DEFAULT 0
+);
+
+-- Consumidor recebe o evento “Pagamento_Pendente” com event_version = 1
+UPDATE pedidos
+SET status = 'aguardando_pagamento', event_version = 1
+WHERE id = '93' AND event_version < 1;
+-- Atualiza apenas se a versão armazenada for menor que a do evento recebido
+
+-- Consumidor recebe o evento “Pago” com event_version = 2
+UPDATE pedidos
+SET status = 'pago', event_version = 2
+WHERE id = '93' AND event_version < 2;
+-- Atualiza apenas se a versão armazenada for menor que a do evento recebido
+```
+
+Se os eventos chegarem fora de ordem — `Pago` antes de `Pagamento_Pendente` — o comportamento se torna seguro: o evento `Pago` é aplicado normalmente, e quando `Pagamento_Pendente` chegar em seguida com `event_version = 1`, a condição `event_version < 1` será falsa (pois o banco já está na versão `2`), e a atualização será ignorada sem causar nenhuma inconsistência.
+
+```sql
+-- Evento “Pago” chega primeiro (event_version = 2) → aplicado normalmente
+UPDATE pedidos SET status = 'pago', event_version = 2
+WHERE id = '93' AND event_version < 2;
+-- 1 row affected 
+
+-- Evento “Pagamento_Pendente” chega atrasado (event_version = 1) → ignorado
+UPDATE pedidos SET status = 'aguardando_pagamento', event_version = 1
+WHERE id = '93' AND event_version < 1;
+-- 0 rows affected → estado não é regredido 
+```
+
+Esse padrão é especialmente estratégico porque **não exige nenhuma coordenação entre os consumidores** e **não depende de locks**. A proteção é feita inteiramente pela escrita condicional. Embora exemplificado em um banco SQL tradicional, a estratégia pode ser implementada em praticamente qualquer database SQL e NoSQL que suporte escritas condicionais. 
+
 <br>
 
 ## Locks 
@@ -520,6 +563,8 @@ Esse padrão é muito utilizado em **ORMs** como Hibernate e ActiveRecord, em AP
 A principal vantagem do lock otimista é o **alto throughput**, pois como não há bloqueio antecipado, múltiplos processos podem ler e processar o mesmo dado em paralelo sem se bloquear mutuamente, o que melhora significativamente a performance em cenários de **baixa contenção**. Em contrapartida, quando conflitos acontecem com frequência, os **retries constantes podem aumentar a latência** e a carga no sistema, tornando essa abordagem inadequada para cenários de alta disputa por um mesmo recurso.
 
 De forma resumida, se conflitos são a regra, prefira o **lock pessimista**. Se conflitos são exceção, o **lock otimista** tende a ser mais eficiente no sistema em questão. 
+
+A diferença em relação ao **Lock Otimista** e uma estratégia de **Last-Write-Wins** é que enquanto o lock otimista verifica se *nada mudou* desde a última leitura (`version = $read_version`), o LWW verifica se *o evento atual é mais recente* que o estado armazenado (`event_version < $incoming_version`). Um protege contra conflito, o outro define **qual lado do conflito vence**.
 
 <br>
 
@@ -622,7 +667,7 @@ Total de itens grelhados na churrasqueira: 100
 
 <br>
 
-### Mutex Distribuído 
+### Mutex e Locks Distribuídos - Redis
 
 ![Robô Mutex Distribuído](/assets/images/system-design/mutex-distribuido.png)
 
@@ -739,7 +784,7 @@ Esse é um exemplo simples pra entendimento do algoritmo que não trata todos os
 
 <br>
 
-### Mutex Distribuído - Zookeeper
+### Mutex e Locks Distribuídos - Zookeeper
 
 Uma alternativa elegante ao Redis para gerenciar locks distribuídos é o uso do **Apache Zookeeper**. Embora a lógica fundamental seja semelhante ao exemplo anterior, o Zookeeper apresenta algumas peculiaridades interessantes.
 
