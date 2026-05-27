@@ -475,8 +475,51 @@ De maneira geral, existem duas grandes estratégias conceituais para trabalhar c
 
 ### Locks Pessimistas
 
+O **Lock Pessimista** parte da premissa de que conflitos são **prováveis e frequentes**. Antes de ler ou alterar um recurso compartilhado, a thread ou o processo **adquire a trava imediatamente**, impedindo que qualquer outra unidade de execução acesse aquele dado enquanto o processamento não for concluído.
+
+Imagine que no churrasco existe uma regra muito clara, quem quer usar a grelha da churrasqueira precisa colocar o paninho de prato no ombro para assumir o controle da mesma. Sem ele, todo mundo longe. Enquanto o paninho de prato estiver com alguém, ninguém mais pode se aproximar. Essa pessoa reserva a grelha com antecedência, mesmo antes de ter o alimento nas mãos, porque acredita que, se não fizer isso, vai ter uma briga por espaço. Essa é a lógica do lock pessimista: **você bloqueia primeiro, age depois**.
+
+Na prática, esse padrão é amplamente utilizado em bancos de dados relacionais com operações como o `SELECT FOR UPDATE`, que trava a linha consultada antes de qualquer modificação, garantindo que nenhuma outra transação possa alterá-la enquanto a trava estiver ativa. O recurso só é liberado ao final da transação, com `COMMIT` ou `ROLLBACK`.
+
+```sql
+BEGIN;
+SELECT saldo FROM contas WHERE id = 42 FOR UPDATE;
+-- nenhuma outra transação consegue modificar essa linha agora
+UPDATE contas SET saldo = saldo - 100 WHERE id = 42;
+COMMIT;
+```
+
+Essa abordagem garante **alta consistência** e é ideal para cenários em que a probabilidade de dois ou mais processos tentarem alterar o mesmo dado ao mesmo tempo é elevada, como em **baixas de estoque**, **transferências bancárias**, **reservas de assentos** ou qualquer operação que exija exclusividade garantida.
+
+O lado negativo do lock pessimista é o impacto na **performance e no throughput**. Como o recurso fica bloqueado durante todo o processamento, outros processos ficam em espera, o que aumenta a latência e pode gerar **gargalos em cenários de alta concorrência**. Há também o risco de **Deadlock**, caso dois processos tentem adquirir travas em recursos distintos de forma circular, como vimos anteriormente.
+
+<br>
 
 ### Locks Otimistas
+
+O **Lock Otimista** parte do princípio oposto, ele assume que conflitos são **raros**. Em vez de bloquear o recurso com antecedência, a leitura e o processamento acontecem sem qualquer trava. A verificação de consistência só ocorre **no momento da escrita**, checando se o dado foi alterado por outra thread ou processo desde que foi lido.
+
+Voltando ao churrasco, desta vez, você não coloca o avental nem reserva a grelha antes. Você prepara o alimento em casa, confiante de que quando chegar na grelha ela estará disponível. Mas antes de colocar o alimento para assar, você confere se a grelha está no mesmo estado em que estava quando você viu anteriormente. Se sim, ótimo. Se não, se alguém já está usando ou mexeu nela, você precisa decidir entre espera, tenta de novo ou descarta. Essa é a lógica do lock otimista: **você age primeiro, e só verifica o conflito na hora de confirmar**.
+
+A implementação mais comum dessa estratégia é o **versionamento de registros**. Cada registro carrega um campo de versão ou um timestamp. Ao ler, você anota a versão atual. Ao escrever, inclui essa versão na condição de atualização. Se a versão no banco ainda for a mesma que você leu, a escrita é confirmada. Se outro processo já alterou o registro e a versão mudou, a escrita falha e o processo precisa repetir a operação com os dados mais recentes.
+
+```sql
+-- Leitura com captura da versão atual
+SELECT saldo, versao FROM contas WHERE id = 42;
+-- versao retornada = 7
+
+-- Escrita condicional à versão
+UPDATE contas
+SET saldo = saldo - 100, versao = versao + 1
+WHERE id = 42 AND versao = 7;
+-- se a versao já mudou, 0 linhas afetadas → conflito detectado, retry necessário
+```
+
+Esse padrão é muito utilizado em **ORMs** como Hibernate e ActiveRecord, em APIs HTTP com o mecanismo de **ETag e If-Match**, em sistemas de controle de versão como o **Git** e em bancos NoSQL com operações de **Compare-and-Swap (CAS)**, como DynamoDB e Redis.
+
+A principal vantagem do lock otimista é o **alto throughput**, pois como não há bloqueio antecipado, múltiplos processos podem ler e processar o mesmo dado em paralelo sem se bloquear mutuamente, o que melhora significativamente a performance em cenários de **baixa contenção**. Em contrapartida, quando conflitos acontecem com frequência, os **retries constantes podem aumentar a latência** e a carga no sistema, tornando essa abordagem inadequada para cenários de alta disputa por um mesmo recurso.
+
+De forma resumida, se conflitos são a regra, prefira o **lock pessimista**. Se conflitos são exceção, o **lock otimista** tende a ser mais eficiente no sistema em questão. 
 
 <br>
 
