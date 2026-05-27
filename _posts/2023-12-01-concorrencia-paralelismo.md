@@ -453,6 +453,119 @@ Esse fenômeno, comum em sistemas distribuídos, caracteriza uma **race conditio
 
 O Last-Write-Wins é uma **estratégia de resolução de conflitos usada em sistemas distribuídos para determinar qual atualização deve prevalecer quando há escritas concorrentes sobre o mesmo dado**. Quando duas ou mais réplicas modificam o mesmo registro quase ao mesmo tempo, **o sistema precisa decidir qual versão manter como “a correta”**. Para isso, as requisições precisam ser **enriquecidas com timestamps atômicos da solicitação**, para que seja possível realizar esse tipo de verificação de forma sistêmica.
 
+#### Exemplo de LWW com Versão no Banco de Dados
+
+A forma mais comum de implementar Last-Write-Wins em nível de banco de dados é enriquecer cada evento com um **número de versão ou timestamp gerado no momento da emissão**, e utilizá-lo como critério de escrita condicional. A regra é simples: **só aplique a atualização se o evento que está chegando for mais recente do que o estado já persistido**.
+
+Voltando ao exemplo do sistema de pagamentos: ao publicar os eventos `Pagamento_Pendente` e `Pago`, o sistema emissor enriquece cada um com um `event_version` sequencial ou um `event_timestamp` atômico. O consumidor, ao tentar aplicar a atualização, inclui essa informação na cláusula `WHERE`, garantindo que eventos mais antigos não sobrescrevam estados mais recentes.
+
+```sql
+-- Tabela com campo de versão para controle de causalidade
+CREATE TABLE pedidos (
+    id          UUID PRIMARY KEY,
+    status      VARCHAR(50),
+    event_version BIGINT DEFAULT 0
+);
+
+-- Consumidor recebe o evento “Pagamento_Pendente” com event_version = 1
+UPDATE pedidos
+SET status = 'aguardando_pagamento', event_version = 1
+WHERE id = '93' AND event_version < 1;
+-- Atualiza apenas se a versão armazenada for menor que a do evento recebido
+
+-- Consumidor recebe o evento “Pago” com event_version = 2
+UPDATE pedidos
+SET status = 'pago', event_version = 2
+WHERE id = '93' AND event_version < 2;
+-- Atualiza apenas se a versão armazenada for menor que a do evento recebido
+```
+
+Se os eventos chegarem fora de ordem — `Pago` antes de `Pagamento_Pendente` — o comportamento se torna seguro: o evento `Pago` é aplicado normalmente, e quando `Pagamento_Pendente` chegar em seguida com `event_version = 1`, a condição `event_version < 1` será falsa (pois o banco já está na versão `2`), e a atualização será ignorada sem causar nenhuma inconsistência.
+
+```sql
+-- Evento “Pago” chega primeiro (event_version = 2) → aplicado normalmente
+UPDATE pedidos SET status = 'pago', event_version = 2
+WHERE id = '93' AND event_version < 2;
+-- 1 row affected 
+
+-- Evento “Pagamento_Pendente” chega atrasado (event_version = 1) → ignorado
+UPDATE pedidos SET status = 'aguardando_pagamento', event_version = 1
+WHERE id = '93' AND event_version < 1;
+-- 0 rows affected → estado não é regredido 
+```
+
+Esse padrão é especialmente estratégico porque **não exige nenhuma coordenação entre os consumidores** e **não depende de locks**. A proteção é feita inteiramente pela escrita condicional. Embora exemplificado em um banco SQL tradicional, a estratégia pode ser implementada em praticamente qualquer database SQL e NoSQL que suporte escritas condicionais. 
+
+<br>
+
+## Locks 
+
+
+Após entender problemas como **Race Conditions**, **Deadlocks**, **Starvation** e o papel de mecanismos como **Mutexes** e **Semáforos**, fica mais fácil compreender o conceito mais amplo de **Locks**.
+
+De forma simples, um **Lock** é uma estratégia de sincronização utilizada para **controlar o acesso a um recurso compartilhado**, garantindo que múltiplas threads, processos ou serviços não manipulem o mesmo dado de maneira conflitante ao mesmo tempo. O objetivo e estratégia principal de um lock é preservar a **integridade**, a **consistência** e, em muitos casos, a **ordem lógica** das operações.
+
+Em termos práticos, sempre que duas ou mais unidades de execução podem **ler, alterar ou gravar o mesmo estado compartilhado**, surge a necessidade de algum mecanismo de coordenação. Esse mecanismo pode ser um `mutex`, um semáforo, um lock distribuído em Redis, uma trava em banco de dados, uma linha bloqueada por transação SQL, uma versão de registro validada por timestamp, entre várias outras abordagens.
+
+Em sistemas, esse tipo de abordagem é muito comum, e podem ser encontradas em atualização de saldo bancário, reserva de assento em companhias de viagem, baixa de estoque em e-commerce, controlar e evitar o processamento de uma mesma mensagem por consumidores diferentes, atualização concorrente de um cadastro por múltiplos usuários ou serviços e etc. 
+
+Sem locks, ou sem mecanismos equivalentes de coordenação, o sistema pode apresentar comportamentos incorretos, como **duplicidade de processamento**, **perda de atualização**, **sobrescrita indevida**, **venda de estoque inexistente** e **inconsistências temporais** difíceis de diagnosticar.
+
+Do ponto de vista arquitetural, locks podem ser aplicados em diferentes camadas, como  **em memória**, para coordenar threads dentro do mesmo processo, **no banco de dados**, para controlar concorrência sobre registros e linhas com transações, **na infraestrutura** com recursos centrais de coordenação, para impedir que múltiplas réplicas processem o mesmo trabalho ao mesmo tempo e tanbém **na lógica de domínio**, combinados com versionamento, timestamps, idempotência e máquinas de estado com escritas condicionais e checks de versão. 
+
+De maneira geral, existem duas grandes estratégias conceituais para trabalhar com locks sobre dados compartilhados: os **Locks Pessimistas** e os **Locks Otimistas**. Ambos buscam preservar consistência, mas partem de premissas bem diferentes sobre o comportamento da concorrência na aplicação. 
+
+
+### Locks Pessimistas
+
+O **Lock Pessimista** parte da premissa de que conflitos são **prováveis e frequentes**. Antes de ler ou alterar um recurso compartilhado, a thread ou o processo **adquire a trava imediatamente**, impedindo que qualquer outra unidade de execução acesse aquele dado enquanto o processamento não for concluído.
+
+Imagine que no churrasco existe uma regra muito clara, quem quer usar a grelha da churrasqueira precisa colocar o paninho de prato no ombro para assumir o controle da mesma. Sem ele, todo mundo longe. Enquanto o paninho de prato estiver com alguém, ninguém mais pode se aproximar. Essa pessoa reserva a grelha com antecedência, mesmo antes de ter o alimento nas mãos, porque acredita que, se não fizer isso, vai ter uma briga por espaço. Essa é a lógica do lock pessimista: **você bloqueia primeiro, age depois**.
+
+Na prática, esse padrão é amplamente utilizado em bancos de dados relacionais com operações como o `SELECT FOR UPDATE`, que trava a linha consultada antes de qualquer modificação, garantindo que nenhuma outra transação possa alterá-la enquanto a trava estiver ativa. O recurso só é liberado ao final da transação, com `COMMIT` ou `ROLLBACK`.
+
+```sql
+BEGIN;
+SELECT saldo FROM contas WHERE id = 42 FOR UPDATE;
+-- nenhuma outra transação consegue modificar essa linha agora
+UPDATE contas SET saldo = saldo - 100 WHERE id = 42;
+COMMIT;
+```
+
+Essa abordagem garante **alta consistência** e é ideal para cenários em que a probabilidade de dois ou mais processos tentarem alterar o mesmo dado ao mesmo tempo é elevada, como em **baixas de estoque**, **transferências bancárias**, **reservas de assentos** ou qualquer operação que exija exclusividade garantida.
+
+O lado negativo do lock pessimista é o impacto na **performance e no throughput**. Como o recurso fica bloqueado durante todo o processamento, outros processos ficam em espera, o que aumenta a latência e pode gerar **gargalos em cenários de alta concorrência**. Há também o risco de **Deadlock**, caso dois processos tentem adquirir travas em recursos distintos de forma circular, como vimos anteriormente.
+
+<br>
+
+### Locks Otimistas
+
+O **Lock Otimista** parte do princípio oposto, ele assume que conflitos são **raros**. Em vez de bloquear o recurso com antecedência, a leitura e o processamento acontecem sem qualquer trava. A verificação de consistência só ocorre **no momento da escrita**, checando se o dado foi alterado por outra thread ou processo desde que foi lido.
+
+Voltando ao churrasco, desta vez, você não coloca o avental nem reserva a grelha antes. Você prepara o alimento em casa, confiante de que quando chegar na grelha ela estará disponível. Mas antes de colocar o alimento para assar, você confere se a grelha está no mesmo estado em que estava quando você viu anteriormente. Se sim, ótimo. Se não, se alguém já está usando ou mexeu nela, você precisa decidir entre espera, tenta de novo ou descarta. Essa é a lógica do lock otimista: **você age primeiro, e só verifica o conflito na hora de confirmar**.
+
+A implementação mais comum dessa estratégia é o **versionamento de registros**. Cada registro carrega um campo de versão ou um timestamp. Ao ler, você anota a versão atual. Ao escrever, inclui essa versão na condição de atualização. Se a versão no banco ainda for a mesma que você leu, a escrita é confirmada. Se outro processo já alterou o registro e a versão mudou, a escrita falha e o processo precisa repetir a operação com os dados mais recentes.
+
+```sql
+-- Leitura com captura da versão atual
+SELECT saldo, versao FROM contas WHERE id = 42;
+-- versao retornada = 7
+
+-- Escrita condicional à versão
+UPDATE contas
+SET saldo = saldo - 100, versao = versao + 1
+WHERE id = 42 AND versao = 7;
+-- se a versao já mudou, 0 linhas afetadas → conflito detectado, retry necessário
+```
+
+Esse padrão é muito utilizado em **ORMs** como Hibernate e ActiveRecord, em APIs HTTP com o mecanismo de **ETag e If-Match**, em sistemas de controle de versão como o **Git** e em bancos NoSQL com operações de **Compare-and-Swap (CAS)**, como DynamoDB e Redis.
+
+A principal vantagem do lock otimista é o **alto throughput**, pois como não há bloqueio antecipado, múltiplos processos podem ler e processar o mesmo dado em paralelo sem se bloquear mutuamente, o que melhora significativamente a performance em cenários de **baixa contenção**. Em contrapartida, quando conflitos acontecem com frequência, os **retries constantes podem aumentar a latência** e a carga no sistema, tornando essa abordagem inadequada para cenários de alta disputa por um mesmo recurso.
+
+De forma resumida, se conflitos são a regra, prefira o **lock pessimista**. Se conflitos são exceção, o **lock otimista** tende a ser mais eficiente no sistema em questão. 
+
+A diferença em relação ao **Lock Otimista** e uma estratégia de **Last-Write-Wins** é que enquanto o lock otimista verifica se *nada mudou* desde a última leitura (`version = $read_version`), o LWW verifica se *o evento atual é mais recente* que o estado armazenado (`event_version < $incoming_version`). Um protege contra conflito, o outro define **qual lado do conflito vence**.
+
 <br>
 
 ## Mutex
@@ -554,7 +667,7 @@ Total de itens grelhados na churrasqueira: 100
 
 <br>
 
-### Mutex Distribuído 
+### Mutex e Locks Distribuídos - Redis
 
 ![Robô Mutex Distribuído](/assets/images/system-design/mutex-distribuido.png)
 
@@ -671,7 +784,7 @@ Esse é um exemplo simples pra entendimento do algoritmo que não trata todos os
 
 <br>
 
-### Mutex Distribuído - Zookeeper
+### Mutex e Locks Distribuídos - Zookeeper
 
 Uma alternativa elegante ao Redis para gerenciar locks distribuídos é o uso do **Apache Zookeeper**. Embora a lógica fundamental seja semelhante ao exemplo anterior, o Zookeeper apresenta algumas peculiaridades interessantes.
 
