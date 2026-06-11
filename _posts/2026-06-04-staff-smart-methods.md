@@ -5,22 +5,22 @@ author: matheus
 featured: false
 published: true
 categories: [ staff-plus, carreira ]
-title: Staff Engineering - Transformando intenções vagas em compromissos metrificáveis com SMART Methods
+title: Staff Engineering - Convertendo Desejos em Metas Verificáveis (SMART Method)
 ---
 
-Uma das principais tarefas de um engenheiro que ocupa a cadeira de Staff ou Especialista é **transformar desejos abstratos da camada executiva e estratégica em dados e tarefas paupáveis que possam ser direcionadas aos times de engenharia de forma tangível e metrificável**. Durante meu primeiro ano na cadeira de Staff, eu enfrentei diversos desafios que foram muito mais árduos do que deveriam por não ter essa clareza de visão. Eu sempre considerei direcionamentos como *"Precisamos melhorar o login"*,  *"Nosso checkout está lento"*,  *"A experiência do usuário está ruim"*,  *"Precisamos escalar a plataforma"*, *"Temos que reduzir incidentes"*, *"A arquitetura precisa ser mais resiliente"* como um despreparo da liderança. Mas não são. Era meu papel que estava ali sendo solicitado. 
+Uma das principais tarefas de um engenheiro que ocupa a cadeira de Staff ou Especialista é **transformar desejos abstratos da camada executiva e estratégica em dados e tarefas palpáveis, que possam ser direcionados aos times de engenharia de forma tangível e metrificável**. Durante meu primeiro ano na cadeira de Staff, enfrentei diversos desafios que foram muito mais árduos do que deveriam, justamente por não ter essa clareza de visão. Eu sempre considerei direcionamentos como *"Precisamos melhorar o login"*, *"Nosso checkout está lento"*, *"A experiência do usuário está ruim"*, *"Precisamos escalar a plataforma"*, *"Temos que reduzir incidentes"* e *"A arquitetura precisa ser mais resiliente"* como sinais de despreparo da liderança. Mas não eram. Era o meu papel que estava ali sendo solicitado.
 
-O problema dessas frases não é a intenção. A intenção geralmente é legítima. **O problema é que elas não dizem o que exatamente precisa mudar, quanto precisa mudar, onde está o problema, em quais condições ele aparece, qual é o estado desejado e como saberemos que melhorou**. E é nosso papel traduzir isso. As vezes, a própria alta liderança não tem as resposta, e cabe a nós, trazer a visão pra essa camada. 
+O problema dessas frases não é a intenção. A intenção geralmente é legítima. **O problema é que elas não dizem o que exatamente precisa mudar, quanto precisa mudar, onde está o problema, em quais condições ele aparece, qual é o estado desejado e como saberemos que melhorou**. E é nosso papel traduzir isso. Às vezes, a própria alta liderança não tem as respostas, e cabe a nós trazer essa visão para essa camada.
 
-Depois de algum tempo, conheci o método SMART no meu MBA, assunto que simplesmente deixei passar as primeiras horas de explicação do professor por por pura prepotencia inicial vinda por um sentimento "mais um termo de coach emocionado". Até que em um dos slides, o professor abordou a perspectiva de que as SMART Methods eram grandes aliadas para traduzir sentimentos vagos dos clientes e metas abstratas da liderança em compromissos verificáveis e metrificáveis. Isso me acendeu uma luz para reassistir a aula no dia seguinte e buscar mais perspecitivas do método. Desde então, utilizo as mesmas como um modelo mental para trafegar entre boards executivos e técnicos transportando dados e intenções para ambos os lados e podendo direcionar a curto, médio e longo prazo junto aos times de engenharia. 
+Depois de algum tempo, conheci o método SMART no meu MBA, assunto que simplesmente deixei passar nas primeiras horas de explicação do professor por pura prepotência inicial, vinda de um sentimento de *"mais um termo de coach emocionado"*. Até que, em um dos slides, o professor abordou a perspectiva de que os SMART Methods eram grandes aliados para traduzir sentimentos vagos dos clientes e metas abstratas da liderança em compromissos verificáveis e metrificáveis. Isso me acendeu uma luz para reassistir à aula no dia seguinte e buscar mais perspectivas sobre o método. Desde então, utilizo o método como um modelo mental para trafegar entre boards executivos e técnicos, transportando dados e intenções para ambos os lados e direcionando ações de curto, médio e longo prazo junto aos times de engenharia.
 
 <br>
 
-## O que é o Metodo SMART?
+## O que é o Método SMART?
 
 ![SMART](/assets/images/staff/smart.jpg)
 
-O Método SMART é o acrônimo para: 
+O Método SMART é o acrônimo para:
 
 * **S — Specific: específico**
 * **M — Measurable: mensurável**
@@ -28,36 +28,45 @@ O Método SMART é o acrônimo para:
 * **R — Relevant: relevante**
 * **T — Time-bound: limitado no tempo**
 
-A ideia o método é **elaborar uma forma simples de transformar e escrever metas**. Uma boa meta precisa deixar claro qual problema será atacado, qual métrica será usada, qual resultado é esperado, por que isso importa e até quando deve acontecer. Justamento inverso do que vemos no exemplo "Nossa home está ruim", "nosso login demora muito" ou "o checkout está lento". 
+A ideia do método é **elaborar uma forma simples de transformar e escrever metas**. Uma boa meta precisa deixar claro qual problema será atacado, qual métrica será usada, qual resultado é esperado, por que isso importa e até quando deve acontecer. É justamente o inverso do que vemos em exemplos como *"Nossa home está ruim"*, *"Nosso login demora muito"* ou *"O checkout está lento"*. 
+
+Em ambientes corporativos, especialmente em engenharia de software, muitas demandas chegam como desejos vago. Esses desesjos podem representar dores reais, mas ainda não são metas. Elas não dizem qual parte do sistema está ruim, qual métrica está degradada, qual baseline será usada, qual impacto precisa ser reduzido, qual trade-off é aceitável ou qual critério indicará que o problema foi resolvido.
+
+É nesse ponto que o SMART se torna um framework tático e estratégico para profissionais Staff+. O método funciona como uma ponte entre a intenção estratégica e a execução técnica. Ele ajuda a converter uma percepção executiva em um contrato de trabalho verificável para os times de engenharia. Em vez de apenas aceitar uma frase como *"precisamos reduzir custos"*, o especialista passa a decompor essa intenção em escopo, métrica, impacto, viabilidade, prazo e critério de sucesso.
+
 
 <br>
 
-## Framework Mental: Transformando abstração em dados com perguntas
+## Framework Mental: transformando abstração em dados com perguntas
 
-Precisamos entender o "desejo". O desejo por si só, é uma intenção ampla, e não diz muita coisa: 
+Precisamos entender o *"desejo"*. O desejo, por si só, é uma intenção ampla e não diz muita coisa:
 
-> "O checkout está lento"
+> *"O checkout está lento"*
 
-Uma boa meta nasce de perguntas melhores. Antes de escrever qualquer tarefa, precisamos decompor o desejo inicial. Precisamos então convertê-lo em uma dor, ou problema real. Essa será a primeira camada de tradução que será observável. Caso não exista, ou exista com outras palavras, é o momento de pavimentar a mesma em comum acordo entre todos os envolvidos. Qual o real problema do login estar ruim? Qual é o real impacto disso para o produto ou cliente?
+**Uma boa meta nasce de perguntas melhores**. Antes de escrever qualquer tarefa, precisamos decompor o desejo inicial. Precisamos, então, convertê-lo em uma dor ou em um problema real. Essa será a primeira camada de tradução observável. Caso ela não exista, ou exista com outras palavras, é o momento de pavimentá-la em comum acordo entre todos os envolvidos. *Qual é o real problema do login estar ruim? Qual é o real impacto disso para o produto ou cliente?*
 
 
-### Primeira Pergunta: O que exatamente está ruim?
+### Primeira pergunta: *o que exatamente está ruim?* - Delimitando o problema
 
-Uma boa meta, independente de ser SMART ou não, deve ser sempre auditada com perguntas que a tornem melhor. Para isso, precisamos utilizar de perguntas para decompor o desejo inicial. O desejo de "precisamos melhorar o checkout" não diz "o que é ruim", "o quanto está ruim", "em qual parte está ruim", e nem o principal: "o que é bom?". 
+![Primeira Pergunta](/assets/images/staff/staff-Smart-1.jpg)
 
-Para converter esse desejo em tópicos metrificáveis, precisamos trabalhar nesses detalhes. Para isso podemos elaborar perguntas como "Qual parte da jornada está com problema?", "O problema é demora? Erro? Experiência? Muitos passos? Confusão do usuário? Todas as alternativas anteriores?", "Quando isso acontece? Tem um padrão?", "São em determinados horários?", "Ocorre após deployments?" e entrando em aspectos mais técnicos, "o checkout está lento em todas as etapas ou apenas no cálculo de frete, pagamento ou confirmação do pedido?", "isso ocorre sempre ou em horarios específicos? Se sim, quais?" "O problema é técnico, operacional, financeiro ou de experiência?"
+Uma boa meta, independentemente de ser SMART ou não, deve ser sempre auditada com perguntas que a tornem melhor. Para isso, precisamos utilizar perguntas para decompor o desejo inicial. O desejo de *"precisamos melhorar o checkout"* não diz *"o que está ruim"*, *"o quanto está ruim"*, *"em qual parte está ruim"* e nem o principal: *"o que é bom?"*.
 
-Respondendo a essas perguntas, podemos começar a buscar transformar: 
+Para converter esse desejo em tópicos metrificáveis, precisamos trabalhar nesses detalhes. Para isso, podemos elaborar perguntas como: *"Qual parte da jornada está com problema?"*, *"O problema é demora? Erro? Experiência? Muitos passos? Confusão do usuário? Todas as alternativas anteriores?"*, *"Quando isso acontece? Existe um padrão?"*, *"Acontece em determinados horários?"*, *"Ocorre após deployments?"* e, entrando em aspectos mais técnicos: *"O checkout está lento em todas as etapas ou apenas no cálculo de frete, pagamento ou confirmação do pedido?"*, *"Isso ocorre sempre ou em horários específicos? Se sim, quais?"* e *"O problema é técnico, operacional, financeiro ou de experiência?"*.
 
-> "O checkout está ruim"
+Respondendo a essas perguntas, podemos começar a transformar:
 
-Para algo parecido com: 
+> *"O checkout está ruim"*
 
-> "A etapa de pagamento do checkout apresenta saturação durante horários de pico. Esses horarios acontecem em dias úteis 12h00 e 18h00 e em datas comemorativas."
+Em algo parecido com:
 
-Dessa forma já temos tecnicamente um alvo claro. Os componentes que fazem parte da etapa de pagamento mediante a uma série de outros componentes e fluxos que podem compor um checkout complexo. 
+> *"A etapa de pagamento do checkout apresenta saturação durante horários de pico. Esses horários acontecem em dias úteis, entre 12h00 e 18h00, e em datas comemorativas."*
 
-### Segunda Pergunta: O quanto está ruim?
+Dessa forma, já temos tecnicamente um alvo claro. **A etapa de pagamento passa a ser isolada como objeto de análise dentro de uma jornada maior de checkout**, que pode envolver uma série de outros componentes e fluxos em uma operação complexa.
+
+### Segunda Pergunta: O quanto está ruim? - Metrificando o problema
+
+![Segunda Pergunta](/assets/images/staff/staff-Smart-2.jpg)
 
 Aqui saímos da percepção e entramos na medição de fato. Para saber o quanto está ruim, precisamos das baselines do comportamento padrão para entender "qual o valor atual da métrica?", "qual a média, p95, p99 e taxa de erro dentro e fora dos períodos de saturação?", "quantos usuários estão impactados?", "qual o impacto operacional ou reputacional?". 
 
@@ -69,17 +78,22 @@ Perceba que essas perguntas podem evoluir o desejo de "checkout ruim" para algo 
 
 Agora que já pavimentamos o desejo, transformando o mesmo em algo mais proximo de um problema que um time de engenharia deveria lidar, temos agora de pavimentar as metas de aceite sobre o mesmo. 
 
-### Terceira Pergunta: O quanto é bom? 
+### Terceira Pergunta: O quanto é bom? - Estabelecendo a meta
+
+
+![Terceira Pergunta](/assets/images/staff/staff-Smart-3.jpg)
 
 Uma meta precisa ser amarrada a um estado desejado. Buscar esses valores vão ajudar a dar milestones sobre o problema elucidado anteriormente. Depois de descobrir "o que está ruim", "o quanto está ruim", precisamos descobrir "o que é bom". 
 
-Tendo encontrado o problema e as métricas que ilustram o sentimento para a realidade, precisamos responder perguntas como: "Quais os valores aceitáveis?", "Quais os valores ideais?", "Existe benchmark de mercado sobre isso?", "Quais os SLA's e SLO's esperados?", "o quanto de degradação é toleravel?". Com essas respostas, ou parte delas podemos escrever a meta sobre o problema. O ideal é que essa meta ilustre algo realmente paupável mediante a realidade, investimento, custo, time e recursos disponíveis para a resolução do mesmo. Ela precisa ser parecida com: 
+Tendo encontrado o problema e as métricas que ilustram o sentimento para a realidade, precisamos responder perguntas como: "Quais os valores aceitáveis?", "Quais os valores ideais?", "Existe benchmark de mercado sobre isso?", "Quais os SLAs e SLO's esperados?", "o quanto de degradação é toleravel?". Com essas respostas, ou parte delas podemos escrever a meta sobre o problema. O ideal é que essa meta ilustre algo realmente paupável mediante a realidade, investimento, custo, time e recursos disponíveis para a resolução do mesmo. Ela precisa ser parecida com: 
 
 > "Precisamos reduzir o tempo de resposta em p95 para 4s e manter uma taxa de erro abaixo de 0.1% nos períodos de pico conforme os contratos do uso de serviço. Nosso abandono de carrinho deve se manter abaixo de 10% independente do período conforme as metas do time de vendas."
 
 Com essas três primeiras perguntas já temos insumos necessários para identificar o problema, e quais os marcos necessários para lidar com eles a nível de uma meta real e mensurável. Agora precisamos "abrir o capô" e dar um deep dive maior para entender em níveis mais técnicos, em quais componentes e camadas precisamos lidar com esse problema. 
 
-### Quarta Pergunta: Onde o problema acontece?
+### Quarta Pergunta: Como e onde o problema acontece? - Elaborando hipóteses
+
+![Querta Pergunta](/assets/images/staff/staff-Smart-4.jpg)
 
 Nem todo problema é global. Muitas vezes, ele é segmentado. Isso é ainda mais comum em arquiteturas em camadas e sistemas muito distribuídos. Nessa etapa de descobrir onde exatamente o problema acontece, podemos utilizar o mesmo ferramental que foi necessário para responder algumas das perguntas anteriores para explorar todas as camadas dos sistemas envolvidos para entender a níveis de engenharia, exatamente onde está o problema. Em que serviços, componentes, camadas, endpoints, chamadas, comandos, processos e etc.
 
@@ -90,9 +104,11 @@ A ideia desse ponto é coletar datapoints técnicos para formular as hipóteses 
 > "A lentidão no checkout aparece entre 18h e 22h, quando o volume ultrapassa 2.000 requisições por segundo e há maior dependência do serviço de antifraude. O mesmo deixa de responder em p95 de 20ms para 2s. Temos 20 tentativas de retry em memória depois que o tempo ultrapassa 1s. Também temos um ponto de saturação no serviço que orquestra os status do pagamento. Nosso database chega a 98% de CPU e as queries executadas no mesmo representa 80% do tempo da transação."
 
 
-### Quinta pergunta: Até quando precisamos melhorar? 
+### Quinta pergunta: Até quando precisamos melhorar? - Definindo Prazos
 
-Aqui precisamos levantar os critérios de urgência e tempo do problema. Precisamos trazer respostas para perguntas como "qual a urgência?", "existe data importante envolvida nessa melhoria? Evento, Relese, Campanha?", "precisamos corrigir isso até uma janela específica?", "quais são as janelas seguras de rollout?", "a meta é emergencial, tática ou estratégica?". 
+![Querta Pergunta](/assets/images/staff/staff-Smart-5.jpg)
+
+Aqui precisamos levantar os critérios de urgência e tempo do problema. Precisamos trazer respostas para perguntas como "qual a urgência?", "existe data importante envolvida nessa melhoria? Evento, Release, Campanha?", "precisamos corrigir isso até uma janela específica?", "quais são as janelas seguras de rollout?", "a meta é emergencial, tática ou estratégica?". 
 
 > Precisamos melhorar a experiência do checkout nos níveis acordados até o inicio das campanhas da Black Friday. As campanhas começam no inicio do mês de novembro. Logo, temos 3 semanas para a proposta e resolução.
 
@@ -161,9 +177,9 @@ Com isso, conseguimos transformar a meta em algo mensurável:
 Agora a meta tem números. Ela pode ser acompanhada. Ela pode ser discutida. Ela pode ser contestada. Ela pode ser validada em produção.
 
 
-### Achievable: Validar se é alcançavel
+### Achievable: Validar se é alcançável
 
-Uma meta precisa ser alcançavel dentro da realidade de tempo, custo, arquitetura, time, dependências e maturidade operacional e tecnologica. Caso necessite de um refactor complexo, substituição de tecnologias, rearquitetura, essas condições precisam ser viáveis dentro do custo e tempo. Temos tempo e pessoas para isso? As pessoas tem os conhecimentos necessários? Temos como priorizar? Temos atividades e projetos que podem ser despriorizados pra que seja possível alocar profissionais neste movimento? 
+Uma meta precisa ser alcançável dentro da realidade de tempo, custo, arquitetura, time, dependências e maturidade operacional e tecnológica. Caso necessite de um refactor complexo, substituição de tecnologias, rearquitetura, essas condições precisam ser viáveis dentro do custo e tempo. Temos tempo e pessoas para isso? As pessoas tem os conhecimentos necessários? Temos como priorizar? Temos atividades e projetos que podem ser despriorizados pra que seja possível alocar profissionais neste movimento? 
 
 No nosso exemplo, sair de um p95 de 40 segundos para 4 segundos é uma redução agressiva. Isso pode ser possível, mas precisa ser validado e ser possível dentro das condições citadas. O time precisa entender se o problema está em pontos sob seu controle ou se depende de fornecedores, contratos, mudanças estruturais ou grandes refatorações.
 
@@ -197,14 +213,14 @@ Também podemos trabalhar com metas em horizontes diferentes, como tático (curt
 
 Uma meta SMART precisa ser relevante para os interesses e metas da instituição. Isso significa que ela deve estar amarrada a algum impacto real dos objetivos da empresa ou área. Isso faz com que seja possível guiar um trabalho de especialista de forma extremamente orientada a resultados. Em engenharia, é comum criarmos metas tecnicamente interessantes, mas desconectadas da dor principal do negócio.
 
-No nosso exemplo, o checkout é uma etapa diretamente ligada à conversão e à receita. Se o cliente chega até o pagamento e abandona a compra por lentidão, erro ou instabilidade, o impacto não é apenas técnico. É financeiro, operacional e reputacional. Além de que temos metas e contratos amarrados com clientes, como os SLA's de disponibilidade e tempo de resposta das transações. 
+No nosso exemplo, o checkout é uma etapa diretamente ligada à conversão e à receita. Se o cliente chega até o pagamento e abandona a compra por lentidão, erro ou instabilidade, o impacto não é apenas técnico. É financeiro, operacional e reputacional. Além de que temos metas e contratos amarrados com clientes, como os SLAs de disponibilidade e tempo de resposta das transações. 
 
 Precisamos elaborar isso executivamente: 
 
 Esse projeto de otimização do checkout é importante porque: 
 
 * Reduz o abandono do carrinho em uma etapa crítica do processo. Temos indicadores de metas de conversão e redução do abandono do carrinho. 
-* Protege a receita em horarios de pico. Temos metas de aumento de receita na API de checkout. 
+* Protege a receita em horários de pico. Temos metas de aumento de receita na API de checkout. 
 * Melhora a experiência de compra. Temos metas para serem atingidas nos aspectos de NPS e satisfação do usuário. 
 * Prepara a plataforma para datas comemorativas onde movemos com mais agressividade os indicadores de conversão anuais e mensais. 
 * Reduz risco operacional
@@ -306,4 +322,4 @@ Uma boa meta SMART deve gerar trabalho concreto. Se a meta não consegue ser que
 
 **Critério de sucesso:** A meta será considerada atingida quando os indicadores de latência, erro e abandono permanecerem dentro dos limites definidos por 7 dias consecutivos, durante horários de pico, sem comprometer consistência, segurança ou estabilidade da jornada de pagamento.
 
-Esse é o principal valor do SMART quando aplicado com maturidade, através das perguntas certas ele tem a capacidade de nos ajudar a transformar uma frase vaga em um contrato claro de execução. O time deixa de perseguir uma percepção genérica de melhoria e passa a trabalhar em cima de uma meta verificável, contextualizada e conectada ao impacto real do negócio. Esse é um trabalho altamente recorrente em cadeiras de Staff+ Engineers, e trabalhar nesse modelo mental me abriu muitas portas e me deu acesso a muitos projetos críticos para meu curriculo. Recomendo altamente o estudo da aplicabilidade no mesmo, mesmo que adaptável, para o seu dia a dia, estando ou não na cadeira. 
+Esse é o principal valor do SMART quando aplicado com maturidade, por meio das perguntas certas, ele tem a capacidade de nos ajudar a transformar uma frase vaga em um contrato claro de execução. O time deixa de perseguir uma percepção genérica de melhoria e passa a trabalhar em cima de uma meta verificável, contextualizada e conectada ao impacto real do negócio. Esse é um trabalho altamente recorrente em cadeiras de Staff+ Engineers, e trabalhar nesse modelo mental me abriu muitas portas e me deu acesso a muitos projetos críticos para meu currículo. Recomendo altamente o estudo da aplicabilidade no mesmo, mesmo que adaptável, para o seu dia a dia, estando ou não na cadeira. 
