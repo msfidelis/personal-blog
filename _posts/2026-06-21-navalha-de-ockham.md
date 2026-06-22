@@ -63,3 +63,13 @@ Uma das janelas mais óbvias para se aplicar o conceito da Navalha de Ockham é 
 A Navalha de Ockham nos orienta a começar pelas explicações que exigem menos suposições e que conseguem explicar a maior quantidade de sinais observados. Eu gosto muito da estratégia de "tirar todo mundo do prédio pegando fogo para depois apagar o incêndio", indo para uma estratégia mais fácil para reduzir o impacto do incidente para o cliente, independente da causa. Se a latência começou a aumentar imediatamente após um deployment, está concentrada apenas nas instâncias que receberam a nova versão e desaparece quando realizamos o rollback, a mudança recente é uma hipótese forte. Investigar primeiro uma falha global de rede exigiria introduzir mais suposições para explicar as mesmas evidências. Isso não significa declarar imediatamente que o deployment é a causa. Significa apenas priorizar a hipótese com maior poder explicativo e menor custo de suposição.
 
 Em incidentes, a navalha pode ajudar a ordenar a investigação. Podemos começar perguntando: o que mudou, quando o comportamento começou, quais componentes estão afetados, quais continuam saudáveis e qual é a primeira divergência observável entre eles? Esse simples modelo mental não é uma bala de prata imediata, mas reduz muito o espaço das investigações para as hipóteses mais obvias. 
+
+<br>
+
+## A Navalha de Ockham e Propostas de Engenharia
+
+A Navalha de Ockham também pode melhorar a forma como escrevemos propostas técnicas independente do formato usado, sejam RFC's, ADR's, Strategy Docs e propostas arquiteturais diversas. Não é incomum uma proposta nascer de uma dor de negócio válida e rapidamente perder força por tentar "abraçar o mundo", passando a propor uma nova plataforma, uma mudança organizacional, uma migração tecnológica e um modelo futuro de arquitetura. Quanto maior o escopo, mais difícil se torna avaliar se a solução realmente responde ao problema original.
+
+Uma boa proposta precisa começar com uma formulação clara do problema. O leitor deve conseguir entender o que está acontecendo, qual é o impacto, quais evidências sustentam a discussão e por que a situação atual é insuficiente. Uma proposta boa consegue responder algumas perguntas básicas como qual problema estamos resolvendo, que resultado esperamos produzir, por que a solução atual é insuficiente, qual é a menor mudança capaz de atender ao objetivo, que complexidade nova será introduzida e como medir tudo isso.
+
+A Navalha de Ockham não exige que apenas uma alternativa seja discutida. Pelo contrário, alternativas são importantes. O que deve ser evitado é a inclusão de opções que não possuem relação real com o problema ou que existem apenas para aumentar a aparência de profundidade do documento.
