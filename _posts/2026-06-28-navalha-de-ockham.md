@@ -30,6 +30,8 @@ No dia a dia da cadeira, ela pode ser utilizada como **um método-base de racioc
 
 <br>
 
+## Simplicidade como Disciplina
+
 Como veremos nos demais capítulos, **problemas de engenharia raramente chegam de forma “limpa” ou “clara”**. Na maioria das vezes, eles vêm como uma mistura de sintomas, interpretações, ruídos e hipóteses. Isso quando não chegam acompanhados de uma série de soluções previamente imaginadas. Frases como “o sistema não escala”, “o banco de dados está lento”, “precisamos quebrar o monólito”, “precisamos adotar eventos” ou “essa aplicação precisa ser modernizada” não representam, necessariamente, problemas bem formulados. **Elas representam percepções sobre o problema e, em alguns casos, já carregam uma solução embutida.**
 
 Quando alguém afirma que um sistema precisa ser quebrado em microserviços, por exemplo, é importante separar duas questões: **“Qual é o problema observado?”** e **“Por que a decomposição em microserviços seria a melhor resposta para esse problema?”**
