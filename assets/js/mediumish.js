@@ -31,34 +31,94 @@ jQuery(document).ready(function($){
     });
 
 
+    // Add clickable permalink anchors to post headings (h2-h6 with an id).
+    // The href is percent-encoded so copied/shared links (accented ids included)
+    // are valid, portable URLs instead of raw UTF-8 characters.
+    $('.article-post h2[id], .article-post h3[id], .article-post h4[id], .article-post h5[id], .article-post h6[id]').each(function() {
+        var $heading = $(this);
+        var encodedId = encodeURIComponent($heading.attr('id'));
+        $heading.append(
+            ' <a class="heading-anchor" href="#' + encodedId + '" aria-label="Link direto para esta seção">#</a>'
+        );
+    });
+
     // Smooth on external page
     $(function() {
+      // `location.hash` / `a.hash` come back percent-encoded for non-ASCII ids (e.g. accents),
+      // and `$('#' + hash)` throws on that as an invalid CSS selector, so resolve via
+      // getElementById on the decoded id instead.
+      function resolveHashTarget(hash) {
+        var id = decodeURIComponent((hash || '').replace(/^#/, ''));
+        if (!id) {
+          return $();
+        }
+        var el = document.getElementById(id);
+        return el ? $(el) : $('[name="' + id + '"]');
+      }
+
+      function navBarOffset() {
+        // Compensate for the fixed navbar so the section title isn't hidden behind it
+        return ($('nav.mediumnavigation').outerHeight() || 0) + 20;
+      }
+
+      function snapTo(target) {
+        $('html,body').scrollTop(target.offset().top - navBarOffset());
+      }
+
+      function smoothScrollTo(target) {
+        if (target && target.length) {
+          $('html,body').animate({
+            scrollTop: target.offset().top - navBarOffset()
+          }, 1000);
+        }
+      }
+
+      // Content that renders asynchronously after the initial jump (MathJax formulas,
+      // mermaid diagrams, lazy images, embeds) can shift the layout and throw the scroll
+      // position off target. Keep re-snapping to the target while the page settles, and
+      // stop as soon as the reader scrolls manually.
+      function keepTargetInPlace(target) {
+        if (!target || !target.length) {
+          return;
+        }
+
+        var userScrolled = false;
+        var stop = function() {
+          userScrolled = true;
+          $(window).off('wheel touchstart', stop);
+        };
+        $(window).one('wheel touchstart', stop);
+
+        var elapsed = 0;
+        var interval = setInterval(function() {
+          elapsed += 300;
+          if (userScrolled || elapsed >= 3000) {
+            clearInterval(interval);
+            return;
+          }
+          snapTo(target);
+        }, 300);
+      }
+
       setTimeout(function() {
         if (location.hash) {
           /* we need to scroll to the top of the window first, because the browser will always jump to the anchor first before JavaScript is ready, thanks Stack Overflow: http://stackoverflow.com/a/3659116 */
           window.scrollTo(0, 0);
-          target = location.hash.split('#');
-          smoothScrollTo($('#'+target[1]));
+          var target = resolveHashTarget(location.hash);
+          smoothScrollTo(target);
+          keepTargetInPlace(target);
         }
       }, 1);
 
       // taken from: https://css-tricks.com/snippets/jquery/smooth-scrolling/
       $('a[href*=\\#]:not([href=\\#])').click(function() {
         if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-          smoothScrollTo($(this.hash));
+          var target = resolveHashTarget(this.hash);
+          smoothScrollTo(target);
+          keepTargetInPlace(target);
           return false;
         }
       });
-
-      function smoothScrollTo(target) {
-        target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-
-        if (target.length) {
-          $('html,body').animate({
-            scrollTop: target.offset().top
-          }, 1000);
-        }
-      }
     });
     
     
