@@ -110,10 +110,48 @@ jQuery(document).ready(function($){
         }
       }, 1);
 
+      // Copy a heading anchor's absolute URL to the clipboard, with a fallback for
+      // browsers/contexts where the async Clipboard API isn't available.
+      function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text);
+          return;
+        }
+        var $tmp = $('<textarea readonly></textarea>').val(text).css({
+          position: 'fixed',
+          top: '-1000px',
+          left: '-1000px'
+        }).appendTo('body');
+        $tmp[0].select();
+        try {
+          document.execCommand('copy');
+        } catch (e) {}
+        $tmp.remove();
+      }
+
+      function flashCopied($link) {
+        $link.addClass('copied');
+        clearTimeout($link.data('copiedTimeout'));
+        var timeoutId = setTimeout(function() {
+          $link.removeClass('copied');
+        }, 1500);
+        $link.data('copiedTimeout', timeoutId);
+      }
+
       // taken from: https://css-tricks.com/snippets/jquery/smooth-scrolling/
       $('a[href*=\\#]:not([href=\\#])').click(function() {
         if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+          var $link = $(this);
           var target = resolveHashTarget(this.hash);
+
+          if ($link.hasClass('heading-anchor')) {
+            copyToClipboard(this.href);
+            flashCopied($link);
+            if (history.pushState) {
+              history.pushState(null, '', this.hash);
+            }
+          }
+
           smoothScrollTo(target);
           keepTargetInPlace(target);
           return false;
