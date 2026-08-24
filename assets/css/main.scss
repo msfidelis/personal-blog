@@ -8,6 +8,39 @@
 	display:inline;
 }
 
+/* Anchor links for post headings: keep sections from hiding behind the fixed navbar,
+   and expose a clickable "#" permalink next to each heading on hover. */
+.article-post h1[id],
+.article-post h2[id],
+.article-post h3[id],
+.article-post h4[id],
+.article-post h5[id],
+.article-post h6[id] {
+	scroll-margin-top: 90px;
+}
+
+.heading-anchor {
+	margin-left: 0.4em;
+	color: #ccc;
+	text-decoration: none;
+	opacity: 0;
+	transition: opacity 0.15s ease-in-out;
+}
+
+h1[id]:hover .heading-anchor,
+h2[id]:hover .heading-anchor,
+h3[id]:hover .heading-anchor,
+h4[id]:hover .heading-anchor,
+h5[id]:hover .heading-anchor,
+h6[id]:hover .heading-anchor,
+.heading-anchor:focus {
+	opacity: 1;
+}
+
+.heading-anchor:hover {
+	color: #1C9963;
+}
+
 // Import partials from `sass_dir` (defaults to `_sass`)
 @import
 	"syntax",
