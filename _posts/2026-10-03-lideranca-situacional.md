@@ -9,9 +9,9 @@ title: Staff Framework - Liderança Situacional e Atuação Cross-Scope
 --- 
 
 
-Esse post é uma tentativa de ilustrar minha forma de liderar. Eu utilizo o modelo adaptado de **Liderança Situacional** para me auxiliar a trafegar e estar presente em diversas frentes ao longo da minha semana, e uso as referências como uma régua para me adaptar a cada caso e agir de forma assertiva. Sei que esse tipo de post pode parecer um pouco arriscado, mas é o método que eu utilizo. Nada mais transparente que isso. Ele pode mudar, mas não hoje.
+Esse post é uma tentativa de ilustrar minha forma de liderar. Eu utilizo o modelo adaptado de **Liderança Situacional** para me auxiliar a trafegar e estar presente em diversas frentes ao longo da minha semana e uso suas referências como uma régua para me adaptar a cada caso e agir de forma assertiva. Sei que esse tipo de post pode parecer um pouco arriscado, mas **é o método que eu utilizo**. Nada mais transparente do que isso. Ele pode mudar, mas não hoje.
 
-Há quem considere esse framework de liderança datado. Eu realmente acho que existem muitas outras referências sobre como liderar. Mas o diferencial, na minha experiência prática, está em como ele facilita minha adaptação rápida entre diversos assuntos que estão evoluindo em ritmos diferentes, conduzidos por pessoas com diferentes níveis de conhecimento, maturidade e senioridade. Vai fazer sentido quando eu começar a explicar. Confia.
+Há quem considere esse framework de liderança datado. Eu realmente acho que existem muitas outras referências sobre como liderar. Mas o diferencial, na minha experiência prática, está em como ele facilita **minha adaptação rápida entre diversos assuntos que evoluem em ritmos diferentes**, conduzidos por pessoas com diferentes níveis de conhecimento, maturidade e senioridade. Vai fazer sentido quando eu começar a explicar. **Confia.**
 
 <br>
 
@@ -21,7 +21,7 @@ A atuação de profissionais Staff+ raramente fica restrita aos limites de um ú
 
 Essa mudança de escopo exige uma forma diferente de pensar a liderança técnica. A forma tradicional de liderança não condiz com o que se espera, na prática, desse papel. É humanamente impossível que um profissional Staff participe de forma ativa e profunda de todos os problemas técnicos de uma organização. E, fazendo um paralelo com alguns feedbacks que recebi nos últimos anos, mesmo que isso fosse possível, provavelmente não seria desejável. **Quanto maior a dependência criada em torno de uma única pessoa, menor tende a ser a autonomia da organização.**
 
-A atuação cross-team precisa, portanto, ser seletiva para que a qualidade de vida do profissional também seja preservada. O objetivo não é estar presente em todos os lugares, mas identificar os pontos em que seu conhecimento, sua influência ou sua capacidade de decisão têm mais valor naquele momento.
+A atuação cross-team precisa, portanto, ser seletiva para que **a qualidade de vida do profissional também seja preservada**. O objetivo não é estar presente em todos os lugares, mas identificar os pontos em que seu conhecimento, sua influência ou sua capacidade de decisão **têm mais valor naquele momento**.
 
 <br>
 
@@ -31,24 +31,23 @@ Talvez uma das decisões mais difíceis na atuação cross-team seja entender qu
 
 Entrar em todas as discussões não escala e, em muitos casos, reduz justamente a autonomia que deveríamos ajudar a construir. Eu costumo pensar que **a entrada acontece quando existe uma diferença relevante entre a complexidade do problema e a capacidade atual do grupo de resolvê-lo sozinho**, ou quando um risco precisa ser avaliado sob uma perspectiva diferente.
 
-Um incidente crítico, por exemplo, pode justificar uma entrada rápida e bastante diretiva. Uma decisão arquitetural que atravessa diferentes domínios pode exigir **Orientação** para conectar contextos que um único time não possui. Uma RFC tecnicamente madura pode demandar somente **Apoio** para destravar uma decisão. E uma iniciativa conduzida por um time que já demonstrou domínio e autonomia talvez **não exija nenhuma intervenção além de disponibilidade para um eventual cafezinho**.
+Um incidente crítico, por exemplo, pode justificar uma entrada rápida e bastante diretiva. Uma decisão arquitetural que atravessa diferentes domínios pode exigir **Orientação** para conectar contextos que um único time não possui. Uma RFC tecnicamente madura pode demandar somente **Apoio** para destravar uma decisão. E uma iniciativa conduzida por um time que já demonstrou domínio e autonomia talvez **não exija nenhuma intervenção além da disponibilidade para um eventual cafezinho**.
 
-Entrar, portanto, não significa necessariamente assumir o controle de algo. E isso é difícil para profissionais mais resolutivos e técnicos, como é o meu caso. Significa, sim, aplicar a intervenção correta, com escopo suficiente para melhorar um determinado cenário.
+Entrar, portanto, não significa necessariamente assumir o controle de algo. E isso é difícil para profissionais mais resolutivos e técnicos, como é o meu caso. Significa, sim, aplicar a intervenção correta, com escopo suficiente para melhorar determinado cenário.
 
 Sair, por sua vez, não significa abandonar, mas reconhecer que a presença deixou de gerar valor proporcional diante das outras demandas. Alguns sinais ajudam a perceber que chegou a hora de sair: o time passa a antecipar perguntas que antes precisavam ser feitas por alguém de fora, apresenta alternativas acompanhadas de trade-offs, consegue discordar com argumentos e identifica riscos sem depender de supervisão.
 
-Saber ler o ambiente para fazer essas duas movimentações de forma constante e sem atrito é uma habilidade que vale a pena desenvolver.
+Saber ler o ambiente para fazer essas duas movimentações de forma constante e sem atrito é **uma habilidade que vale a pena desenvolver**.
 
 <br>
 
-## A Liderança Situacional 
+## A Liderança Situacional
 
-
-Um mesmo comportamento pode ser eficiente em determinado contexto e completamente inadequado em outro. Uma equipe enfrentando um incidente crítico talvez precise de decisões rápidas, responsabilidades claras e direcionamento explícito, sem muita margem para ambiguidades. A mesma postura, aplicada continuamente sobre um grupo mais sênior, pode ser percebida como uma limitação de autonomia. A Liderança Situacional propõe, portanto, que o estilo de liderança seja ajustado de acordo com **o nível de capacidade e disposição das pessoas diante de uma determinada tarefa ou responsabilidade**. Essa flexibilização permite uma transição mais leve entre diferentes contextos.
+Um mesmo comportamento pode ser eficiente em determinado contexto e completamente inadequado em outro. Uma equipe enfrentando um incidente crítico talvez precise de decisões rápidas, responsabilidades claras e direcionamento explícito, sem muita margem para ambiguidades. A mesma postura, aplicada continuamente a um grupo mais sênior, pode ser percebida como uma limitação de autonomia. A Liderança Situacional propõe, portanto, que o estilo de liderança seja ajustado de acordo com **o nível de capacidade e disposição das pessoas diante de uma determinada tarefa ou responsabilidade**. Essa flexibilização permite uma transição mais leve entre diferentes contextos.
 
 Alguém pode possuir alta senioridade, ampla experiência de carreira e enorme autonomia em determinado domínio de negócio e, ao mesmo tempo, precisar de orientação diante de um problema completamente novo. Um Principal Engineer com experiência em sistemas distribuídos pode ter alta maturidade para discutir particionamento, consistência e resiliência, mas baixa maturidade ao assumir, pela primeira vez, uma responsabilidade relacionada a Machine Learning, compliance ou outro domínio com o qual ainda não tenha familiaridade. **Trocamos a pergunta "qual é a senioridade desta pessoa?" por algo como "qual é o grau de autonomia dessa pessoa diante de determinado assunto?".**
 
-Eu, por exemplo, posso participar de fóruns estruturantes, com profissionais de alta senioridade, sobre padrões de sistemas distribuídos, orquestração de containers, cloud providers, avaliação de risco e trade-offs técnicos complexos de consistência e, ao mesmo tempo, ser totalmente ouvinte em um fórum sobre otimizações de frontend. Essa alternância evita dois extremos totalmente "chatos": **tratar todos como se precisassem de supervisão**, ou **tratar todos como se já estivessem prontos para operar sozinhos em qualquer cenário**.
+Eu, por exemplo, posso participar de fóruns estruturantes, com profissionais de alta senioridade, sobre padrões de sistemas distribuídos, orquestração de containers, cloud providers, avaliação de risco e trade-offs técnicos complexos de consistência e, ao mesmo tempo, ser totalmente ouvinte em um fórum sobre otimizações de frontend. Essa alternância evita dois extremos totalmente "chatos": **tratar todos como se precisassem de supervisão** ou **tratar todos como se já estivessem prontos para operar sozinhos em qualquer cenário**.
 
 <br>
 
@@ -56,14 +55,14 @@ Eu, por exemplo, posso participar de fóruns estruturantes, com profissionais de
 
 ![Liderança Situacional](/assets/images/staff/Liderancao-Situacional.jpg)
 
-A Liderança Situacional combina quatro níveis possíveis de atuação do líder com quatro níveis de maturidade dos times ou liderados, sendo esses adaptados a diferentes necessidades e situações. Um Staff precisa conseguir ler o ambiente, a pauta ou o fórum para saber como se posicionar diante das necessidades do momento. É aqui que entra a clareza do método.
+A Liderança Situacional combina quatro níveis possíveis de atuação do líder com quatro níveis de maturidade dos times ou liderados, **adaptados a diferentes necessidades e situações**. Um Staff precisa conseguir ler o ambiente, a pauta ou o fórum para saber como se posicionar diante das necessidades do momento. **É aqui que entra a clareza do método.**
 
 Os níveis de atuação variam desde direcionamentos fechados e diretos até modelos de delegação ampla. São eles: **Direção**, **Orientação**, **Apoio** e **Delegação**.
 
-Independentemente do modelo escolhido, o objetivo é conseguir trafegar entre todos eles **sem autoridade formal ou imposição**. *O pior modelo de liderança do mundo ainda é melhor do que uma "carteirada"*.
+Independentemente do modelo escolhido, o objetivo é conseguir trafegar entre todos eles **sem autoridade formal ou imposição**. **O pior modelo de liderança do mundo ainda é melhor do que uma "carteirada".**
 
 
-### Direção - Direcionamentos Explicitos
+### Direção - Direcionamentos Explícitos
 
 Direção é o **nível de atuação mais prescritivo e imediato**.
 
@@ -75,7 +74,7 @@ Em engenharia, esse tipo de atuação pode aparecer durante um incidente crític
 
 Nesse tipo de cenário, em que existe impacto para um cliente, **há pouco espaço para discussão. O custo da indecisão é alto.**
 
-Uma atuação diretiva não deve ser confundida, em hipótese alguma, com autoritarismo. É preciso cuidado para que essa abordagem situacional não se torne permanente e crie um gargalo de decisão por medo ou comodidade. Sua função é reduzir a distância entre a complexidade do problema e a capacidade atual de quem precisa resolvê-lo, encurtando a tomada de decisão quando falta maturidade às pessoas envolvidas naquele contexto.
+Uma atuação diretiva não deve ser confundida, em hipótese alguma, com autoritarismo. É preciso cuidado para que essa abordagem situacional não se torne permanente e crie um gargalo de decisão por medo ou comodidade. Sua função é reduzir a distância entre a complexidade do problema e a capacidade atual de quem precisa resolvê-lo, **encurtando a tomada de decisão quando falta maturidade às pessoas envolvidas naquele contexto**.
 
 
 ### Orientação - Direcionamento Construtivo
@@ -86,10 +85,9 @@ Nesse estágio, a pessoa ou equipe já demonstra alguma disposição e possui um
 
 > "Vamos precisar salvar os logs das aplicações de cartão de crédito em dois locais. Vamos ingeri-los e consultá-los de forma quente para a operação diária no Elasticsearch, mas também iremos armazená-los no S3, em uma camada mais fria. Teremos uma retenção de 7 dias na stack de observabilidade para troubleshooting e uma retenção de 5 anos no Deep Archive para auditoria. Esse requisito não é negociável, pois é uma exigência regulatória das auditorias ISO."
 
-Os times serão parte ativa da solução, elaborando, questionando e debatendo os requisitos e a implementação de fato. Porém, as lacunas que impediriam um entendimento mais profundo são preenchidas de forma explícita por quem orienta.
+Os times serão parte ativa da solução, elaborando, questionando e debatendo os requisitos e a implementação de fato. Porém, **as lacunas que impediriam um entendimento mais profundo são preenchidas de forma explícita por quem orienta**.
 
-O maior risco da liderança orientativa é tratá-la como uma aula unidirecional, fazendo com que ela retorne a um perfil diretivo ou pouco se diferencie dele. Se quem orienta apenas explica, sem abrir espaço real para perguntas, discordâncias ou rodadas de entendimento, a atuação regride para Direção — o pior cenário possível. **A função desse nível é reduzir o risco imediato da decisão e, ao mesmo tempo, investir na formação de autonomia futura sobre aquele contexto específico.**
-
+O maior risco da liderança orientativa é tratá-la como uma aula unidirecional, fazendo com que ela retorne a um perfil diretivo ou pouco se diferencie dele. Se quem orienta apenas explica, sem abrir espaço real para perguntas, discordâncias ou rodadas de entendimento, a atuação regride para Direção — **o pior cenário possível**. **A função desse nível é reduzir o risco imediato da decisão e, ao mesmo tempo, investir na formação de autonomia futura sobre aquele contexto específico.**
 
 ### Apoio - Direcionamento de Segurança
 
@@ -111,7 +109,7 @@ Em engenharia, esse tipo de atuação aparece quando um grupo já assumiu autono
 
 > "Essa decisão é de vocês. Hoje, o time conhece esse domínio melhor do que eu. Sigam com o que fizer mais sentido. Me chamem se aparecer algum risco que fuja do domínio de vocês ou que não consigam resolver sozinhos."
 
-A atuação aqui se resume a confirmar, de forma explícita, que a decisão pertence a quem já demonstrou repertório para sustentá-la sozinho — sem necessidade de transferir conhecimento ou validar pontualmente.
+A atuação aqui se resume a confirmar, de forma explícita, que a decisão pertence a quem já demonstrou repertório para sustentá-la sozinho — **sem necessidade de transferir conhecimento ou validar pontualmente**.
 
 O maior risco da Delegação está em dois extremos. O primeiro é usá-la como desculpa para negligência: delegar e desaparecer, sem manter nenhum canal real de escalada, tratando "confio no time" como sinônimo de "não preciso mais acompanhar nada daquele contexto". **O objetivo é confiar, não deixar o time desamparado.**
 
@@ -121,17 +119,17 @@ O segundo, mais sutil, é **delegar a responsabilidade sem, de fato, abrir mão 
 
 ## Níveis de maturidade de times
 
-![Niveis de Maturidade](/assets/images/staff/niveis-maturidade.jpg)
+![Níveis de Maturidade](/assets/images/staff/niveis-maturidade.jpg)
 
-Agora que o modelo está claro, vamos aplicá-lo a cenários hipotéticos de times de engenharia. A cada situação, a forma de liderança precisa se adequar às características de maturidade envolvidas — a régua e o termômetro são sempre o quórum e o contexto das pessoas envolvidas.
+Agora que o modelo está claro, vamos aplicá-lo a cenários hipotéticos de times de engenharia. A cada situação, a forma de liderança precisa se adequar às características de maturidade envolvidas — **a régua e o termômetro são sempre o quórum e o contexto das pessoas envolvidas**.
 
 ### Baixa capacidade e baixa vontade - Direção
 
-Esse é o perfil de menor prontidão diante de um assunto específico: **pouco domínio técnico do problema e, ao mesmo tempo, pouca disposição real para lidar com ele**. Não é necessariamente preguiça. É comum essa combinação aparecer quando o assunto é novo, quando a pessoa nunca teve contato direto com aquele tipo de desafio ou quando já existe uma experiência ruim recente relacionada àquele contexto, o tipo de situação que gera hesitação antes mesmo da tentativa.
+Esse é o perfil de menor prontidão diante de um assunto específico: **pouco domínio técnico do problema e, ao mesmo tempo, pouca disposição real para lidar com ele**. Não é necessariamente preguiça. É comum essa combinação aparecer quando o assunto é novo, quando a pessoa nunca teve contato direto com aquele tipo de desafio ou quando já existe uma experiência ruim recente relacionada àquele contexto — **o tipo de situação que gera hesitação antes mesmo da tentativa**.
 
 Esse é exatamente o cenário em que **Direção** funciona melhor: reduzir a ambiguidade ao mínimo possível, porque não há capacidade nem confiança suficientes para sustentar uma decisão autônoma sem risco. Um exemplo comum em engenharia é herdar a manutenção de um sistema legado, escrito por alguém que já saiu da empresa e sem nenhuma documentação viva, depois de ter visto colegas tentarem manutenções ou evoluções e causarem problemas graves em produção.
 
-Diante disso, o caminho mais eficaz não é abrir espaço para exploração, mas indicar exatamente o próximo passo e reduzir o raio de manobra até que exista repertório mínimo para operar com mais liberdade.
+Diante disso, o caminho mais eficaz não é abrir espaço para exploração, mas indicar exatamente o próximo passo e **reduzir o raio de manobra até que exista repertório mínimo para operar com mais liberdade**.
 
 
 ### Baixa capacidade e alta vontade - Orientação
@@ -143,11 +141,11 @@ Um exemplo comum é o de um engenheiro que nunca trabalhou com mensageria e even
 
 ### Alta capacidade e baixa vontade - Apoio
 
-Esse cenário de maturidade aparece em profissionais que, por si só, já sabem o que fazer e como fazer, mas têm dificuldade para agir e tomar decisões estruturantes sozinhos. Às vezes é insegurança pontual ou falta de autonomia; em outros casos, desmotivação ou excesso de cautela diante da exposição da decisão. Medo de agir sem alguém por perto. Normal.
+Esse cenário de maturidade aparece em profissionais que, por si sós, já sabem o que fazer e como fazer, mas têm dificuldade para agir e tomar decisões estruturantes sozinhos. Às vezes, é insegurança pontual ou falta de autonomia; em outros casos, desmotivação ou excesso de cautela diante da exposição da decisão. **Medo de agir sem alguém por perto. Normal.**
 
 É exatamente aqui que a liderança de **Apoio** entra, gerando segurança para destravar a decisão. Um exemplo comum é o de um Tech Lead que sabe exatamente como corrigir um memory leak em um serviço crítico, mas hesita em aplicar o fix em produção porque uma tentativa anterior, meses atrás, gerou um pico de latência e violou os SLOs do produto. **A solução técnica já está pronta há dias; só falta alguém validar que ela está certa e dizer "pode seguir".**
 
-Esse tipo de cenário também pode esconder algo mais preocupante: profissionais extremamente sêniores desmotivados, o que gera risco real para o time e para a empresa. Vale ir além da leitura mais básica de liderança, entender os motivos por trás disso e exercitar uma liderança mais humana, atenta ao momento profissional da pessoa.
+Esse tipo de cenário também pode esconder algo mais preocupante: **profissionais extremamente seniores desmotivados**, o que gera risco real para o time e para a empresa. Vale ir além da leitura mais básica de liderança, entender os motivos por trás disso e exercitar uma liderança mais humana, atenta ao momento profissional da pessoa.
 
 ### Alta capacidade e alta vontade - Delegação
 
@@ -155,3 +153,12 @@ Esse é o perfil de maior prontidão, em que o time já tem **domínio técnico 
 
 Um exemplo é uma squad que administra sozinha um pipeline de dados essencial para outras áreas da empresa, decidindo particionamento, escala e SLA sem precisar de aprovação prévia e recorrendo a alguém de fora somente quando o risco genuinamente ultrapassa o domínio do time. **Tratar esse perfil como se ainda precisasse de Apoio ou Orientação é limitar a autonomia de um perfil raríssimo.**
 
+<br>
+
+## Conclusão
+
+Essa adaptação que utilizo da liderança situacional me ensinou na prática que, não é possível estar presente em todas as mesas decisões, e me deu uma forma simples de **entender qual tipo de intervenção cada contexto realmente precisa**. Em alguns momentos, será necessário direcionar. Em outros, orientar, apoiar ou simplesmente sair do caminho pra um time fazer algo de uma forma muito melhor do que se eu estivesse presente. 
+
+Quanto maior o escopo de atuação, mais importante se torna reconhecer que liderança não significa centralizar assuntos, decisões e avais para que as pessoas "possam trabalhar". O objetivo sempre deve ser **reduzir dependências, aumentar a autonomia e melhorar a capacidade dos times de resolver problemas sem depender constantemente de uma única pessoa**.
+
+No fim, uma boa atuação Staff talvez seja justamente essa: **saber quando entrar, como contribuir e, principalmente, quando deixar de ser necessário**.
