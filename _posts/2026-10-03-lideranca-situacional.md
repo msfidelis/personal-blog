@@ -31,7 +31,7 @@ Talvez uma das decisões mais difíceis na atuação cross-team seja entender qu
 
 Entrar em todas as discussões não escala e, em muitos casos, reduz justamente a autonomia que deveríamos ajudar a construir. Eu costumo pensar que **a entrada acontece quando existe uma diferença relevante entre a complexidade do problema e a capacidade atual do grupo de resolvê-lo sozinho**, ou quando um risco precisa ser avaliado sob uma perspectiva diferente.
 
-Um incidente crítico, por exemplo, pode justificar uma entrada rápida e bastante diretiva. Uma decisão arquitetural que atravessa diferentes domínios pode exigir **Orientação** para conectar contextos que um único time não possui. Uma RFC tecnicamente madura pode demandar somente **Apoio** para destravar uma decisão. E uma iniciativa conduzida por um time que já demonstrou domínio e autonomia talvez não exija nenhuma intervenção além de disponibilidade para um eventual cafezinho.
+Um incidente crítico, por exemplo, pode justificar uma entrada rápida e bastante diretiva. Uma decisão arquitetural que atravessa diferentes domínios pode exigir **Orientação** para conectar contextos que um único time não possui. Uma RFC tecnicamente madura pode demandar somente **Apoio** para destravar uma decisão. E uma iniciativa conduzida por um time que já demonstrou domínio e autonomia talvez **não exija nenhuma intervenção além de disponibilidade para um eventual cafezinho**.
 
 Entrar, portanto, não significa necessariamente assumir o controle de algo. E isso é difícil para profissionais mais resolutivos e técnicos, como é o meu caso. Significa, sim, aplicar a intervenção correta, com escopo suficiente para melhorar um determinado cenário.
 
@@ -43,13 +43,12 @@ Saber ler o ambiente para fazer essas duas movimentações de forma constante e 
 
 ## A Liderança Situacional 
 
-O modelo de Liderança Situacional, associado principalmente aos trabalhos de Paul Hersey e Ken Blanchard, parte da premissa de que não deve existir um modelo único de liderar: a atuação e o método devem variar de acordo com alguns critérios. Critérios que, na minha visão, combinam perfeitamente com o trabalho de estar presente em inúmeras frentes e, por isso, servem como uma luva para profissionais na cadeira de Staff+.
 
 Um mesmo comportamento pode ser eficiente em determinado contexto e completamente inadequado em outro. Uma equipe enfrentando um incidente crítico talvez precise de decisões rápidas, responsabilidades claras e direcionamento explícito, sem muita margem para ambiguidades. A mesma postura, aplicada continuamente sobre um grupo mais sênior, pode ser percebida como uma limitação de autonomia. A Liderança Situacional propõe, portanto, que o estilo de liderança seja ajustado de acordo com **o nível de capacidade e disposição das pessoas diante de uma determinada tarefa ou responsabilidade**. Essa flexibilização permite uma transição mais leve entre diferentes contextos.
 
 Alguém pode possuir alta senioridade, ampla experiência de carreira e enorme autonomia em determinado domínio de negócio e, ao mesmo tempo, precisar de orientação diante de um problema completamente novo. Um Principal Engineer com experiência em sistemas distribuídos pode ter alta maturidade para discutir particionamento, consistência e resiliência, mas baixa maturidade ao assumir, pela primeira vez, uma responsabilidade relacionada a Machine Learning, compliance ou outro domínio com o qual ainda não tenha familiaridade. **Trocamos a pergunta "qual é a senioridade desta pessoa?" por algo como "qual é o grau de autonomia dessa pessoa diante de determinado assunto?".**
 
-Eu, por exemplo, posso participar de fóruns estruturantes, com profissionais de alta senioridade, sobre padrões de sistemas distribuídos, orquestração de containers, cloud providers, avaliação de risco e trade-offs técnicos complexos de consistência e, ao mesmo tempo, ser totalmente ouvinte em um fórum sobre otimizações de frontend. Essa alternância evita dois extremos: tratar todos como se precisassem de supervisão, ou tratar todos como se já estivessem prontos para operar sozinhos em qualquer cenário.
+Eu, por exemplo, posso participar de fóruns estruturantes, com profissionais de alta senioridade, sobre padrões de sistemas distribuídos, orquestração de containers, cloud providers, avaliação de risco e trade-offs técnicos complexos de consistência e, ao mesmo tempo, ser totalmente ouvinte em um fórum sobre otimizações de frontend. Essa alternância evita dois extremos totalmente "chatos": **tratar todos como se precisassem de supervisão**, ou **tratar todos como se já estivessem prontos para operar sozinhos em qualquer cenário**.
 
 <br>
 
@@ -57,18 +56,18 @@ Eu, por exemplo, posso participar de fóruns estruturantes, com profissionais de
 
 ![Liderança Situacional](/assets/images/staff/Liderancao-Situacional.jpg)
 
-A Liderança Situacional combina quatro níveis possíveis de atuação do líder com quatro níveis de maturidade dos times ou liderados, adaptados a diferentes necessidades e situações. Um Staff precisa conseguir ler o ambiente, a pauta ou o fórum para saber como se posicionar diante das necessidades do momento. É aqui que entra a clareza do método.
+A Liderança Situacional combina quatro níveis possíveis de atuação do líder com quatro níveis de maturidade dos times ou liderados, sendo esses adaptados a diferentes necessidades e situações. Um Staff precisa conseguir ler o ambiente, a pauta ou o fórum para saber como se posicionar diante das necessidades do momento. É aqui que entra a clareza do método.
 
 Os níveis de atuação variam desde direcionamentos fechados e diretos até modelos de delegação ampla. São eles: **Direção**, **Orientação**, **Apoio** e **Delegação**.
 
-Independentemente do modelo escolhido, o objetivo é conseguir trafegar entre todos eles sem autoridade formal ou imposição. O pior modelo de liderança do mundo ainda é melhor do que uma "carteirada".
+Independentemente do modelo escolhido, o objetivo é conseguir trafegar entre todos eles **sem autoridade formal ou imposição**. *O pior modelo de liderança do mundo ainda é melhor do que uma "carteirada"*.
 
 
 ### Direção - Direcionamentos Explicitos
 
 Direção é o **nível de atuação mais prescritivo e imediato**.
 
-Nesse estágio, existe pouca capacidade ou pouco contexto para que a pessoa ou o time consiga tomar determinadas decisões de forma orgânica. Esse tipo de atuação geralmente é aplicado em cenários em que o tempo é valioso e não podemos lidar com divergências ou ambiguidades. Isso pode significar definir objetivos, estabelecer prioridades, determinar limites técnicos, dividir um problema em etapas ou até indicar diretamente uma abordagem inicial.
+Nesse estágio, existe pouca capacidade ou pouco contexto para que a pessoa ou o time consiga tomar determinadas decisões de forma orgânica. Esse tipo de atuação geralmente é aplicado em cenários em que **o tempo é valioso e não podemos lidar com divergências ou ambiguidades**. Isso pode significar definir objetivos, estabelecer prioridades, determinar limites técnicos, dividir um problema em etapas ou até indicar diretamente uma abordagem inicial.
 
 Em engenharia, esse tipo de atuação pode aparecer durante um incidente crítico envolvendo um time pouco familiarizado com determinado sistema. Em vez de iniciar uma discussão aberta sobre todas as alternativas possíveis, um profissional experiente pode direcionar explicitamente:
 
@@ -81,7 +80,7 @@ Uma atuação diretiva não deve ser confundida, em hipótese alguma, com autori
 
 ### Orientação - Direcionamento Construtivo
 
-Orientação é o nível de atuação em que **a decisão ainda é conduzida por quem lidera a sala, mas deixa de ser unilateral e fechada**. Times e iniciativas mais adequados a uma liderança orientativa já possuem um nível de execução confiável, porém ainda apresentam alguma lacuna de maturidade, entendimento ou contexto. Aqui, já existe margem para questionamento, experimentação e erro, mas ainda é necessário um direcionamento formal e claro sobre objetivos e riscos.
+Orientação é o nível de atuação em que **a decisão ainda é conduzida por quem lidera a sala, mas deixa de ser unilateral e fechada**. Times e iniciativas mais adequados a uma liderança orientativa já possuem um nível de execução confiável, porém ainda apresentam alguma lacuna de maturidade, entendimento ou contexto. Aqui, já existe margem para questionamento, experimentação e erro, mas **ainda é necessário um direcionamento formal e claro sobre objetivos e riscos**.
 
 Nesse estágio, a pessoa ou equipe já demonstra alguma disposição e possui um contexto inicial, mas ainda não acumulou capacidade suficiente para sustentar sozinha as decisões técnicas daquele domínio. Diferentemente da Direção, aqui existe espaço e tempo para explicar o raciocínio por trás de cada escolha e gerar divergências pontuais, não apenas comunicar uma decisão. O objetivo deixa de ser **"resolver pela pessoa"** e passa a ser **"resolver junto, explicitando o porquê"**, para que a capacidade real comece a se formar.
 
