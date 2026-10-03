@@ -157,7 +157,7 @@ Um exemplo é uma squad que administra sozinha um pipeline de dados essencial pa
 
 ## Conclusão
 
-Essa adaptação que utilizo da liderança situacional me ensinou na prática que, não é possível estar presente em todas as mesas decisões, e me deu uma forma simples de **entender qual tipo de intervenção cada contexto realmente precisa**. Em alguns momentos, será necessário direcionar. Em outros, orientar, apoiar ou simplesmente sair do caminho pra um time fazer algo de uma forma muito melhor do que se eu estivesse presente. 
+Essa adaptação que utilizo da liderança situacional me ensinou na prática que, não é possível estar presente em todas as mesas e decisões, e me deu uma forma simples de **entender qual tipo de intervenção cada contexto realmente precisa**. Em alguns momentos, será necessário direcionar. Em outros, orientar, apoiar ou simplesmente sair do caminho pra um time fazer algo de uma forma muito melhor do que se eu estivesse presente. 
 
 Quanto maior o escopo de atuação, mais importante se torna reconhecer que liderança não significa centralizar assuntos, decisões e avais para que as pessoas "possam trabalhar". O objetivo sempre deve ser **reduzir dependências, aumentar a autonomia e melhorar a capacidade dos times de resolver problemas sem depender constantemente de uma única pessoa**.
 
