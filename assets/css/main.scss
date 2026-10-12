@@ -8,6 +8,58 @@
 	display:inline;
 }
 
+/* Anchor links for post headings: keep sections from hiding behind the fixed navbar,
+   and expose a clickable "#" permalink next to each heading on hover. */
+.article-post h1[id],
+.article-post h2[id],
+.article-post h3[id],
+.article-post h4[id],
+.article-post h5[id],
+.article-post h6[id] {
+	scroll-margin-top: 90px;
+}
+
+.heading-anchor {
+	position: relative;
+	margin-left: 0.4em;
+	color: #ccc;
+	text-decoration: none;
+	opacity: 0;
+	transition: opacity 0.15s ease-in-out;
+}
+
+h1[id]:hover .heading-anchor,
+h2[id]:hover .heading-anchor,
+h3[id]:hover .heading-anchor,
+h4[id]:hover .heading-anchor,
+h5[id]:hover .heading-anchor,
+h6[id]:hover .heading-anchor,
+.heading-anchor:focus,
+.heading-anchor.copied {
+	opacity: 1;
+}
+
+.heading-anchor:hover {
+	color: #1C9963;
+}
+
+/* "Link copiado!" toast shown briefly after clicking a heading anchor */
+.heading-anchor.copied::after {
+	content: "Link copiado!";
+	position: absolute;
+	left: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	margin-left: 8px;
+	padding: 2px 8px;
+	border-radius: 4px;
+	background: #1C9963;
+	color: #fff;
+	font-size: 0.7rem;
+	font-weight: 400;
+	white-space: nowrap;
+}
+
 // Import partials from `sass_dir` (defaults to `_sass`)
 @import
 	"syntax",
