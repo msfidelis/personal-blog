@@ -8,6 +8,8 @@ categories: [ system-design, engineering ]
 title: System Design - O Sumário e o Prefácio (Comece por aqui)
 ---
 
+Se você veio buscar os artigos de System Design, aqui tem tudinho na ordem recomendada. 
+
 # Prefácio 
 
 ### Dissolver e Coagular: O conhecimento de uma vida, até agora...
